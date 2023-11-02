@@ -67,6 +67,7 @@ import (
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/hss"
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/iam"
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/identitycenter"
+	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/iec"
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/ims"
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/iotda"
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/koogallery"
@@ -437,9 +438,11 @@ func Provider() *schema.Provider {
 			"huaweicloud_csms_secret_version": dew.DataSourceDewCsmsSecret(),
 			"huaweicloud_css_flavors":         css.DataSourceCssFlavors(),
 
-			"huaweicloud_dcs_flavors":        dcs.DataSourceDcsFlavorsV2(),
-			"huaweicloud_dcs_maintainwindow": dcs.DataSourceDcsMaintainWindow(),
-			"huaweicloud_dcs_instances":      dcs.DataSourceDcsInstance(),
+			"huaweicloud_dcs_flavors":         dcs.DataSourceDcsFlavorsV2(),
+			"huaweicloud_dcs_maintainwindow":  dcs.DataSourceDcsMaintainWindow(),
+			"huaweicloud_dcs_instances":       dcs.DataSourceDcsInstance(),
+			"huaweicloud_dcs_templates":       dcs.DataSourceTemplates(),
+			"huaweicloud_dcs_template_detail": dcs.DataSourceTemplateDetail(),
 
 			"huaweicloud_dds_flavors":   dds.DataSourceDDSFlavorV3(),
 			"huaweicloud_dds_instances": dds.DataSourceDdsInstance(),
@@ -490,6 +493,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_identity_group":       iam.DataSourceIdentityGroup(),
 			"huaweicloud_identity_projects":    iam.DataSourceIdentityProjects(),
 			"huaweicloud_identity_users":       iam.DataSourceIdentityUsers(),
+			"huaweicloud_identity_agencies":    iam.DataSourceIdentityAgencies(),
 
 			"huaweicloud_identitycenter_instance": identitycenter.DataSourceIdentityCenter(),
 			"huaweicloud_identitycenter_groups":   identitycenter.DataSourceIdentityCenterGroups(),
@@ -528,6 +532,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_elb_flavors":       elb.DataSourceElbFlavorsV3(),
 			"huaweicloud_elb_pools":         elb.DataSourcePools(),
 			"huaweicloud_elb_loadbalancers": elb.DataSourceElbLoadbalances(),
+			"huaweicloud_elb_listeners":     elb.DataSourceElbListeners(),
 
 			"huaweicloud_nat_gateway": nat.DataSourcePublicGateway(),
 
@@ -806,8 +811,9 @@ func Provider() *schema.Provider {
 			"huaweicloud_dc_virtual_gateway":   dc.ResourceVirtualGateway(),
 			"huaweicloud_dc_virtual_interface": dc.ResourceVirtualInterface(),
 
-			"huaweicloud_dcs_instance": dcs.ResourceDcsInstance(),
-			"huaweicloud_dcs_backup":   dcs.ResourceDcsBackup(),
+			"huaweicloud_dcs_instance":        dcs.ResourceDcsInstance(),
+			"huaweicloud_dcs_backup":          dcs.ResourceDcsBackup(),
+			"huaweicloud_dcs_custom_template": dcs.ResourceCustomTemplate(),
 
 			"huaweicloud_dds_database_role":      dds.ResourceDatabaseRole(),
 			"huaweicloud_dds_database_user":      dds.ResourceDatabaseUser(),
@@ -952,16 +958,16 @@ func Provider() *schema.Provider {
 			"huaweicloud_identitycenter_account_assignment":       identitycenter.ResourceIdentityCenterAccountAssignment(),
 			"huaweicloud_identitycenter_custom_policy_attachment": identitycenter.ResourceCustomPolicyAttachment(),
 
-			"huaweicloud_iec_eip":                 resourceIecNetworkEip(),
+			"huaweicloud_iec_eip":                 iec.ResourceIecNetworkEip(),
 			"huaweicloud_iec_keypair":             resourceIecKeypair(),
 			"huaweicloud_iec_network_acl":         resourceIecNetworkACL(),
 			"huaweicloud_iec_network_acl_rule":    resourceIecNetworkACLRule(),
 			"huaweicloud_iec_security_group":      resourceIecSecurityGroup(),
 			"huaweicloud_iec_security_group_rule": resourceIecSecurityGroupRule(),
-			"huaweicloud_iec_server":              resourceIecServer(),
+			"huaweicloud_iec_server":              iec.ResourceIecServer(),
 			"huaweicloud_iec_vip":                 resourceIecVipV1(),
-			"huaweicloud_iec_vpc":                 ResourceIecVpc(),
-			"huaweicloud_iec_vpc_subnet":          resourceIecSubnet(),
+			"huaweicloud_iec_vpc":                 iec.ResourceIecVpc(),
+			"huaweicloud_iec_vpc_subnet":          iec.ResourceIecSubnet(),
 
 			"huaweicloud_images_image":                ims.ResourceImsImage(),
 			"huaweicloud_images_image_copy":           ims.ResourceImsImageCopy(),
@@ -1071,6 +1077,8 @@ func Provider() *schema.Provider {
 			"huaweicloud_rds_mysql_account":                rds.ResourceMysqlAccount(),
 			"huaweicloud_rds_mysql_database":               rds.ResourceMysqlDatabase(),
 			"huaweicloud_rds_mysql_database_privilege":     rds.ResourceMysqlDatabasePrivilege(),
+			"huaweicloud_rds_pg_account":                   rds.ResourcePgAccount(),
+			"huaweicloud_rds_sqlserver_database":           rds.ResourceSQLServerDatabase(),
 			"huaweicloud_rds_instance":                     rds.ResourceRdsInstance(),
 			"huaweicloud_rds_parametergroup":               rds.ResourceRdsConfiguration(),
 			"huaweicloud_rds_read_replica_instance":        rds.ResourceRdsReadReplicaInstance(),
@@ -1107,6 +1115,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_smn_topic":            smn.ResourceTopic(),
 			"huaweicloud_smn_subscription":     smn.ResourceSubscription(),
 			"huaweicloud_smn_message_template": smn.ResourceSmnMessageTemplate(),
+			"huaweicloud_smn_logtank":          smn.ResourceSmnLogtank(),
 
 			"huaweicloud_sms_server_template": sms.ResourceServerTemplate(),
 			"huaweicloud_sms_task":            sms.ResourceMigrateTask(),
@@ -1173,7 +1182,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_waf_rule_geolocation_access_control":     waf.ResourceRuleGeolocation(),
 			"huaweicloud_waf_rule_information_leakage_prevention": waf.ResourceRuleLeakagePrevention(),
 			"huaweicloud_waf_dedicated_instance":                  waf.ResourceWafDedicatedInstance(),
-			"huaweicloud_waf_dedicated_domain":                    waf.ResourceWafDedicatedDomainV1(),
+			"huaweicloud_waf_dedicated_domain":                    waf.ResourceWafDedicatedDomain(),
 			"huaweicloud_waf_instance_group":                      waf.ResourceWafInstanceGroup(),
 			"huaweicloud_waf_instance_group_associate":            waf.ResourceWafInstGroupAssociate(),
 			"huaweicloud_waf_reference_table":                     waf.ResourceWafReferenceTableV1(),
