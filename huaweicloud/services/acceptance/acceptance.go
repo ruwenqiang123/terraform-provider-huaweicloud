@@ -122,7 +122,8 @@ var (
 
 	HW_FGS_TRIGGER_LTS_AGENCY = os.Getenv("HW_FGS_TRIGGER_LTS_AGENCY")
 
-	HW_KMS_ENVIRONMENT = os.Getenv("HW_KMS_ENVIRONMENT")
+	HW_KMS_ENVIRONMENT    = os.Getenv("HW_KMS_ENVIRONMENT")
+	HW_KMS_HSM_CLUSTER_ID = os.Getenv("HW_KMS_HSM_CLUSTER_ID")
 
 	HW_MULTI_ACCOUNT_ENVIRONMENT            = os.Getenv("HW_MULTI_ACCOUNT_ENVIRONMENT")
 	HW_ORGANIZATIONS_OPEN                   = os.Getenv("HW_ORGANIZATIONS_OPEN")
@@ -473,6 +474,13 @@ func TestAccPreCheckProjectId(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckDestProjectIds(t *testing.T) {
+	if HW_DEST_PROJECT_ID == "" || HW_DEST_PROJECT_ID_TEST == "" {
+		t.Skip("HW_DEST_PROJECT_ID and HW_DEST_PROJECT_ID_TEST must be set for acceptance test.")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckProject(t *testing.T) {
 	if HW_ENTERPRISE_PROJECT_ID_TEST != "" {
 		t.Skip("This environment does not support project tests")
@@ -693,6 +701,13 @@ func TestAccPreCheckScmCertificateName(t *testing.T) {
 func TestAccPreCheckKms(t *testing.T) {
 	if HW_KMS_ENVIRONMENT == "" {
 		t.Skip("This environment does not support KMS tests")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckKmsHsmClusterId(t *testing.T) {
+	if HW_KMS_HSM_CLUSTER_ID == "" {
+		t.Skip("HW_KMS_HSM_CLUSTER_ID must be set for KMS dedicated keystore acceptance tests.")
 	}
 }
 
