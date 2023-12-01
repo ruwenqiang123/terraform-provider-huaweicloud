@@ -206,6 +206,12 @@ var allServiceCatalog = map[string]ServiceCatalog{
 		Version: "svcstg/icmgr/v1",
 		Product: "AOM",
 	},
+	"coc": {
+		Name:    "coc",
+		Version: "v1",
+		Scope:   "global",
+		Product: "COC",
+	},
 	"fgs": {
 		Name:    "functiongraph",
 		Version: "v2",
@@ -759,6 +765,7 @@ var allServiceCatalog = map[string]ServiceCatalog{
 		Version:          "v3",
 		Scope:            "global",
 		WithOutProjectID: true,
+		Admin:            true,
 		Product:          "CC",
 	},
 

@@ -4,7 +4,7 @@ subcategory: "Scalable File Service (SFS)"
 
 # huaweicloud_sfs_turbo
 
-Provides an Shared File System (SFS) Turbo resource.
+Provides a Shared File System (SFS) Turbo resource.
 
 ## Example Usage
 
@@ -81,8 +81,8 @@ The following arguments are supported:
 * `region` - (Optional, String, ForceNew) The region in which to create the SFS Turbo resource. If omitted, the
   provider-level region will be used. Changing this creates a new SFS Turbo resource.
 
-* `name` - (Required, String, ForceNew) Specifies the name of an SFS Turbo file system. The value contains 4 to 64
-  characters and must start with a letter. Changing this will create a new resource.
+* `name` - (Required, String) Specifies the name of an SFS Turbo file system. The value contains 4 to 64
+  characters and must start with a letter.
 
 * `size` - (Required, Int) Specifies the capacity of a sharing file system, in GB.
   + If `share_type` is set to **STANDARD** or **PERFORMANCE**, the value ranges from 500 to 32768, and ranges from
@@ -180,7 +180,7 @@ In addition to all arguments above, the following attributes are exported:
 
 * `version` - The version ID of the SFS Turbo file system.
 
-* `export_location` - Tthe mount point of the SFS Turbo file system.
+* `export_location` - The mount point of the SFS Turbo file system.
 
 * `available_capacity` - The available capacity of the SFS Turbo file system in the unit of GB.
 

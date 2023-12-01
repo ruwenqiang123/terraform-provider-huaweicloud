@@ -130,7 +130,7 @@ func ResourceWafDedicatedDomain() *schema.Resource {
 				Type:     schema.TypeList,
 				Optional: true,
 				MaxItems: 1,
-				Elem:     dedicatedDomainCustomPageSchema(),
+				Elem:     domainCustomPageSchema(),
 			},
 			"redirect_url": {
 				Type:     schema.TypeString,
@@ -164,7 +164,7 @@ func ResourceWafDedicatedDomain() *schema.Resource {
 				Optional: true,
 				Computed: true,
 				MaxItems: 1,
-				Elem:     dedicatedDomainTimeoutSettingSchema(),
+				Elem:     domainTimeoutSettingSchema(),
 			},
 			"traffic_mark": {
 				Type:     schema.TypeList,
@@ -246,7 +246,7 @@ func dedicatedDomainServerSchema() *schema.Resource {
 	return &sc
 }
 
-func dedicatedDomainCustomPageSchema() *schema.Resource {
+func domainCustomPageSchema() *schema.Resource {
 	sc := schema.Resource{
 		Schema: map[string]*schema.Schema{
 			"http_return_code": {
@@ -309,7 +309,7 @@ func dedicatedDomainConnectionProtectionSchema() *schema.Resource {
 	return &sc
 }
 
-func dedicatedDomainTimeoutSettingSchema() *schema.Resource {
+func domainTimeoutSettingSchema() *schema.Resource {
 	sc := schema.Resource{
 		Schema: map[string]*schema.Schema{
 			"connection_timeout": {
@@ -649,7 +649,7 @@ func buildHostFlag(d *schema.ResourceData) (*domains.Flag, error) {
 	}, nil
 }
 
-func updateWafDedicatedDomainPolicyHost(d *schema.ResourceData, cfg *config.Config) error {
+func updateWafDomainPolicyHost(d *schema.ResourceData, cfg *config.Config) error {
 	client, err := cfg.WafV1Client(cfg.GetRegion(d))
 	if err != nil {
 		return fmt.Errorf("error creating WAF client: %s", err)
@@ -664,7 +664,7 @@ func updateWafDedicatedDomainPolicyHost(d *schema.ResourceData, cfg *config.Conf
 		Hosts:               []string{d.Id()},
 		EnterpriseProjectId: epsID,
 	}
-	log.Printf("[DEBUG] Bind WAF dedicated domain %s to policy %s", d.Id(), newPolicyId)
+	log.Printf("[DEBUG] Bind WAF domain %s to policy %s", d.Id(), newPolicyId)
 
 	if _, err := policies.UpdateHosts(client, newPolicyId, updateHostsOpts).Extract(); err != nil {
 		return fmt.Errorf("error updating WAF policy hosts: %s", err)
@@ -840,7 +840,7 @@ func resourceWafDedicatedDomainUpdate(ctx context.Context, d *schema.ResourceDat
 	}
 
 	if d.HasChanges("policy_id") {
-		if err := updateWafDedicatedDomainPolicyHost(d, cfg); err != nil {
+		if err := updateWafDomainPolicyHost(d, cfg); err != nil {
 			return diag.FromErr(err)
 		}
 	}
