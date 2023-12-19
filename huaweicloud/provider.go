@@ -443,6 +443,8 @@ func Provider() *schema.Provider {
 			"huaweicloud_csms_secret_version": dew.DataSourceDewCsmsSecret(),
 			"huaweicloud_css_flavors":         css.DataSourceCssFlavors(),
 
+			"huaweicloud_dataarts_studio_workspaces": dataarts.DataSourceDataArtsStudioWorkspaces(),
+
 			"huaweicloud_dbss_flavors": dbss.DataSourceDbssFlavors(),
 
 			"huaweicloud_dcs_flavors":         dcs.DataSourceDcsFlavorsV2(),
@@ -553,6 +555,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_elb_security_policies": elb.DataSourceElbSecurityPolicies(),
 
 			"huaweicloud_nat_gateway":          nat.DataSourcePublicGateway(),
+			"huaweicloud_nat_gateways":         nat.DataSourcePublicGateways(),
 			"huaweicloud_nat_private_gateways": nat.DataSourcePrivateGateways(),
 
 			"huaweicloud_networking_port":      vpc.DataSourceNetworkingPortV2(),
@@ -587,6 +590,8 @@ func Provider() *schema.Provider {
 			"huaweicloud_rds_sqlserver_collations": rds.DataSourceSQLServerCollations(),
 			"huaweicloud_rds_pg_plugins":           rds.DataSourcePgPlugins(),
 			"huaweicloud_rds_mysql_databases":      rds.DataSourceRdsMysqlDatabases(),
+			"huaweicloud_rds_mysql_accounts":       rds.DataSourceRdsMysqlAccounts(),
+			"huaweicloud_rds_parametergroups":      rds.DataSourceParametergroups(),
 
 			"huaweicloud_rms_policy_definitions":           rms.DataSourcePolicyDefinitions(),
 			"huaweicloud_rms_assignment_package_templates": rms.DataSourceTemplates(),
@@ -633,6 +638,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_waf_dedicated_instances": waf.DataSourceWafDedicatedInstancesV1(),
 			"huaweicloud_waf_reference_tables":    waf.DataSourceWafReferenceTablesV1(),
 			"huaweicloud_waf_instance_groups":     waf.DataSourceWafInstanceGroups(),
+			"huaweicloud_waf_dedicated_domains":   waf.DataSourceWafDedicatedDomains(),
 			"huaweicloud_waf_address_groups":      waf.DataSourceWafAddressGroups(),
 			"huaweicloud_dws_flavors":             dws.DataSourceDwsFlavors(),
 
@@ -814,6 +820,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_cfw_protection_rule":      cfw.ResourceProtectionRule(),
 			"huaweicloud_cfw_service_group":        cfw.ResourceServiceGroup(),
 			"huaweicloud_cfw_service_group_member": cfw.ResourceServiceGroupMember(),
+			"huaweicloud_cfw_firewall":             cfw.ResourceFirewall(),
 
 			"huaweicloud_cloudtable_cluster": cloudtable.ResourceCloudTableCluster(),
 
@@ -1087,9 +1094,15 @@ func Provider() *schema.Provider {
 			"huaweicloud_modelarts_network":                modelarts.ResourceModelartsNetwork(),
 			"huaweicloud_modelarts_resource_pool":          modelarts.ResourceModelartsResourcePool(),
 
-			"huaweicloud_dataarts_studio_instance":  dataarts.ResourceStudioInstance(),
-			"huaweicloud_dataarts_studio_directory": dataarts.ResourceDataArtsStudioDirectory(),
-			"huaweicloud_dataarts_service_app":      dataarts.ResourceServiceApp(),
+			"huaweicloud_dataarts_studio_instance":              dataarts.ResourceStudioInstance(),
+			"huaweicloud_dataarts_studio_directory":             dataarts.ResourceDataArtsStudioDirectory(),
+			"huaweicloud_dataarts_studio_subject":               dataarts.ResourceDataArtsStudioSubject(),
+			"huaweicloud_dataarts_studio_service_app":           dataarts.ResourceServiceApp(),
+			"huaweicloud_dataarts_studio_permission_set":        dataarts.ResourcePermissionSet(),
+			"huaweicloud_dataarts_studio_business_metric":       dataarts.ResourceBusinessMetric(),
+			"huaweicloud_dataarts_studio_data_recognition_rule": dataarts.ResourceStudioRule(),
+			// DataArts Factory --- Data Development
+			"huaweicloud_dataarts_studio_resource": dataarts.ResourceStudioResource(),
 
 			"huaweicloud_mpc_transcoding_template":       mpc.ResourceTranscodingTemplate(),
 			"huaweicloud_mpc_transcoding_template_group": mpc.ResourceTranscodingTemplateGroup(),
@@ -1148,6 +1161,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_rms_resource_recorder":                  rms.ResourceRecorder(),
 			"huaweicloud_rms_advanced_query":                     rms.ResourceAdvancedQuery(),
 			"huaweicloud_rms_assignment_package":                 rms.ResourceAssignmentPackage(),
+			"huaweicloud_rms_organizational_assignment_package":  rms.ResourceOrgAssignmentPackage(),
 
 			"huaweicloud_sdrs_drill":              sdrs.ResourceDrill(),
 			"huaweicloud_sdrs_replication_pair":   sdrs.ResourceReplicationPair(),
@@ -1252,6 +1266,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_waf_instance_group_associate":            waf.ResourceWafInstGroupAssociate(),
 			"huaweicloud_waf_reference_table":                     waf.ResourceWafReferenceTableV1(),
 
+			"huaweicloud_workspace_user_group":       workspace.ResourceUserGroup(),
 			"huaweicloud_workspace_access_policy":    workspace.ResourceAccessPolicy(),
 			"huaweicloud_workspace_desktop":          workspace.ResourceDesktop(),
 			"huaweicloud_workspace_policy_group":     workspace.ResourcePolicyGroup(),
