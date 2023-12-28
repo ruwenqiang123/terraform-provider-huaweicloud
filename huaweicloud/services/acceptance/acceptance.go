@@ -152,6 +152,8 @@ var (
 
 	// The cluster ID of the CCE
 	HW_CCE_CLUSTER_ID = os.Getenv("HW_CCE_CLUSTER_ID")
+	// The absolute chart path of the CCE
+	HW_CCE_CHART_PATH = os.Getenv("HW_CCE_CHART_PATH")
 	// The cluster name of the CCE
 	HW_CCE_CLUSTER_NAME = os.Getenv("HW_CCE_CLUSTER_NAME")
 	// The cluster ID of the CCE
@@ -173,6 +175,8 @@ var (
 
 	// The ID of the CBR backup
 	HW_IMS_BACKUP_ID = os.Getenv("HW_IMS_BACKUP_ID")
+	// The shared backup ID wants to accept.
+	HW_SHARED_BACKUP_ID = os.Getenv("HW_SHARED_BACKUP_ID")
 
 	// The SecMaster workspace ID
 	HW_SECMASTER_WORKSPACE_ID = os.Getenv("HW_SECMASTER_WORKSPACE_ID")
@@ -204,6 +208,17 @@ var (
 	HW_NEW_CERTIFICATE_PRIVATE_KEY = os.Getenv("HW_NEW_CERTIFICATE_PRIVATE_KEY")
 	HW_NEW_CERTIFICATE_ROOT_CA     = os.Getenv("HW_NEW_CERTIFICATE_ROOT_CA")
 
+	HW_GM_CERTIFICATE_CONTENT             = os.Getenv("HW_GM_CERTIFICATE_CONTENT")
+	HW_GM_CERTIFICATE_PRIVATE_KEY         = os.Getenv("HW_GM_CERTIFICATE_PRIVATE_KEY")
+	HW_GM_ENC_CERTIFICATE_CONTENT         = os.Getenv("HW_GM_ENC_CERTIFICATE_CONTENT")
+	HW_GM_ENC_CERTIFICATE_PRIVATE_KEY     = os.Getenv("HW_GM_ENC_CERTIFICATE_PRIVATE_KEY")
+	HW_GM_CERTIFICATE_CHAIN               = os.Getenv("HW_GM_CERTIFICATE_CHAIN")
+	HW_NEW_GM_CERTIFICATE_CONTENT         = os.Getenv("HW_NEW_GM_CERTIFICATE_CONTENT")
+	HW_NEW_GM_CERTIFICATE_PRIVATE_KEY     = os.Getenv("HW_NEW_GM_CERTIFICATE_PRIVATE_KEY")
+	HW_NEW_GM_ENC_CERTIFICATE_CONTENT     = os.Getenv("HW_NEW_GM_ENC_CERTIFICATE_CONTENT")
+	HW_NEW_GM_ENC_CERTIFICATE_PRIVATE_KEY = os.Getenv("HW_NEW_GM_ENC_CERTIFICATE_PRIVATE_KEY")
+	HW_NEW_GM_CERTIFICATE_CHAIN           = os.Getenv("HW_NEW_GM_CERTIFICATE_CHAIN")
+
 	HW_CODEARTS_RESOURCE_POOL_ID  = os.Getenv("HW_CODEARTS_RESOURCE_POOL_ID")
 	HW_CODEARTS_ENABLE_FLAG       = os.Getenv("HW_CODEARTS_ENABLE_FLAG")
 	HW_CODEARTS_PUBLIC_IP_ADDRESS = os.Getenv("HW_CODEARTS_PUBLIC_IP_ADDRESS")
@@ -217,6 +232,7 @@ var (
 	HW_CERT_BATCH_PUSH_ID = os.Getenv("HW_CERT_BATCH_PUSH_ID")
 
 	HW_DATAARTS_WORKSPACE_ID            = os.Getenv("HW_DATAARTS_WORKSPACE_ID")
+	HW_DATAARTS_CDM_NAME                = os.Getenv("HW_DATAARTS_CDM_NAME")
 	HW_DATAARTS_MANAGER_ID              = os.Getenv("HW_DATAARTS_MANAGER_ID")
 	HW_DATAARTS_BIZ_CATALOG_ID          = os.Getenv("HW_DATAARTS_BIZ_CATALOG_ID")
 	HW_DATAARTS_SECRECY_LEVEL_ID        = os.Getenv("HW_DATAARTS_SECRECY_LEVEL_ID")
@@ -225,6 +241,7 @@ var (
 	HW_DATAARTS_CATEGORY_ID_UPDATE      = os.Getenv("HW_DATAARTS_CATEGORY_ID_UPDATE")
 	HW_DATAARTS_BUILTIN_RULE_ID         = os.Getenv("HW_DATAARTS_BUILTIN_RULE_ID")
 	HW_DATAARTS_BUILTIN_RULE_NAME       = os.Getenv("HW_DATAARTS_BUILTIN_RULE_NAME")
+	HW_DATAARTS_SUBJECT_ID              = os.Getenv("HW_DATAARTS_SUBJECT_ID")
 )
 
 // TestAccProviders is a static map containing only the main provider instance.
@@ -805,6 +822,14 @@ func TestAccPreCheckCceClusterId(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckCceChartPath(t *testing.T) {
+	// HW_CCE_CHART_PATH is the absolute path of the chart package
+	if HW_CCE_CHART_PATH == "" {
+		t.Skip("HW_CCE_CHART_PATH must be set for CCE chart acceptance tests")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckWorkloadNameSpace(t *testing.T) {
 	if HW_WORKLOAD_NAMESPACE == "" {
 		t.Skip("HW_WORKLOAD_NAMESPACE must be set for SWR image trigger acceptance tests")
@@ -829,6 +854,13 @@ func TestAccPreCheckSwrTargetOrigination(t *testing.T) {
 func TestAccPreCheckImsBackupId(t *testing.T) {
 	if HW_IMS_BACKUP_ID == "" {
 		t.Skip("HW_IMS_BACKUP_ID must be set for IMS whole image with CBR backup id")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckAcceptBackup(t *testing.T) {
+	if HW_SHARED_BACKUP_ID == "" {
+		t.Skip("HW_SHARED_BACKUP_ID must be set for CBR backup share acceptance")
 	}
 }
 
@@ -881,6 +913,21 @@ func TestAccPreCheckCertificateFull(t *testing.T) {
 	TestAccPreCheckCertificateWithoutRootCA(t)
 	if HW_CERTIFICATE_ROOT_CA == "" || HW_NEW_CERTIFICATE_ROOT_CA == "" {
 		t.Skip("HW_CERTIFICATE_ROOT_CA and HW_NEW_CERTIFICATE_ROOT_CA must be set for root CA validation")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckGMCertificate(t *testing.T) {
+	if HW_GM_CERTIFICATE_CONTENT == "" || HW_GM_CERTIFICATE_PRIVATE_KEY == "" ||
+		HW_GM_ENC_CERTIFICATE_CONTENT == "" || HW_GM_ENC_CERTIFICATE_PRIVATE_KEY == "" ||
+		HW_GM_CERTIFICATE_CHAIN == "" ||
+		HW_NEW_GM_CERTIFICATE_CONTENT == "" || HW_NEW_GM_CERTIFICATE_PRIVATE_KEY == "" ||
+		HW_NEW_GM_ENC_CERTIFICATE_CONTENT == "" || HW_NEW_GM_ENC_CERTIFICATE_PRIVATE_KEY == "" ||
+		HW_NEW_GM_CERTIFICATE_CHAIN == "" {
+		t.Skip("HW_GM_CERTIFICATE_CONTENT, HW_GM_CERTIFICATE_PRIVATE_KEY, HW_GM_ENC_CERTIFICATE_CONTENT," +
+			" HW_GM_ENC_CERTIFICATE_PRIVATE_KEY, HW_GM_CERTIFICATE_CHAIN, HW_NEW_GM_CERTIFICATE_CONTENT," +
+			" HW_NEW_GM_CERTIFICATE_PRIVATE_KEY, HW_NEW_GM_ENC_CERTIFICATE_CONTENT," +
+			" HW_NEW_GM_ENC_CERTIFICATE_PRIVATE_KEY, HW_NEW_GM_CERTIFICATE_CHAIN must be set for GM certificate")
 	}
 }
 
@@ -1014,6 +1061,13 @@ func TestAccPreCheckDataArtsBizCatalogID(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckDataArtsCdmName(t *testing.T) {
+	if HW_DATAARTS_CDM_NAME == "" {
+		t.Skip("HW_DATAARTS_CDM_NAME must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckDataArtsDataClassificationID(t *testing.T) {
 	if HW_DATAARTS_SECRECY_LEVEL_ID == "" || HW_DATAARTS_SECRECY_LEVEL_ID_UPDATE == "" {
 		t.Skip("HW_DATAARTS_SECRECY_LEVEL_ID and HW_DATAARTS_SECRECY_LEVEL_ID_UPDATE must be set for the acceptance test")
@@ -1028,5 +1082,12 @@ func TestAccPreCheckDataArtsDataClassificationID(t *testing.T) {
 func TestAccPreCheckDataArtsBuiltinRule(t *testing.T) {
 	if HW_DATAARTS_BUILTIN_RULE_ID == "" || HW_DATAARTS_BUILTIN_RULE_NAME == "" {
 		t.Skip("HW_DATAARTS_BUILTIN_RULE_ID and HW_DATAARTS_BUILTIN_RULE_NAME must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckDataArtsSubjectID(t *testing.T) {
+	if HW_DATAARTS_SUBJECT_ID == "" {
+		t.Skip("HW_DATAARTS_SUBJECT_ID must be set for the acceptance test")
 	}
 }

@@ -452,14 +452,16 @@ func Provider() *schema.Provider {
 			"huaweicloud_dcs_instances":       dcs.DataSourceDcsInstance(),
 			"huaweicloud_dcs_templates":       dcs.DataSourceTemplates(),
 			"huaweicloud_dcs_template_detail": dcs.DataSourceTemplateDetail(),
+			"huaweicloud_dcs_backups":         dcs.DataSourceBackups(),
 
 			"huaweicloud_dds_flavors":   dds.DataSourceDDSFlavorV3(),
 			"huaweicloud_dds_instances": dds.DataSourceDdsInstance(),
 
-			"huaweicloud_dms_kafka_flavors":   dms.DataSourceKafkaFlavors(),
-			"huaweicloud_dms_kafka_instances": dms.DataSourceDmsKafkaInstances(),
-			"huaweicloud_dms_product":         dms.DataSourceDmsProduct(),
-			"huaweicloud_dms_maintainwindow":  dms.DataSourceDmsMaintainWindow(),
+			"huaweicloud_dms_kafka_flavors":             dms.DataSourceKafkaFlavors(),
+			"huaweicloud_dms_kafka_instances":           dms.DataSourceDmsKafkaInstances(),
+			"huaweicloud_dms_product":                   dms.DataSourceDmsProduct(),
+			"huaweicloud_dms_maintainwindow":            dms.DataSourceDmsMaintainWindow(),
+			"huaweicloud_dms_kafka_smart_connect_tasks": dms.DataSourceDmsKafkaSmartConnectTasks(),
 
 			"huaweicloud_dms_rabbitmq_flavors": dms.DataSourceRabbitMQFlavors(),
 
@@ -554,9 +556,10 @@ func Provider() *schema.Provider {
 			"huaweicloud_elb_l7policies":        elb.DataSourceElbL7policies(),
 			"huaweicloud_elb_security_policies": elb.DataSourceElbSecurityPolicies(),
 
-			"huaweicloud_nat_gateway":          nat.DataSourcePublicGateway(),
-			"huaweicloud_nat_gateways":         nat.DataSourcePublicGateways(),
-			"huaweicloud_nat_private_gateways": nat.DataSourcePrivateGateways(),
+			"huaweicloud_nat_gateway":             nat.DataSourcePublicGateway(),
+			"huaweicloud_nat_gateways":            nat.DataSourcePublicGateways(),
+			"huaweicloud_nat_private_gateways":    nat.DataSourcePrivateGateways(),
+			"huaweicloud_nat_private_transit_ips": nat.DataSourcePrivateTransitIps(),
 
 			"huaweicloud_networking_port":      vpc.DataSourceNetworkingPortV2(),
 			"huaweicloud_networking_secgroup":  vpc.DataSourceNetworkingSecGroup(),
@@ -610,6 +613,9 @@ func Provider() *schema.Provider {
 			"huaweicloud_sfs_file_system": sfs.DataSourceSFSFileSystemV2(),
 			"huaweicloud_sfs_turbos":      sfs.DataSourceTurbos(),
 
+			"huaweicloud_swr_organizations": swr.DataSourceOrganizations(),
+			"huaweicloud_swr_repositories":  swr.DataSourceRepositories(),
+
 			"huaweicloud_tms_resource_types": tms.DataSourceResourceTypes(),
 
 			"huaweicloud_vpc_bandwidth": eip.DataSourceBandWidth(),
@@ -626,6 +632,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_vpc_subnet_ids":         vpc.DataSourceVpcSubnetIdsV1(),
 
 			"huaweicloud_vpcep_public_services": vpcep.DataSourceVPCEPPublicServices(),
+			"huaweicloud_vpcep_services":        vpcep.DataSourceVPCEPServices(),
 
 			"huaweicloud_vpn_gateway_availability_zones": vpn.DataSourceVpnGatewayAZs(),
 			"huaweicloud_vpn_gateways":                   vpn.DataSourceGateways(),
@@ -770,19 +777,21 @@ func Provider() *schema.Provider {
 			"huaweicloud_bms_instance": bms.ResourceBmsInstance(),
 			"huaweicloud_bcs_instance": resourceBCSInstanceV2(),
 
-			"huaweicloud_cbr_backup_share": cbr.ResourceBackupShare(),
-			"huaweicloud_cbr_checkpoint":   cbr.ResourceCheckpoint(),
-			"huaweicloud_cbr_policy":       cbr.ResourcePolicy(),
-			"huaweicloud_cbr_vault":        cbr.ResourceVault(),
+			"huaweicloud_cbr_backup_share_accepter": cbr.ResourceBackupShareAccepter(),
+			"huaweicloud_cbr_backup_share":          cbr.ResourceBackupShare(),
+			"huaweicloud_cbr_checkpoint":            cbr.ResourceCheckpoint(),
+			"huaweicloud_cbr_policy":                cbr.ResourcePolicy(),
+			"huaweicloud_cbr_vault":                 cbr.ResourceVault(),
 
 			"huaweicloud_cbh_instance": cbh.ResourceCBHInstance(),
 
-			"huaweicloud_cc_connection":             cc.ResourceCloudConnection(),
-			"huaweicloud_cc_network_instance":       cc.ResourceNetworkInstance(),
-			"huaweicloud_cc_bandwidth_package":      cc.ResourceBandwidthPackage(),
-			"huaweicloud_cc_inter_region_bandwidth": cc.ResourceInterRegionBandwidth(),
-			"huaweicloud_cc_central_network":        cc.ResourceCentralNetwork(),
-			"huaweicloud_cc_central_network_policy": cc.ResourceCentralNetworkPolicy(),
+			"huaweicloud_cc_connection":                   cc.ResourceCloudConnection(),
+			"huaweicloud_cc_network_instance":             cc.ResourceNetworkInstance(),
+			"huaweicloud_cc_bandwidth_package":            cc.ResourceBandwidthPackage(),
+			"huaweicloud_cc_inter_region_bandwidth":       cc.ResourceInterRegionBandwidth(),
+			"huaweicloud_cc_central_network":              cc.ResourceCentralNetwork(),
+			"huaweicloud_cc_central_network_policy":       cc.ResourceCentralNetworkPolicy(),
+			"huaweicloud_cc_central_network_policy_apply": cc.ResourceCentralNetworkPolicyApply(),
 
 			"huaweicloud_cce_cluster":     cce.ResourceCluster(),
 			"huaweicloud_cce_node":        cce.ResourceNode(),
@@ -792,6 +801,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_cce_namespace":   cce.ResourceCCENamespaceV1(),
 			"huaweicloud_cce_pvc":         cce.ResourceCcePersistentVolumeClaimsV1(),
 			"huaweicloud_cce_partition":   cce.ResourcePartition(),
+			"huaweicloud_cce_chart":       cce.ResourceChart(),
 
 			"huaweicloud_cts_tracker":      cts.ResourceCTSTracker(),
 			"huaweicloud_cts_data_tracker": cts.ResourceCTSDataTracker(),
@@ -892,12 +902,14 @@ func Provider() *schema.Provider {
 			"huaweicloud_dli_template_spark":        dli.ResourceSparkTemplate(),
 			"huaweicloud_dli_agency":                dli.ResourceDliAgency(),
 
-			"huaweicloud_dms_kafka_user":           dms.ResourceDmsKafkaUser(),
-			"huaweicloud_dms_kafka_permissions":    dms.ResourceDmsKafkaPermissions(),
-			"huaweicloud_dms_kafka_instance":       dms.ResourceDmsKafkaInstance(),
-			"huaweicloud_dms_kafka_topic":          dms.ResourceDmsKafkaTopic(),
-			"huaweicloud_dms_kafka_consumer_group": dms.ResourceDmsKafkaConsumerGroup(),
-			"huaweicloud_dms_kafka_smart_connect":  dms.ResourceDmsKafkaSmartConnect(),
+			"huaweicloud_dms_kafka_user":               dms.ResourceDmsKafkaUser(),
+			"huaweicloud_dms_kafka_permissions":        dms.ResourceDmsKafkaPermissions(),
+			"huaweicloud_dms_kafka_instance":           dms.ResourceDmsKafkaInstance(),
+			"huaweicloud_dms_kafka_topic":              dms.ResourceDmsKafkaTopic(),
+			"huaweicloud_dms_kafka_consumer_group":     dms.ResourceDmsKafkaConsumerGroup(),
+			"huaweicloud_dms_kafka_smart_connect":      dms.ResourceDmsKafkaSmartConnect(),
+			"huaweicloud_dms_kafka_smart_connect_task": dms.ResourceDmsKafkaSmartConnectTask(),
+			"huaweicloud_dms_kafka_user_client_quota":  dms.ResourceDmsKafkaUserClientQuota(),
 
 			"huaweicloud_dms_rabbitmq_instance": dms.ResourceDmsRabbitmqInstance(),
 
@@ -950,6 +962,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_er_route_table":    er.ResourceRouteTable(),
 			"huaweicloud_er_static_route":   er.ResourceStaticRoute(),
 			"huaweicloud_er_vpc_attachment": er.ResourceVpcAttachment(),
+			"huaweicloud_er_flow_log":       er.ResourceFlowLog(),
 
 			"huaweicloud_evs_snapshot": evs.ResourceEvsSnapshotV2(),
 			"huaweicloud_evs_volume":   evs.ResourceEvsVolume(),
@@ -1094,15 +1107,25 @@ func Provider() *schema.Provider {
 			"huaweicloud_modelarts_network":                modelarts.ResourceModelartsNetwork(),
 			"huaweicloud_modelarts_resource_pool":          modelarts.ResourceModelartsResourcePool(),
 
-			"huaweicloud_dataarts_studio_instance":              dataarts.ResourceStudioInstance(),
-			"huaweicloud_dataarts_studio_directory":             dataarts.ResourceDataArtsStudioDirectory(),
-			"huaweicloud_dataarts_studio_subject":               dataarts.ResourceDataArtsStudioSubject(),
-			"huaweicloud_dataarts_studio_service_app":           dataarts.ResourceServiceApp(),
-			"huaweicloud_dataarts_studio_permission_set":        dataarts.ResourcePermissionSet(),
-			"huaweicloud_dataarts_studio_business_metric":       dataarts.ResourceBusinessMetric(),
-			"huaweicloud_dataarts_studio_data_recognition_rule": dataarts.ResourceStudioRule(),
-			// DataArts Factory --- Data Development
-			"huaweicloud_dataarts_studio_resource": dataarts.ResourceStudioResource(),
+			// DataArts Studio - Management Center
+			"huaweicloud_dataarts_studio_data_connection": dataarts.ResourceDataConnection(),
+			"huaweicloud_dataarts_studio_instance":        dataarts.ResourceStudioInstance(),
+			// DataArts Architecture
+			"huaweicloud_dataarts_architecture_directory":       dataarts.ResourceArchitectureDirectory(),
+			"huaweicloud_dataarts_architecture_model":           dataarts.ResourceArchitectureModel(),
+			"huaweicloud_dataarts_architecture_subject":         dataarts.ResourceArchitectureSubject(),
+			"huaweicloud_dataarts_architecture_table_model":     dataarts.ResourceArchitectureTableModel(),
+			"huaweicloud_dataarts_architecture_business_metric": dataarts.ResourceBusinessMetric(),
+			"huaweicloud_dataarts_architecture_process":         dataarts.ResourceArchitectureProcess(),
+			"huaweicloud_dataarts_architecture_data_standard":   dataarts.ResourceDataStandard(),
+			// DataArts Factory
+			"huaweicloud_dataarts_factory_resource": dataarts.ResourceFactoryResource(),
+			"huaweicloud_dataarts_factory_job":      dataarts.ResourceFactoryJob(),
+			// DataArts Security
+			"huaweicloud_dataarts_security_permission_set":        dataarts.ResourceSecurityPermissionSet(),
+			"huaweicloud_dataarts_security_data_recognition_rule": dataarts.ResourceSecurityRule(),
+			// DataArts DataService
+			"huaweicloud_dataarts_dataservice_app": dataarts.ResourceDataServiceApp(),
 
 			"huaweicloud_mpc_transcoding_template":       mpc.ResourceTranscodingTemplate(),
 			"huaweicloud_mpc_transcoding_template_group": mpc.ResourceTranscodingTemplateGroup(),
@@ -1273,6 +1296,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_workspace_service":          workspace.ResourceService(),
 			"huaweicloud_workspace_terminal_binding": workspace.ResourceTerminalBinding(),
 			"huaweicloud_workspace_user":             workspace.ResourceUser(),
+			"huaweicloud_workspace_eip_associate":    workspace.ResourceEipAssociate(),
 
 			"huaweicloud_cpts_project": cpts.ResourceProject(),
 			"huaweicloud_cpts_task":    cpts.ResourceTask(),
