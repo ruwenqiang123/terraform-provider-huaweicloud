@@ -23,8 +23,7 @@
               "enterprise_project_id": {
                 "type": "string",
                 "optional": true,
-                "computed": true,
-                "forcenew": true
+                "computed": true
               },
               "flavor_id": {
                 "type": "string",
@@ -169,7 +168,7 @@
           },
           "product": {
             "short": "Workspace",
-            "name": "云桌面",
+            "name": "Workspace",
             "catalog": "Business Applications",
             "name_cn": "云桌面",
             "catalog_cn": "企业应用"

@@ -113,6 +113,11 @@
                 "type": "string",
                 "computed": true
               },
+              "server_id": {
+                "type": "string",
+                "optional": true,
+                "forcenew": true
+              },
               "size": {
                 "type": "number",
                 "optional": true,
@@ -149,7 +154,7 @@
           },
           "product": {
             "short": "EVS",
-            "name": "云硬盘",
+            "name": "Elastic Volume Service",
             "catalog": "Storage",
             "name_cn": "云硬盘",
             "catalog_cn": "存储"

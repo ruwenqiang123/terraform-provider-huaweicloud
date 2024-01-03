@@ -26,6 +26,10 @@
                 "type": "string",
                 "computed": true
               },
+              "topic_urn": {
+                "type": "string",
+                "optional": true
+              },
               "traffic_threshold": {
                 "type": "number",
                 "required": true
@@ -34,7 +38,7 @@
           },
           "product": {
             "short": "Anti-DDoS",
-            "name": "Anti-DDoS流量清洗",
+            "name": "Anti-DDoS",
             "catalog": "Security & Compliance",
             "name_cn": "Anti-DDoS流量清洗",
             "catalog_cn": "安全与合规"

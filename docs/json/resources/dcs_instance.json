@@ -76,12 +76,12 @@
               "maintain_begin": {
                 "type": "string",
                 "optional": true,
-                "default": "02:00:00"
+                "computed": true
               },
               "maintain_end": {
                 "type": "string",
                 "optional": true,
-                "default": "06:00:00"
+                "computed": true
               },
               "max_memory": {
                 "type": "number",
@@ -266,7 +266,7 @@
           },
           "product": {
             "short": "DCS",
-            "name": "分布式缓存服务",
+            "name": "Distributed Cache Service",
             "catalog": "Middleware",
             "name_cn": "分布式缓存服务",
             "catalog_cn": "应用中间件"

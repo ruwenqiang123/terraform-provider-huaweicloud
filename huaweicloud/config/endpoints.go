@@ -49,6 +49,7 @@ var multiCatalogKeys = map[string][]string{
 	"ims":          {"imsv1"},
 	"config":       {"rms"}, // config is named as Resource Management Service(RMS) before
 	"tms":          {"tmsv2"},
+	"anti-ddos":    {"anti-ddosv2"},
 }
 
 // GetServiceDerivedCatalogKeys returns the derived catalog keys of a service.
@@ -352,7 +353,6 @@ var allServiceCatalog = map[string]ServiceCatalog{
 	"dnsv21": {
 		Name:             "dns",
 		Version:          "v2.1",
-		Scope:            "global",
 		WithOutProjectID: true,
 		Product:          "DNS",
 	},
@@ -533,6 +533,11 @@ var allServiceCatalog = map[string]ServiceCatalog{
 	"anti-ddos": {
 		Name:    "antiddos",
 		Version: "v1",
+		Product: "Anti-DDoS",
+	},
+	"anti-ddosv2": {
+		Name:    "antiddos",
+		Version: "v2",
 		Product: "Anti-DDoS",
 	},
 	"kms": {
