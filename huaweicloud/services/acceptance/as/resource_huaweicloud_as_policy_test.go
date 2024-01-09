@@ -86,7 +86,7 @@ func TestAccASPolicy_Alarm(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "cool_down_time", "600"),
 					resource.TestCheckResourceAttr(resourceName, "scaling_policy_type", "ALARM"),
 					resource.TestCheckResourceAttr(resourceName, "scaling_policy_action.0.operation", "ADD"),
-					resource.TestCheckResourceAttr(resourceName, "scaling_policy_action.0.instance_number", "1"),
+					resource.TestCheckResourceAttr(resourceName, "scaling_policy_action.0.instance_percentage", "10"),
 					resource.TestCheckResourceAttrPair(resourceName, "scaling_group_id", "huaweicloud_as_group.acc_as_group", "id"),
 					resource.TestCheckResourceAttrPair(resourceName, "alarm_id", "huaweicloud_ces_alarmrule.alarm_rule", "id"),
 				),
@@ -153,7 +153,7 @@ func testASPolicy_base(rName string) string {
 	return fmt.Sprintf(`
 %[1]s
 
-resource "huaweicloud_compute_keypair" "acc_key" {
+resource "huaweicloud_kps_keypair" "acc_key" {
   name       = "%[2]s"
   public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDAjpC1hwiOCCmKEWxJ4qzTTsJbKzndLo1BCz5PcwtUnflmU+gHJtWMZKpuEGVi29h0A/+ydKek1O18k10Ff+4tyFjiHDQAT9+OfgWf7+b1yK+qDip3X1C0UPMbwHlTfSGWLGZquwhvEFx9k3h/M+VtMvwR1lJ9LUyTAImnNjWG7TAIPmui30HvM2UiFEmqkr4ijq45MyX2+fLIePLRIFuu1p4whjHAQYufqyno3BS48icQb4p6iVEZPo4AE2o9oIyQvj2mx4dk5Y8CgSETOZTYDOR3rU2fZTRDRgPJDH9FWvQjF5tA0p3d9CoWWd2s6GKKbfoUIi8R/Db1BSPJwkqB jrp-hp-pc"
 }
@@ -163,7 +163,7 @@ resource "huaweicloud_as_configuration" "acc_as_config"{
   instance_config {
     image    = data.huaweicloud_images_image.test.id
     flavor   = data.huaweicloud_compute_flavors.test.ids[0]
-    key_name = huaweicloud_compute_keypair.acc_key.id
+    key_name = huaweicloud_kps_keypair.acc_key.id
     disk {
       size        = 40
       volume_type = "SATA"
@@ -288,8 +288,8 @@ resource "huaweicloud_as_policy" "acc_as_policy"{
   cool_down_time      = 600
 
   scaling_policy_action {
-    operation       = "ADD"
-    instance_number = 1
+    operation           = "ADD"
+    instance_percentage = 10
   }
 }
 `, testASPolicy_base(rName), rName)

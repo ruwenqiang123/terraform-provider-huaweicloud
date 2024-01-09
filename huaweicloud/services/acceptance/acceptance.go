@@ -119,6 +119,8 @@ var (
 	HW_WORKSPACE_AD_DOMAIN_IP   = os.Getenv("HW_WORKSPACE_AD_DOMAIN_IP")   // Active domain IP, e.g. "192.168.196.3".
 	HW_WORKSPACE_AD_VPC_ID      = os.Getenv("HW_WORKSPACE_AD_VPC_ID")      // The VPC ID to which the AD server and desktops belongs.
 	HW_WORKSPACE_AD_NETWORK_ID  = os.Getenv("HW_WORKSPACE_AD_NETWORK_ID")  // The network ID to which the AD server belongs.
+	// The internet access port to which the Workspace service.
+	HW_WORKSPACE_INTERNET_ACCESS_PORT = os.Getenv("HW_WORKSPACE_INTERNET_ACCESS_PORT")
 
 	HW_FGS_TRIGGER_LTS_AGENCY = os.Getenv("HW_FGS_TRIGGER_LTS_AGENCY")
 
@@ -228,6 +230,8 @@ var (
 	HW_KOOGALLERY_ASSET = os.Getenv("HW_KOOGALLERY_ASSET")
 
 	HW_CCI_NAMESPACE = os.Getenv("HW_CCI_NAMESPACE")
+
+	HW_CC_GLOBAL_GATEWAY_ID = os.Getenv("HW_CC_GLOBAL_GATEWAY_ID")
 
 	HW_CERT_BATCH_PUSH_ID = os.Getenv("HW_CERT_BATCH_PUSH_ID")
 
@@ -770,6 +774,13 @@ func TestAccPreCheckWorkspaceAD(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckWorkspaceInternetAccessPort(t *testing.T) {
+	if HW_WORKSPACE_INTERNET_ACCESS_PORT == "" {
+		t.Skip("HW_WORKSPACE_INTERNET_ACCESS_PORT must be set for Workspace service acceptance tests.")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckER(t *testing.T) {
 	if HW_ER_TEST_ON == "" {
 		t.Skip("Skip all ER acceptance tests.")
@@ -1041,6 +1052,13 @@ func TestAccPreCheckCDN(t *testing.T) {
 func TestAccPreCheckCERT(t *testing.T) {
 	if HW_CDN_CERT_PATH == "" || HW_CDN_PRIVATE_KEY_PATH == "" {
 		t.Skip("This environment does not support CDN certificate tests")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckCCGlobalGateway(t *testing.T) {
+	if HW_CC_GLOBAL_GATEWAY_ID == "" {
+		t.Skip("HW_CC_GLOBAL_GATEWAY_ID must be set for the acceptance test")
 	}
 }
 

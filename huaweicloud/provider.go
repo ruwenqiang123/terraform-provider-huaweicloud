@@ -637,8 +637,10 @@ func Provider() *schema.Provider {
 			"huaweicloud_vpc_subnets":            vpc.DataSourceVpcSubnets(),
 			"huaweicloud_vpc_subnet_ids":         vpc.DataSourceVpcSubnetIdsV1(),
 
-			"huaweicloud_vpcep_public_services": vpcep.DataSourceVPCEPPublicServices(),
-			"huaweicloud_vpcep_services":        vpcep.DataSourceVPCEPServices(),
+			"huaweicloud_vpcep_public_services":     vpcep.DataSourceVPCEPPublicServices(),
+			"huaweicloud_vpcep_services":            vpcep.DataSourceVPCEPServices(),
+			"huaweicloud_vpcep_service_connections": vpcep.DataSourceVPCEPServiceConnections(),
+			"huaweicloud_vpcep_service_permissions": vpcep.DataSourceVPCEPServicePermissions(),
 
 			"huaweicloud_vpn_gateway_availability_zones": vpn.DataSourceVpnGatewayAZs(),
 			"huaweicloud_vpn_gateways":                   vpn.DataSourceGateways(),
@@ -798,6 +800,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_cc_central_network":              cc.ResourceCentralNetwork(),
 			"huaweicloud_cc_central_network_policy":       cc.ResourceCentralNetworkPolicy(),
 			"huaweicloud_cc_central_network_policy_apply": cc.ResourceCentralNetworkPolicyApply(),
+			"huaweicloud_cc_central_network_attachment":   cc.ResourceCentralNetworkAttachment(),
 
 			"huaweicloud_cce_cluster":     cce.ResourceCluster(),
 			"huaweicloud_cce_node":        cce.ResourceNode(),
@@ -820,9 +823,10 @@ func Provider() *schema.Provider {
 			"huaweicloud_ccm_private_ca":          ccm.ResourcePrivateCertificateAuthority(),
 			"huaweicloud_ccm_private_certificate": ccm.ResourceCcmPrivateCertificate(),
 
-			"huaweicloud_cdm_cluster": cdm.ResourceCdmCluster(),
-			"huaweicloud_cdm_job":     cdm.ResourceCdmJob(),
-			"huaweicloud_cdm_link":    cdm.ResourceCdmLink(),
+			"huaweicloud_cdm_cluster":        cdm.ResourceCdmCluster(),
+			"huaweicloud_cdm_cluster_action": cdm.ResourceClusterAction(),
+			"huaweicloud_cdm_job":            cdm.ResourceCdmJob(),
+			"huaweicloud_cdm_link":           cdm.ResourceCdmLink(),
 
 			"huaweicloud_cdn_domain":         cdn.ResourceCdnDomainV1(),
 			"huaweicloud_ces_alarmrule":      ces.ResourceAlarmRule(),
@@ -1267,6 +1271,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_vpc_subnet":                      vpc.ResourceVpcSubnetV1(),
 			"huaweicloud_vpc_address_group":               vpc.ResourceVpcAddressGroup(),
 			"huaweicloud_vpc_flow_log":                    vpc.ResourceVpcFlowLog(),
+			"huaweicloud_vpc_traffic_mirror_filter":       vpc.ResourceTrafficMirrorFilter(),
 
 			"huaweicloud_vpcep_approval": vpcep.ResourceVPCEndpointApproval(),
 			"huaweicloud_vpcep_endpoint": vpcep.ResourceVPCEndpoint(),

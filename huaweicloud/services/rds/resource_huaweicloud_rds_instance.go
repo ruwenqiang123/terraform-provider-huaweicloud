@@ -230,7 +230,6 @@ func ResourceRdsInstance() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
-				ForceNew: true,
 			},
 
 			"param_group_id": {
@@ -243,6 +242,12 @@ func ResourceRdsInstance() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				ForceNew: true,
+			},
+
+			"switch_strategy": {
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
 			},
 
 			"ssl_enable": {
@@ -490,6 +495,12 @@ func resourceRdsInstanceCreate(ctx context.Context, d *schema.ResourceData, meta
 		return diag.FromErr(err)
 	}
 
+	if v, ok := d.GetOk("switch_strategy"); ok && v.(string) != "reliability" {
+		if err = updateRdsInstanceSwitchStrategy(ctx, d, client, instanceID); err != nil {
+			return diag.FromErr(err)
+		}
+	}
+
 	tagRaw := d.Get("tags").(map[string]interface{})
 	if len(tagRaw) > 0 {
 		taglist := utils.ExpandResourceTags(tagRaw)
@@ -548,6 +559,7 @@ func resourceRdsInstanceRead(ctx context.Context, d *schema.ResourceData, meta i
 	d.Set("flavor", instance.FlavorRef)
 	d.Set("time_zone", instance.TimeZone)
 	d.Set("enterprise_project_id", instance.EnterpriseProjectId)
+	d.Set("switch_strategy", instance.SwitchStrategy)
 	d.Set("charging_mode", instance.ChargeInfo.ChargeMode)
 	d.Set("tags", utils.TagsToMap(instance.Tags))
 
@@ -713,6 +725,13 @@ func resourceRdsInstanceUpdate(ctx context.Context, d *schema.ResourceData, meta
 	}
 
 	if err = updateRdsInstanceMaintainWindow(d, client, instanceID); err != nil {
+		return diag.FromErr(err)
+	}
+
+	if err = updateRdsInstanceReplicationMode(ctx, d, client, instanceID); err != nil {
+		return diag.FromErr(err)
+	}
+	if err = updateRdsInstanceSwitchStrategy(ctx, d, client, instanceID); err != nil {
 		return diag.FromErr(err)
 	}
 
@@ -1560,6 +1579,73 @@ func updateRdsInstanceMaintainWindow(d *schema.ResourceData, client *golangsdk.S
 	r := instances.ModifyMaintainWindow(client, modifyMaintainWindowOpts, instanceID)
 	if r.Err != nil {
 		return fmt.Errorf("error modify RDS instance (%s) maintain window: %s", instanceID, r.Err)
+	}
+	return nil
+}
+
+func updateRdsInstanceReplicationMode(ctx context.Context, d *schema.ResourceData, client *golangsdk.ServiceClient,
+	instanceID string) error {
+	if !d.HasChanges("ha_replication_mode") {
+		return nil
+	}
+
+	modifyReplicationModeOpts := instances.ModifyReplicationModeOpts{
+		Mode: d.Get("ha_replication_mode").(string),
+	}
+
+	log.Printf("[DEBUG] Modify RDS instance replication mode opts: %+v", modifyReplicationModeOpts)
+	retryFunc := func() (interface{}, bool, error) {
+		res, err := instances.ModifyReplicationMode(client, modifyReplicationModeOpts, instanceID).Extract()
+		retry, err := handleMultiOperationsError(err)
+		return res, retry, err
+	}
+	res, err := common.RetryContextWithWaitForState(&common.RetryContextWithWaitForStateParam{
+		Ctx:          ctx,
+		RetryFunc:    retryFunc,
+		WaitFunc:     rdsInstanceStateRefreshFunc(client, instanceID),
+		WaitTarget:   []string{"ACTIVE"},
+		Timeout:      d.Timeout(schema.TimeoutUpdate),
+		DelayTimeout: 1 * time.Second,
+		PollInterval: 10 * time.Second,
+	})
+	if err != nil {
+		return fmt.Errorf("error modify RDS instance (%s) replication mode: %s", instanceID, err)
+	}
+	job := res.(*instances.ReplicationMode)
+
+	if err = checkRDSInstanceJobFinish(client, job.WorkflowId, d.Timeout(schema.TimeoutUpdate)); err != nil {
+		return fmt.Errorf("error waiting for RDS instance (%s) update replication mode completed: %s", instanceID, err)
+	}
+	return nil
+}
+
+func updateRdsInstanceSwitchStrategy(ctx context.Context, d *schema.ResourceData, client *golangsdk.ServiceClient,
+	instanceID string) error {
+	if !d.HasChanges("switch_strategy") {
+		return nil
+	}
+
+	modifySwitchStrategyOpts := instances.ModifySwitchStrategyOpts{
+		RepairStrategy: d.Get("switch_strategy").(string),
+	}
+
+	log.Printf("[DEBUG] Modify RDS instance switch strategy opts: %+v", modifySwitchStrategyOpts)
+	retryFunc := func() (interface{}, bool, error) {
+		res := instances.ModifySwitchStrategy(client, modifySwitchStrategyOpts, instanceID)
+		retry, err := handleMultiOperationsError(res.Err)
+		return res, retry, err
+	}
+	_, err := common.RetryContextWithWaitForState(&common.RetryContextWithWaitForStateParam{
+		Ctx:          ctx,
+		RetryFunc:    retryFunc,
+		WaitFunc:     rdsInstanceStateRefreshFunc(client, instanceID),
+		WaitTarget:   []string{"ACTIVE"},
+		Timeout:      d.Timeout(schema.TimeoutUpdate),
+		DelayTimeout: 1 * time.Second,
+		PollInterval: 10 * time.Second,
+	})
+	if err != nil {
+		return fmt.Errorf("error modify RDS instance (%s) switch strategy: %s", instanceID, err)
 	}
 	return nil
 }
