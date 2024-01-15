@@ -14,6 +14,8 @@ Manage DMS Kafka instance resources within HuaweiCloud.
 variable "vpc_id" {}
 variable "subnet_id" {}
 variable "security_group_id" {}
+variable "access_password" {}
+variable "manager_password" {}
 
 variable "availability_zones" {
   default = ["your_availability_zones_a", "your_availability_zones_b", "your_availability_zones_c"]
@@ -48,10 +50,10 @@ resource "huaweicloud_dms_kafka_instance" "test" {
   broker_num         = 3
 
   access_user = "user"
-  password    = "Kafka_%^&_Test"
+  password    = var.access_password
 
   manager_user     = "kafka_manager"
-  manager_password = "Kafka_Test^&*("
+  manager_password = var.manager_password
 }
 ```
 
@@ -134,10 +136,9 @@ The following arguments are supported:
 * `access_user` - (Optional, String, ForceNew) Specifies the username of SASL_SSL user. A username consists of 4
   to 64 characters and supports only letters, digits, and hyphens (-). Changing this creates a new instance resource.
 
-* `password` - (Optional, String, ForceNew) Specifies the password of SASL_SSL user. A password must meet the
-  following complexity requirements: Must be 8 to 32 characters long. Must contain at least 2 of the following character
-  types: lowercase letters, uppercase letters, digits, and special characters (`~!@#$%^&*()-_=+\\|[{}]:'",<.>/?).
-  Changing this creates a new instance resource.
+* `password` - (Optional, String) Specifies the password of SASL_SSL user. A password must meet the following
+  complexity requirements: Must be 8 to 32 characters long. Must contain at least 2 of the following character types:
+  lowercase letters, uppercase letters, digits, and special characters (`~!@#$%^&*()-_=+\\|[{}]:'",<.>/?).
 
   -> **NOTE:** If `access_user` and `password` are specified, the SASL_SSL is enabled for a Kafka instance.
 
@@ -192,11 +193,10 @@ The following arguments are supported:
 * `dumping` - (Optional, Bool, ForceNew) Specifies whether to enable message dumping.
   Changing this creates a new instance resource.
 
-* `enable_auto_topic` - (Optional, Bool, ForceNew) Specifies whether to enable automatic topic creation. If automatic
+* `enable_auto_topic` - (Optional, Bool) Specifies whether to enable automatic topic creation. If automatic
   topic creation is enabled, a topic will be automatically created with 3 partitions and 3 replicas when a message is
   produced to or consumed from a topic that does not exist.
   The default value is false.
-  Changing this creates a new instance resource.
 
 * `enterprise_project_id` - (Optional, String) Specifies the enterprise project ID of the Kafka instance.
 

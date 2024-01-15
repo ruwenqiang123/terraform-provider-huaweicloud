@@ -174,6 +174,10 @@ var (
 	HW_SWR_TARGET_REGION = os.Getenv("HW_SWR_TARGET_REGION")
 	// The target organization of SWR image auto sync
 	HW_SWR_TARGET_ORGANIZATION = os.Getenv("HW_SWR_TARGET_ORGANIZATION")
+	// The organization of SWR image tag
+	HW_SWR_ORGANIZATION = os.Getenv("HW_SWR_ORGANIZATION")
+	// The repository of SWR image tag
+	HW_SWR_REPOSITORY = os.Getenv("HW_SWR_REPOSITORY")
 
 	// The ID of the CBR backup
 	HW_IMS_BACKUP_ID = os.Getenv("HW_IMS_BACKUP_ID")
@@ -231,7 +235,9 @@ var (
 
 	HW_CCI_NAMESPACE = os.Getenv("HW_CCI_NAMESPACE")
 
-	HW_CC_GLOBAL_GATEWAY_ID = os.Getenv("HW_CC_GLOBAL_GATEWAY_ID")
+	HW_CC_GLOBAL_GATEWAY_ID  = os.Getenv("HW_CC_GLOBAL_GATEWAY_ID")
+	HW_CC_PEER_DOMAIN_ID     = os.Getenv("HW_CC_PEER_DOMAIN_ID")
+	HW_CC_PEER_CONNECTION_ID = os.Getenv("HW_CC_PEER_CONNECTION_ID")
 
 	HW_CERT_BATCH_PUSH_ID = os.Getenv("HW_CERT_BATCH_PUSH_ID")
 
@@ -251,6 +257,11 @@ var (
 	HW_DATAARTS_CONNECTION_NAME         = os.Getenv("HW_DATAARTS_CONNECTION_NAME")
 	HW_DATAARTS_ARCHITECTURE_USER_ID    = os.Getenv("HW_DATAARTS_ARCHITECTURE_USER_ID")
 	HW_DATAARTS_ARCHITECTURE_USER_NAME  = os.Getenv("HW_DATAARTS_ARCHITECTURE_USER_NAME")
+
+	HW_EVS_AVAILABILITY_ZONE_GPSSD2 = os.Getenv("HW_EVS_AVAILABILITY_ZONE_GPSSD2")
+	HW_EVS_AVAILABILITY_ZONE_ESSD2  = os.Getenv("HW_EVS_AVAILABILITY_ZONE_ESSD2")
+
+	HW_ECS_LAUNCH_TEMPLATE_ID = os.Getenv("HW_ECS_LAUNCH_TEMPLATE_ID")
 )
 
 // TestAccProviders is a static map containing only the main provider instance.
@@ -570,6 +581,20 @@ func TestAccPreCheckChargingMode(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckAvailabilityZoneGPSSD2(t *testing.T) {
+	if HW_EVS_AVAILABILITY_ZONE_GPSSD2 == "" {
+		t.Skip("If you want to change the QoS of a GPSSD2 type cloudvolume, you must specify an availability zone that supports GPSSD2 type under the current region")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckAvailabilityZoneESSD2(t *testing.T) {
+	if HW_EVS_AVAILABILITY_ZONE_ESSD2 == "" {
+		t.Skip("If you want to change the QoS of a ESSD2 type cloudvolume, you must specify an availability zone that supports ESSD2 type under the current region")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckHighCostAllow(t *testing.T) {
 	if HW_HIGH_COST_ALLOW == "" {
 		t.Skip("Do not allow expensive testing")
@@ -867,6 +892,20 @@ func TestAccPreCheckSwrTargetOrigination(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckSwrOrigination(t *testing.T) {
+	if HW_SWR_ORGANIZATION == "" {
+		t.Skip("HW_SWR_ORGANIZATION must be set for SWR image tags tests")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckSwrRepository(t *testing.T) {
+	if HW_SWR_REPOSITORY == "" {
+		t.Skip("HW_SWR_REPOSITORY must be set for SWR image tags tests")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckImsBackupId(t *testing.T) {
 	if HW_IMS_BACKUP_ID == "" {
 		t.Skip("HW_IMS_BACKUP_ID must be set for IMS whole image with CBR backup id")
@@ -1063,6 +1102,13 @@ func TestAccPreCheckCCGlobalGateway(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckCCAuth(t *testing.T) {
+	if HW_CC_PEER_DOMAIN_ID == "" || HW_CC_PEER_CONNECTION_ID == "" {
+		t.Skip("HW_CC_PEER_DOMAIN_ID, HW_CC_PEER_CONNECTION_ID must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckASScalingGroupID(t *testing.T) {
 	if HW_AS_SCALING_GROUP_ID == "" {
 		t.Skip("HW_AS_SCALING_GROUP_ID must be set for the acceptance test")
@@ -1140,5 +1186,12 @@ func TestAccPreCheckDataArtsArchitectureReviewer(t *testing.T) {
 func TestAccPreCheckAKAndSK(t *testing.T) {
 	if HW_ACCESS_KEY == "" || HW_SECRET_KEY == "" {
 		t.Skip("HW_ACCESS_KEY and HW_SECRET_KEY must be set for acceptance tests")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckECSLaunchTemplateID(t *testing.T) {
+	if HW_ECS_LAUNCH_TEMPLATE_ID == "" {
+		t.Skip("HW_ECS_LAUNCH_TEMPLATE_ID must be set for the acceptance test")
 	}
 }

@@ -62,6 +62,7 @@ func TestAccKafkaInstance_basic(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "description", "kafka test update"),
 					resource.TestCheckResourceAttr(resourceName, "tags.key1", "value"),
 					resource.TestCheckResourceAttr(resourceName, "tags.owner", "terraform_update"),
+					resource.TestCheckResourceAttr(resourceName, "enable_auto_topic", "true"),
 				),
 			},
 			{
@@ -316,7 +317,7 @@ resource "huaweicloud_dms_kafka_instance" "test" {
   name               = "%s"
   description        = "kafka test update"
   access_user        = "user"
-  password           = "Kafkatest@123"
+  password           = "Kafkatest@1234"
   vpc_id             = huaweicloud_vpc.test.id
   network_id         = huaweicloud_vpc_subnet.test.id
   security_group_id  = huaweicloud_networking_secgroup.test.id
@@ -331,6 +332,7 @@ resource "huaweicloud_dms_kafka_instance" "test" {
   manager_password   = "Kafkatest@123"
   security_protocol  = "SASL_PLAINTEXT"
   enabled_mechanisms = ["SCRAM-SHA-512"]
+  enable_auto_topic  = true
 
   tags = {
     key1  = "value"
