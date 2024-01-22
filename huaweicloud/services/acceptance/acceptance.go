@@ -474,11 +474,17 @@ func RandomCidrAndGatewayIp() (string, string) {
 	return fmt.Sprintf("172.16.%d.0/24", seed), fmt.Sprintf("172.16.%d.1", seed)
 }
 
-func RandomPassword() string {
+func RandomPassword(customChars ...string) string {
+	var specialChars string
+	if len(customChars) < 1 {
+		specialChars = "~!@#%^*-_=+?"
+	} else {
+		specialChars = customChars[0]
+	}
 	return fmt.Sprintf("%s%s%s%d",
 		acctest.RandStringFromCharSet(2, "ABCDEFGHIJKLMNOPQRSTUVWXZY"),
 		acctest.RandStringFromCharSet(3, acctest.CharSetAlpha),
-		acctest.RandStringFromCharSet(2, "~!@#%^*-_=+?"),
+		acctest.RandStringFromCharSet(2, specialChars),
 		acctest.RandIntRange(1000, 9999))
 }
 
@@ -866,7 +872,8 @@ func TestAccPreCheckCceClusterId(t *testing.T) {
 func TestAccPreCheckCceChartPath(t *testing.T) {
 	// HW_CCE_CHART_PATH is the absolute path of the chart package
 	if HW_CCE_CHART_PATH == "" {
-		t.Skip("HW_CCE_CHART_PATH must be set for CCE chart acceptance tests")
+		t.Skip("HW_CCE_CHART_PATH must be set for CCE chart acceptance tests, " +
+			"the value is the absolute path of the chart package")
 	}
 }
 
