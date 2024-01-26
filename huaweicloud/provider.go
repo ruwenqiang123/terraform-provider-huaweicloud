@@ -412,6 +412,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_cbr_policies": cbr.DataSourcePolicies(),
 
 			"huaweicloud_cbh_instances": cbh.DataSourceCbhInstances(),
+			"huaweicloud_cbh_flavors":   cbh.DataSourceCbhFlavors(),
 
 			"huaweicloud_cce_addon_template":      cce.DataSourceAddonTemplate(),
 			"huaweicloud_cce_cluster":             cce.DataSourceCCEClusterV3(),
@@ -479,6 +480,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_dms_rocketmq_topics":          dms.DataSourceDmsRocketMQTopics(),
 			"huaweicloud_dms_rocketmq_users":           dms.DataSourceDmsRocketMQUsers(),
 			"huaweicloud_dms_rocketmq_consumer_groups": dms.DataSourceDmsRocketMQConsumerGroups(),
+			"huaweicloud_dms_rocketmq_flavors":         dms.DataSourceRocketMQFlavors(),
 
 			"huaweicloud_dns_zones":      dns.DataSourceZones(),
 			"huaweicloud_dns_recordsets": dns.DataSourceRecordsets(),
@@ -634,10 +636,12 @@ func Provider() *schema.Provider {
 
 			"huaweicloud_tms_resource_types": tms.DataSourceResourceTypes(),
 
-			"huaweicloud_vpc_bandwidth":  eip.DataSourceBandWidth(),
-			"huaweicloud_vpc_bandwidths": eip.DataSourceBandWidths(),
-			"huaweicloud_vpc_eip":        eip.DataSourceVpcEip(),
-			"huaweicloud_vpc_eips":       eip.DataSourceVpcEips(),
+			"huaweicloud_vpc_bandwidth":           eip.DataSourceBandWidth(),
+			"huaweicloud_vpc_bandwidths":          eip.DataSourceBandWidths(),
+			"huaweicloud_vpc_eip":                 eip.DataSourceVpcEip(),
+			"huaweicloud_vpc_eips":                eip.DataSourceVpcEips(),
+			"huaweicloud_global_eip_pools":        eip.DataSourceGlobalEIPPools(),
+			"huaweicloud_global_eip_access_sites": eip.DataSourceGlobalEIPAccessSites(),
 
 			"huaweicloud_vpc":                    vpc.DataSourceVpcV1(),
 			"huaweicloud_vpcs":                   vpc.DataSourceVpcs(),
@@ -896,6 +900,7 @@ func Provider() *schema.Provider {
 
 			"huaweicloud_dc_virtual_gateway":   dc.ResourceVirtualGateway(),
 			"huaweicloud_dc_virtual_interface": dc.ResourceVirtualInterface(),
+			"huaweicloud_dc_hosted_connect":    dc.ResourceHostedConnect(),
 
 			"huaweicloud_dcs_instance":        dcs.ResourceDcsInstance(),
 			"huaweicloud_dcs_backup":          dcs.ResourceDcsBackup(),
@@ -1000,6 +1005,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_evs_snapshot": evs.ResourceEvsSnapshotV2(),
 			"huaweicloud_evs_volume":   evs.ResourceEvsVolume(),
 
+			"huaweicloud_fgs_application":                fgs.ResourceApplication(),
 			"huaweicloud_fgs_async_invoke_configuration": fgs.ResourceAsyncInvokeConfiguration(),
 			"huaweicloud_fgs_dependency":                 fgs.ResourceFgsDependency(),
 			"huaweicloud_fgs_dependency_version":         fgs.ResourceDependencyVersion(),
@@ -1196,6 +1202,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_obs_bucket_policy":      obs.ResourceObsBucketPolicy(),
 			"huaweicloud_obs_bucket_replication": obs.ResourceObsBucketReplication(),
 
+			"huaweicloud_oms_migration_sync_task":  oms.ResourceMigrationSyncTask(),
 			"huaweicloud_oms_migration_task":       oms.ResourceMigrationTask(),
 			"huaweicloud_oms_migration_task_group": oms.ResourceMigrationTaskGroup(),
 
@@ -1217,6 +1224,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_rds_cross_region_backup_strategy": rds.ResourceBackupStrategy(),
 			"huaweicloud_rds_sql_audit":                    rds.ResourceSQLAudit(),
 			"huaweicloud_rds_pg_plugin":                    rds.ResourceRdsPgPlugin(),
+			"huaweicloud_rds_pg_hba":                       rds.ResourcePgHba(),
 
 			"huaweicloud_rms_policy_assignment":                  rms.ResourcePolicyAssignment(),
 			"huaweicloud_rms_resource_aggregator":                rms.ResourceAggregator(),
@@ -1288,6 +1296,8 @@ func Provider() *schema.Provider {
 			"huaweicloud_vpc_bandwidth_associate": eip.ResourceBandWidthAssociate(),
 			"huaweicloud_vpc_eip":                 eip.ResourceVpcEIPV1(),
 			"huaweicloud_vpc_eip_associate":       eip.ResourceEIPAssociate(),
+
+			"huaweicloud_global_internet_bandwidth": eip.ResourceGlobalInternetBandwidth(),
 
 			"huaweicloud_vpc_peering_connection":          vpc.ResourceVpcPeeringConnectionV2(),
 			"huaweicloud_vpc_peering_connection_accepter": vpc.ResourceVpcPeeringConnectionAccepterV2(),
