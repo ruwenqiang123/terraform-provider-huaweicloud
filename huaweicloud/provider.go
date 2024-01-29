@@ -89,7 +89,6 @@ import (
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/rds"
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/rfs"
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/rms"
-	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/scm"
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/sdrs"
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/secmaster"
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/servicestage"
@@ -557,21 +556,23 @@ func Provider() *schema.Provider {
 
 			"huaweicloud_lts_structuring_custom_templates": lts.DataSourceCustomTemplates(),
 
-			"huaweicloud_elb_certificate":       elb.DataSourceELBCertificateV3(),
-			"huaweicloud_elb_flavors":           elb.DataSourceElbFlavorsV3(),
-			"huaweicloud_elb_pools":             elb.DataSourcePools(),
-			"huaweicloud_elb_loadbalancers":     elb.DataSourceElbLoadbalances(),
-			"huaweicloud_elb_listeners":         elb.DataSourceElbListeners(),
-			"huaweicloud_elb_members":           elb.DataSourceElbMembers(),
-			"huaweicloud_elb_ipgroups":          elb.DataSourceElbIpGroups(),
-			"huaweicloud_elb_logtanks":          elb.DataSourceElbLogtanks(),
-			"huaweicloud_elb_l7rules":           elb.DataSourceElbL7rules(),
-			"huaweicloud_elb_l7policies":        elb.DataSourceElbL7policies(),
-			"huaweicloud_elb_security_policies": elb.DataSourceElbSecurityPolicies(),
-			"huaweicloud_elb_monitors":          elb.DataSourceElbMonitors(),
+			"huaweicloud_elb_certificate":          elb.DataSourceELBCertificateV3(),
+			"huaweicloud_elb_flavors":              elb.DataSourceElbFlavorsV3(),
+			"huaweicloud_elb_pools":                elb.DataSourcePools(),
+			"huaweicloud_elb_active_standby_pools": elb.DataSourceActiveStandbyPools(),
+			"huaweicloud_elb_loadbalancers":        elb.DataSourceElbLoadbalances(),
+			"huaweicloud_elb_listeners":            elb.DataSourceElbListeners(),
+			"huaweicloud_elb_members":              elb.DataSourceElbMembers(),
+			"huaweicloud_elb_ipgroups":             elb.DataSourceElbIpGroups(),
+			"huaweicloud_elb_logtanks":             elb.DataSourceElbLogtanks(),
+			"huaweicloud_elb_l7rules":              elb.DataSourceElbL7rules(),
+			"huaweicloud_elb_l7policies":           elb.DataSourceElbL7policies(),
+			"huaweicloud_elb_security_policies":    elb.DataSourceElbSecurityPolicies(),
+			"huaweicloud_elb_monitors":             elb.DataSourceElbMonitors(),
 
 			"huaweicloud_nat_gateway":             nat.DataSourcePublicGateway(),
 			"huaweicloud_nat_gateways":            nat.DataSourcePublicGateways(),
+			"huaweicloud_nat_private_dnat_rules":  nat.DataSourcePrivateDnatRules(),
 			"huaweicloud_nat_private_gateways":    nat.DataSourcePrivateGateways(),
 			"huaweicloud_nat_private_snat_rules":  nat.DataSourcePrivateSnatRules(),
 			"huaweicloud_nat_private_transit_ips": nat.DataSourcePrivateTransitIps(),
@@ -608,8 +609,10 @@ func Provider() *schema.Provider {
 			"huaweicloud_rds_storage_types":        rds.DataSourceStoragetype(),
 			"huaweicloud_rds_sqlserver_collations": rds.DataSourceSQLServerCollations(),
 			"huaweicloud_rds_pg_plugins":           rds.DataSourcePgPlugins(),
+			"huaweicloud_rds_pg_accounts":          rds.DataSourcePgAccounts(),
 			"huaweicloud_rds_mysql_databases":      rds.DataSourceRdsMysqlDatabases(),
 			"huaweicloud_rds_mysql_accounts":       rds.DataSourceRdsMysqlAccounts(),
+			"huaweicloud_rds_mysql_binlog":         rds.DataSourceRdsMysqlBinlog(),
 			"huaweicloud_rds_parametergroups":      rds.DataSourceParametergroups(),
 
 			"huaweicloud_rms_policy_definitions":           rms.DataSourcePolicyDefinitions(),
@@ -624,7 +627,7 @@ func Provider() *schema.Provider {
 
 			"huaweicloud_sms_source_servers": sms.DataSourceServers(),
 
-			"huaweicloud_scm_certificates": scm.DataSourceCertificates(),
+			"huaweicloud_scm_certificates": ccm.DataSourceCertificates(),
 
 			"huaweicloud_sfs_file_system": sfs.DataSourceSFSFileSystemV2(),
 			"huaweicloud_sfs_turbos":      sfs.DataSourceTurbos(),
@@ -843,6 +846,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_ccm_certificate_push":    ccm.ResourceCcmCertificatePush(),
 			"huaweicloud_ccm_private_ca":          ccm.ResourcePrivateCertificateAuthority(),
 			"huaweicloud_ccm_private_certificate": ccm.ResourceCcmPrivateCertificate(),
+			"huaweicloud_scm_certificate":         ccm.ResourceScmCertificate(),
 
 			"huaweicloud_cdm_cluster":        cdm.ResourceCdmCluster(),
 			"huaweicloud_cdm_cluster_action": cdm.ResourceClusterAction(),
@@ -1013,6 +1017,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_fgs_trigger":                    fgs.ResourceFunctionGraphTrigger(),
 
 			"huaweicloud_ga_accelerator":    ga.ResourceAccelerator(),
+			"huaweicloud_ga_address_group":  ga.ResourceIpAddressGroup(),
 			"huaweicloud_ga_listener":       ga.ResourceListener(),
 			"huaweicloud_ga_endpoint_group": ga.ResourceEndpointGroup(),
 			"huaweicloud_ga_endpoint":       ga.ResourceEndpoint(),
@@ -1298,6 +1303,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_vpc_eip_associate":       eip.ResourceEIPAssociate(),
 
 			"huaweicloud_global_internet_bandwidth": eip.ResourceGlobalInternetBandwidth(),
+			"huaweicloud_global_eip":                eip.ResourceGlobalEIP(),
 
 			"huaweicloud_vpc_peering_connection":          vpc.ResourceVpcPeeringConnectionV2(),
 			"huaweicloud_vpc_peering_connection_accepter": vpc.ResourceVpcPeeringConnectionAccepterV2(),
@@ -1320,8 +1326,6 @@ func Provider() *schema.Provider {
 			"huaweicloud_vpn_customer_gateway":        vpn.ResourceCustomerGateway(),
 			"huaweicloud_vpn_connection":              vpn.ResourceConnection(),
 			"huaweicloud_vpn_connection_health_check": vpn.ResourceConnectionHealthCheck(),
-
-			"huaweicloud_scm_certificate": scm.ResourceScmCertificate(),
 
 			"huaweicloud_waf_address_group":                       waf.ResourceWafAddressGroup(),
 			"huaweicloud_waf_certificate":                         waf.ResourceWafCertificateV1(),
