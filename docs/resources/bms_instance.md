@@ -99,21 +99,28 @@ The following arguments are supported:
 * `vpc_id` - (Required, String, ForceNew) Specifies id of vpc in which to create the instance. Changing this creates a
   new instance.
 
-* `nics` - (Required, List, ForceNew) Specifies an array of one or more networks to attach to the instance. The network
-  object structure is documented below. Changing this creates a new instance.
+* `nics` - (Required, List) Specifies an array of one or more networks to attach to the instance. The network
+  object structure is documented below.
 
-* `admin_pass` - (Optional, String, ForceNew) Specifies the administrative password to assign to the instance. Changing
-  this creates a new instance.
+* `admin_pass` - (Optional, String, ForceNew) Specifies the login password of the administrator for logging in to the
+  BMS using password authentication. Changing this creates a new instance. The password must meet the following
+  complexity requirements:
+  + Contains 8 to 26 characters.
+  + Contains at least three of the following character types: uppercase letters, lowercase letters, digits, and special
+    characters !@$%^-_=+[{}]:,./?
+  + Cannot contain the username or the username in reverse.
 
-* `key_pair` - (Optional, String, ForceNew) Specifies the name of a key pair to put on the instance. The key pair must
-  already be created and associated with the tenant's account. Changing this creates a new instance.
+* `key_pair` - (Optional, String, ForceNew) Specifies the name of a key pair for logging in to the BMS using key pair
+  authentication. The key pair must already be created and associated with the tenant's account. The parameter is
+  required when using a Windows image to create a BMS. Changing this creates a new instance.
 
 * `user_data` - (Optional, String, ForceNew) Specifies the user data to be injected during the instance creation. Text
-  and text files can be injected. `user_data` can come from a variety of sources: inline, read in from the
-  *file* function. Changing this creates a new instance.
+  and text files can be injected. `user_data` can come from a variety of sources: inline, read in from the *file*
+  function. The content of `user_data` can be plaint text or encoded with base64. Changing this creates a new instance.
 
--> **NOTE:** If the `user_data` field is specified for a Linux BMS that is created using an image with Cloud-Init
-installed, the `admin_pass` field becomes invalid.
+-> **NOTE:** 1. If the `user_data` field is specified for a Linux BMS that is created using an image with Cloud-Init
+  installed, the `admin_pass` field becomes invalid.
+        <br/>2. If both `key_name` and `user_data` are specified, `user_data` only injects user data.
 
 * `security_groups` - (Optional, List, ForceNew) Specifies an array of one or more security group IDs to associate with
   the instance. Changing this creates a new instance.
@@ -182,16 +189,19 @@ installed, the `admin_pass` field becomes invalid.
 * `auto_renew` - (Optional, String) Specifies whether auto renew is enabled. Valid values are "true" and "
   false", defaults to *false*.
 
-* `agency_name` - (Optional, String, ForceNew) Specifies the IAM agency name which is created on IAM to provide
-  temporary credentials for BMS to access cloud services. Changing this creates a new instance.
+* `agency_name` - (Optional, String) Specifies the IAM agency name which is created on IAM to provide
+  temporary credentials for BMS to access cloud services.
+
+* `metadata` - (Optional, Map) Specifies the user-defined metadata key-value pair.
+  + A metadata key contains of a maximum of 255 Unicode characters which can be letters, digits, hyphens (-),
+    underscores (_), colons (:), and point (.).
+  + A metadata value consists of a maximum of 255 Unicode characters.
 
 The `nics` block supports:
 
-* `subnet_id` - (Required, String, ForceNew) Specifies the ID of subnet to attach to the instance. Changing this creates
-  a new instance.
+* `subnet_id` - (Required, String) Specifies the ID of subnet to attach to the instance.
 
-* `ip_address` - (Optional, String, ForceNew) Specifies a fixed IPv4 address to be used on this network. Changing this
-  creates a new instance.
+* `ip_address` - (Optional, String) Specifies a fixed IPv4 address to be used on this network.
 
 The `data_disks` block supports:
 

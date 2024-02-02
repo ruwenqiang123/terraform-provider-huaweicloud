@@ -53,6 +53,8 @@ var (
 	operateErrorCode = map[string]bool{
 		// current state not support
 		"DCS.4026": true,
+		// instance status is not running
+		"DCS.4049": true,
 		// backup
 		"DCS.4096": true,
 		// restore
@@ -76,6 +78,21 @@ var (
 	}
 )
 
+// @API DCS PUT /v2/{project_id}/instances/{id}/password
+// @API DCS GET /v2/{project_id}/instances/{instancesId}/configs
+// @API DCS PUT /v2/{project_id}/instances/{instancesId}/configs
+// @API DCS GET /v2/available-zones
+// @API DCS PUT /v2/{project_id}/instances/status
+// @API DCS GET /v2/{project_id}/flavors
+// @API DCS GET /v2/{project_id}/instance/{id}/whitelist
+// @API DCS PUT /v2/{project_id}/instance/{id}/whitelist
+// @API DCS POST /v2/{project_id}/instances/{id}/resize
+// @API DCS DELETE /v2/{project_id}/instances/{id}
+// @API DCS GET /v2/{project_id}/instances/{id}
+// @API DCS PUT /v2/{project_id}/instances/{id}
+// @API DCS POST /v2/{project_id}/instances
+// @API DCS GET /v2/{project_id}/instances/{id}/tags
+// @API DCS POST /v2/{project_id}/dcs/{id}/tags/action
 func ResourceDcsInstance() *schema.Resource {
 	return &schema.Resource{
 		CreateContext: resourceDcsInstancesCreate,
@@ -1325,24 +1342,8 @@ func handleOperationError(err error) (bool, error) {
 		if errorCodeErr != nil {
 			return false, fmt.Errorf("error parse errorCode from response body: %s", errorCodeErr)
 		}
-		if operateErrorCode[errorCode.(string)] {
-			return true, err
-		}
-	}
-	// unsubscribe fail
-	if errCode, ok := err.(golangsdk.ErrDefault400); ok {
-		var apiError interface{}
-		if jsonErr := json.Unmarshal(errCode.Body, &apiError); jsonErr != nil {
-			return false, fmt.Errorf("unmarshal the response body failed: %s", jsonErr)
-		}
-
-		errorCode, errorCodeErr := jmespath.Search("error_code", apiError)
-		if errorCodeErr != nil {
-			return false, fmt.Errorf("error parse errorCode from response body: %s", errorCodeErr)
-		}
-
 		// CBC.99003651: Another operation is being performed.
-		if errorCode == "CBC.99003651" {
+		if operateErrorCode[errorCode.(string)] || errorCode == "CBC.99003651" {
 			return true, err
 		}
 	}

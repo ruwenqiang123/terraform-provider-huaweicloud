@@ -46,7 +46,7 @@ func TestAccRdsInstance_basic(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "fixed_ip", "192.168.0.52"),
 					resource.TestCheckResourceAttr(resourceName, "private_ips.0", "192.168.0.52"),
 					resource.TestCheckResourceAttr(resourceName, "charging_mode", "postPaid"),
-					resource.TestCheckResourceAttr(resourceName, "db.0.port", "8635"),
+					resource.TestCheckResourceAttr(resourceName, "db.0.port", "8634"),
 					resource.TestCheckResourceAttr(resourceName, "db.0.password", pwd),
 					resource.TestCheckResourceAttr(resourceName, "maintain_begin", "06:00"),
 					resource.TestCheckResourceAttr(resourceName, "maintain_end", "09:00"),
@@ -107,7 +107,7 @@ func TestAccRdsInstance_without_password(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "description", "test_description"),
 					resource.TestCheckResourceAttr(resourceName, "flavor", "rds.pg.n1.large.2"),
 					resource.TestCheckResourceAttr(resourceName, "volume.0.size", "50"),
-					resource.TestCheckResourceAttr(resourceName, "db.0.port", "8635"),
+					resource.TestCheckResourceAttr(resourceName, "db.0.port", "8634"),
 				),
 			},
 			{
@@ -118,7 +118,7 @@ func TestAccRdsInstance_without_password(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "description", "test_description"),
 					resource.TestCheckResourceAttr(resourceName, "flavor", "rds.pg.n1.large.2"),
 					resource.TestCheckResourceAttr(resourceName, "volume.0.size", "50"),
-					resource.TestCheckResourceAttr(resourceName, "db.0.port", "8635"),
+					resource.TestCheckResourceAttr(resourceName, "db.0.port", "8634"),
 					resource.TestCheckResourceAttr(resourceName, "db.0.password", pwd),
 				),
 			},
@@ -284,7 +284,7 @@ func TestAccRdsInstance_sqlserver(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "name", name),
 					resource.TestCheckResourceAttr(resourceName, "collation", "Chinese_PRC_CI_AS"),
 					resource.TestCheckResourceAttr(resourceName, "volume.0.size", "40"),
-					resource.TestCheckResourceAttr(resourceName, "db.0.port", "8635"),
+					resource.TestCheckResourceAttr(resourceName, "db.0.port", "8634"),
 				),
 			},
 			{
@@ -294,7 +294,7 @@ func TestAccRdsInstance_sqlserver(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "name", name),
 					resource.TestCheckResourceAttr(resourceName, "collation", "Chinese_PRC_CI_AI"),
 					resource.TestCheckResourceAttr(resourceName, "volume.0.size", "40"),
-					resource.TestCheckResourceAttr(resourceName, "db.0.port", "8635"),
+					resource.TestCheckResourceAttr(resourceName, "db.0.port", "8634"),
 				),
 			},
 		},
@@ -354,13 +354,15 @@ func TestAccRdsInstance_prePaid(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckRdsInstanceExists(resourceName, &instance),
 					resource.TestCheckResourceAttr(resourceName, "auto_renew", "false"),
+					resource.TestCheckResourceAttr(resourceName, "volume.0.size", "50"),
 				),
 			},
 			{
-				Config: testAccRdsInstance_prePaid(name, password, true),
+				Config: testAccRdsInstance_prePaid_update(name, password, true),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckRdsInstanceExists(resourceName, &instance),
 					resource.TestCheckResourceAttr(resourceName, "auto_renew", "true"),
+					resource.TestCheckResourceAttr(resourceName, "volume.0.size", "60"),
 				),
 			},
 		},
@@ -473,7 +475,7 @@ func TestAccRdsInstance_restore_sqlserver(t *testing.T) {
 						"data.huaweicloud_rds_flavors.test", "flavors.0.name"),
 					resource.TestCheckResourceAttr(resourceName, "volume.0.type", "CLOUDSSD"),
 					resource.TestCheckResourceAttr(resourceName, "volume.0.size", "50"),
-					resource.TestCheckResourceAttr(resourceName, "db.0.port", "8635"),
+					resource.TestCheckResourceAttr(resourceName, "db.0.port", "8634"),
 					resource.TestCheckResourceAttr(resourceName, "db.0.password", pwd),
 				),
 			},
@@ -634,7 +636,7 @@ resource "huaweicloud_rds_instance" "test" {
     password = "%s"
     type     = "PostgreSQL"
     version  = "12"
-    port     = 8635
+    port     = 8634
   }
   volume {
     type = "CLOUDSSD"
@@ -710,7 +712,7 @@ resource "huaweicloud_rds_instance" "test" {
   db {
     type    = "PostgreSQL"
     version = "12"
-    port    = 8635
+    port    = 8634
   }
 
   volume {
@@ -739,7 +741,7 @@ resource "huaweicloud_rds_instance" "test" {
     password = "%s"
     type     = "PostgreSQL"
     version  = "12"
-    port     = 8635
+    port     = 8634
   }
 
   volume {
@@ -767,7 +769,7 @@ resource "huaweicloud_rds_instance" "test" {
     password = "Huangwei!120521"
     type     = "PostgreSQL"
     version  = "12"
-    port     = 8635
+    port     = 8634
   }
   volume {
     type = "CLOUDSSD"
@@ -803,7 +805,7 @@ resource "huaweicloud_rds_instance" "test" {
     password = "Huangwei!120521"
     type     = "PostgreSQL"
     version  = "12"
-    port     = 8635
+    port     = 8634
   }
   volume {
     type = "CLOUDSSD"
@@ -956,7 +958,7 @@ data "huaweicloud_availability_zones" "test" {}
 resource "huaweicloud_networking_secgroup_rule" "ingress" {
   direction         = "ingress"
   ethertype         = "IPv4"
-  ports             = 8635
+  ports             = 8634
   protocol          = "tcp"
   remote_ip_prefix  = "0.0.0.0/0"
   security_group_id = huaweicloud_networking_secgroup.test.id
@@ -986,7 +988,7 @@ resource "huaweicloud_rds_instance" "test" {
     password = "%[3]s"
     type     = "SQLServer"
     version  = "2017_EE"
-    port     = 8635
+    port     = 8634
   }
 
   volume {
@@ -1006,7 +1008,7 @@ data "huaweicloud_availability_zones" "test" {}
 resource "huaweicloud_networking_secgroup_rule" "ingress" {
   direction         = "ingress"
   ethertype         = "IPv4"
-  ports             = 8635
+  ports             = 8634
   protocol          = "tcp"
   remote_ip_prefix  = "0.0.0.0/0"
   security_group_id = huaweicloud_networking_secgroup.test.id
@@ -1036,7 +1038,7 @@ resource "huaweicloud_rds_instance" "test" {
     password = "%[3]s"
     type     = "SQLServer"
     version  = "2017_EE"
-    port     = 8635
+    port     = 8634
   }
 
   volume {
@@ -1116,6 +1118,51 @@ resource "huaweicloud_rds_instance" "test" {
   volume {
     type = "CLOUDSSD"
     size = 50
+  }
+
+  charging_mode = "prePaid"
+  period_unit   = "month"
+  period        = 1
+  auto_renew    = "%[4]v"
+}
+`, testAccRdsInstance_base(), name, pwd, isAutoRenew)
+}
+
+func testAccRdsInstance_prePaid_update(name, pwd string, isAutoRenew bool) string {
+	return fmt.Sprintf(`
+%[1]s
+
+data "huaweicloud_rds_flavors" "test" {
+  db_type       = "SQLServer"
+  db_version    = "2019_SE"
+  instance_mode = "single"
+  group_type    = "dedicated"
+  vcpus         = 4
+}
+
+resource "huaweicloud_rds_instance" "test" {
+  vpc_id            = data.huaweicloud_vpc.test.id
+  subnet_id         = data.huaweicloud_vpc_subnet.test.id
+  security_group_id = data.huaweicloud_networking_secgroup.test.id
+  
+  availability_zone = [
+    data.huaweicloud_availability_zones.test.names[0],
+  ]
+
+  name      = "%[2]s"
+  flavor    = data.huaweicloud_rds_flavors.test.flavors[0].name
+  collation = "Chinese_PRC_CI_AS"
+
+  db {
+    password = "%[3]s"
+    type     = "SQLServer"
+    version  = "2019_SE"
+    port     = 8638
+  }
+
+  volume {
+    type = "CLOUDSSD"
+    size = 60
   }
 
   charging_mode = "prePaid"
@@ -1303,7 +1350,7 @@ resource "huaweicloud_rds_instance" "test_backup" {
     password = "%[3]s"
     type     = "SQLServer"
     version  = "2019_SE"
-    port     = 8635
+    port     = 8634
   }
 
   volume {

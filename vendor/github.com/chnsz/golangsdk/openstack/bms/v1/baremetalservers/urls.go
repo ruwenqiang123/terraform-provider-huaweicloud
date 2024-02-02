@@ -7,6 +7,7 @@ const resourcePath = "baremetalservers"
 
 func createURL(sc *golangsdk.ServiceClient) string {
 	return sc.ServiceURL(resourcePath)
+	return sc.ServiceURL(resourcePath)
 }
 
 func getURL(sc *golangsdk.ServiceClient, serverID string) string {
@@ -31,4 +32,8 @@ func addNicsURL(sc *golangsdk.ServiceClient, serverID string) string {
 
 func serverStatusPostURL(sc *golangsdk.ServiceClient) string {
 	return sc.ServiceURL(resourcePath, "action")
+}
+
+func metadataURL(client *golangsdk.ServiceClient, serverID string) string {
+	return client.ServiceURL("baremetalservers", serverID, "metadata")
 }

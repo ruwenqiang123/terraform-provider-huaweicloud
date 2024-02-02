@@ -19,6 +19,11 @@ import (
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/config"
 )
 
+// @API EIP POST /v2.0/{project_id}/bandwidths/change-to-period
+// @API EIP PUT /v2.0/{project_id}/bandwidths/{ID}
+// @API EIP DELETE /v2.0/{project_id}/bandwidths/{ID}
+// @API EIP GET /v1/{project_id}/bandwidths/{id}
+// @API EIP POST /v2.0/{project_id}/bandwidths
 func ResourceVpcBandWidthV2() *schema.Resource {
 	return &schema.Resource{
 		CreateContext: resourceVpcBandWidthV2Create,
@@ -83,6 +88,14 @@ func ResourceVpcBandWidthV2() *schema.Resource {
 				Computed: true,
 			},
 			"status": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"created_at": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"updated_at": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
@@ -275,6 +288,8 @@ func resourceVpcBandWidthV2Read(_ context.Context, d *schema.ResourceData, meta 
 		d.Set("bandwidth_type", b.BandwidthType),
 		d.Set("public_border_group", b.PublicBorderGroup),
 		d.Set("status", b.Status),
+		d.Set("created_at", b.CreatedAt),
+		d.Set("updated_at", b.UpdatedAt),
 		d.Set("charging_mode", normalizeChargingMode(b.BillingInfo)),
 		d.Set("publicips", flattenPublicIPs(b)),
 	)
