@@ -21,7 +21,7 @@ func getClusterResourceFunc(cfg *config.Config, state *terraform.ResourceState) 
 	region := acceptance.HW_REGION_NAME
 	// getDwsCluster: Query the DWS cluster.
 	var (
-		getDwsClusterHttpUrl = "v1.0/{project_id}/clusters/{id}"
+		getDwsClusterHttpUrl = "v1.0/{project_id}/clusters/{cluster_id}"
 		getDwsClusterProduct = "dws"
 	)
 	getDwsClusterClient, err := cfg.NewServiceClient(getDwsClusterProduct, region)
@@ -31,7 +31,7 @@ func getClusterResourceFunc(cfg *config.Config, state *terraform.ResourceState) 
 
 	getDwsClusterPath := getDwsClusterClient.Endpoint + getDwsClusterHttpUrl
 	getDwsClusterPath = strings.ReplaceAll(getDwsClusterPath, "{project_id}", getDwsClusterClient.ProjectID)
-	getDwsClusterPath = strings.ReplaceAll(getDwsClusterPath, "{id}", state.Primary.ID)
+	getDwsClusterPath = strings.ReplaceAll(getDwsClusterPath, "{cluster_id}", state.Primary.ID)
 
 	getDwsClusterOpt := golangsdk.RequestOpts{
 		KeepResponseBody: true,
@@ -450,4 +450,76 @@ resource "huaweicloud_elb_loadbalancer" "test2" {
   }
 }
 `, baseNetwork, rName)
+}
+
+func TestAccResourceCluster_updateWithEpsId(t *testing.T) {
+	var obj interface{}
+
+	resourceName := "huaweicloud_dws_cluster.test"
+	rName := acceptance.RandomAccResourceName()
+
+	rc := acceptance.InitResourceCheck(
+		resourceName,
+		&obj,
+		getClusterResourceFunc,
+	)
+	srcEPS := acceptance.HW_ENTERPRISE_PROJECT_ID_TEST
+	destEPS := acceptance.HW_ENTERPRISE_MIGRATE_PROJECT_ID_TEST
+
+	resource.ParallelTest(t, resource.TestCase{
+		PreCheck: func() {
+			acceptance.TestAccPreCheck(t)
+			acceptance.TestAccPreCheckMigrateEpsID(t)
+		},
+		ProviderFactories: acceptance.TestAccProviderFactories,
+		CheckDestroy:      rc.CheckResourceDestroy(),
+		Steps: []resource.TestStep{
+			{
+				Config: testAccCluster_withEpsId(rName, 3, dws.PublicBindTypeAuto, "cluster123@!", srcEPS, "bar"),
+				Check: resource.ComposeTestCheckFunc(
+					rc.CheckResourceExists(),
+					resource.TestCheckResourceAttr(resourceName, "enterprise_project_id", srcEPS),
+				),
+			},
+			{
+				Config: testAccCluster_withEpsId(rName, 6, dws.PublicBindTypeAuto, "cluster123@!u", destEPS, "bar"),
+				Check: resource.ComposeTestCheckFunc(
+					rc.CheckResourceExists(),
+					resource.TestCheckResourceAttr(resourceName, "enterprise_project_id", destEPS),
+				),
+			},
+		},
+	})
+}
+
+func testAccCluster_withEpsId(rName string, numberOfNode int, publicIpBindType, password, epsId, tag string) string {
+	baseNetwork := common.TestBaseNetwork(rName)
+
+	return fmt.Sprintf(`
+%s
+
+data "huaweicloud_availability_zones" "test" {}
+
+resource "huaweicloud_dws_cluster" "test" {
+  name                   = "%s"
+  node_type              = "dwsk2.xlarge"
+  number_of_node         = %d
+  vpc_id                 = huaweicloud_vpc.test.id
+  network_id             = huaweicloud_vpc_subnet.test.id
+  security_group_id      = huaweicloud_networking_secgroup.test.id
+  availability_zone      = data.huaweicloud_availability_zones.test.names[0]
+  user_name              = "test_cluster_admin"
+  user_pwd               = "%s"
+  enterprise_project_id  = "%s"
+
+  public_ip {
+    public_bind_type = "%s"
+  }
+
+  tags = {
+    key = "val"
+    foo = "%s"
+  }
+}
+`, baseNetwork, rName, numberOfNode, password, epsId, publicIpBindType, tag)
 }

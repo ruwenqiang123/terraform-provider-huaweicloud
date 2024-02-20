@@ -456,6 +456,8 @@ func Provider() *schema.Provider {
 
 			"huaweicloud_dbss_flavors": dbss.DataSourceDbssFlavors(),
 
+			"huaweicloud_dc_virtual_gateways": dc.DataSourceDCVirtualGateways(),
+
 			"huaweicloud_dcs_flavors":         dcs.DataSourceDcsFlavorsV2(),
 			"huaweicloud_dcs_maintainwindow":  dcs.DataSourceDcsMaintainWindow(),
 			"huaweicloud_dcs_instances":       dcs.DataSourceDcsInstance(),
@@ -577,10 +579,12 @@ func Provider() *schema.Provider {
 
 			"huaweicloud_nat_gateway":             nat.DataSourcePublicGateway(),
 			"huaweicloud_nat_gateways":            nat.DataSourcePublicGateways(),
+			"huaweicloud_nat_dnat_rules":          nat.DataSourceDnatRules(),
 			"huaweicloud_nat_private_dnat_rules":  nat.DataSourcePrivateDnatRules(),
 			"huaweicloud_nat_private_gateways":    nat.DataSourcePrivateGateways(),
 			"huaweicloud_nat_private_snat_rules":  nat.DataSourcePrivateSnatRules(),
 			"huaweicloud_nat_private_transit_ips": nat.DataSourcePrivateTransitIps(),
+			"huaweicloud_nat_snat_rules":          nat.DataSourceSnatRules(),
 
 			"huaweicloud_networking_port":           vpc.DataSourceNetworkingPortV2(),
 			"huaweicloud_networking_secgroup":       vpc.DataSourceNetworkingSecGroup(),
@@ -930,6 +934,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_dds_backup":             dds.ResourceDdsBackup(),
 			"huaweicloud_dds_parameter_template": dds.ResourceDdsParameterTemplate(),
 			"huaweicloud_dds_audit_log_policy":   dds.ResourceDdsAuditLogPolicy(),
+			"huaweicloud_dds_lts_log":            dds.ResourceDdsLtsLog(),
 
 			"huaweicloud_ddm_instance": ddm.ResourceDdmInstance(),
 			"huaweicloud_ddm_schema":   ddm.ResourceDdmSchema(),
@@ -983,15 +988,16 @@ func Provider() *schema.Provider {
 
 			"huaweicloud_drs_job": drs.ResourceDrsJob(),
 
-			"huaweicloud_dws_cluster":            dws.ResourceDwsCluster(),
-			"huaweicloud_dws_logical_cluster":    dws.ResourceLogicalCluster(),
-			"huaweicloud_dws_event_subscription": dws.ResourceDwsEventSubs(),
-			"huaweicloud_dws_alarm_subscription": dws.ResourceDwsAlarmSubs(),
-			"huaweicloud_dws_snapshot":           dws.ResourceDwsSnapshot(),
-			"huaweicloud_dws_snapshot_policy":    dws.ResourceDwsSnapshotPolicy(),
-			"huaweicloud_dws_ext_data_source":    dws.ResourceDwsExtDataSource(),
-			"huaweicloud_dws_workload_queue":     dws.ResourceWorkLoadQueue(),
-			"huaweicloud_dws_workload_plan":      dws.ResourceWorkLoadPlan(),
+			"huaweicloud_dws_cluster":             dws.ResourceDwsCluster(),
+			"huaweicloud_dws_logical_cluster":     dws.ResourceLogicalCluster(),
+			"huaweicloud_dws_event_subscription":  dws.ResourceDwsEventSubs(),
+			"huaweicloud_dws_alarm_subscription":  dws.ResourceDwsAlarmSubs(),
+			"huaweicloud_dws_snapshot":            dws.ResourceDwsSnapshot(),
+			"huaweicloud_dws_snapshot_policy":     dws.ResourceDwsSnapshotPolicy(),
+			"huaweicloud_dws_ext_data_source":     dws.ResourceDwsExtDataSource(),
+			"huaweicloud_dws_workload_queue":      dws.ResourceWorkLoadQueue(),
+			"huaweicloud_dws_workload_plan":       dws.ResourceWorkLoadPlan(),
+			"huaweicloud_dws_workload_plan_stage": dws.ResourceWorkLoadPlanStage(),
 
 			"huaweicloud_eg_connection":           eg.ResourceConnection(),
 			"huaweicloud_eg_custom_event_channel": eg.ResourceCustomEventChannel(),
@@ -1318,6 +1324,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_vpc_bandwidth_associate": eip.ResourceBandWidthAssociate(),
 			"huaweicloud_vpc_eip":                 eip.ResourceVpcEIPV1(),
 			"huaweicloud_vpc_eip_associate":       eip.ResourceEIPAssociate(),
+			"huaweicloud_vpc_internet_gateway":    eip.ResourceVPCInternetGateway(),
 
 			"huaweicloud_global_internet_bandwidth": eip.ResourceGlobalInternetBandwidth(),
 			"huaweicloud_global_eip":                eip.ResourceGlobalEIP(),

@@ -27,8 +27,8 @@ import (
 // @API DWS GET /v1.0/{project_id}/job/{job_id}
 // @API DWS GET /v1.0/{project_id}/clusters/{cluster_id}/ext-data-sources
 // @API DWS POST /v1.0/{project_id}/clusters/{cluster_id}/ext-data-sources
-// @API DWS DELETE /v1.0/{project_id}/clusters/{cluster_id}/ext-data-sources/{id}
-// @API AWS PUT /v1.0/{project_id}/clusters/{cluster_id}/ext-data-sources/{id}
+// @API DWS DELETE /v1.0/{project_id}/clusters/{cluster_id}/ext-data-sources/{ext_data_source_id}
+// @API AWS PUT /v1.0/{project_id}/clusters/{cluster_id}/ext-data-sources/{ext_data_source_id}
 func ResourceDwsExtDataSource() *schema.Resource {
 	return &schema.Resource{
 		CreateContext: resourceDwsExtDataSourceCreate,
@@ -149,6 +149,7 @@ func resourceDwsExtDataSourceCreate(ctx context.Context, d *schema.ResourceData,
 	createDwsExtDataSourcePath = strings.ReplaceAll(createDwsExtDataSourcePath, "{cluster_id}", fmt.Sprintf("%v", d.Get("cluster_id")))
 
 	createDwsExtDataSourceOpt := golangsdk.RequestOpts{
+		MoreHeaders:      requestOpts.MoreHeaders,
 		KeepResponseBody: true,
 		OkCodes: []int{
 			200,
@@ -250,9 +251,7 @@ func GetExtDataSource(cfg *config.Config, region string, d *schema.ResourceData,
 
 	getDwsExtDataSourceOpt := golangsdk.RequestOpts{
 		KeepResponseBody: true,
-		MoreHeaders: map[string]string{
-			"Content-Type": "application/json;charset=UTF-8",
-		},
+		MoreHeaders:      requestOpts.MoreHeaders,
 		OkCodes: []int{
 			200,
 		},
@@ -286,7 +285,7 @@ func resourceDwsExtDataSourceUpdate(ctx context.Context, d *schema.ResourceData,
 	if d.HasChanges(updateDwsExtDataSourceChanges...) {
 		// updateDwsExtDataSource: update the DWS external data source.
 		var (
-			updateDwsExtDataSourceHttpUrl = "v1.0/{project_id}/clusters/{cluster_id}/ext-data-sources/{id}"
+			updateDwsExtDataSourceHttpUrl = "v1.0/{project_id}/clusters/{cluster_id}/ext-data-sources/{ext_data_source_id}"
 			updateDwsExtDataSourceProduct = "dws"
 		)
 		updateDwsExtDataSourceClient, err := cfg.NewServiceClient(updateDwsExtDataSourceProduct, region)
@@ -297,13 +296,11 @@ func resourceDwsExtDataSourceUpdate(ctx context.Context, d *schema.ResourceData,
 		updateDwsExtDataSourcePath := updateDwsExtDataSourceClient.Endpoint + updateDwsExtDataSourceHttpUrl
 		updateDwsExtDataSourcePath = strings.ReplaceAll(updateDwsExtDataSourcePath, "{project_id}", updateDwsExtDataSourceClient.ProjectID)
 		updateDwsExtDataSourcePath = strings.ReplaceAll(updateDwsExtDataSourcePath, "{cluster_id}", fmt.Sprintf("%v", d.Get("cluster_id")))
-		updateDwsExtDataSourcePath = strings.ReplaceAll(updateDwsExtDataSourcePath, "{id}", d.Id())
+		updateDwsExtDataSourcePath = strings.ReplaceAll(updateDwsExtDataSourcePath, "{ext_data_source_id}", d.Id())
 
 		updateDwsExtDataSourceOpt := golangsdk.RequestOpts{
 			KeepResponseBody: true,
-			MoreHeaders: map[string]string{
-				"Content-Type": "application/json;charset=UTF-8",
-			},
+			MoreHeaders:      requestOpts.MoreHeaders,
 			OkCodes: []int{
 				200,
 			},
@@ -349,7 +346,7 @@ func resourceDwsExtDataSourceDelete(ctx context.Context, d *schema.ResourceData,
 
 	// deleteDwsExtDataSource: delete DWS external data source
 	var (
-		deleteDwsExtDataSourceHttpUrl = "v1.0/{project_id}/clusters/{cluster_id}/ext-data-sources/{id}"
+		deleteDwsExtDataSourceHttpUrl = "v1.0/{project_id}/clusters/{cluster_id}/ext-data-sources/{ext_data_source_id}"
 		deleteDwsExtDataSourceProduct = "dws"
 	)
 	deleteDwsExtDataSourceClient, err := cfg.NewServiceClient(deleteDwsExtDataSourceProduct, region)
@@ -359,14 +356,12 @@ func resourceDwsExtDataSourceDelete(ctx context.Context, d *schema.ResourceData,
 
 	deleteDwsExtDataSourcePath := deleteDwsExtDataSourceClient.Endpoint + deleteDwsExtDataSourceHttpUrl
 	deleteDwsExtDataSourcePath = strings.ReplaceAll(deleteDwsExtDataSourcePath, "{project_id}", deleteDwsExtDataSourceClient.ProjectID)
-	deleteDwsExtDataSourcePath = strings.ReplaceAll(deleteDwsExtDataSourcePath, "{id}", d.Id())
+	deleteDwsExtDataSourcePath = strings.ReplaceAll(deleteDwsExtDataSourcePath, "{ext_data_source_id}", d.Id())
 	deleteDwsExtDataSourcePath = strings.ReplaceAll(deleteDwsExtDataSourcePath, "{cluster_id}", fmt.Sprintf("%v", d.Get("cluster_id")))
 
 	deleteDwsExtDataSourceOpt := golangsdk.RequestOpts{
 		KeepResponseBody: true,
-		MoreHeaders: map[string]string{
-			"Content-Type": "application/json;charset=UTF-8",
-		},
+		MoreHeaders:      requestOpts.MoreHeaders,
 		OkCodes: []int{
 			200,
 		},
@@ -453,9 +448,7 @@ func extDataSourceWaitingForStateCompleted(ctx context.Context, d *schema.Resour
 
 			extDataSourceWaitingOpt := golangsdk.RequestOpts{
 				KeepResponseBody: true,
-				MoreHeaders: map[string]string{
-					"Content-Type": "application/json;charset=UTF-8",
-				},
+				MoreHeaders:      requestOpts.MoreHeaders,
 				OkCodes: []int{
 					200,
 				},

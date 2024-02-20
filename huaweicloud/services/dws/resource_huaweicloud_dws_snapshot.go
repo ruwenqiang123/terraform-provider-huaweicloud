@@ -26,8 +26,8 @@ import (
 )
 
 // @API DWS POST /v1.0/{project_id}/snapshots
-// @API DWS GET /v1.0/{project_id}/snapshots/{id}
-// @API DWS DELETE /v1.0/{project_id}/snapshots/{id}
+// @API DWS GET /v1.0/{project_id}/snapshots/{snapshot_id}
+// @API DWS DELETE /v1.0/{project_id}/snapshots/{snapshot_id}
 func ResourceDwsSnapshot() *schema.Resource {
 	return &schema.Resource{
 		CreateContext: resourceDwsSnapshotCreate,
@@ -113,6 +113,7 @@ func resourceDwsSnapshotCreate(ctx context.Context, d *schema.ResourceData, meta
 	createDwsSnapshotPath = strings.ReplaceAll(createDwsSnapshotPath, "{project_id}", createDwsSnapshotClient.ProjectID)
 
 	createDwsSnapshotOpt := golangsdk.RequestOpts{
+		MoreHeaders:      requestOpts.MoreHeaders,
 		KeepResponseBody: true,
 		OkCodes: []int{
 			200,
@@ -161,7 +162,7 @@ func createDwsSnapshotWaitingForStateCompleted(ctx context.Context, d *schema.Re
 			cfg := meta.(*config.Config)
 			region := cfg.GetRegion(d)
 			var (
-				createDwsSnapshotWaitingHttpUrl = "v1.0/{project_id}/snapshots/{id}"
+				createDwsSnapshotWaitingHttpUrl = "v1.0/{project_id}/snapshots/{snapshot_id}"
 				createDwsSnapshotWaitingProduct = "dws"
 			)
 			createDwsSnapshotWaitingClient, err := cfg.NewServiceClient(createDwsSnapshotWaitingProduct, region)
@@ -172,13 +173,11 @@ func createDwsSnapshotWaitingForStateCompleted(ctx context.Context, d *schema.Re
 			createDwsSnapshotWaitingPath := createDwsSnapshotWaitingClient.Endpoint + createDwsSnapshotWaitingHttpUrl
 			createDwsSnapshotWaitingPath = strings.ReplaceAll(createDwsSnapshotWaitingPath, "{project_id}",
 				createDwsSnapshotWaitingClient.ProjectID)
-			createDwsSnapshotWaitingPath = strings.ReplaceAll(createDwsSnapshotWaitingPath, "{id}", d.Id())
+			createDwsSnapshotWaitingPath = strings.ReplaceAll(createDwsSnapshotWaitingPath, "{snapshot_id}", d.Id())
 
 			createDwsSnapshotWaitingOpt := golangsdk.RequestOpts{
 				KeepResponseBody: true,
-				MoreHeaders: map[string]string{
-					"Content-Type": "application/json;charset=UTF-8",
-				},
+				MoreHeaders:      requestOpts.MoreHeaders,
 				OkCodes: []int{
 					200,
 				},
@@ -232,7 +231,7 @@ func resourceDwsSnapshotRead(_ context.Context, d *schema.ResourceData, meta int
 
 	// getDwsSnapshot: Query the DWS snapshot.
 	var (
-		getDwsSnapshotHttpUrl = "v1.0/{project_id}/snapshots/{id}"
+		getDwsSnapshotHttpUrl = "v1.0/{project_id}/snapshots/{snapshot_id}"
 		getDwsSnapshotProduct = "dws"
 	)
 	getDwsSnapshotClient, err := cfg.NewServiceClient(getDwsSnapshotProduct, region)
@@ -242,13 +241,11 @@ func resourceDwsSnapshotRead(_ context.Context, d *schema.ResourceData, meta int
 
 	getDwsSnapshotPath := getDwsSnapshotClient.Endpoint + getDwsSnapshotHttpUrl
 	getDwsSnapshotPath = strings.ReplaceAll(getDwsSnapshotPath, "{project_id}", getDwsSnapshotClient.ProjectID)
-	getDwsSnapshotPath = strings.ReplaceAll(getDwsSnapshotPath, "{id}", d.Id())
+	getDwsSnapshotPath = strings.ReplaceAll(getDwsSnapshotPath, "{snapshot_id}", d.Id())
 
 	getDwsSnapshotOpt := golangsdk.RequestOpts{
 		KeepResponseBody: true,
-		MoreHeaders: map[string]string{
-			"Content-Type": "application/json;charset=UTF-8",
-		},
+		MoreHeaders:      requestOpts.MoreHeaders,
 		OkCodes: []int{
 			200,
 		},
@@ -305,7 +302,7 @@ func resourceDwsSnapshotDelete(_ context.Context, d *schema.ResourceData, meta i
 
 	// deleteDwsSnapshot: delete DWS snapshot
 	var (
-		deleteDwsSnapshotHttpUrl = "v1.0/{project_id}/snapshots/{id}"
+		deleteDwsSnapshotHttpUrl = "v1.0/{project_id}/snapshots/{snapshot_id}"
 		deleteDwsSnapshotProduct = "dws"
 	)
 	deleteDwsSnapshotClient, err := cfg.NewServiceClient(deleteDwsSnapshotProduct, region)
@@ -315,9 +312,10 @@ func resourceDwsSnapshotDelete(_ context.Context, d *schema.ResourceData, meta i
 
 	deleteDwsSnapshotPath := deleteDwsSnapshotClient.Endpoint + deleteDwsSnapshotHttpUrl
 	deleteDwsSnapshotPath = strings.ReplaceAll(deleteDwsSnapshotPath, "{project_id}", deleteDwsSnapshotClient.ProjectID)
-	deleteDwsSnapshotPath = strings.ReplaceAll(deleteDwsSnapshotPath, "{id}", d.Id())
+	deleteDwsSnapshotPath = strings.ReplaceAll(deleteDwsSnapshotPath, "{snapshot_id}", d.Id())
 
 	deleteDwsSnapshotOpt := golangsdk.RequestOpts{
+		MoreHeaders:      requestOpts.MoreHeaders,
 		KeepResponseBody: true,
 		OkCodes: []int{
 			200,

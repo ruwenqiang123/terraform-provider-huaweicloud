@@ -165,8 +165,8 @@ The following arguments are supported:
 
 * `tags` - (Optional, Map) The key/value pairs to associate with the cluster.
 
-* `enterprise_project_id` - (Optional, String, ForceNew) Specifies the enterprise project id of the css cluster, Value 0
-  indicates the default enterprise project. Changing this parameter will create a new resource.
+* `enterprise_project_id` - (Optional, String) Specifies the enterprise project id of the css cluster, Value 0
+  indicates the default enterprise project.
 
 * `public_access` - (Optional, List) Specifies the public network access information.
   The [public_access](#Css_public_access) structure is documented below.
@@ -363,8 +363,8 @@ This resource provides the following timeouts configuration options:
 
 ## Import
 
-CSS cluster can be imported by `id`. For example,
+CSS cluster can be imported by `id`, e.g.
 
-```
-terraform import huaweicloud_css_cluster.example 6d793124-3d5d-47be-bf09-f694fdf2d9ed
+```bash
+terraform import huaweicloud_css_cluster.test <id>
 ```

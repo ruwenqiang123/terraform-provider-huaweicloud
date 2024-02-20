@@ -131,7 +131,7 @@ The following arguments are supported:
 
 * `security_group_id` - (Required, String) Specifies the security group ID of the DDS instance.
 
-* `password` - (Required, String) Specifies the Administrator password of the database instance.
+* `password` - (Optional, String) Specifies the Administrator password of the database instance.
 
 * `disk_encryption_id` - (Optional, String, ForceNew) Specifies the disk encryption ID of the instance. Changing this
   creates a new instance.
@@ -150,8 +150,7 @@ The following arguments are supported:
 
 * `backup_strategy` - (Optional, List) Specifies the advanced backup policy. The structure is described below.
 
-* `enterprise_project_id` - (Optional, String, ForceNew) Specifies the enterprise project id of the dds instance.
-  Changing this creates a new instance.
+* `enterprise_project_id` - (Optional, String) Specifies the enterprise project id of the dds instance.
 
 * `ssl` - (Optional, Bool) Specifies whether to enable or disable SSL. Defaults to true.
 
