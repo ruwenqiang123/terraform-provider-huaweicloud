@@ -405,7 +405,8 @@ func Provider() *schema.Provider {
 			"huaweicloud_account":            DataSourceAccount(),
 			"huaweicloud_availability_zones": DataSourceAvailabilityZones(),
 
-			"huaweicloud_bms_flavors": bms.DataSourceBmsFlavors(),
+			"huaweicloud_bms_flavors":   bms.DataSourceBmsFlavors(),
+			"huaweicloud_bms_instances": bms.DataSourceBmsInstances(),
 
 			"huaweicloud_cbr_backup":   cbr.DataSourceBackup(),
 			"huaweicloud_cbr_vaults":   cbr.DataSourceVaults(),
@@ -426,6 +427,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_ccm_private_certificate_export": ccm.DataSourceCcmPrivateCertificateExport(),
 
 			"huaweicloud_cdn_domain_statistics": cdn.DataSourceStatistics(),
+			"huaweicloud_cdn_domains":           cdn.DataSourceCdnDomains(),
 
 			"huaweicloud_cfw_firewalls": cfw.DataSourceFirewalls(),
 
@@ -510,6 +512,8 @@ func Provider() *schema.Provider {
 			"huaweicloud_fgs_application_templates": fgs.DataSourceFunctionGraphApplicationTemplates(),
 			"huaweicloud_fgs_dependencies":          fgs.DataSourceFunctionGraphDependencies(),
 			"huaweicloud_fgs_functions":             fgs.DataSourceFunctionGraphFunctions(),
+
+			"huaweicloud_ga_accelerators": ga.DataSourceAccelerators(),
 
 			"huaweicloud_gaussdb_cassandra_dedicated_resource": gaussdb.DataSourceGeminiDBDehResource(),
 			"huaweicloud_gaussdb_cassandra_flavors":            gaussdb.DataSourceCassandraFlavors(),
