@@ -514,6 +514,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_fgs_functions":             fgs.DataSourceFunctionGraphFunctions(),
 
 			"huaweicloud_ga_accelerators": ga.DataSourceAccelerators(),
+			"huaweicloud_ga_listeners":    ga.DataSourceListeners(),
 
 			"huaweicloud_gaussdb_cassandra_dedicated_resource": gaussdb.DataSourceGeminiDBDehResource(),
 			"huaweicloud_gaussdb_cassandra_flavors":            gaussdb.DataSourceCassandraFlavors(),
@@ -1128,6 +1129,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_iotda_amqp":                iotda.ResourceAmqp(),
 			"huaweicloud_iotda_device_certificate":  iotda.ResourceDeviceCertificate(),
 			"huaweicloud_iotda_device_linkage_rule": iotda.ResourceDeviceLinkageRule(),
+			"huaweicloud_iotda_batchtask_file":      iotda.ResourceBatchTaskFile(),
 
 			"huaweicloud_kms_key":                dew.ResourceKmsKey(),
 			"huaweicloud_kps_keypair":            dew.ResourceKeypair(),

@@ -274,6 +274,10 @@ var (
 	HW_EVS_AVAILABILITY_ZONE_ESSD2  = os.Getenv("HW_EVS_AVAILABILITY_ZONE_ESSD2")
 
 	HW_ECS_LAUNCH_TEMPLATE_ID = os.Getenv("HW_ECS_LAUNCH_TEMPLATE_ID")
+
+	HW_IOTDA_BATCHTASK_FILE_PATH = os.Getenv("HW_IOTDA_BATCHTASK_FILE_PATH")
+
+	HW_DWS_MUTIL_AZS = os.Getenv("HW_DWS_MUTIL_AZS")
 )
 
 // TestAccProviders is a static map containing only the main provider instance.
@@ -1269,5 +1273,19 @@ func TestAccPreCheckAKAndSK(t *testing.T) {
 func TestAccPreCheckECSLaunchTemplateID(t *testing.T) {
 	if HW_ECS_LAUNCH_TEMPLATE_ID == "" {
 		t.Skip("HW_ECS_LAUNCH_TEMPLATE_ID must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckIOTDABatchTaskFilePath(t *testing.T) {
+	if HW_IOTDA_BATCHTASK_FILE_PATH == "" {
+		t.Skip("HW_IOTDA_BATCHTASK_FILE_PATH must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckMutilAZ(t *testing.T) {
+	if HW_DWS_MUTIL_AZS == "" {
+		t.Skip("HW_DWS_MUTIL_AZS must be set for the acceptance test")
 	}
 }
