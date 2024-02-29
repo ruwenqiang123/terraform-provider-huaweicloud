@@ -76,6 +76,7 @@ var (
 	HW_CDN_DOMAIN_NAME              = os.Getenv("HW_CDN_DOMAIN_NAME")
 	HW_CDN_CERT_PATH                = os.Getenv("HW_CDN_CERT_PATH")
 	HW_CDN_PRIVATE_KEY_PATH         = os.Getenv("HW_CDN_PRIVATE_KEY_PATH")
+	HW_CDN_ENABLE_FLAG              = os.Getenv("HW_CDN_ENABLE_FLAG")
 	HW_CERTIFICATE_KEY_PATH         = os.Getenv("HW_CERTIFICATE_KEY_PATH")
 	HW_CERTIFICATE_CHAIN_PATH       = os.Getenv("HW_CERTIFICATE_CHAIN_PATH")
 	HW_CERTIFICATE_PRIVATE_KEY_PATH = os.Getenv("HW_CERTIFICATE_PRIVATE_KEY_PATH")
@@ -202,6 +203,7 @@ var (
 	HW_SECMASTER_PIPELINE_ID = os.Getenv("HW_SECMASTER_PIPELINE_ID")
 
 	HW_MODELARTS_HAS_SUBSCRIBE_MODEL = os.Getenv("HW_MODELARTS_HAS_SUBSCRIBE_MODEL")
+	HW_MODELARTS_USER_LOGIN_PASSWORD = os.Getenv("HW_MODELARTS_USER_LOGIN_PASSWORD")
 
 	// The CMDB sub-application ID of AOM service
 	HW_AOM_SUB_APPLICATION_ID = os.Getenv("HW_AOM_SUB_APPLICATION_ID")
@@ -1089,6 +1091,13 @@ func TestAccPreCheckModelArtsHasSubscribeModel(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckModelartsUserLoginPassword(t *testing.T) {
+	if HW_MODELARTS_USER_LOGIN_PASSWORD == "" {
+		t.Skip("HW_MODELARTS_USER_LOGIN_PASSWORD must be set for modelarts privilege resource pool acceptance test")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckEgChannelId(t *testing.T) {
 	if HW_EG_CHANNEL_ID == "" {
 		t.Skip("The sub-resource acceptance test of the EG channel must set 'HW_EG_CHANNEL_ID'")
@@ -1164,6 +1173,13 @@ func TestAccPreCheckCDN(t *testing.T) {
 func TestAccPreCheckCERT(t *testing.T) {
 	if HW_CDN_CERT_PATH == "" || HW_CDN_PRIVATE_KEY_PATH == "" {
 		t.Skip("This environment does not support CDN certificate tests")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckCDNDomainCertificates(t *testing.T) {
+	if HW_CDN_ENABLE_FLAG == "" {
+		t.Skip("Skip the CDN acceptance tests.")
 	}
 }
 

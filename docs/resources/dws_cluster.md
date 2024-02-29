@@ -27,12 +27,18 @@ resource "huaweicloud_dws_cluster" "cluster" {
   version           = var.dws_cluster_version
   node_type         = "dws.m3.xlarge"
   number_of_node    = 3
+  number_of_cn      = 3
   availability_zone = var.availability_zone
   user_name         = var.user_name
   user_pwd          = var.user_pwd
   vpc_id            = var.vpc_id
   network_id        = var.network_id
   security_group_id = huaweicloud_networking_secgroup.secgroup.id
+
+  volume {
+    type     = "SSD"
+    capacity = 300
+  }
 }
 ```
 
@@ -52,7 +58,7 @@ The following arguments are supported:
   Changing this parameter will create a new resource.
 
 * `number_of_node` - (Required, Int) Number of nodes in a cluster.  
- The value ranges from 3 to 32 in cluster mode. The value of stream warehouse(stand-alone mode) is 1.
+ The value ranges from 3 to 256 in cluster mode. The value of stream warehouse(stand-alone mode) is 1.
 
 * `user_name` - (Required, String, ForceNew) Administrator username for logging in to a data warehouse cluster.  
  The administrator username must: Consist of lowercase letters, digits, or underscores.
@@ -80,7 +86,7 @@ The following arguments are supported:
 * `enterprise_project_id` - (Optional, String) The enterprise project ID.
 
 * `number_of_cn` - (Required, Int, ForceNew) The number of CN.  
-  The value ranges from 2 to **number_of_node**, the maximum value is 20. Defaults to 3.
+  The value ranges from 2 to **number_of_node**, the maximum value is 20.
   Changing this parameter will create a new resource.
 
 * `version` - (Required, String, ForceNew) The cluster version.
@@ -118,6 +124,8 @@ The following arguments are supported:
 
 * `elb_id` - (Optional, String) Specifies the ID of the ELB load balancer.
 
+* `lts_enable` - (Optional, Bool) Specified whether to enable LTS. The default value is **false**.
+
 <a name="DwsCluster_PublicIp"></a>
 The `PublicIp` block supports:
 
@@ -130,10 +138,9 @@ The `PublicIp` block supports:
 The `Volume` block supports:
 
 * `type` - (Optional, String) The volume type. Value options are as follows:
-  + **SATA**: Common I/O. The SATA disk is used.
-  + **SAS**: High I/O. The SAS disk is used.
   + **SSD**: Ultra-high I/O. The solid-state drive (SSD) is used.
-  The valid value are **auto_assign**, **not_use**, and **bind_existing**. Defaults to **not_use**.
+  + **SAS**: High I/O. The SAS disk is used.
+  + **SATA**: Common I/O. The SATA disk is used.
 
 * `capacity` - (Optional, String) The capacity size, in GB.
 
@@ -262,7 +269,7 @@ $ terraform import huaweicloud_dws_cluster.test 47ad727e-9dcc-4833-bde0-bb298607
 
 Note that the imported state may not be identical to your resource definition, due to some attributes missing from the
 API response, security or some other reason. The missing attributes include: `user_pwd`, `number_of_cn`, `kms_key_id`,
-`volume`, `dss_pool_id`, `logical_cluster_enable`.
+`volume`, `dss_pool_id`, `logical_cluster_enable`, `lts_enable`.
 It is generally recommended running `terraform plan` after importing a cluster.
 You can then decide if changes should be applied to the cluster, or the resource definition
 should be updated to align with the cluster. Also you can ignore changes as below.
@@ -273,7 +280,7 @@ resource "huaweicloud_dws_cluster" "test" {
 
   lifecycle {
     ignore_changes = [
-      user_pwd, number_of_cn, kms_key_id, volume, dss_pool_id, logical_cluster_enable
+      user_pwd, number_of_cn, kms_key_id, volume, dss_pool_id, logical_cluster_enable, lts_enable
     ]
   }
 }
