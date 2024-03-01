@@ -452,6 +452,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_cph_phone_images":   cph.DataSourcePhoneImages(),
 
 			"huaweicloud_csms_secret_version": dew.DataSourceDewCsmsSecret(),
+			"huaweicloud_csms_events":         dew.DataSourceDewCsmsEvents(),
 			"huaweicloud_css_flavors":         css.DataSourceCssFlavors(),
 
 			"huaweicloud_dataarts_studio_workspaces":                  dataarts.DataSourceDataArtsStudioWorkspaces(),
@@ -514,9 +515,10 @@ func Provider() *schema.Provider {
 			"huaweicloud_fgs_dependencies":          fgs.DataSourceFunctionGraphDependencies(),
 			"huaweicloud_fgs_functions":             fgs.DataSourceFunctionGraphFunctions(),
 
-			"huaweicloud_ga_accelerators":   ga.DataSourceAccelerators(),
-			"huaweicloud_ga_address_groups": ga.DataSourceAddressGroups(),
-			"huaweicloud_ga_listeners":      ga.DataSourceListeners(),
+			"huaweicloud_ga_accelerators":    ga.DataSourceAccelerators(),
+			"huaweicloud_ga_address_groups":  ga.DataSourceAddressGroups(),
+			"huaweicloud_ga_endpoint_groups": ga.DataSourceEndpointGroups(),
+			"huaweicloud_ga_listeners":       ga.DataSourceListeners(),
 
 			"huaweicloud_gaussdb_cassandra_dedicated_resource": gaussdb.DataSourceGeminiDBDehResource(),
 			"huaweicloud_gaussdb_cassandra_flavors":            gaussdb.DataSourceCassandraFlavors(),
@@ -672,6 +674,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_global_eip_pools":           eip.DataSourceGlobalEIPPools(),
 			"huaweicloud_global_eip_access_sites":    eip.DataSourceGlobalEIPAccessSites(),
 			"huaweicloud_global_internet_bandwidths": eip.DataSourceGlobalInternetBandwidths(),
+			"huaweicloud_global_eips":                eip.DataSourceGlobalEIPs(),
 
 			"huaweicloud_vpc":                    vpc.DataSourceVpcV1(),
 			"huaweicloud_vpcs":                   vpc.DataSourceVpcs(),
