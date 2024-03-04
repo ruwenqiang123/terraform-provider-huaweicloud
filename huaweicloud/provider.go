@@ -451,6 +451,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_cph_phone_flavors":  cph.DataSourcePhoneFlavors(),
 			"huaweicloud_cph_phone_images":   cph.DataSourcePhoneImages(),
 
+			"huaweicloud_csms_secrets":        dew.DataSourceDewCsmsSecrets(),
 			"huaweicloud_csms_secret_version": dew.DataSourceDewCsmsSecret(),
 			"huaweicloud_csms_events":         dew.DataSourceDewCsmsEvents(),
 			"huaweicloud_css_flavors":         css.DataSourceCssFlavors(),
@@ -623,6 +624,7 @@ func Provider() *schema.Provider {
 
 			"huaweicloud_ram_resource_permissions": ram.DataSourceRAMPermissions(),
 			"huaweicloud_ram_shared_resources":     ram.DataSourceRAMSharedResources(),
+			"huaweicloud_ram_shared_principals":    ram.DataSourceRAMSharedPrincipals(),
 
 			"huaweicloud_rds_flavors":                       rds.DataSourceRdsFlavor(),
 			"huaweicloud_rds_engine_versions":               rds.DataSourceRdsEngineVersionsV3(),
@@ -706,8 +708,9 @@ func Provider() *schema.Provider {
 			"huaweicloud_waf_domains":             waf.DataSourceWafDomains(),
 			"huaweicloud_waf_address_groups":      waf.DataSourceWafAddressGroups(),
 
-			"huaweicloud_dws_flavors":               dws.DataSourceDwsFlavors(),
-			"huaweicloud_dws_logical_cluster_rings": dws.DataSourceLogicalClusterRings(),
+			"huaweicloud_dws_flavors":                 dws.DataSourceDwsFlavors(),
+			"huaweicloud_dws_logical_cluster_rings":   dws.DataSourceLogicalClusterRings(),
+			"huaweicloud_dws_disaster_recovery_tasks": dws.DataSourceDisasterRecoveryTasks(),
 
 			"huaweicloud_workspace_desktops": workspace.DataSourceDesktops(),
 			"huaweicloud_workspace_flavors":  workspace.DataSourceWorkspaceFlavors(),
