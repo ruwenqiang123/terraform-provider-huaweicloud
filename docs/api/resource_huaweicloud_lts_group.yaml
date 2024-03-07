@@ -13,7 +13,7 @@ paths:
             tag: LTS
         POST:
             tag: LTS
-    /v2/{project_id}/groups/{id}:
+    /v2/{project_id}/groups/{log_group_id}:
         DELETE:
             tag: LTS
         POST:
