@@ -279,11 +279,14 @@ var (
 
 	HW_ECS_LAUNCH_TEMPLATE_ID = os.Getenv("HW_ECS_LAUNCH_TEMPLATE_ID")
 
+	HW_IOTDA_ACCESS_ADDRESS      = os.Getenv("HW_IOTDA_ACCESS_ADDRESS")
 	HW_IOTDA_BATCHTASK_FILE_PATH = os.Getenv("HW_IOTDA_BATCHTASK_FILE_PATH")
 
 	HW_DWS_MUTIL_AZS = os.Getenv("HW_DWS_MUTIL_AZS")
 
 	HW_DCS_ACCOUNT_WHITELIST = os.Getenv("HW_DCS_ACCOUNT_WHITELIST")
+
+	HW_DCS_INSTANCE_ID = os.Getenv("HW_DCS_INSTANCE_ID")
 )
 
 // TestAccProviders is a static map containing only the main provider instance.
@@ -1319,6 +1322,13 @@ func TestAccPreCheckECSLaunchTemplateID(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckHWIOTDAAccessAddress(t *testing.T) {
+	if HW_IOTDA_ACCESS_ADDRESS == "" {
+		t.Skip("HW_IOTDA_ACCESS_ADDRESS must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckIOTDABatchTaskFilePath(t *testing.T) {
 	if HW_IOTDA_BATCHTASK_FILE_PATH == "" {
 		t.Skip("HW_IOTDA_BATCHTASK_FILE_PATH must be set for the acceptance test")
@@ -1336,5 +1346,12 @@ func TestAccPreCheckMutilAZ(t *testing.T) {
 func TestAccPreCheckDCSAccountWhitelist(t *testing.T) {
 	if HW_DCS_ACCOUNT_WHITELIST == "" {
 		t.Skip("HW_DCS_ACCOUNT_WHITELIST must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckDCSInstanceID(t *testing.T) {
+	if HW_DCS_INSTANCE_ID == "" {
+		t.Skip("HW_DCS_INSTANCE_ID must be set for the acceptance test")
 	}
 }
