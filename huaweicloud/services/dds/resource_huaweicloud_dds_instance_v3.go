@@ -38,6 +38,8 @@ import (
 // @API DDS POST /v3/{project_id}/instances/{instance_id}/resize
 // @API DDS GET /v3/{project_id}/jobs
 // @API DDS DELETE /v3/{project_id}/instances/{serverID}
+// @API DDS PUT /v3/{project_id}/instances/{instance_id}/remark
+// @API DDS POST /v3/{project_id}/instances/{instance_id}/migrate
 // @API BSS POST /v2/orders/subscriptions/resources/unsubscribe
 // @API BSS GET /v2/orders/customer-orders/details/{order_id}
 // @API BSS POST /v2/orders/suscriptions/resources/query
@@ -94,9 +96,9 @@ func ResourceDdsInstanceV3() *schema.Resource {
 				},
 			},
 			"availability_zone": {
-				Type:     schema.TypeString,
-				Required: true,
-				ForceNew: true,
+				Type:             schema.TypeString,
+				Required:         true,
+				DiffSuppressFunc: utils.SuppressStringSepratedByCommaDiffs,
 			},
 			"vpc_id": {
 				Type:     schema.TypeString,
@@ -209,6 +211,10 @@ func ResourceDdsInstanceV3() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
+			},
+			"description": {
+				Type:     schema.TypeString,
+				Optional: true,
 			},
 			"charging_mode": common.SchemaChargingMode(nil),
 			"period_unit":   common.SchemaPeriodUnit(nil),
@@ -437,6 +443,16 @@ func resourceDdsInstanceV3Create(ctx context.Context, d *schema.ResourceData, me
 		d.SetId(instance.Id)
 	}
 
+	if description, ok := d.GetOk("description"); ok {
+		opt := instances.RemarkOpts{
+			Remark: description.(string),
+		}
+		err = instances.UpdateRemark(client, d.Id(), opt)
+		if err != nil {
+			return diag.Errorf("error adding description of the DDS instance (%s) : %s ", d.Id(), err)
+		}
+	}
+
 	stateConf := &resource.StateChangeConf{
 		Pending:    []string{"creating", "updating"},
 		Target:     []string{"normal"},
@@ -506,6 +522,7 @@ func resourceDdsInstanceV3Read(_ context.Context, d *schema.ResourceData, meta i
 		d.Set("status", instanceObj.Status),
 		d.Set("enterprise_project_id", instanceObj.EnterpriseProjectID),
 		d.Set("nodes", flattenDdsInstanceV3Nodes(instanceObj)),
+		d.Set("description", instanceObj.Remark),
 	)
 
 	port, err := strconv.Atoi(instanceObj.Port)
@@ -590,6 +607,16 @@ func resourceDdsInstanceV3Update(ctx context.Context, d *schema.ResourceData, me
 	client, err := conf.DdsV3Client(region)
 	if err != nil {
 		return diag.Errorf("Error creating DDS client: %s ", err)
+	}
+
+	if d.HasChange("description") {
+		opt := instances.RemarkOpts{
+			Remark: d.Get("description").(string),
+		}
+		err = instances.UpdateRemark(client, instanceId, opt)
+		if err != nil {
+			return diag.Errorf("error updating description of the DDS instance (%s) : %s ", instanceId, err)
+		}
 	}
 
 	var opts []instances.UpdateOpt
@@ -762,6 +789,43 @@ func resourceDdsInstanceV3Update(ctx context.Context, d *schema.ResourceData, me
 		}
 		if err := common.MigrateEnterpriseProject(ctx, conf, d, migrateOpts); err != nil {
 			return diag.FromErr(err)
+		}
+	}
+
+	if d.HasChange("availability_zone") {
+		azOpt := instances.AvailabilityZoneOpts{
+			TargetAzs: d.Get("availability_zone").(string),
+		}
+		retryFunc := func() (interface{}, bool, error) {
+			resp, err := instances.UpdateAvailabilityZone(client, instanceId, azOpt)
+			retry, err := handleMultiOperationsError(err)
+			return resp, retry, err
+		}
+		r, err := common.RetryContextWithWaitForState(&common.RetryContextWithWaitForStateParam{
+			Ctx:          ctx,
+			RetryFunc:    retryFunc,
+			WaitFunc:     ddsInstanceStateRefreshFunc(client, instanceId),
+			WaitTarget:   []string{"normal"},
+			Timeout:      d.Timeout(schema.TimeoutUpdate),
+			DelayTimeout: 10 * time.Second,
+			PollInterval: 10 * time.Second,
+		})
+		if err != nil {
+			return diag.Errorf("error updating availability zone: %s", err)
+		}
+		resp := r.(*instances.AvailabilityZoneResp)
+		stateConf := &resource.StateChangeConf{
+			Pending:      []string{"Running"},
+			Target:       []string{"Completed"},
+			Refresh:      JobStateRefreshFunc(client, resp.JobId),
+			Timeout:      d.Timeout(schema.TimeoutUpdate),
+			Delay:        10 * time.Second,
+			PollInterval: 10 * time.Second,
+		}
+
+		_, err = stateConf.WaitForStateContext(ctx)
+		if err != nil {
+			return diag.Errorf("error waiting for the job (%s) completed: %s ", resp.JobId, err)
 		}
 	}
 

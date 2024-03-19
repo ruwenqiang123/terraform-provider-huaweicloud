@@ -135,8 +135,12 @@ var (
 	HW_FGS_TEMPLATE_ID = os.Getenv("HW_FGS_TEMPLATE_ID")
 	HW_FGS_GPU_TYPE    = os.Getenv("HW_FGS_GPU_TYPE")
 
-	HW_KMS_ENVIRONMENT    = os.Getenv("HW_KMS_ENVIRONMENT")
-	HW_KMS_HSM_CLUSTER_ID = os.Getenv("HW_KMS_HSM_CLUSTER_ID")
+	HW_KMS_ENVIRONMENT     = os.Getenv("HW_KMS_ENVIRONMENT")
+	HW_KMS_HSM_CLUSTER_ID  = os.Getenv("HW_KMS_HSM_CLUSTER_ID")
+	HW_KMS_KEY_ID          = os.Getenv("HW_KMS_KEY_ID")
+	HW_KMS_IMPORT_TOKEN    = os.Getenv("HW_KMS_IMPORT_TOKEN")
+	HW_KMS_KEY_MATERIAL    = os.Getenv("HW_KMS_KEY_MATERIAL")
+	HW_KMS_KEY_PRIVATE_KEY = os.Getenv("HW_KMS_KEY_PRIVATE_KEY")
 
 	HW_MULTI_ACCOUNT_ENVIRONMENT            = os.Getenv("HW_MULTI_ACCOUNT_ENVIRONMENT")
 	HW_ORGANIZATIONS_OPEN                   = os.Getenv("HW_ORGANIZATIONS_OPEN")
@@ -287,6 +291,20 @@ var (
 	HW_DCS_ACCOUNT_WHITELIST = os.Getenv("HW_DCS_ACCOUNT_WHITELIST")
 
 	HW_DCS_INSTANCE_ID = os.Getenv("HW_DCS_INSTANCE_ID")
+
+	HW_LTS_AGENCY_STREAM_NAME = os.Getenv("HW_LTS_AGENCY_STREAM_NAME")
+	HW_LTS_AGENCY_STREAM_ID   = os.Getenv("HW_LTS_AGENCY_STREAM_ID")
+	HW_LTS_AGENCY_GROUP_NAME  = os.Getenv("HW_LTS_AGENCY_GROUP_NAME")
+	HW_LTS_AGENCY_GROUP_ID    = os.Getenv("HW_LTS_AGENCY_GROUP_ID")
+	HW_LTS_LOG_STREAM_NAME    = os.Getenv("HW_LTS_LOG_STREAM_NAME")
+	HW_LTS_LOG_STREAM_ID      = os.Getenv("HW_LTS_LOG_STREAM_ID")
+	HW_LTS_LOG_GROUP_NAME     = os.Getenv("HW_LTS_LOG_GROUP_NAME")
+	HW_LTS_LOG_GROUP_ID       = os.Getenv("HW_LTS_LOG_GROUP_ID")
+	HW_LTS_AGENCY_PROJECT_ID  = os.Getenv("HW_LTS_AGENCY_PROJECT_ID")
+	HW_LTS_AGENCY_DOMAIN_NAME = os.Getenv("HW_LTS_AGENCY_DOMAIN_NAME")
+	HW_LTS_AGENCY_NAME        = os.Getenv("HW_LTS_AGENCY_NAME")
+
+	HW_VPCEP_SERVICE_ID = os.Getenv("HW_VPCEP_SERVICE_ID")
 )
 
 // TestAccProviders is a static map containing only the main provider instance.
@@ -852,6 +870,34 @@ func TestAccPreCheckKmsHsmClusterId(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckKmsImportToken(t *testing.T) {
+	if HW_KMS_IMPORT_TOKEN == "" {
+		t.Skip("HW_KMS_IMPORT_TOKEN must be set for KMS key material acceptance tests.")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckKmsKeyID(t *testing.T) {
+	if HW_KMS_KEY_ID == "" {
+		t.Skip("HW_KMS_KEY_ID must be set for KMS key material acceptance tests.")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckKmsKeyMaterial(t *testing.T) {
+	if HW_KMS_KEY_MATERIAL == "" {
+		t.Skip("HW_KMS_KEY_MATERIAL must be set for KMS key material acceptance tests.")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckKmsKeyPrivateKey(t *testing.T) {
+	if HW_KMS_KEY_PRIVATE_KEY == "" {
+		t.Skip("HW_KMS_KEY_PRIVATE_KEY must be set for KMS key material acceptance tests.")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckProjectID(t *testing.T) {
 	if HW_PROJECT_ID == "" {
 		t.Skip("HW_PROJECT_ID must be set for acceptance tests")
@@ -1353,5 +1399,29 @@ func TestAccPreCheckDCSAccountWhitelist(t *testing.T) {
 func TestAccPreCheckDCSInstanceID(t *testing.T) {
 	if HW_DCS_INSTANCE_ID == "" {
 		t.Skip("HW_DCS_INSTANCE_ID must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckLTSCrossAccountAccess(t *testing.T) {
+	if HW_LTS_AGENCY_STREAM_NAME == "" || HW_LTS_AGENCY_STREAM_ID == "" || HW_LTS_AGENCY_GROUP_NAME == "" ||
+		HW_LTS_AGENCY_GROUP_ID == "" || HW_LTS_AGENCY_PROJECT_ID == "" ||
+		HW_LTS_AGENCY_DOMAIN_NAME == "" || HW_LTS_AGENCY_NAME == "" {
+		t.Skip("The delegator account config of HW_LTS_AGENCY_STREAM_NAME, HW_LTS_AGENCY_STREAM_ID, HW_LTS_AGENCY_GROUP_NAME," +
+			" HW_LTS_AGENCY_GROUP_ID, HW_LTS_AGENCY_PROJECT_ID, HW_LTS_AGENCY_DOMAIN_NAME and HW_LTS_AGENCY_NAME " +
+			"must be set for the acceptance test")
+	}
+
+	if HW_LTS_LOG_STREAM_NAME == "" || HW_LTS_LOG_STREAM_ID == "" ||
+		HW_LTS_LOG_GROUP_NAME == "" || HW_LTS_LOG_GROUP_ID == "" {
+		t.Skip("The delegatee account config of HW_LTS_LOG_STREAM_NAME, HW_LTS_LOG_STREAM_ID, HW_LTS_LOG_GROUP_NAME" +
+			" and HW_LTS_LOG_GROUP_ID must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckVPCEPServiceId(t *testing.T) {
+	if HW_VPCEP_SERVICE_ID == "" {
+		t.Skip("HW_VPCEP_SERVICE_ID must be set for the acceptance test")
 	}
 }

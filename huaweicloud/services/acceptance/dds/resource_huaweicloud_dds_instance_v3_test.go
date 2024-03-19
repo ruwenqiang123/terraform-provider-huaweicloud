@@ -187,6 +187,7 @@ func TestAccDDSV3Instance_prePaid(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "backup_strategy.0.start_time", "08:00-09:00"),
 					resource.TestCheckResourceAttr(resourceName, "backup_strategy.0.keep_days", "8"),
 					resource.TestCheckResourceAttr(resourceName, "auto_renew", "false"),
+					resource.TestCheckResourceAttr(resourceName, "description", "test description"),
 				),
 			},
 			{
@@ -200,6 +201,7 @@ func TestAccDDSV3Instance_prePaid(t *testing.T) {
 					testAccCheckDDSV3InstanceFlavor(&instance, "shard", "size", "30"),
 					testAccCheckDDSV3InstanceFlavor(&instance, "mongos", "spec_code", "dds.mongodb.s6.large.4.mongos"),
 					resource.TestCheckResourceAttr(resourceName, "auto_renew", "true"),
+					resource.TestCheckResourceAttr(resourceName, "description", ""),
 				),
 			},
 		},
@@ -607,7 +609,7 @@ data "huaweicloud_availability_zones" "test" {}
 
 resource "huaweicloud_dds_instance" "instance" {
   name                  = "%s"
-  availability_zone     = data.huaweicloud_availability_zones.test.names[0]
+  availability_zone     = data.huaweicloud_availability_zones.test.names[1]
   vpc_id                = huaweicloud_vpc.test.id
   subnet_id             = huaweicloud_vpc_subnet.test.id
   security_group_id     = huaweicloud_networking_secgroup.test.id
@@ -721,6 +723,7 @@ resource "huaweicloud_dds_instance" "instance" {
   security_group_id = huaweicloud_networking_secgroup.test.id
   password          = "Terraform@123"
   mode              = "Sharding"
+  description       = "test description"
 
   charging_mode = "prePaid"
   period_unit   = "month"
