@@ -572,6 +572,9 @@ func Provider() *schema.Provider {
 			"huaweicloud_kms_data_key": dew.DataSourceKmsDataKeyV1(),
 			"huaweicloud_kps_keypairs": dew.DataSourceKeypairs(),
 
+			"huaweicloud_iotda_spaces":   iotda.DataSourceSpaces(),
+			"huaweicloud_iotda_products": iotda.DataSourceProducts(),
+
 			"huaweicloud_koogallery_assets": koogallery.DataSourceKooGalleryAssets(),
 
 			"huaweicloud_lb_listeners":    lb.DataSourceListeners(),
@@ -857,16 +860,17 @@ func Provider() *schema.Provider {
 
 			"huaweicloud_cbh_instance": cbh.ResourceCBHInstance(),
 
-			"huaweicloud_cc_connection":                   cc.ResourceCloudConnection(),
-			"huaweicloud_cc_network_instance":             cc.ResourceNetworkInstance(),
-			"huaweicloud_cc_authorization":                cc.ResourceAuthorization(),
-			"huaweicloud_cc_bandwidth_package":            cc.ResourceBandwidthPackage(),
-			"huaweicloud_cc_inter_region_bandwidth":       cc.ResourceInterRegionBandwidth(),
-			"huaweicloud_cc_central_network":              cc.ResourceCentralNetwork(),
-			"huaweicloud_cc_central_network_policy":       cc.ResourceCentralNetworkPolicy(),
-			"huaweicloud_cc_central_network_policy_apply": cc.ResourceCentralNetworkPolicyApply(),
-			"huaweicloud_cc_central_network_attachment":   cc.ResourceCentralNetworkAttachment(),
-			"huaweicloud_cc_global_connection_bandwidth":  cc.ResourceGlobalConnectionBandwidth(),
+			"huaweicloud_cc_connection":                            cc.ResourceCloudConnection(),
+			"huaweicloud_cc_network_instance":                      cc.ResourceNetworkInstance(),
+			"huaweicloud_cc_authorization":                         cc.ResourceAuthorization(),
+			"huaweicloud_cc_bandwidth_package":                     cc.ResourceBandwidthPackage(),
+			"huaweicloud_cc_inter_region_bandwidth":                cc.ResourceInterRegionBandwidth(),
+			"huaweicloud_cc_central_network":                       cc.ResourceCentralNetwork(),
+			"huaweicloud_cc_central_network_policy":                cc.ResourceCentralNetworkPolicy(),
+			"huaweicloud_cc_central_network_policy_apply":          cc.ResourceCentralNetworkPolicyApply(),
+			"huaweicloud_cc_central_network_attachment":            cc.ResourceCentralNetworkAttachment(),
+			"huaweicloud_cc_global_connection_bandwidth":           cc.ResourceGlobalConnectionBandwidth(),
+			"huaweicloud_cc_global_connection_bandwidth_associate": cc.ResourceGlobalConnectionBandwidthAssociate(),
 
 			"huaweicloud_cce_cluster":     cce.ResourceCluster(),
 			"huaweicloud_cce_node":        cce.ResourceNode(),
@@ -938,14 +942,15 @@ func Provider() *schema.Provider {
 			"huaweicloud_csms_event":  dew.ResourceCsmsEvent(),
 			"huaweicloud_csms_secret": dew.ResourceCsmsSecret(),
 
-			"huaweicloud_css_cluster":                css.ResourceCssCluster(),
-			"huaweicloud_css_snapshot":               css.ResourceCssSnapshot(),
-			"huaweicloud_css_thesaurus":              css.ResourceCssthesaurus(),
-			"huaweicloud_css_configuration":          css.ResourceCssConfiguration(),
-			"huaweicloud_css_scan_task":              css.ResourceScanTask(),
-			"huaweicloud_css_logstash_cluster":       css.ResourceLogstashCluster(),
-			"huaweicloud_css_logstash_configuration": css.ResourceLogstashConfiguration(),
-			"huaweicloud_css_logstash_pipeline":      css.ResourceLogstashPipeline(),
+			"huaweicloud_css_cluster":                     css.ResourceCssCluster(),
+			"huaweicloud_css_snapshot":                    css.ResourceCssSnapshot(),
+			"huaweicloud_css_thesaurus":                   css.ResourceCssthesaurus(),
+			"huaweicloud_css_configuration":               css.ResourceCssConfiguration(),
+			"huaweicloud_css_scan_task":                   css.ResourceScanTask(),
+			"huaweicloud_css_logstash_cluster":            css.ResourceLogstashCluster(),
+			"huaweicloud_css_logstash_configuration":      css.ResourceLogstashConfiguration(),
+			"huaweicloud_css_logstash_pipeline":           css.ResourceLogstashPipeline(),
+			"huaweicloud_css_logstash_custom_certificate": css.ResourceLogstashCertificate(),
 
 			"huaweicloud_dbss_instance": dbss.ResourceInstance(),
 

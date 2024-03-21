@@ -95,6 +95,7 @@ var (
 	HW_DLI_DS_AUTH_KRB_CONF_OBS_PATH    = os.Getenv("HW_DLI_DS_AUTH_KRB_CONF_OBS_PATH")
 	HW_DLI_DS_AUTH_KRB_TAB_OBS_PATH     = os.Getenv("HW_DLI_DS_AUTH_KRB_TAB_OBS_PATH")
 	HW_DLI_AGENCY_FLAG                  = os.Getenv("HW_DLI_AGENCY_FLAG")
+	HW_DLI_OWNER                        = os.Getenv("HW_DLI_OWNER")
 
 	HW_GITHUB_REPO_HOST        = os.Getenv("HW_GITHUB_REPO_HOST")        // Repository host (Github, Gitlab, Gitee)
 	HW_GITHUB_PERSONAL_TOKEN   = os.Getenv("HW_GITHUB_PERSONAL_TOKEN")   // Personal access token (Github, Gitlab, Gitee)
@@ -258,7 +259,8 @@ var (
 	HW_CC_PEER_DOMAIN_ID     = os.Getenv("HW_CC_PEER_DOMAIN_ID")
 	HW_CC_PEER_CONNECTION_ID = os.Getenv("HW_CC_PEER_CONNECTION_ID")
 
-	HW_CERT_BATCH_PUSH_ID = os.Getenv("HW_CERT_BATCH_PUSH_ID")
+	HW_CERT_BATCH_PUSH_ID     = os.Getenv("HW_CERT_BATCH_PUSH_ID")
+	HW_CERT_BATCH_PUSH_WAF_ID = os.Getenv("HW_CERT_BATCH_PUSH_WAF_ID")
 
 	HW_AS_SCALING_GROUP_ID  = os.Getenv("HW_AS_SCALING_GROUP_ID")
 	HW_AS_SCALING_POLICY_ID = os.Getenv("HW_AS_SCALING_POLICY_ID")
@@ -758,6 +760,13 @@ func TestAccPreCheckDliDsAuthKrb(t *testing.T) {
 func TestAccPreCheckDliAgency(t *testing.T) {
 	if HW_DLI_AGENCY_FLAG == "" {
 		t.Skip("HW_DLI_AGENCY_FLAG must be set for DLI datasource DLI agency acceptance tests.")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckDliOwner(t *testing.T) {
+	if HW_DLI_OWNER == "" {
+		t.Skip("HW_DLI_OWNER must be set for DLI datasource DLI agency acceptance tests.")
 	}
 }
 
@@ -1416,6 +1425,20 @@ func TestAccPreCheckLTSCrossAccountAccess(t *testing.T) {
 		HW_LTS_LOG_GROUP_NAME == "" || HW_LTS_LOG_GROUP_ID == "" {
 		t.Skip("The delegatee account config of HW_LTS_LOG_STREAM_NAME, HW_LTS_LOG_STREAM_ID, HW_LTS_LOG_GROUP_NAME" +
 			" and HW_LTS_LOG_GROUP_ID must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckCCMPushCertificateID(t *testing.T) {
+	if HW_CERT_BATCH_PUSH_ID == "" {
+		t.Skip("HW_CERT_BATCH_PUSH_ID must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckCCMPushWAFInstance(t *testing.T) {
+	if HW_CERT_BATCH_PUSH_WAF_ID == "" {
+		t.Skip("HW_CERT_BATCH_PUSH_WAF_ID must be set for the acceptance test")
 	}
 }
 
