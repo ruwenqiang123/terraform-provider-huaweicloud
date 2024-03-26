@@ -338,6 +338,13 @@ func dbInfoSchemaResource() *schema.Resource {
 				ForceNew: true,
 			},
 
+			"vpc_id": {
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+				ForceNew: true,
+			},
+
 			"subnet_id": {
 				Type:     schema.TypeString,
 				Optional: true,
@@ -766,6 +773,14 @@ func resourceJobUpdate(ctx context.Context, d *schema.ResourceData, meta interfa
 				return diag.FromErr(err)
 			}
 
+			// preCheck job before reset
+			if action.(string) == "reset" {
+				err = preCheck(ctx, client, d.Id(), d.Timeout(schema.TimeoutUpdate), "forRetryJob")
+				if err != nil {
+					return diag.FromErr(err)
+				}
+			}
+
 			// execute action
 			err = executeJobAction(clientV5, buildExecuteJobActionBodyParams(d), action.(string), d.Id())
 			if err != nil {
@@ -1151,6 +1166,7 @@ func buildDbConfigParamter(d *schema.ResourceData, dbType, projectId string) (*j
 		DbPort:          golangsdk.IntToPointer(configRaw["port"].(int)),
 		InstanceId:      configRaw["instance_id"].(string),
 		Region:          configRaw["region"].(string),
+		VpcId:           configRaw["vpc_id"].(string),
 		SubnetId:        configRaw["subnet_id"].(string),
 		ProjectId:       projectId,
 		SslCertPassword: configRaw["ssl_cert_password"].(string),
@@ -1186,6 +1202,7 @@ func setDbInfoToState(d *schema.ResourceData, endpoint jobs.Endpoint, fieldName 
 		"instance_id":        endpoint.InstanceId,
 		"name":               endpoint.InstanceName,
 		"region":             endpoint.Region,
+		"vpc_id":             endpoint.VpcId,
 		"subnet_id":          endpoint.SubnetId,
 		"ssl_cert_password":  endpoint.SslCertPassword,
 		"ssl_cert_check_sum": endpoint.SslCertCheckSum,

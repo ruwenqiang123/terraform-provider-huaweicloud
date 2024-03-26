@@ -471,6 +471,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_dcs_template_detail": dcs.DataSourceTemplateDetail(),
 			"huaweicloud_dcs_backups":         dcs.DataSourceBackups(),
 			"huaweicloud_dcs_hotkey_analyses": dcs.DataSourceDcsHotkeyAnalyses(),
+			"huaweicloud_dcs_bigkey_analyses": dcs.DataSourceDcsBigkeyAnalyses(),
 
 			"huaweicloud_dds_flavors":       dds.DataSourceDDSFlavorV3(),
 			"huaweicloud_dds_instances":     dds.DataSourceDdsInstance(),
@@ -573,8 +574,10 @@ func Provider() *schema.Provider {
 			"huaweicloud_kms_data_key": dew.DataSourceKmsDataKeyV1(),
 			"huaweicloud_kps_keypairs": dew.DataSourceKeypairs(),
 
-			"huaweicloud_iotda_spaces":   iotda.DataSourceSpaces(),
-			"huaweicloud_iotda_products": iotda.DataSourceProducts(),
+			"huaweicloud_iotda_amqps":                iotda.DataSourceAMQPQueues(),
+			"huaweicloud_iotda_dataforwarding_rules": iotda.DataSourceDataForwardingRules(),
+			"huaweicloud_iotda_spaces":               iotda.DataSourceSpaces(),
+			"huaweicloud_iotda_products":             iotda.DataSourceProducts(),
 
 			"huaweicloud_koogallery_assets": koogallery.DataSourceKooGalleryAssets(),
 
@@ -656,6 +659,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_rms_policy_definitions":           rms.DataSourcePolicyDefinitions(),
 			"huaweicloud_rms_assignment_package_templates": rms.DataSourceTemplates(),
 			"huaweicloud_rms_regions":                      rms.DataSourceRmsRegions(),
+			"huaweicloud_rms_policy_assignments":           rms.DataSourceRmsPolicyAssignments(),
 
 			"huaweicloud_sdrs_domain": sdrs.DataSourceSDRSDomain(),
 
@@ -1114,7 +1118,8 @@ func Provider() *schema.Provider {
 			"huaweicloud_ges_metadata": ges.ResourceGesMetadata(),
 			"huaweicloud_ges_backup":   ges.ResourceGesBackup(),
 
-			"huaweicloud_hss_host_group": hss.ResourceHostGroup(),
+			"huaweicloud_hss_host_group":      hss.ResourceHostGroup(),
+			"huaweicloud_hss_host_protection": hss.ResourceHostProtection(),
 
 			"huaweicloud_identity_access_key":            iam.ResourceIdentityKey(),
 			"huaweicloud_identity_acl":                   iam.ResourceIdentityACL(),
