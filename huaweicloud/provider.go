@@ -508,9 +508,11 @@ func Provider() *schema.Provider {
 			"huaweicloud_enterprise_project":  eps.DataSourceEnterpriseProject(),
 			"huaweicloud_enterprise_projects": eps.DataSourceEnterpriseProjects(),
 
+			"huaweicloud_er_associations":       er.DataSourceAssociations(),
 			"huaweicloud_er_attachments":        er.DataSourceAttachments(),
 			"huaweicloud_er_flow_logs":          er.DataSourceFlowLogs(),
 			"huaweicloud_er_instances":          er.DataSourceInstances(),
+			"huaweicloud_er_propagations":       er.DataSourcePropagations(),
 			"huaweicloud_er_route_tables":       er.DataSourceRouteTables(),
 			"huaweicloud_er_availability_zones": er.DataSourceAvailabilityZones(),
 
