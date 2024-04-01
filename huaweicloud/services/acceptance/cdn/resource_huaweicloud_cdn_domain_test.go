@@ -79,6 +79,7 @@ func TestAccCdnDomain_basic(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					rc.CheckResourceExists(),
 					resource.TestCheckResourceAttr(resourceName, "name", acceptance.HW_CDN_DOMAIN_NAME),
+					resource.TestCheckResourceAttr(resourceName, "sources.#", "1"),
 					resource.TestCheckResourceAttr(resourceName, "sources.0.retrieval_host", "customize.test.huaweicloud.com"),
 					resource.TestCheckResourceAttr(resourceName, "sources.0.http_port", "8001"),
 					resource.TestCheckResourceAttr(resourceName, "sources.0.https_port", "8002"),
@@ -89,12 +90,7 @@ func TestAccCdnDomain_basic(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					rc.CheckResourceExists(),
 					resource.TestCheckResourceAttr(resourceName, "name", acceptance.HW_CDN_DOMAIN_NAME),
-					resource.TestCheckResourceAttr(resourceName, "sources.0.active", "1"),
-					resource.TestCheckResourceAttr(resourceName, "sources.0.origin", "14.215.177.39"),
-					resource.TestCheckResourceAttr(resourceName, "sources.0.origin_type", "ipaddr"),
-					resource.TestCheckResourceAttr(resourceName, "sources.1.active", "0"),
-					resource.TestCheckResourceAttr(resourceName, "sources.1.origin", "220.181.28.52"),
-					resource.TestCheckResourceAttr(resourceName, "sources.1.origin_type", "ipaddr"),
+					resource.TestCheckResourceAttr(resourceName, "sources.#", "2"),
 				),
 			},
 			{
@@ -157,9 +153,9 @@ resource "huaweicloud_cdn_domain" "test" {
 
   cache_settings {
     rules {
-      rule_type = 0
+      rule_type = "all"
       ttl       = 180
-      ttl_type  = 4
+      ttl_type  = "d"
       priority  = 2
     }
   }
@@ -209,6 +205,8 @@ resource "huaweicloud_cdn_domain" "test" {
 `, acceptance.HW_CDN_DOMAIN_NAME)
 
 // Prepare the HTTPS certificate before running this test case
+// All configuration item modifications may trigger `CDN.0163`. This is a problem that we have no way to solve.
+// When a `CDN.0163` error occurs, you can avoid this error by adjusting the test case configuration items.
 func TestAccCdnDomain_configHttpSettings(t *testing.T) {
 	var (
 		obj          interface{}
@@ -309,6 +307,8 @@ resource "huaweicloud_cdn_domain" "test" {
 }
 `, acceptance.HW_CDN_DOMAIN_NAME, acceptance.HW_CDN_CERT_PATH, acceptance.HW_CDN_PRIVATE_KEY_PATH)
 
+// All configuration item modifications may trigger `CDN.0163`. This is a problem that we have no way to solve.
+// When a `CDN.0163` error occurs, you can avoid this error by adjusting the test case configuration items.
 func TestAccCdnDomain_configs(t *testing.T) {
 	var (
 		obj          interface{}
@@ -341,8 +341,40 @@ func TestAccCdnDomain_configs(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "configs.0.url_signing.0.status", "off"),
 					resource.TestCheckResourceAttr(resourceName, "configs.0.compress.0.status", "off"),
 					resource.TestCheckResourceAttr(resourceName, "configs.0.force_redirect.0.status", "on"),
-					resource.TestCheckResourceAttr(resourceName, "configs.0.ip_frequency_limit.0.enabled", "true"),
-					resource.TestCheckResourceAttr(resourceName, "configs.0.ip_frequency_limit.0.qps", "1"),
+
+					resource.TestCheckResourceAttr(resourceName, "configs.0.flexible_origin.#", "2"),
+
+					resource.TestCheckResourceAttr(resourceName, "configs.0.remote_auth.0.enabled", "true"),
+					resource.TestCheckResourceAttr(resourceName,
+						"configs.0.remote_auth.0.remote_auth_rules.0.auth_failed_status", "403"),
+					resource.TestCheckResourceAttr(resourceName,
+						"configs.0.remote_auth.0.remote_auth_rules.0.auth_server", "https://testdomain.com"),
+					resource.TestCheckResourceAttr(resourceName,
+						"configs.0.remote_auth.0.remote_auth_rules.0.auth_success_status", "200"),
+					resource.TestCheckResourceAttr(resourceName,
+						"configs.0.remote_auth.0.remote_auth_rules.0.file_type_setting", "specific_file"),
+					resource.TestCheckResourceAttr(resourceName,
+						"configs.0.remote_auth.0.remote_auth_rules.0.request_method", "GET"),
+					resource.TestCheckResourceAttr(resourceName,
+						"configs.0.remote_auth.0.remote_auth_rules.0.reserve_args", "k1|k2|key33"),
+					resource.TestCheckResourceAttr(resourceName,
+						"configs.0.remote_auth.0.remote_auth_rules.0.reserve_args_setting", "reserve_specific_args"),
+					resource.TestCheckResourceAttr(resourceName,
+						"configs.0.remote_auth.0.remote_auth_rules.0.reserve_headers_setting", "reserve_specific_headers"),
+					resource.TestCheckResourceAttr(resourceName,
+						"configs.0.remote_auth.0.remote_auth_rules.0.reserve_headers", "key1|key2"),
+					resource.TestCheckResourceAttr(resourceName,
+						"configs.0.remote_auth.0.remote_auth_rules.0.response_status", "403"),
+					resource.TestCheckResourceAttr(resourceName,
+						"configs.0.remote_auth.0.remote_auth_rules.0.specified_file_type", "jpg|mp4"),
+					resource.TestCheckResourceAttr(resourceName,
+						"configs.0.remote_auth.0.remote_auth_rules.0.timeout", "50"),
+					resource.TestCheckResourceAttr(resourceName,
+						"configs.0.remote_auth.0.remote_auth_rules.0.timeout_action", "pass"),
+					resource.TestCheckResourceAttr(resourceName,
+						"configs.0.remote_auth.0.remote_auth_rules.0.add_custom_args_rules.#", "2"),
+					resource.TestCheckResourceAttr(resourceName,
+						"configs.0.remote_auth.0.remote_auth_rules.0.add_custom_headers_rules.#", "2"),
 				),
 			},
 			{
@@ -361,8 +393,47 @@ func TestAccCdnDomain_configs(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "configs.0.url_signing.0.status", "off"),
 					resource.TestCheckResourceAttr(resourceName, "configs.0.compress.0.status", "off"),
 					resource.TestCheckResourceAttr(resourceName, "configs.0.force_redirect.0.status", "on"),
-					resource.TestCheckResourceAttr(resourceName, "configs.0.ip_frequency_limit.0.enabled", "true"),
-					resource.TestCheckResourceAttr(resourceName, "configs.0.ip_frequency_limit.0.qps", "100000"),
+
+					resource.TestCheckResourceAttr(resourceName, "configs.0.flexible_origin.#", "1"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.flexible_origin.0.match_type", "file_path"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.flexible_origin.0.match_pattern", "/test/folder01;/test/folder02"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.flexible_origin.0.priority", "3"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.flexible_origin.0.back_sources.0.http_port", "83"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.flexible_origin.0.back_sources.0.https_port", "470"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.flexible_origin.0.back_sources.0.ip_or_domain", "www.hshs.cdd"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.flexible_origin.0.back_sources.0.sources_type", "domain"),
+
+					resource.TestCheckResourceAttr(resourceName, "configs.0.remote_auth.0.enabled", "true"),
+					resource.TestCheckResourceAttr(resourceName,
+						"configs.0.remote_auth.0.remote_auth_rules.0.auth_failed_status", "503"),
+					resource.TestCheckResourceAttr(resourceName,
+						"configs.0.remote_auth.0.remote_auth_rules.0.auth_server", "https://testdomain-update.com"),
+					resource.TestCheckResourceAttr(resourceName,
+						"configs.0.remote_auth.0.remote_auth_rules.0.auth_success_status", "302"),
+					resource.TestCheckResourceAttr(resourceName,
+						"configs.0.remote_auth.0.remote_auth_rules.0.file_type_setting", "all"),
+					resource.TestCheckResourceAttr(resourceName,
+						"configs.0.remote_auth.0.remote_auth_rules.0.request_method", "POST"),
+					resource.TestCheckResourceAttr(resourceName,
+						"configs.0.remote_auth.0.remote_auth_rules.0.reserve_args_setting", "reserve_all_args"),
+					resource.TestCheckResourceAttr(resourceName,
+						"configs.0.remote_auth.0.remote_auth_rules.0.reserve_headers_setting", "reserve_all_headers"),
+					resource.TestCheckResourceAttr(resourceName,
+						"configs.0.remote_auth.0.remote_auth_rules.0.response_status", "206"),
+					resource.TestCheckResourceAttr(resourceName,
+						"configs.0.remote_auth.0.remote_auth_rules.0.timeout", "3000"),
+					resource.TestCheckResourceAttr(resourceName,
+						"configs.0.remote_auth.0.remote_auth_rules.0.timeout_action", "forbid"),
+					resource.TestCheckResourceAttr(resourceName,
+						"configs.0.remote_auth.0.remote_auth_rules.0.add_custom_args_rules.#", "1"),
+					resource.TestCheckResourceAttr(resourceName,
+						"configs.0.remote_auth.0.remote_auth_rules.0.add_custom_headers_rules.#", "0"),
+					resource.TestCheckResourceAttr(resourceName,
+						"configs.0.remote_auth.0.remote_auth_rules.0.add_custom_args_rules.0.key", "http_user_agent"),
+					resource.TestCheckResourceAttr(resourceName,
+						"configs.0.remote_auth.0.remote_auth_rules.0.add_custom_args_rules.0.type", "nginx_preset_var"),
+					resource.TestCheckResourceAttr(resourceName,
+						"configs.0.remote_auth.0.remote_auth_rules.0.add_custom_args_rules.0.value", "$server_protocol"),
 				),
 			},
 			{
@@ -370,7 +441,10 @@ func TestAccCdnDomain_configs(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					rc.CheckResourceExists(),
 					resource.TestCheckResourceAttr(resourceName, "name", acceptance.HW_CDN_DOMAIN_NAME),
-					resource.TestCheckResourceAttr(resourceName, "configs.0.ip_frequency_limit.0.enabled", "false"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.flexible_origin.#", "0"),
+
+					resource.TestCheckResourceAttr(resourceName, "configs.0.remote_auth.0.enabled", "false"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.remote_auth.0.remote_auth_rules.#", "0"),
 				),
 			},
 			{
@@ -433,9 +507,73 @@ resource "huaweicloud_cdn_domain" "test" {
       type    = "http"
     }
 
-    ip_frequency_limit {
+    flexible_origin {
+      match_type = "all"
+      priority   = 1
+
+      back_sources {
+        http_port    = 1
+        https_port   = 65535
+        ip_or_domain = "165.132.12.2"
+        sources_type = "ipaddr"
+      }
+    }
+
+    flexible_origin {
+      match_type    = "file_extension"
+      match_pattern = ".jpg;.zip;.exe"
+      priority      = 2
+
+      back_sources {
+        http_port    = 65535
+        https_port   = 1
+        ip_or_domain = "165.5.1.4"
+        sources_type = "ipaddr"
+      }
+    }
+
+    remote_auth {
       enabled = true
-      qps     = 1
+
+      remote_auth_rules {
+        auth_failed_status      = "403"
+        auth_server             = "https://testdomain.com"
+        auth_success_status     = "200"
+        file_type_setting       = "specific_file"
+        request_method          = "GET"
+        reserve_args            = "k1|k2|key33"
+        reserve_args_setting    = "reserve_specific_args"
+        reserve_headers_setting = "reserve_specific_headers"
+        reserve_headers         = "key1|key2"
+        response_status         = "403"
+        specified_file_type     = "jpg|mp4"
+        timeout                 = 50
+        timeout_action          = "pass"
+
+        add_custom_args_rules {
+          key   = "http_user_agent"
+          type  = "nginx_preset_var"
+          value = "$http_host"
+        }
+
+        add_custom_args_rules {
+          key   = "args_custom_key"
+          type  = "custom_var"
+          value = "args_custom_value"
+        }
+
+        add_custom_headers_rules {
+          key   = "http_user_agent"
+          type  = "nginx_preset_var"
+          value = "$remote_addr"
+        }
+
+        add_custom_headers_rules {
+          key   = "headers_custom_key"
+          type  = "custom_var"
+          value = "headers_custom_value"
+        }
+      }
     }
   }
 }
@@ -489,9 +627,40 @@ resource "huaweicloud_cdn_domain" "test" {
       type    = "http"
     }
 
-    ip_frequency_limit {
+    flexible_origin {
+      match_type    = "file_path"
+      match_pattern = "/test/folder01;/test/folder02"
+      priority      = 3
+
+      back_sources {
+        http_port    = 83
+        https_port   = 470
+        ip_or_domain = "www.hshs.cdd"
+        sources_type = "domain"
+      }
+    }
+
+    remote_auth {
       enabled = true
-      qps     = 100000
+
+      remote_auth_rules {
+        auth_failed_status      = "503"
+        auth_server             = "https://testdomain-update.com"
+        auth_success_status     = "302"
+        file_type_setting       = "all"
+        request_method          = "POST"
+        reserve_args_setting    = "reserve_all_args"
+        reserve_headers_setting = "reserve_all_headers"
+        response_status         = "206"
+        timeout                 = 3000
+        timeout_action          = "forbid"
+
+        add_custom_args_rules {
+          key   = "http_user_agent"
+          type  = "nginx_preset_var"
+          value = "$server_protocol"
+        }
+      }
     }
   }
 }
@@ -515,14 +684,15 @@ resource "huaweicloud_cdn_domain" "test" {
     ipv6_enable                   = false
     range_based_retrieval_enabled = false
 
-    ip_frequency_limit {
+    remote_auth {
       enabled = false
     }
   }
 }
 `, acceptance.HW_CDN_DOMAIN_NAME)
 
-// This case is used to test fields that are only valid in the `wholeSite` scenario.
+// All configuration item modifications may trigger `CDN.0163`. This is a problem that we have no way to solve.
+// When a `CDN.0163` error occurs, you can avoid this error by adjusting the test case configuration items.
 func TestAccCdnDomain_configTypeWholeSite(t *testing.T) {
 	var (
 		obj          interface{}

@@ -249,7 +249,9 @@ var (
 	HW_CODEARTS_ENABLE_FLAG       = os.Getenv("HW_CODEARTS_ENABLE_FLAG")
 	HW_CODEARTS_PUBLIC_IP_ADDRESS = os.Getenv("HW_CODEARTS_PUBLIC_IP_ADDRESS")
 
-	HW_EG_CHANNEL_ID = os.Getenv("HW_EG_CHANNEL_ID")
+	HW_EG_TEST_ON     = os.Getenv("HW_EG_TEST_ON") // Whether to run the EG related tests.
+	HW_EG_CHANNEL_ID  = os.Getenv("HW_EG_CHANNEL_ID")
+	HW_EG_AGENCY_NAME = os.Getenv("HW_EG_AGENCY_NAME")
 
 	HW_KOOGALLERY_ASSET = os.Getenv("HW_KOOGALLERY_ASSET")
 
@@ -305,6 +307,9 @@ var (
 	HW_LTS_AGENCY_PROJECT_ID  = os.Getenv("HW_LTS_AGENCY_PROJECT_ID")
 	HW_LTS_AGENCY_DOMAIN_NAME = os.Getenv("HW_LTS_AGENCY_DOMAIN_NAME")
 	HW_LTS_AGENCY_NAME        = os.Getenv("HW_LTS_AGENCY_NAME")
+
+	HW_LTS_CCE_HOST_GROUP_ID = os.Getenv("HW_LTS_CCE_HOST_GROUP_ID")
+	HW_LTS_CCE_CLUSTER_ID    = os.Getenv("HW_LTS_CCE_CLUSTER_ID")
 
 	HW_VPCEP_SERVICE_ID = os.Getenv("HW_VPCEP_SERVICE_ID")
 
@@ -1185,9 +1190,23 @@ func TestAccPreCheckModelartsUserLoginPassword(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckEG(t *testing.T) {
+	if HW_EG_TEST_ON == "" {
+		t.Skip("Skip all sub tests of the EG service.")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckEgChannelId(t *testing.T) {
 	if HW_EG_CHANNEL_ID == "" {
 		t.Skip("The sub-resource acceptance test of the EG channel must set 'HW_EG_CHANNEL_ID'")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckEgAgencyName(t *testing.T) {
+	if HW_EG_AGENCY_NAME == "" {
+		t.Skip("HW_EG_AGENCY_NAME must be set for resource creation of the EG connection")
 	}
 }
 
@@ -1203,6 +1222,47 @@ func TestAccPreCheckLtsAomAccessUpdate(t *testing.T) {
 	if HW_CCE_CLUSTER_ID_ANOTHER == "" || HW_CCE_CLUSTER_NAME_ANOTHER == "" {
 		t.Skip("HW_CCE_CLUSTER_ID_ANOTHER and HW_CCE_CLUSTER_NAME_ANOTHER must be set for LTS AOM access" +
 			" acceptance tests")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckLtsStructConfigCustom(t *testing.T) {
+	if HW_LTS_STRUCT_CONFIG_TEMPLATE_ID == "" || HW_LTS_STRUCT_CONFIG_TEMPLATE_NAME == "" {
+		t.Skip("HW_LTS_STRUCT_CONFIG_TEMPLATE_ID and HW_LTS_STRUCT_CONFIG_TEMPLATE_NAME must be" +
+			" set for LTS struct config custom acceptance tests")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckLtsEnableFlag(t *testing.T) {
+	if HW_LTS_ENABLE_FLAG == "" {
+		t.Skip("Skip the LTS acceptance tests.")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckLTSCrossAccountAccess(t *testing.T) {
+	if HW_LTS_AGENCY_STREAM_NAME == "" || HW_LTS_AGENCY_STREAM_ID == "" || HW_LTS_AGENCY_GROUP_NAME == "" ||
+		HW_LTS_AGENCY_GROUP_ID == "" || HW_LTS_AGENCY_PROJECT_ID == "" ||
+		HW_LTS_AGENCY_DOMAIN_NAME == "" || HW_LTS_AGENCY_NAME == "" {
+		t.Skip("The delegator account config of HW_LTS_AGENCY_STREAM_NAME, HW_LTS_AGENCY_STREAM_ID, HW_LTS_AGENCY_GROUP_NAME," +
+			" HW_LTS_AGENCY_GROUP_ID, HW_LTS_AGENCY_PROJECT_ID, HW_LTS_AGENCY_DOMAIN_NAME and HW_LTS_AGENCY_NAME " +
+			"must be set for the acceptance test")
+	}
+
+	if HW_LTS_LOG_STREAM_NAME == "" || HW_LTS_LOG_STREAM_ID == "" ||
+		HW_LTS_LOG_GROUP_NAME == "" || HW_LTS_LOG_GROUP_ID == "" {
+		t.Skip("The delegatee account config of HW_LTS_LOG_STREAM_NAME, HW_LTS_LOG_STREAM_ID, HW_LTS_LOG_GROUP_NAME" +
+			" and HW_LTS_LOG_GROUP_ID must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckLTSCCEAccess(t *testing.T) {
+	if HW_LTS_LOG_STREAM_ID == "" || HW_LTS_LOG_GROUP_ID == "" ||
+		HW_LTS_CCE_CLUSTER_ID == "" || HW_LTS_CCE_HOST_GROUP_ID == "" {
+		t.Skip("The cce access config of HW_LTS_LOG_STREAM_ID, HW_LTS_LOG_GROUP_ID, HW_LTS_CCE_CLUSTER_ID" +
+			" and HW_LTS_CCE_HOST_GROUP_ID must be set for the acceptance test")
 	}
 }
 
@@ -1224,21 +1284,6 @@ func TestAccPreCheckCocInstanceID(t *testing.T) {
 func TestAccPrecheckKooGallery(t *testing.T) {
 	if HW_KOOGALLERY_ASSET == "" {
 		t.Skip("Skip the KooGallery acceptance tests.")
-	}
-}
-
-// lintignore:AT003
-func TestAccPreCheckLtsStructConfigCustom(t *testing.T) {
-	if HW_LTS_STRUCT_CONFIG_TEMPLATE_ID == "" || HW_LTS_STRUCT_CONFIG_TEMPLATE_NAME == "" {
-		t.Skip("HW_LTS_STRUCT_CONFIG_TEMPLATE_ID and HW_LTS_STRUCT_CONFIG_TEMPLATE_NAME must be" +
-			" set for LTS struct config custom acceptance tests")
-	}
-}
-
-// lintignore:AT003
-func TestAccPreCheckLtsEnableFlag(t *testing.T) {
-	if HW_LTS_ENABLE_FLAG == "" {
-		t.Skip("Skip the LTS acceptance tests.")
 	}
 }
 
@@ -1411,23 +1456,6 @@ func TestAccPreCheckDCSAccountWhitelist(t *testing.T) {
 func TestAccPreCheckDCSInstanceID(t *testing.T) {
 	if HW_DCS_INSTANCE_ID == "" {
 		t.Skip("HW_DCS_INSTANCE_ID must be set for the acceptance test")
-	}
-}
-
-// lintignore:AT003
-func TestAccPreCheckLTSCrossAccountAccess(t *testing.T) {
-	if HW_LTS_AGENCY_STREAM_NAME == "" || HW_LTS_AGENCY_STREAM_ID == "" || HW_LTS_AGENCY_GROUP_NAME == "" ||
-		HW_LTS_AGENCY_GROUP_ID == "" || HW_LTS_AGENCY_PROJECT_ID == "" ||
-		HW_LTS_AGENCY_DOMAIN_NAME == "" || HW_LTS_AGENCY_NAME == "" {
-		t.Skip("The delegator account config of HW_LTS_AGENCY_STREAM_NAME, HW_LTS_AGENCY_STREAM_ID, HW_LTS_AGENCY_GROUP_NAME," +
-			" HW_LTS_AGENCY_GROUP_ID, HW_LTS_AGENCY_PROJECT_ID, HW_LTS_AGENCY_DOMAIN_NAME and HW_LTS_AGENCY_NAME " +
-			"must be set for the acceptance test")
-	}
-
-	if HW_LTS_LOG_STREAM_NAME == "" || HW_LTS_LOG_STREAM_ID == "" ||
-		HW_LTS_LOG_GROUP_NAME == "" || HW_LTS_LOG_GROUP_ID == "" {
-		t.Skip("The delegatee account config of HW_LTS_LOG_STREAM_NAME, HW_LTS_LOG_STREAM_ID, HW_LTS_LOG_GROUP_NAME" +
-			" and HW_LTS_LOG_GROUP_ID must be set for the acceptance test")
 	}
 }
 

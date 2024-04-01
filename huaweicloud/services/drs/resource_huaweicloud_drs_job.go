@@ -198,6 +198,38 @@ func ResourceDrsJob() *schema.Resource {
 				},
 			},
 
+			"policy_config": {
+				Type:     schema.TypeList,
+				Optional: true,
+				Computed: true,
+				ForceNew: true,
+				MaxItems: 1,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"filter_ddl_policy": {
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+							ForceNew: true,
+						},
+
+						"conflict_policy": {
+							Type:     schema.TypeString,
+							Optional: true,
+							Computed: true,
+							ForceNew: true,
+						},
+
+						"index_trans": {
+							Type:     schema.TypeBool,
+							Optional: true,
+							Computed: true,
+							ForceNew: true,
+						},
+					},
+				},
+			},
+
 			"tags": common.TagsSchema(),
 
 			"force_destroy": {
@@ -268,6 +300,11 @@ func ResourceDrsJob() *schema.Resource {
 			},
 
 			"status": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+
+			"progress": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
@@ -460,6 +497,13 @@ func resourceJobCreate(ctx context.Context, d *schema.ResourceData, meta interfa
 		}
 	}
 
+	if _, ok := d.GetOk("policy_config"); ok {
+		err = updateJobConfig(clientV5, buildUpdateJobConfigBodyParams(d, "policy"), "policy", d.Id())
+		if err != nil {
+			return diag.FromErr(err)
+		}
+	}
+
 	// Only support migration or synchronization job to select objects, this limitation is stated in docs.
 	_, ok1 := d.GetOk("databases")
 	_, ok2 := d.GetOk("tables")
@@ -497,8 +541,8 @@ func resourceJobCreate(ctx context.Context, d *schema.ResourceData, meta interfa
 }
 
 func buildUpdateJobConfigBodyParams(d *schema.ResourceData, updateType string) map[string]interface{} {
-	// in next update for policy, it will change to switch/case
-	if updateType == "db_object" {
+	switch updateType {
+	case "db_object":
 		if _, ok1 := d.GetOk("databases"); ok1 {
 			return map[string]interface{}{
 				"db_object": map[string]interface{}{
@@ -512,6 +556,10 @@ func buildUpdateJobConfigBodyParams(d *schema.ResourceData, updateType string) m
 				"object_scope": "table",
 				"object_info":  buildTables(d.Get("tables").(*schema.Set).List()),
 			},
+		}
+	case "policy":
+		return map[string]interface{}{
+			"policy_config": buildPolicyConfig(d.Get("policy_config").([]interface{})),
 		}
 	}
 	return nil
@@ -556,6 +604,19 @@ func buildTableInfos(list []interface{}) map[string]interface{} {
 			}
 			rst[v] = m
 		}
+	}
+	return rst
+}
+
+func buildPolicyConfig(rawArray []interface{}) map[string]interface{} {
+	if len(rawArray) == 0 {
+		return nil
+	}
+	raw := rawArray[0].(map[string]interface{})
+	rst := map[string]interface{}{
+		"filter_ddl_policy": utils.ValueIngoreEmpty(raw["filter_ddl_policy"]),
+		"conflict_policy":   utils.ValueIngoreEmpty(raw["conflict_policy"]),
+		"index_trans":       utils.ValueIngoreEmpty(raw["index_trans"]),
 	}
 	return rst
 }
@@ -607,6 +668,11 @@ func resourceJobRead(_ context.Context, d *schema.ResourceData, meta interface{}
 		return diag.Errorf("query the job list by jobId: %s, error: %s", d.Id(), err)
 	}
 
+	progressResp, err := jobs.Progress(client, jobs.QueryJobReq{Jobs: []string{d.Id()}})
+	if err != nil {
+		return diag.Errorf("error getting job progress: %s", err)
+	}
+
 	createdAt, _ := strconv.ParseInt(detail.CreateTime, 10, 64)
 	mErr := multierror.Append(
 		d.Set("region", region),
@@ -623,7 +689,9 @@ func resourceJobRead(_ context.Context, d *schema.ResourceData, meta interface{}
 		d.Set("multi_write", detail.MultiWrite),
 		d.Set("created_at", utils.FormatTimeStampRFC3339(createdAt/1000, false)),
 		d.Set("status", detail.Status),
+		d.Set("progress", progressResp.Results[0].Progress),
 		d.Set("tags", utils.TagsToMap(detail.Tags)),
+		d.Set("policy_config", flattenPolicyConfig(detail)),
 		setDbInfoToState(d, detail.SourceEndpoint, "source_db"),
 		setDbInfoToState(d, detail.TargetEndpoint, "destination_db"),
 	)
@@ -697,6 +765,17 @@ func flattenObjectName(objectInfos []jobs.ObjectInfo, isDateBase bool) []interfa
 		}
 	}
 
+	return rst
+}
+
+func flattenPolicyConfig(detail jobs.JobDetail) []interface{} {
+	rst := make([]interface{}, 0)
+	v := map[string]interface{}{
+		"filter_ddl_policy": detail.FilterDdlPolicy,
+		"conflict_policy":   detail.ConflictPolicy,
+		"index_trans":       detail.IndexTrans,
+	}
+	rst = append(rst, v)
 	return rst
 }
 

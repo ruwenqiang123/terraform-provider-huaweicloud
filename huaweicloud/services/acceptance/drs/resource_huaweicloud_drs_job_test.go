@@ -293,12 +293,16 @@ func TestAccResourceDrsJob_sync(t *testing.T) {
 					resource.TestCheckResourceAttrPair(resourceName, "destination_db.0.region",
 						"huaweicloud_rds_instance.test2", "region"),
 					resource.TestCheckResourceAttrSet(resourceName, "status"),
+					resource.TestCheckResourceAttrSet(resourceName, "progress"),
 					resource.TestCheckResourceAttrSet(resourceName, "private_ip"),
 					resource.TestCheckResourceAttr(resourceName, "charging_mode", "prePaid"),
 					resource.TestCheckResourceAttr(resourceName, "period_unit", "month"),
 					resource.TestCheckResourceAttr(resourceName, "period", "1"),
 					resource.TestCheckResourceAttr(resourceName, "auto_renew", "false"),
 					resource.TestCheckResourceAttrSet(resourceName, "order_id"),
+					resource.TestCheckResourceAttr(resourceName, "policy_config.0.filter_ddl_policy", "drop_database"),
+					resource.TestCheckResourceAttr(resourceName, "policy_config.0.conflict_policy", "overwrite"),
+					resource.TestCheckResourceAttr(resourceName, "policy_config.0.index_trans", "true"),
 				),
 			},
 			{
@@ -378,6 +382,12 @@ resource "huaweicloud_drs_job" "test" {
   }
 
   databases = [huaweicloud_rds_mysql_database.test.name]
+
+  policy_config {
+    filter_ddl_policy = "drop_database"
+    conflict_policy   = "overwrite"
+    index_trans       = true
+  }
 
   charging_mode = "prePaid"
   period_unit   = "month"

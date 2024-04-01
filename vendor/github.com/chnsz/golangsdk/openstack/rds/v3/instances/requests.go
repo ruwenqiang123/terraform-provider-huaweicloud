@@ -157,7 +157,7 @@ func (opts DeleteOpts) ToInstancesDeleteMap() (map[string]interface{}, error) {
 	return b, nil
 }
 
-func Delete(client *golangsdk.ServiceClient, instanceId string) (r DeleteResult) {
+func Delete(client *golangsdk.ServiceClient, instanceId string) (r JobResult) {
 
 	url := deleteURL(client, instanceId)
 
@@ -231,7 +231,7 @@ func (opts RestartInstanceOpts) ToActionInstanceMap() (map[string]interface{}, e
 	return toActionInstanceMap(opts)
 }
 
-func Restart(client *golangsdk.ServiceClient, opts ActionInstanceBuilder, instanceId string) (r RestartResult) {
+func Restart(client *golangsdk.ServiceClient, opts ActionInstanceBuilder, instanceId string) (r JobResult) {
 	b, err := opts.ToActionInstanceMap()
 	if err != nil {
 		r.Err = err
@@ -277,7 +277,7 @@ func (opts SingleToHaRdsOpts) ToActionInstanceMap() (map[string]interface{}, err
 	return toActionInstanceMap(opts)
 }
 
-func SingleToHa(client *golangsdk.ServiceClient, opts ActionInstanceBuilder, instanceId string) (r SingleToHaResult) {
+func SingleToHa(client *golangsdk.ServiceClient, opts ActionInstanceBuilder, instanceId string) (r JobResult) {
 	b, err := opts.ToActionInstanceMap()
 	if err != nil {
 		r.Err = err
@@ -519,7 +519,7 @@ func GetConfigurations(c *golangsdk.ServiceClient, instanceID string) (r GetConf
 	return
 }
 
-func RebootInstance(c *golangsdk.ServiceClient, instanceID string) (r RebootResult) {
+func RebootInstance(c *golangsdk.ServiceClient, instanceID string) (r JobResult) {
 	b, err := golangsdk.BuildRequestBody(struct{}{}, "restart")
 	if err != nil {
 		r.Err = err
@@ -708,7 +708,7 @@ func (opts ModifyCollationOpts) ToActionInstanceMap() (map[string]interface{}, e
 }
 
 // ModifyCollation is a method used to modify collation.
-func ModifyCollation(c *golangsdk.ServiceClient, opts ActionInstanceBuilder, instanceId string) (r ModifyCollationResult) {
+func ModifyCollation(c *golangsdk.ServiceClient, opts ActionInstanceBuilder, instanceId string) (r JobResult) {
 	b, err := opts.ToActionInstanceMap()
 	if err != nil {
 		r.Err = err
@@ -727,7 +727,7 @@ func (opts ModifyBinlogRetentionHoursOpts) ToActionInstanceMap() (map[string]int
 }
 
 // ModifyBinlogRetentionHours is a method used to modify binlog retention hours.
-func ModifyBinlogRetentionHours(c *golangsdk.ServiceClient, opts ActionInstanceBuilder, instanceId string) (r ModifyCollationResult) {
+func ModifyBinlogRetentionHours(c *golangsdk.ServiceClient, opts ActionInstanceBuilder, instanceId string) (r JobResult) {
 	b, err := opts.ToActionInstanceMap()
 	if err != nil {
 		r.Err = err
@@ -742,5 +742,56 @@ func GetBinlogRetentionHours(c *golangsdk.ServiceClient, instanceId string) (r G
 	_, r.Err = c.Get(binlogRetentionHoursURL(c, instanceId), &r.Body, &golangsdk.RequestOpts{
 		MoreHeaders: requestOpts.MoreHeaders,
 	})
+	return
+}
+
+type ModifyMsdtcHostsOpts struct {
+	Hosts []Host `json:"hosts" required:"true"`
+}
+
+type Host struct {
+	HostName string `json:"host_name" required:"true"`
+	Ip       string `json:"ip" required:"true"`
+}
+
+func (opts ModifyMsdtcHostsOpts) ToActionInstanceMap() (map[string]interface{}, error) {
+	return toActionInstanceMap(opts)
+}
+
+// ModifyMsdtcHosts is a method used to modify msdtc hosts.
+func ModifyMsdtcHosts(c *golangsdk.ServiceClient, opts ActionInstanceBuilder, instanceId string) (r JobResult) {
+	b, err := opts.ToActionInstanceMap()
+	if err != nil {
+		r.Err = err
+		return
+	}
+	_, r.Err = c.Post(updateURL(c, instanceId, "msdtc/host"), b, &r.Body, &golangsdk.RequestOpts{})
+	return
+}
+
+// GetMsdtcHosts is a method used to obtain the msdtc hosts.
+func GetMsdtcHosts(c *golangsdk.ServiceClient, instanceId string) ([]RdsMsdtcHosts, error) {
+	url := msdtcHostsURL(c, instanceId)
+
+	pages, err := pagination.NewPager(c, url, func(r pagination.PageResult) pagination.Page {
+		return MsdtcHostsPage{pagination.OffsetPageBase{PageResult: r}}
+	}).AllPages()
+	if err != nil {
+		return nil, err
+	}
+	res, err := ExtractRdsMsdtcHosts(pages)
+	if err != nil {
+		return nil, err
+	}
+	return res.Hosts, err
+}
+
+func Startup(client *golangsdk.ServiceClient, instanceId string) (r JobResult) {
+	_, r.Err = client.Post(updateURL(client, instanceId, "action/startup"), nil, &r.Body, &golangsdk.RequestOpts{})
+	return
+}
+
+func Shutdown(client *golangsdk.ServiceClient, instanceId string) (r JobResult) {
+	_, r.Err = client.Post(updateURL(client, instanceId, "action/shutdown"), nil, &r.Body, &golangsdk.RequestOpts{})
 	return
 }
