@@ -415,7 +415,8 @@ func Provider() *schema.Provider {
 			"huaweicloud_cbh_instances": cbh.DataSourceCbhInstances(),
 			"huaweicloud_cbh_flavors":   cbh.DataSourceCbhFlavors(),
 
-			"huaweicloud_cc_central_networks": cc.DataSourceCcCentralNetworks(),
+			"huaweicloud_cc_central_networks":            cc.DataSourceCcCentralNetworks(),
+			"huaweicloud_cc_central_network_connections": cc.DataSourceCcCentralNetworkConnections(),
 
 			"huaweicloud_cce_addon_template":      cce.DataSourceAddonTemplate(),
 			"huaweicloud_cce_cluster":             cce.DataSourceCCEClusterV3(),
@@ -585,6 +586,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_iotda_amqps":                iotda.DataSourceAMQPQueues(),
 			"huaweicloud_iotda_dataforwarding_rules": iotda.DataSourceDataForwardingRules(),
 			"huaweicloud_iotda_device_groups":        iotda.DataSourceDeviceGroups(),
+			"huaweicloud_iotda_device_linkage_rules": iotda.DataSourceDeviceLinkageRules(),
 			"huaweicloud_iotda_spaces":               iotda.DataSourceSpaces(),
 			"huaweicloud_iotda_products":             iotda.DataSourceProducts(),
 			"huaweicloud_iotda_devices":              iotda.DataSourceDevices(),
