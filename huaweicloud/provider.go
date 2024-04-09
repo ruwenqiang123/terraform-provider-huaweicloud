@@ -21,6 +21,7 @@ import (
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/as"
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/bcs"
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/bms"
+	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/cae"
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/cbh"
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/cbr"
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/cc"
@@ -415,8 +416,9 @@ func Provider() *schema.Provider {
 			"huaweicloud_cbh_instances": cbh.DataSourceCbhInstances(),
 			"huaweicloud_cbh_flavors":   cbh.DataSourceCbhFlavors(),
 
-			"huaweicloud_cc_central_networks":            cc.DataSourceCcCentralNetworks(),
-			"huaweicloud_cc_central_network_connections": cc.DataSourceCcCentralNetworkConnections(),
+			"huaweicloud_cc_central_networks":             cc.DataSourceCcCentralNetworks(),
+			"huaweicloud_cc_central_network_connections":  cc.DataSourceCcCentralNetworkConnections(),
+			"huaweicloud_cc_global_connection_bandwidths": cc.DataSourceCcGlobalConnectionBandwidths(),
 
 			"huaweicloud_cce_addon_template":      cce.DataSourceAddonTemplate(),
 			"huaweicloud_cce_cluster":             cce.DataSourceCCEClusterV3(),
@@ -484,6 +486,7 @@ func Provider() *schema.Provider {
 
 			"huaweicloud_dli_datasource_auths":       dli.DataSourceAuths(),
 			"huaweicloud_dli_datasource_connections": dli.DataSourceConnections(),
+			"huaweicloud_dli_elastic_resource_pools": dli.DataSourceDliElasticPools(),
 			"huaweicloud_dli_quotas":                 dli.DataSourceDliQuotas(),
 
 			"huaweicloud_dms_kafka_flavors":             dms.DataSourceKafkaFlavors(),
@@ -873,6 +876,9 @@ func Provider() *schema.Provider {
 			"huaweicloud_bms_instance": bms.ResourceBmsInstance(),
 			"huaweicloud_bcs_instance": bcs.ResourceInstance(),
 
+			"huaweicloud_cae_component":                cae.ResourceComponent(),
+			"huaweicloud_cae_component_configurations": cae.ResourceComponentConfigurations(),
+
 			"huaweicloud_cbr_backup_share_accepter": cbr.ResourceBackupShareAccepter(),
 			"huaweicloud_cbr_backup_share":          cbr.ResourceBackupShare(),
 			"huaweicloud_cbr_checkpoint":            cbr.ResourceCheckpoint(),
@@ -881,17 +887,18 @@ func Provider() *schema.Provider {
 
 			"huaweicloud_cbh_instance": cbh.ResourceCBHInstance(),
 
-			"huaweicloud_cc_connection":                            cc.ResourceCloudConnection(),
-			"huaweicloud_cc_network_instance":                      cc.ResourceNetworkInstance(),
-			"huaweicloud_cc_authorization":                         cc.ResourceAuthorization(),
-			"huaweicloud_cc_bandwidth_package":                     cc.ResourceBandwidthPackage(),
-			"huaweicloud_cc_inter_region_bandwidth":                cc.ResourceInterRegionBandwidth(),
-			"huaweicloud_cc_central_network":                       cc.ResourceCentralNetwork(),
-			"huaweicloud_cc_central_network_policy":                cc.ResourceCentralNetworkPolicy(),
-			"huaweicloud_cc_central_network_policy_apply":          cc.ResourceCentralNetworkPolicyApply(),
-			"huaweicloud_cc_central_network_attachment":            cc.ResourceCentralNetworkAttachment(),
-			"huaweicloud_cc_global_connection_bandwidth":           cc.ResourceGlobalConnectionBandwidth(),
-			"huaweicloud_cc_global_connection_bandwidth_associate": cc.ResourceGlobalConnectionBandwidthAssociate(),
+			"huaweicloud_cc_connection":                                     cc.ResourceCloudConnection(),
+			"huaweicloud_cc_network_instance":                               cc.ResourceNetworkInstance(),
+			"huaweicloud_cc_authorization":                                  cc.ResourceAuthorization(),
+			"huaweicloud_cc_bandwidth_package":                              cc.ResourceBandwidthPackage(),
+			"huaweicloud_cc_inter_region_bandwidth":                         cc.ResourceInterRegionBandwidth(),
+			"huaweicloud_cc_central_network":                                cc.ResourceCentralNetwork(),
+			"huaweicloud_cc_central_network_policy":                         cc.ResourceCentralNetworkPolicy(),
+			"huaweicloud_cc_central_network_policy_apply":                   cc.ResourceCentralNetworkPolicyApply(),
+			"huaweicloud_cc_central_network_attachment":                     cc.ResourceCentralNetworkAttachment(),
+			"huaweicloud_cc_central_network_connection_bandwidth_associate": cc.ResourceCentralNetworkConnectionBandwidthAssociate(),
+			"huaweicloud_cc_global_connection_bandwidth":                    cc.ResourceGlobalConnectionBandwidth(),
+			"huaweicloud_cc_global_connection_bandwidth_associate":          cc.ResourceGlobalConnectionBandwidthAssociate(),
 
 			"huaweicloud_cce_cluster":     cce.ResourceCluster(),
 			"huaweicloud_cce_node":        cce.ResourceNode(),
@@ -1123,6 +1130,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_gaussdb_mysql_account_privilege":  gaussdb.ResourceGaussDBAccountPrivilege(),
 			"huaweicloud_gaussdb_mysql_sql_control_rule":   gaussdb.ResourceGaussDBSqlControlRule(),
 			"huaweicloud_gaussdb_mysql_parameter_template": gaussdb.ResourceGaussDBMysqlTemplate(),
+			"huaweicloud_gaussdb_mysql_backup":             gaussdb.ResourceGaussDBMysqlBackup(),
 
 			"huaweicloud_gaussdb_opengauss_instance": gaussdb.ResourceOpenGaussInstance(),
 
@@ -1859,6 +1867,11 @@ func configureProvider(_ context.Context, d *schema.ResourceData, terraformVersi
 			conf.SetServiceEndpoint("bss", bssIntlEndpoint)
 			conf.SetServiceEndpoint("tms", tmsIntlEndpoint)
 		}
+	}
+
+	if conf.Cloud == defaultEuropeCloud {
+		cdnEndpoint := fmt.Sprintf("https://cdn.%s/", conf.Cloud)
+		conf.SetServiceEndpoint("cdn", cdnEndpoint)
 	}
 
 	return &conf, nil

@@ -2,9 +2,9 @@ package cdn
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
-	"net/http"
 	"time"
 
 	"github.com/hashicorp/go-multierror"
@@ -12,11 +12,11 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
+	"github.com/jmespath/go-jmespath"
 
 	"github.com/chnsz/golangsdk"
 	"github.com/chnsz/golangsdk/openstack/cdn/v1/domains"
 
-	"github.com/huaweicloud/huaweicloud-sdk-go-v3/core/sdkerr"
 	cdnv2 "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/cdn/v2"
 	"github.com/huaweicloud/huaweicloud-sdk-go-v3/services/cdn/v2/model"
 
@@ -57,9 +57,6 @@ var httpsConfig = schema.Schema{
 				Type:     schema.TypeInt,
 				Optional: true,
 				Computed: true,
-				ValidateFunc: validation.IntInSlice([]int{
-					0, 1,
-				}),
 			},
 			"http2_enabled": {
 				Type:     schema.TypeBool,
@@ -67,9 +64,10 @@ var httpsConfig = schema.Schema{
 				Computed: true,
 			},
 			"tls_version": {
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
+				Type:             schema.TypeString,
+				Optional:         true,
+				DiffSuppressFunc: utils.SuppressStringSepratedByCommaDiffs,
+				Computed:         true,
 			},
 			"https_status": {
 				Type:     schema.TypeString,
@@ -423,7 +421,6 @@ func ResourceCdnDomain() *schema.Resource {
 			"type": {
 				Type:     schema.TypeString,
 				Required: true,
-				ForceNew: true,
 				ValidateFunc: validation.StringInSlice([]string{
 					"web", "download", "video", "wholeSite",
 				}, true),
@@ -472,15 +469,15 @@ func ResourceCdnDomain() *schema.Resource {
 					},
 				},
 			},
+			"service_area": {
+				Type:        schema.TypeString,
+				Optional:    true,
+				Computed:    true,
+				Description: "schema: Required",
+			},
 			"enterprise_project_id": {
 				Type:     schema.TypeString,
 				Optional: true,
-				ForceNew: true,
-			},
-			"service_area": {
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
 				ForceNew: true,
 			},
 			"configs": {
@@ -610,28 +607,26 @@ func buildCreateDomainSources(d *schema.ResourceData) []domains.SourcesOpts {
 	return sourceRequests
 }
 
+func buildHttpStatusOpts(enable bool) string {
+	if enable {
+		return "on"
+	}
+	return "off"
+}
+
 func buildHTTPSOpts(rawHTTPS []interface{}) *model.HttpPutBody {
 	if len(rawHTTPS) != 1 {
 		return nil
 	}
 
 	https := rawHTTPS[0].(map[string]interface{})
-	httpsStatus := ""
-	if https["https_enabled"].(bool) {
-		httpsStatus = "on"
-	}
-	http2Status := ""
-	if https["http2_enabled"].(bool) {
-		http2Status = "on"
-	}
-
 	httpsOpts := model.HttpPutBody{
-		HttpsStatus:       utils.StringIgnoreEmpty(httpsStatus),
+		HttpsStatus:       utils.String(buildHttpStatusOpts(https["https_enabled"].(bool))),
 		CertificateName:   utils.StringIgnoreEmpty(https["certificate_name"].(string)),
 		CertificateValue:  utils.StringIgnoreEmpty(https["certificate_body"].(string)),
 		PrivateKey:        utils.StringIgnoreEmpty(https["private_key"].(string)),
-		CertificateSource: utils.Int32IgnoreEmpty(int32(https["certificate_source"].(int))),
-		Http2Status:       utils.StringIgnoreEmpty(http2Status),
+		CertificateSource: utils.Int32(int32(https["certificate_source"].(int))),
+		Http2Status:       utils.String(buildHttpStatusOpts(https["http2_enabled"].(bool))),
 		TlsVersion:        utils.StringIgnoreEmpty(https["tls_version"].(string)),
 	}
 
@@ -933,21 +928,22 @@ func buildCacheRules(followOrigin bool, rules []interface{}) *[]model.CacheRules
 	return &result
 }
 
-func updateDomainFullConfigs(client *cdnv2.CdnClient, cfg *config.Config, d *schema.ResourceData) error {
-	rawConfigs := d.Get("configs").([]interface{})
-	if len(rawConfigs) < 1 || rawConfigs[0] == nil {
-		return nil
-	}
-	configs := rawConfigs[0].(map[string]interface{})
-
+func buildIpv6AccelerateOpts(ipv6Enable bool) *int32 {
 	ipv6Accelerate := 0
-	if configs["ipv6_enable"].(bool) {
+	if ipv6Enable {
 		ipv6Accelerate = 1
 	}
-	configsOpts := model.Configs{
-		Sources:           buildSourcesOpts(d.Get("sources").(*schema.Set).List()),
-		Ipv6Accelerate:    utils.Int32(int32(ipv6Accelerate)),
-		OriginRangeStatus: utils.String(parseFunctionEnabledStatus(configs["range_based_retrieval_enabled"].(bool))),
+	return utils.Int32(int32(ipv6Accelerate))
+}
+
+// buildUpdateDomainFullConfigsOpts Build CDN domain config opts from field `configs`
+func buildUpdateDomainFullConfigsOpts(configsOpts *model.Configs, configs map[string]interface{}, d *schema.ResourceData) {
+	if d.HasChange("configs.0.ipv6_enable") {
+		configsOpts.Ipv6Accelerate = buildIpv6AccelerateOpts(configs["ipv6_enable"].(bool))
+	}
+	if d.HasChange("configs.0.range_based_retrieval_enabled") {
+		retrievalEnabled := configs["range_based_retrieval_enabled"].(bool)
+		configsOpts.OriginRangeStatus = utils.String(parseFunctionEnabledStatus(retrievalEnabled))
 	}
 	if d.HasChange("configs.0.https_settings") {
 		configsOpts.Https = buildHTTPSOpts(configs["https_settings"].([]interface{}))
@@ -984,6 +980,25 @@ func updateDomainFullConfigs(client *cdnv2.CdnClient, cfg *config.Config, d *sch
 	}
 	if d.HasChange("configs.0.remote_auth") {
 		configsOpts.RemoteAuth = buildRemoteAuthOpts(configs["remote_auth"].([]interface{}))
+	}
+}
+
+func updateDomainFullConfigs(client *cdnv2.CdnClient, cfg *config.Config, d *schema.ResourceData) error {
+	// When the configs configuration is empty, the interface will report an error.
+	// Make fields `business_type` and `service_area` are configured by default.
+	configsOpts := model.Configs{
+		BusinessType: utils.StringIgnoreEmpty(d.Get("type").(string)),
+		ServiceArea:  utils.StringIgnoreEmpty(d.Get("service_area").(string)),
+	}
+	if d.HasChange("sources") {
+		configsOpts.Sources = buildSourcesOpts(d.Get("sources").(*schema.Set).List())
+	}
+
+	if d.HasChange("configs") {
+		rawConfigs := d.Get("configs").([]interface{})
+		if len(rawConfigs) > 0 && rawConfigs[0] != nil {
+			buildUpdateDomainFullConfigsOpts(&configsOpts, rawConfigs[0].(map[string]interface{}), d)
+		}
 	}
 
 	if d.HasChange("cache_settings") {
@@ -1034,34 +1049,31 @@ func resourceCdnDomainCreate(ctx context.Context, d *schema.ResourceData, meta i
 	}
 	d.SetId(v.ID)
 
-	hcCdnClient, err := cfg.HcCdnV2Client(cfg.GetRegion(d))
-	if err != nil {
-		return diag.Errorf("error creating CDN v2 client: %s", err)
-	}
-	requestOpts := buildDomainDetailRequestOpts(d, cfg)
-	if err := waitingForStatusOnline(ctx, hcCdnClient, d.Timeout(schema.TimeoutCreate), requestOpts); err != nil {
+	opts := buildResourceExtensionOpts(d, cfg)
+	if err := waitingForStatusOnline(ctx, cdnClient, d, d.Timeout(schema.TimeoutCreate), opts); err != nil {
 		return diag.Errorf("error waiting for CDN domain (%s) creation to become online: %s", d.Id(), err)
 	}
 	return resourceCdnDomainUpdate(ctx, d, meta)
 }
 
-func waitingForStatusOnline(ctx context.Context, hcCdnClient *cdnv2.CdnClient, timeout time.Duration,
-	opts *model.ShowDomainDetailByNameRequest) error {
+func waitingForStatusOnline(ctx context.Context, client *golangsdk.ServiceClient, d *schema.ResourceData,
+	timeout time.Duration, opts *domains.ExtensionOpts) error {
+	domainName := d.Get("name").(string)
 	unexpectedStatus := []string{"offline", "configure_failed", "check_failed", "deleting"}
 	stateConf := &resource.StateChangeConf{
 		Pending: []string{"PENDING"},
 		Target:  []string{"COMPLETED"},
 		Refresh: func() (interface{}, string, error) {
-			domain, err := hcCdnClient.ShowDomainDetailByName(opts)
+			domain, err := domains.GetByName(client, domainName, opts).Extract()
 			if err != nil {
 				return nil, "ERROR", err
 			}
 
-			if domain == nil || domain.Domain == nil {
+			if domain == nil {
 				return nil, "ERROR", fmt.Errorf("error retrieving CDN domain: Domain is not found in API response")
 			}
 
-			status := utils.StringValue(domain.Domain.DomainStatus)
+			status := domain.DomainStatus
 			if status == "online" {
 				return domain, "COMPLETED", nil
 			}
@@ -1072,30 +1084,31 @@ func waitingForStatusOnline(ctx context.Context, hcCdnClient *cdnv2.CdnClient, t
 			return domain, "PENDING", nil
 		},
 		Timeout:      timeout,
-		Delay:        10 * time.Second,
-		PollInterval: 10 * time.Second,
+		Delay:        20 * time.Second,
+		PollInterval: 20 * time.Second,
 	}
 	_, err := stateConf.WaitForStateContext(ctx)
 	return err
 }
 
-func waitingForStatusOffline(ctx context.Context, hcCdnClient *cdnv2.CdnClient, timeout time.Duration,
-	opts *model.ShowDomainDetailByNameRequest) error {
+func waitingForStatusOffline(ctx context.Context, client *golangsdk.ServiceClient, d *schema.ResourceData,
+	timeout time.Duration, opts *domains.ExtensionOpts) error {
+	domainName := d.Get("name").(string)
 	unexpectedStatus := []string{"online", "configure_failed", "check_failed", "deleting"}
 	stateConf := &resource.StateChangeConf{
 		Pending: []string{"PENDING"},
 		Target:  []string{"COMPLETED"},
 		Refresh: func() (interface{}, string, error) {
-			domain, err := hcCdnClient.ShowDomainDetailByName(opts)
+			domain, err := domains.GetByName(client, domainName, opts).Extract()
 			if err != nil {
 				return nil, "ERROR", err
 			}
 
-			if domain == nil || domain.Domain == nil {
+			if domain == nil {
 				return nil, "ERROR", fmt.Errorf("error retrieving CDN domain: Domain is not found in API response")
 			}
 
-			status := utils.StringValue(domain.Domain.DomainStatus)
+			status := domain.DomainStatus
 			if status == "offline" {
 				return domain, "COMPLETED", nil
 			}
@@ -1106,8 +1119,8 @@ func waitingForStatusOffline(ctx context.Context, hcCdnClient *cdnv2.CdnClient, 
 			return domain, "PENDING", nil
 		},
 		Timeout:      timeout,
-		Delay:        10 * time.Second,
-		PollInterval: 10 * time.Second,
+		Delay:        20 * time.Second,
+		PollInterval: 20 * time.Second,
 	}
 	_, err := stateConf.WaitForStateContext(ctx)
 	return err
@@ -1121,14 +1134,16 @@ func analyseFunctionEnabledStatusPtr(enabledStatus *string) bool {
 	return enabledStatus != nil && *enabledStatus == "on"
 }
 
-func flattenHTTPSAttrs(https *model.HttpGetBody, privateKey string) []map[string]interface{} {
+// flattenHTTPSAttrs Field `privateKey` is not returned in the details interface.
+// The value of the field `certificateBody` will be modified by the cloud, resulting in inconsistency with the local value.
+func flattenHTTPSAttrs(https *model.HttpGetBody, privateKey, certificateBody string) []map[string]interface{} {
 	if https == nil {
 		return nil
 	}
 	httpsAttrs := map[string]interface{}{
 		"https_status":       https.HttpsStatus,
 		"certificate_name":   https.CertificateName,
-		"certificate_body":   https.CertificateValue,
+		"certificate_body":   certificateBody,
 		"private_key":        privateKey,
 		"certificate_source": https.CertificateSource,
 		"http2_status":       https.Http2Status,
@@ -1398,10 +1413,11 @@ func flattenCacheRulesAttrs(cacheRulesPtr *[]model.CacheRules) []map[string]inte
 
 func flattenConfigAttrs(configsResp *model.ConfigsGetBody, d *schema.ResourceData) []map[string]interface{} {
 	privateKey := d.Get("configs.0.https_settings.0.private_key").(string)
+	certificateBody := d.Get("configs.0.https_settings.0.certificate_body").(string)
 	urlAuthKey := d.Get("configs.0.url_signing.0.key").(string)
 
 	configsAttrs := map[string]interface{}{
-		"https_settings":                flattenHTTPSAttrs(configsResp.Https, privateKey),
+		"https_settings":                flattenHTTPSAttrs(configsResp.Https, privateKey, certificateBody),
 		"retrieval_request_header":      flattenOriginRequestHeaderAttrs(configsResp.OriginRequestHeader),
 		"http_response_header":          flattenHttpResponseHeaderAttrs(configsResp.HttpResponseHeader),
 		"url_signing":                   flattenUrlAuthAttrs(configsResp.UrlAuth, urlAuthKey),
@@ -1437,71 +1453,53 @@ func queryDomainFullConfig(hcCdnClient *cdnv2.CdnClient, cfg *config.Config, d *
 	return resp.Configs, nil
 }
 
-func queryAndFlattenDomainTags(hcCdnClient *cdnv2.CdnClient, d *schema.ResourceData) (map[string]string, error) {
-	tags, err := hcCdnClient.ShowTags(&model.ShowTagsRequest{ResourceId: d.Id()})
+func queryAndFlattenDomainTags(cdnClient *golangsdk.ServiceClient, d *schema.ResourceData) (map[string]string, error) {
+	tags, err := domains.GetTags(cdnClient, d.Id())
 	if err != nil {
 		return nil, fmt.Errorf("error retrieving CDN domain tags: %s", err)
 	}
-
-	if tags.Tags == nil || len(*tags.Tags) == 0 {
-		return nil, nil
-	}
-
-	tagMap := make(map[string]string, len(*tags.Tags))
-	for _, tag := range *tags.Tags {
-		if tag.Value != nil {
-			tagMap[tag.Key] = *tag.Value
-		} else {
-			tagMap[tag.Key] = ""
-		}
-	}
-	return tagMap, nil
-}
-
-func flattenServiceArea(serviceArea *model.DomainsDetailServiceArea) interface{} {
-	if serviceArea == nil {
-		return nil
-	}
-	return serviceArea.Value()
+	return utils.TagsToMap(tags), nil
 }
 
 func resourceCdnDomainRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	cfg := meta.(*config.Config)
+	cdnClient, err := cfg.CdnV1Client(cfg.GetRegion(d))
+	if err != nil {
+		return diag.Errorf("error creating CDN v1 client: %s", err)
+	}
+
 	hcCdnClient, err := cfg.HcCdnV2Client(cfg.GetRegion(d))
 	if err != nil {
 		return diag.Errorf("error creating CDN v2 client: %s", err)
 	}
 
-	requestOpts := buildDomainDetailRequestOpts(d, cfg)
-	v, err := hcCdnClient.ShowDomainDetailByName(requestOpts)
+	v, err := domains.GetByName(cdnClient, d.Get("name").(string), buildResourceExtensionOpts(d, cfg)).Extract()
 	if err != nil {
 		return common.CheckDeletedDiag(d, parseDetailResponseError(err), "error retrieving CDN domain")
 	}
 
-	if v == nil || v.Domain == nil {
+	if v == nil {
 		return diag.Errorf("error retrieving CDN domain: Domain is not found in API response")
 	}
 
-	domain := *v.Domain
-	// Backfield the id when executing the import operation
-	d.SetId(*domain.Id)
-
-	configsResp, err := queryDomainFullConfig(hcCdnClient, cfg, d, *domain.DomainName)
+	// Backfield the ID when executing the import operation
+	d.SetId(v.ID)
+	configsResp, err := queryDomainFullConfig(hcCdnClient, cfg, d, v.DomainName)
 	if err != nil {
 		return diag.FromErr(err)
 	}
 
-	tags, err := queryAndFlattenDomainTags(hcCdnClient, d)
+	tags, err := queryAndFlattenDomainTags(cdnClient, d)
 	if err != nil {
 		return diag.FromErr(err)
 	}
 
 	mErr := multierror.Append(nil,
-		d.Set("name", domain.DomainName),
-		d.Set("type", domain.BusinessType),
-		d.Set("cname", domain.Cname),
-		d.Set("domain_status", domain.DomainStatus),
-		d.Set("service_area", flattenServiceArea(domain.ServiceArea)),
+		d.Set("name", v.DomainName),
+		d.Set("type", v.BusinessType),
+		d.Set("cname", v.CName),
+		d.Set("domain_status", v.DomainStatus),
+		d.Set("service_area", v.ServiceArea),
 		d.Set("sources", flattenSourcesAttrs(configsResp.Sources)),
 		d.Set("configs", flattenConfigAttrs(configsResp, d)),
 		d.Set("cache_settings", flattenCacheRulesAttrs(configsResp.CacheRules)),
@@ -1513,10 +1511,19 @@ func resourceCdnDomainRead(_ context.Context, d *schema.ResourceData, meta inter
 // When the domain name does not exist, the response body example of the details interface is as follows:
 // {"error": {"error_code": "CDN.0170","error_msg": "domain not exist!"}}
 func parseDetailResponseError(err error) error {
-	var responseErr *sdkerr.ServiceResponseError
-	if errors.As(err, &responseErr) {
-		if responseErr.StatusCode == http.StatusBadRequest && responseErr.ErrorCode == "CDN.0170" {
-			return golangsdk.ErrDefault404{}
+	var errCode golangsdk.ErrDefault400
+	if errors.As(err, &errCode) {
+		var apiError interface{}
+		if jsonErr := json.Unmarshal(errCode.Body, &apiError); jsonErr != nil {
+			return err
+		}
+		errorCode, errorCodeErr := jmespath.Search("error.error_code", apiError)
+		if errorCodeErr != nil || errorCode == nil {
+			return err
+		}
+
+		if errorCode.(string) == "CDN.0170" {
+			return golangsdk.ErrDefault404(errCode)
 		}
 	}
 	return err
@@ -1529,14 +1536,18 @@ func resourceCdnDomainUpdate(ctx context.Context, d *schema.ResourceData, meta i
 		return diag.Errorf("error creating CDN v2 client: %s", err)
 	}
 
-	if d.HasChanges("sources", "configs", "cache_settings") || d.IsNewResource() {
+	if d.HasChanges("sources", "configs", "cache_settings", "type", "service_area") || d.IsNewResource() {
 		err = updateDomainFullConfigs(hcCdnClient, cfg, d)
 		if err != nil {
 			return diag.Errorf("error updating CDN domain configs settings: %s", err)
 		}
 
-		requestOpts := buildDomainDetailRequestOpts(d, cfg)
-		if err := waitingForStatusOnline(ctx, hcCdnClient, d.Timeout(schema.TimeoutUpdate), requestOpts); err != nil {
+		cdnClient, err := cfg.CdnV1Client(cfg.GetRegion(d))
+		if err != nil {
+			return diag.Errorf("error creating CDN v1 client: %s", err)
+		}
+		opts := buildResourceExtensionOpts(d, cfg)
+		if err := waitingForStatusOnline(ctx, cdnClient, d, d.Timeout(schema.TimeoutUpdate), opts); err != nil {
 			return diag.Errorf("error waiting for CDN domain (%s) update to become online: %s", d.Id(), err)
 		}
 	}
@@ -1609,12 +1620,7 @@ func resourceCdnDomainDelete(ctx context.Context, d *schema.ResourceData, meta i
 			return diag.Errorf("error disable CDN domain %s: %s", d.Id(), err)
 		}
 
-		hcCdnClient, err := cfg.HcCdnV2Client(cfg.GetRegion(d))
-		if err != nil {
-			return diag.Errorf("error creating CDN v2 client: %s", err)
-		}
-		requestOpts := buildDomainDetailRequestOpts(d, cfg)
-		if err := waitingForStatusOffline(ctx, hcCdnClient, d.Timeout(schema.TimeoutDelete), requestOpts); err != nil {
+		if err := waitingForStatusOffline(ctx, cdnClient, d, d.Timeout(schema.TimeoutDelete), opts); err != nil {
 			return diag.Errorf("error waiting for CDN domain (%s) update to become offline: %s", d.Id(), err)
 		}
 	}
@@ -1637,13 +1643,6 @@ func buildResourceExtensionOpts(d *schema.ResourceData, cfg *config.Config) *dom
 	}
 
 	return nil
-}
-
-func buildDomainDetailRequestOpts(d *schema.ResourceData, cfg *config.Config) *model.ShowDomainDetailByNameRequest {
-	return &model.ShowDomainDetailByNameRequest{
-		DomainName:          d.Get("name").(string),
-		EnterpriseProjectId: utils.StringIgnoreEmpty(cfg.GetEnterpriseProjectID(d)),
-	}
 }
 
 func resourceCDNDomainImportState(_ context.Context, d *schema.ResourceData,

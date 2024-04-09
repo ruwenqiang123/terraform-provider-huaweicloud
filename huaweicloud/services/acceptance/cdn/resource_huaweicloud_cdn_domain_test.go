@@ -2,29 +2,37 @@ package cdn
 
 import (
 	"fmt"
+	"reflect"
+	"sort"
+	"strings"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 
-	"github.com/huaweicloud/huaweicloud-sdk-go-v3/services/cdn/v2/model"
+	"github.com/chnsz/golangsdk/openstack/cdn/v1/domains"
 
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/config"
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/acceptance"
-	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/utils"
 )
 
+func getResourceExtensionOpts(epsId string) *domains.ExtensionOpts {
+	if epsId != "" {
+		return &domains.ExtensionOpts{
+			EnterpriseProjectId: epsId,
+		}
+	}
+	return nil
+}
+
 func getCdnDomainFunc(cfg *config.Config, state *terraform.ResourceState) (interface{}, error) {
-	hcCdnClient, err := cfg.HcCdnV2Client(acceptance.HW_REGION_NAME)
+	client, err := cfg.CdnV1Client(acceptance.HW_REGION_NAME)
 	if err != nil {
-		return nil, fmt.Errorf("error creating CDN v2 client: %s", err)
+		return nil, fmt.Errorf("error creating CDN v1 client: %s", err)
 	}
 
-	requestOpts := &model.ShowDomainDetailByNameRequest{
-		DomainName:          state.Primary.Attributes["name"],
-		EnterpriseProjectId: utils.StringIgnoreEmpty(state.Primary.Attributes["enterprise_project_id"]),
-	}
-	return hcCdnClient.ShowDomainDetailByName(requestOpts)
+	opts := getResourceExtensionOpts(state.Primary.Attributes["enterprise_project_id"])
+	return domains.GetByName(client, state.Primary.Attributes["name"], opts).Extract()
 }
 
 func TestAccCdnDomain_basic(t *testing.T) {
@@ -64,9 +72,12 @@ func TestAccCdnDomain_basic(t *testing.T) {
 				),
 			},
 			{
-				Config: testAccCdnDomain_cache,
+				Config: testAccCdnDomain_update1,
 				Check: resource.ComposeTestCheckFunc(
 					rc.CheckResourceExists(),
+					resource.TestCheckResourceAttr(resourceName, "name", acceptance.HW_CDN_DOMAIN_NAME),
+					resource.TestCheckResourceAttr(resourceName, "type", "download"),
+					resource.TestCheckResourceAttr(resourceName, "service_area", "global"),
 					resource.TestCheckResourceAttr(resourceName, "cache_settings.0.rules.0.rule_type", "all"),
 					resource.TestCheckResourceAttr(resourceName, "cache_settings.0.rules.0.ttl", "180"),
 					resource.TestCheckResourceAttr(resourceName, "cache_settings.0.rules.0.ttl_type", "d"),
@@ -75,10 +86,12 @@ func TestAccCdnDomain_basic(t *testing.T) {
 				),
 			},
 			{
-				Config: testAccCdnDomain_retrievalHost,
+				Config: testAccCdnDomain_update2,
 				Check: resource.ComposeTestCheckFunc(
 					rc.CheckResourceExists(),
 					resource.TestCheckResourceAttr(resourceName, "name", acceptance.HW_CDN_DOMAIN_NAME),
+					resource.TestCheckResourceAttr(resourceName, "type", "web"),
+					resource.TestCheckResourceAttr(resourceName, "service_area", "mainland_china"),
 					resource.TestCheckResourceAttr(resourceName, "sources.#", "1"),
 					resource.TestCheckResourceAttr(resourceName, "sources.0.retrieval_host", "customize.test.huaweicloud.com"),
 					resource.TestCheckResourceAttr(resourceName, "sources.0.http_port", "8001"),
@@ -86,7 +99,7 @@ func TestAccCdnDomain_basic(t *testing.T) {
 				),
 			},
 			{
-				Config: testAccCdnDomain_standby,
+				Config: testAccCdnDomain_update3,
 				Check: resource.ComposeTestCheckFunc(
 					rc.CheckResourceExists(),
 					resource.TestCheckResourceAttr(resourceName, "name", acceptance.HW_CDN_DOMAIN_NAME),
@@ -132,11 +145,11 @@ resource "huaweicloud_cdn_domain" "test" {
 }
 `, acceptance.HW_CDN_DOMAIN_NAME)
 
-var testAccCdnDomain_cache = fmt.Sprintf(`
+var testAccCdnDomain_update1 = fmt.Sprintf(`
 resource "huaweicloud_cdn_domain" "test" {
   name                  = "%s"
-  type                  = "web"
-  service_area          = "outside_mainland_china"
+  type                  = "download"
+  service_area          = "global"
   enterprise_project_id = "0"
 
   configs {
@@ -162,11 +175,11 @@ resource "huaweicloud_cdn_domain" "test" {
 }
 `, acceptance.HW_CDN_DOMAIN_NAME)
 
-var testAccCdnDomain_retrievalHost = fmt.Sprintf(`
+var testAccCdnDomain_update2 = fmt.Sprintf(`
 resource "huaweicloud_cdn_domain" "test" {
   name                  = "%s"
   type                  = "web"
-  service_area          = "outside_mainland_china"
+  service_area          = "mainland_china"
   enterprise_project_id = "0"
 
   configs {
@@ -184,11 +197,11 @@ resource "huaweicloud_cdn_domain" "test" {
 }
 `, acceptance.HW_CDN_DOMAIN_NAME)
 
-var testAccCdnDomain_standby = fmt.Sprintf(`
+var testAccCdnDomain_update3 = fmt.Sprintf(`
 resource "huaweicloud_cdn_domain" "test" {
   name                  = "%s"
   type                  = "web"
-  service_area          = "outside_mainland_china"
+  service_area          = "mainland_china"
   enterprise_project_id = "0"
 
   sources {
@@ -236,17 +249,70 @@ func TestAccCdnDomain_configHttpSettings(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "configs.0.ipv6_enable", "true"),
 					resource.TestCheckResourceAttr(resourceName, "configs.0.range_based_retrieval_enabled", "true"),
 					resource.TestCheckResourceAttr(resourceName, "configs.0.https_settings.0.certificate_name", "terraform-test"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.https_settings.0.https_enabled", "true"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.https_settings.0.http2_enabled", "true"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.https_settings.0.certificate_source", "0"),
 					resource.TestCheckResourceAttr(resourceName, "configs.0.https_settings.0.https_status", "on"),
 					resource.TestCheckResourceAttr(resourceName, "configs.0.https_settings.0.http2_status", "on"),
-					resource.TestCheckResourceAttr(resourceName, "configs.0.cache_url_parameter_filter.0.type", "ignore_url_params"),
-					resource.TestCheckResourceAttr(resourceName, "configs.0.retrieval_request_header.0.name", "test-name"),
-					resource.TestCheckResourceAttr(resourceName, "configs.0.url_signing.0.status", "off"),
-					resource.TestCheckResourceAttr(resourceName, "configs.0.compress.0.status", "off"),
-					resource.TestCheckResourceAttr(resourceName, "configs.0.force_redirect.0.status", "on"),
+					testAccCheckTLSVersion(resourceName, "TLSv1.1,TLSv1.2"),
+
+					resource.TestCheckResourceAttrSet(resourceName, "configs.0.https_settings.0.certificate_body"),
+					resource.TestCheckResourceAttrSet(resourceName, "configs.0.https_settings.0.private_key"),
+				),
+			},
+			{
+				Config: testAccCdnDomain_configHttpSettings_update1,
+				Check: resource.ComposeTestCheckFunc(
+					rc.CheckResourceExists(),
+					resource.TestCheckResourceAttr(resourceName, "name", acceptance.HW_CDN_DOMAIN_NAME),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.https_settings.0.certificate_name", "terraform-update"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.https_settings.0.https_enabled", "true"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.https_settings.0.http2_enabled", "false"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.https_settings.0.certificate_source", "0"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.https_settings.0.https_status", "on"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.https_settings.0.http2_status", "off"),
+					testAccCheckTLSVersion(resourceName, "TLSv1.1,TLSv1.2,TLSv1.3"),
+				),
+			},
+			{
+				Config: testAccCdnDomain_configHttpSettings_update2,
+				Check: resource.ComposeTestCheckFunc(
+					rc.CheckResourceExists(),
+					resource.TestCheckResourceAttr(resourceName, "name", acceptance.HW_CDN_DOMAIN_NAME),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.https_settings.0.https_enabled", "false"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.https_settings.0.http2_enabled", "false"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.https_settings.0.https_status", "off"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.https_settings.0.http2_status", "off"),
 				),
 			},
 		},
 	})
+}
+
+// The response value order of field `tls_version` will be modified.
+// For example `TLSv1.1,TLSv1.2` will be modified to `TLSv1.2,TLSv1.1`.
+func testAccCheckTLSVersion(n string, tlsVersion string) resource.TestCheckFunc {
+	return func(s *terraform.State) error {
+		rs, ok := s.RootModule().Resources[n]
+		if !ok {
+			return fmt.Errorf("resource (%s) not found: %s", n, rs)
+		}
+
+		tlsVersionAttr := rs.Primary.Attributes["configs.0.https_settings.0.tls_version"]
+		if tlsVersionAttr == "" {
+			return fmt.Errorf("attribute `configs.0.https_settings.0.tls_version` is not found from state")
+		}
+
+		tlsVersionArray := strings.Split(tlsVersion, ",")
+		tlsVersionAttrArray := strings.Split(tlsVersionAttr, ",")
+		sort.Strings(tlsVersionArray)
+		sort.Strings(tlsVersionAttrArray)
+		if reflect.DeepEqual(tlsVersionArray, tlsVersionAttrArray) {
+			return nil
+		}
+		return fmt.Errorf("attribute 'configs.0.https_settings.0.tls_version' expected (%s), got (%s)",
+			tlsVersion, tlsVersionAttr)
+	}
 }
 
 var testAccCdnDomain_configHttpSettings = fmt.Sprintf(`
@@ -268,44 +334,73 @@ resource "huaweicloud_cdn_domain" "test" {
     range_based_retrieval_enabled = "true"
 
     https_settings {
-      certificate_name = "terraform-test"
-      certificate_body = file("%s")
-      http2_enabled    = true
-      https_enabled    = true
-      private_key      = file("%s")
-    }
-
-    cache_url_parameter_filter {
-      type = "ignore_url_params"
-    }
-
-    retrieval_request_header {
-      name   = "test-name"
-      value  = "test-val"
-      action = "set"
-    }
-
-    http_response_header {
-      name   = "test-name"
-      value  = "test-val"
-      action = "set"
-    }
-
-    url_signing {
-      enabled = false
-    }
-
-    compress {
-      enabled = false
-    }
-
-    force_redirect {
-      enabled = true
-      type    = "http"
+      certificate_name   = "terraform-test"
+      certificate_body   = file("%s")
+      http2_enabled      = true
+      https_enabled      = true
+      private_key        = file("%s")
+      tls_version        = "TLSv1.1,TLSv1.2"
+      certificate_source = 0
     }
   }
 }
 `, acceptance.HW_CDN_DOMAIN_NAME, acceptance.HW_CDN_CERT_PATH, acceptance.HW_CDN_PRIVATE_KEY_PATH)
+
+var testAccCdnDomain_configHttpSettings_update1 = fmt.Sprintf(`
+resource "huaweicloud_cdn_domain" "test" {
+  name                  = "%s"
+  type                  = "web"
+  service_area          = "outside_mainland_china"
+  enterprise_project_id = 0
+
+  sources {
+    active      = 1
+    origin      = "100.254.53.75"
+    origin_type = "ipaddr"
+  }
+
+  configs {
+    origin_protocol               = "http"
+    ipv6_enable                   = true
+    range_based_retrieval_enabled = "true"
+
+    https_settings {
+      certificate_name   = "terraform-update"
+      certificate_body   = file("%s")
+      http2_enabled      = false
+      https_enabled      = true
+      private_key        = file("%s")
+      tls_version        = "TLSv1.1,TLSv1.2,TLSv1.3"
+      certificate_source = 0
+    }
+  }
+}
+`, acceptance.HW_CDN_DOMAIN_NAME, acceptance.HW_CDN_CERT_PATH, acceptance.HW_CDN_PRIVATE_KEY_PATH)
+
+var testAccCdnDomain_configHttpSettings_update2 = fmt.Sprintf(`
+resource "huaweicloud_cdn_domain" "test" {
+  name                  = "%s"
+  type                  = "web"
+  service_area          = "outside_mainland_china"
+  enterprise_project_id = 0
+
+  sources {
+    active      = 1
+    origin      = "100.254.53.75"
+    origin_type = "ipaddr"
+  }
+
+  configs {
+    origin_protocol               = "http"
+    ipv6_enable                   = true
+    range_based_retrieval_enabled = "true"
+
+    https_settings {
+      https_enabled = false
+    }
+  }
+}
+`, acceptance.HW_CDN_DOMAIN_NAME)
 
 // All configuration item modifications may trigger `CDN.0163`. This is a problem that we have no way to solve.
 // When a `CDN.0163` error occurs, you can avoid this error by adjusting the test case configuration items.

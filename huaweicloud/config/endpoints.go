@@ -623,6 +623,10 @@ var allServiceCatalog = map[string]ServiceCatalog{
 	},
 
 	// catalog for Enterprise Intelligence
+	"cae": {
+		Name:    "cae",
+		Product: "CAE",
+	},
 	"mrs": {
 		Name:    "mrs",
 		Version: "v1.1",
