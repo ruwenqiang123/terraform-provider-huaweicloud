@@ -418,7 +418,9 @@ func Provider() *schema.Provider {
 
 			"huaweicloud_cc_central_networks":             cc.DataSourceCcCentralNetworks(),
 			"huaweicloud_cc_central_network_connections":  cc.DataSourceCcCentralNetworkConnections(),
+			"huaweicloud_cc_connections":                  cc.DataSourceCloudConnections(),
 			"huaweicloud_cc_global_connection_bandwidths": cc.DataSourceCcGlobalConnectionBandwidths(),
+			"huaweicloud_cc_central_network_policies":     cc.DataSourceCcCentralNetworkPolicies(),
 
 			"huaweicloud_cce_addon_template":      cce.DataSourceAddonTemplate(),
 			"huaweicloud_cce_cluster":             cce.DataSourceCCEClusterV3(),
@@ -506,8 +508,10 @@ func Provider() *schema.Provider {
 			"huaweicloud_dms_rocketmq_consumer_groups": dms.DataSourceDmsRocketMQConsumerGroups(),
 			"huaweicloud_dms_rocketmq_flavors":         dms.DataSourceRocketMQFlavors(),
 
-			"huaweicloud_dns_zones":      dns.DataSourceZones(),
-			"huaweicloud_dns_recordsets": dns.DataSourceRecordsets(),
+			"huaweicloud_dns_floating_ptrrecords": dns.DataSourceFloatingPtrrecords(),
+			"huaweicloud_dns_line_groups":         dns.DataSourceLineGroups(),
+			"huaweicloud_dns_recordsets":          dns.DataSourceRecordsets(),
+			"huaweicloud_dns_zones":               dns.DataSourceZones(),
 
 			"huaweicloud_drs_availability_zones": drs.DataSourceAvailabilityZones(),
 
@@ -552,6 +556,8 @@ func Provider() *schema.Provider {
 			"huaweicloud_gaussdb_mysql_instance":               gaussdb.DataSourceGaussDBMysqlInstance(),
 			"huaweicloud_gaussdb_mysql_instances":              gaussdb.DataSourceGaussDBMysqlInstances(),
 			"huaweicloud_gaussdb_redis_instance":               gaussdb.DataSourceGaussRedisInstance(),
+			"huaweicloud_gaussdb_mysql_backups":                gaussdb.DataSourceGaussdbMysqlBackups(),
+			"huaweicloud_gaussdb_mysql_restore_time_ranges":    gaussdb.DataSourceGaussdbMysqlRestoreTimeRanges(),
 
 			"huaweicloud_identity_permissions": iam.DataSourceIdentityPermissions(),
 			"huaweicloud_identity_role":        iam.DataSourceIdentityRole(),
@@ -671,13 +677,16 @@ func Provider() *schema.Provider {
 			"huaweicloud_rds_mysql_binlog":                  rds.DataSourceRdsMysqlBinlog(),
 			"huaweicloud_rds_parametergroups":               rds.DataSourceParametergroups(),
 
-			"huaweicloud_rms_policy_definitions":           rms.DataSourcePolicyDefinitions(),
-			"huaweicloud_rms_assignment_package_templates": rms.DataSourceTemplates(),
-			"huaweicloud_rms_regions":                      rms.DataSourceRmsRegions(),
-			"huaweicloud_rms_services":                     rms.DataSourceRmsServices(),
-			"huaweicloud_rms_policy_assignments":           rms.DataSourceRmsPolicyAssignments(),
-			"huaweicloud_rms_advanced_query_schemas":       rms.DataSourceRmsAdvancedQuerySchemas(),
-			"huaweicloud_rms_assignment_packages":          rms.DataSourceRmsAssignmentPackages(),
+			"huaweicloud_rms_policy_definitions":                 rms.DataSourcePolicyDefinitions(),
+			"huaweicloud_rms_assignment_package_templates":       rms.DataSourceTemplates(),
+			"huaweicloud_rms_regions":                            rms.DataSourceRmsRegions(),
+			"huaweicloud_rms_services":                           rms.DataSourceRmsServices(),
+			"huaweicloud_rms_policy_assignments":                 rms.DataSourceRmsPolicyAssignments(),
+			"huaweicloud_rms_advanced_query_schemas":             rms.DataSourceRmsAdvancedQuerySchemas(),
+			"huaweicloud_rms_assignment_packages":                rms.DataSourceRmsAssignmentPackages(),
+			"huaweicloud_rms_organizational_policy_assignments":  rms.DataSourceRmsOrganizationalPolicyAssignments(),
+			"huaweicloud_rms_organizational_assignment_packages": rms.DataSourceRmsOrganizationalAssignmentPackages(),
+			"huaweicloud_rms_advanced_queries":                   rms.DataSourceRmsAdvancedQueries(),
 
 			"huaweicloud_sdrs_domain": sdrs.DataSourceSDRSDomain(),
 
@@ -690,8 +699,9 @@ func Provider() *schema.Provider {
 
 			"huaweicloud_scm_certificates": ccm.DataSourceCertificates(),
 
-			"huaweicloud_sfs_file_system": sfs.DataSourceSFSFileSystemV2(),
-			"huaweicloud_sfs_turbos":      sfs.DataSourceTurbos(),
+			"huaweicloud_sfs_file_system":       sfs.DataSourceSFSFileSystemV2(),
+			"huaweicloud_sfs_turbos":            sfs.DataSourceTurbos(),
+			"huaweicloud_sfs_turbo_obs_targets": sfs.DataSourceSfsTurboObsTargets(),
 
 			"huaweicloud_swr_organizations":  swr.DataSourceOrganizations(),
 			"huaweicloud_swr_repositories":   swr.DataSourceRepositories(),
@@ -878,6 +888,7 @@ func Provider() *schema.Provider {
 
 			"huaweicloud_cae_component":                cae.ResourceComponent(),
 			"huaweicloud_cae_component_configurations": cae.ResourceComponentConfigurations(),
+			"huaweicloud_cae_component_deployment":     cae.ResourceComponentDeployment(),
 
 			"huaweicloud_cbr_backup_share_accepter": cbr.ResourceBackupShareAccepter(),
 			"huaweicloud_cbr_backup_share":          cbr.ResourceBackupShare(),
@@ -1131,6 +1142,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_gaussdb_mysql_sql_control_rule":   gaussdb.ResourceGaussDBSqlControlRule(),
 			"huaweicloud_gaussdb_mysql_parameter_template": gaussdb.ResourceGaussDBMysqlTemplate(),
 			"huaweicloud_gaussdb_mysql_backup":             gaussdb.ResourceGaussDBMysqlBackup(),
+			"huaweicloud_gaussdb_mysql_restore":            gaussdb.ResourceGaussDBMysqlRestore(),
 
 			"huaweicloud_gaussdb_opengauss_instance": gaussdb.ResourceOpenGaussInstance(),
 
@@ -1144,8 +1156,9 @@ func Provider() *schema.Provider {
 			"huaweicloud_ges_metadata": ges.ResourceGesMetadata(),
 			"huaweicloud_ges_backup":   ges.ResourceGesBackup(),
 
-			"huaweicloud_hss_host_group":      hss.ResourceHostGroup(),
-			"huaweicloud_hss_host_protection": hss.ResourceHostProtection(),
+			"huaweicloud_hss_host_group":           hss.ResourceHostGroup(),
+			"huaweicloud_hss_host_protection":      hss.ResourceHostProtection(),
+			"huaweicloud_hss_webtamper_protection": hss.ResourceWebTamperProtection(),
 
 			"huaweicloud_identity_access_key":            iam.ResourceIdentityKey(),
 			"huaweicloud_identity_acl":                   iam.ResourceIdentityACL(),
@@ -1370,12 +1383,13 @@ func Provider() *schema.Provider {
 			"huaweicloud_servicestage_repo_token_authorization":    servicestage.ResourceRepoTokenAuth(),
 			"huaweicloud_servicestage_repo_password_authorization": servicestage.ResourceRepoPwdAuth(),
 
-			"huaweicloud_sfs_access_rule":     sfs.ResourceSFSAccessRuleV2(),
-			"huaweicloud_sfs_file_system":     sfs.ResourceSFSFileSystemV2(),
-			"huaweicloud_sfs_turbo":           sfs.ResourceSFSTurbo(),
-			"huaweicloud_sfs_turbo_dir":       sfs.ResourceSfsTurboDir(),
-			"huaweicloud_sfs_turbo_dir_quota": sfs.ResourceSfsTurboDirQuota(),
-			"huaweicloud_sfs_turbo_perm_rule": sfs.ResourceSFSTurboPermRule(),
+			"huaweicloud_sfs_access_rule":      sfs.ResourceSFSAccessRuleV2(),
+			"huaweicloud_sfs_file_system":      sfs.ResourceSFSFileSystemV2(),
+			"huaweicloud_sfs_turbo":            sfs.ResourceSFSTurbo(),
+			"huaweicloud_sfs_turbo_dir":        sfs.ResourceSfsTurboDir(),
+			"huaweicloud_sfs_turbo_dir_quota":  sfs.ResourceSfsTurboDirQuota(),
+			"huaweicloud_sfs_turbo_obs_target": sfs.ResourceOBSTarget(),
+			"huaweicloud_sfs_turbo_perm_rule":  sfs.ResourceSFSTurboPermRule(),
 
 			"huaweicloud_smn_topic":            smn.ResourceTopic(),
 			"huaweicloud_smn_subscription":     smn.ResourceSubscription(),

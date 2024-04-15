@@ -65,6 +65,7 @@ resource "huaweicloud_cdn_domain" "domain_1" {
 ```hcl
 variable "domain_name" {}
 variable "origin_server" {}
+variable "ip_or_domain" {}
 
 resource "huaweicloud_cdn_domain" "domain_1" {
   name         = var.domain_name
@@ -78,14 +79,17 @@ resource "huaweicloud_cdn_domain" "domain_1" {
   }
 
   configs {
-    origin_protocol = "http"
+    origin_protocol               = "http"
+    ipv6_enable                   = true
+    range_based_retrieval_enabled = true
 
     https_settings {
-      certificate_name = "terraform-test"
-      certificate_body = file("your_directory/chain.cer")
-      http2_enabled    = true
-      https_enabled    = true
-      private_key      = file("your_directory/server_private.key")
+      certificate_name     = "terraform-test"
+      certificate_body     = file("your_directory/chain.cer")
+      http2_enabled        = true
+      https_enabled        = true
+      private_key          = file("your_directory/server_private.key")
+      ocsp_stapling_status = "on"
     }
 
     cache_url_parameter_filter {
@@ -105,7 +109,46 @@ resource "huaweicloud_cdn_domain" "domain_1" {
     }
 
     url_signing {
-      enabled = false
+      enabled     = true
+      type        = "type_a"
+      key         = "A27jtfSTy13q7A0UnTA9vpxYXEb"
+      time_format = "dec"
+      expire_time = 30
+    }
+
+    flexible_origin {
+      match_type = "all"
+      priority   = 1
+
+      back_sources {
+        http_port    = 80
+        https_port   = 443
+        ip_or_domain = var.ip_or_domain
+        sources_type = "ipaddr"
+      }
+    }
+
+    remote_auth {
+      enabled = true
+
+      remote_auth_rules {
+        auth_failed_status      = "503"
+        auth_server             = "https://testdomain-update.com"
+        auth_success_status     = "302"
+        file_type_setting       = "all"
+        request_method          = "POST"
+        reserve_args_setting    = "reserve_all_args"
+        reserve_headers_setting = "reserve_all_headers"
+        response_status         = "206"
+        timeout                 = 3000
+        timeout_action          = "forbid"
+
+        add_custom_args_rules {
+          key   = "http_user_agent"
+          type  = "nginx_preset_var"
+          value = "$server_protocol"
+        }
+      }
     }
 
     compress {
@@ -124,10 +167,10 @@ resource "huaweicloud_cdn_domain" "domain_1" {
 
 The following arguments are supported:
 
-* `name` - (Required, String, ForceNew) Specifies acceleration domain name. Changing this parameter will create a new
-  resource. The domain name consists of one or more parts, representing domains at different levels.
-  Domain names at all levels can only be composed of letters, digits, and hyphens (-), and the letters are equivalent in
-  upper and lower case. Domain names at all levels are connected with (.). The domain name can contain up to `75` characters.
+* `name` - (Required, String) Specifies acceleration domain name. The domain name consists of one or more parts,
+  representing domains at different levels. Domain names at all levels can only be composed of letters, digits,
+  and hyphens (-), and the letters are equivalent in upper and lower case. Domain names at all levels are connected
+  with (.). The domain name can contain up to `75` characters.
 
 * `type` - (Required, String) Specifies the service type of the domain name. The valid values are as follows:
   + **web**: Static acceleration. For websites with many images and small files, such as portals and e-commerce websites.
@@ -156,8 +199,7 @@ The following arguments are supported:
 * `cache_settings` - (Optional, List) Specifies the cache configuration. The [cache_settings](#cache_settings_object) structure
   is documented below.
 
-* `enterprise_project_id` - (Optional, String, ForceNew) Specifies the enterprise project ID. Changing this parameter
-  will create a new resource.
+* `enterprise_project_id` - (Optional, String) Specifies the enterprise project ID.
 
 * `tags` - (Optional, Map) Specifies the key/value pairs to associate with the domain.
 
@@ -271,16 +313,28 @@ The `https_settings` block support:
 * `private_key` - (Optional, String) Specifies the private key used by the HTTPS protocol. This parameter is mandatory
   when a certificate is configured. The value is in PEM format.
 
-* `certificate_source` - (Optional, Int) Specifies the certificate type. Currently, only **0** is supported, which means
+* `certificate_source` - (Optional, Int) Specifies the certificate source. Currently, only **0** is supported, which means
   your own certificate. Defaults to **0**.
+
+* `certificate_type` - (Optional, String) Specifies the certificate type. Currently, only **server** is supported, which
+  means international certificate. Defaults to **server**.
 
 * `http2_enabled` - (Optional, Bool) Specifies whether HTTP/2 is used. Defaults to **false**.
   When `https_enabled` is set to **false**, this parameter does not take effect.
+
+  -> Currently, this field does not support closing after it is enabled.
 
 * `tls_version` - (Optional, String) Specifies the transport Layer Security (TLS). Currently, **TLSv1.0**,
   **TLSv1.1**, **TLSv1.2**, and **TLSv1.3** are supported. By default, **TLSv1.1**, **TLSv1.2**, and **TLSv1.3** are
   enabled. You can enable a single version or consecutive versions. To enable multiple versions, use commas (,) to
   separate versions, for example, **TLSv1.1,TLSv1.2**.
+
+* `ocsp_stapling_status` - (Optional, String) Specifies whether online certificate status protocol (OCSP) stapling is enabled.
+  Valid values are as follows:
+  + **on**: Enable.
+  + **off**: Disable.
+
+  Defaults to **off**.
 
 <a name="retrieval_request_header_object"></a>
 The `retrieval_request_header` block support:
@@ -515,7 +569,8 @@ The `cache_settings` block support:
 The `rules` block support:
 
 * `rule_type` - (Required, String) Specifies the rule type. Possible value are:
-  + **all**: All types of files are matched. It is the default value.
+  + **all**: All types of files are matched. It is the default value. The cloud will create a cache rule with **all**
+    rule type by default.
   + **file_extension**: Files are matched based on their suffixes.
   + **catalog**: Files are matched based on their directories.
   + **full_path**: Files are matched based on their full paths.
@@ -581,7 +636,9 @@ $ terraform import huaweicloud_cdn_domain.test <name>
 ```
 
 Note that the imported state may not be identical to your resource definition, due to some attributes missing from the
-API response, security or some other reason. The missing attributes include: `enterprise_project_id`.
+API response, security or some other reason. The missing attributes include: `enterprise_project_id`,
+`configs.0.url_signing.0.key`, `configs.0.https_settings.0.certificate_body`, `configs.0.https_settings.0.private_key`,
+and `cache_settings`.
 It is generally recommended running `terraform plan` after importing a resource.
 You can then decide if changes should be applied to the resource, or the resource definition should be updated to align
 with the resource. Also, you can ignore changes as below.
@@ -592,8 +649,9 @@ resource "huaweicloud_cdn_domain" "test" {
   
   lifecycle {
     ignore_changes = [
-      enterprise_project_id,
+      enterprise_project_id, configs.0.url_signing.0.key, configs.0.https_settings.0.certificate_body,
+      configs.0.https_settings.0.private_key, cache_settings,
     ]
   }
 }
-```**
+```

@@ -1,6 +1,6 @@
 info:
     version: ""
-    title: resource_huaweicloud_dli_template_spark
+    title: resource_huaweicloud_dli_flink_template
     description: ""
 schemes:
     - https
@@ -8,14 +8,13 @@ host: huaweicloud.com
 tags:
     - name: DLI
 paths:
-    /v1.0/{project_id}/sqls-deletion:
-        POST:
-            tag: DLI
-    /v3/{project_id}/templates:
-        POST:
-            tag: DLI
-    /v3/{project_id}/templates/{id}:
+    /v1.0/{project_id}/streaming/job-templates:
         GET:
+            tag: DLI
+        POST:
+            tag: DLI
+    /v1.0/{project_id}/streaming/job-templates/{id}:
+        DELETE:
             tag: DLI
         PUT:
             tag: DLI

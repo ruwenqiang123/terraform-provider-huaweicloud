@@ -262,8 +262,9 @@ The following arguments are supported:
 * `expired_days` - (Optional, Int, ForceNew) Specifies how many days after the task is abnormal, it will automatically
  end. The value ranges from 14 to 100. the default value is **14**. Changing this parameter will create a new resource.
 
-* `start_time` - (Optional, String, ForceNew) Specifies the time to start the job. The time format
- is **yyyy-MM-dd HH:mm:ss**. Start immediately by default. Changing this parameter will create a new resource.
+* `start_time` - (Optional, String, ForceNew) Specifies the time to start the job. The time format is a time stamp
+  accurating to milliseconds, e.g. **1684466549755**, which indicates **2023-05-19 11:22:29.755**.
+  Start immediately by default. Changing this parameter will create a new resource.
 
 * `destination_db_readnoly` - (Optional, Bool, ForceNew) Specifies the destination DB instance as read-only helps
   ensure the migration is successful. Once the migration is complete, the DB instance automatically changes to
@@ -336,6 +337,9 @@ The following arguments are supported:
   Changing this will create a new resource.
 
 * `auto_renew` - (Optional, String) Specifies whether auto renew is enabled. Valid values are **true** and **false**.
+
+* `alarm_notify` - (Optional, List, ForceNew)  Specifies the information body for setting task exception notification.
+  The [alarm_notify](#block--alarm_notify) structure is documented below.
 
 <a name="block--db_info"></a>
 The `db_info` block supports:
@@ -428,6 +432,24 @@ The `tables` block supports:
 
 * `table_names` - (Required, List) Specifies the names of table which belong to a same datebase.
 
+<a name="block--alarm_notify"></a>
+The `alarm_notify` block supports:
+
+* `topic_urn` - (Required, String, ForceNew) Specifies the SMN topic URN which is subscribed.
+
+* `delay_time` - (Optional, Int, ForceNew) Specifies the Delay threshold between the source and destination database,
+  in seconds. Value ranges from **1** to **3600**. Default is **0** and no notifications will be sent to recipient. If
+  the delay exceeds a specified value and lasts for 6 minutes, DRS will notify specified recipients. This option is
+  available only for **full+incremental** tasks.
+
+* `rpo_delay` - (Optional, Int, ForceNew) Specifies the RPO delay threshold, in seconds. Value ranges from **1** to **3600**.
+  Default is **0** and no notifications will be sent to recipient. If the RPO delay between the service database and
+  the DRS instance exceeds a specified value and lasts for 6 minutes, DRS will notify specified recipients.
+
+* `rto_delay` - (Optional, Int, ForceNew) Specifies the RTO delay threshold, in seconds. Value ranges from **1** to **3600**.
+  Default is **0** and no notifications will be sent to recipient. If the RTO delay between the DRS instance and the
+  DR database exceeds a specified value and lasts for 6 minutes, DRS will notify specified recipients.
+
 ## Attribute Reference
 
 In addition to all arguments above, the following attributes are exported:
@@ -440,7 +462,21 @@ In addition to all arguments above, the following attributes are exported:
 
 * `slave_job_id` - The slave job ID which will return if job is dual-AZ.
 
-* `created_at` - Create time. The format is ISO8601:YYYY-MM-DDThh:mm:ssZ
+* `created_at` - Create time. The format is ISO8601:YYYY-MM-DDThh:mm:ssZ.
+
+* `updated_at` - Update time. The format is ISO8601:YYYY-MM-DDThh:mm:ssZ.
+
+* `vpc_id` - The VPC ID to which the DRS instance belongs.
+
+* `subnet_id` - The subnet ID to which the DRS instance belongs.
+
+* `security_group_id` - The security group ID to which the DRS instance belongs.
+
+* `source_db` - The source database configuration.
+  The [db_info](#attrblock--db_info) structure of the `source_db` is documented below.
+
+* `destination_db` - The destination database configuration.
+  The [db_info](#attrblock--db_info) structure of the `destination_db` is documented below.
 
 * `status` - Status.
 
@@ -449,6 +485,11 @@ In addition to all arguments above, the following attributes are exported:
 * `public_ip` - Public IP.
 
 * `private_ip` - Private IP.
+
+<a name="attrblock--db_info"></a>
+The `db_info` block supports:
+
+* `security_group_id` - The security group ID to which the databese instance belongs.
 
 ## Timeouts
 
@@ -470,10 +511,10 @@ $ terraform import huaweicloud_drs_job.test <id>
 
 Note that the imported state may not be identical to your resource definition, due to some attributes missing from the
 API response, security or some other reason. The missing attributes include: `enterprise_project_id`, `force_destroy`,
-`source_db.0.password` and `destination_db.0.password`, `action`, `is_sync_re_edit`, `pause_mode`, `auto_renew`.
-It is generally recommended running **terraform plan** after importing a job. You can then decide if changes should be
-applied to the job, or the resource definition should be updated to align with the job. Also you can ignore changes as
-below.
+`source_db.0.password` and `destination_db.0.password`, `action`, `is_sync_re_edit`, `pause_mode`, `auto_renew`,
+`alarm_notify.0.topic_urn`. It is generally recommended running **terraform plan** after importing a job. You can then
+decide if changes should be applied to the job, or the resource definition should be updated to align with the job. Also
+you can ignore changes as below.
 
 ```
 resource "huaweicloud_drs_job" "test" {

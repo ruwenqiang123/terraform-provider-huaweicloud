@@ -59,7 +59,6 @@ func TestAccCdnDomain_basic(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "name", acceptance.HW_CDN_DOMAIN_NAME),
 					resource.TestCheckResourceAttr(resourceName, "type", "web"),
 					resource.TestCheckResourceAttr(resourceName, "service_area", "outside_mainland_china"),
-					resource.TestCheckResourceAttr(resourceName, "enterprise_project_id", "0"),
 					resource.TestCheckResourceAttr(resourceName, "configs.0.origin_protocol", "http"),
 					resource.TestCheckResourceAttr(resourceName, "sources.#", "1"),
 					resource.TestCheckResourceAttr(resourceName, "sources.0.active", "1"),
@@ -78,10 +77,6 @@ func TestAccCdnDomain_basic(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "name", acceptance.HW_CDN_DOMAIN_NAME),
 					resource.TestCheckResourceAttr(resourceName, "type", "download"),
 					resource.TestCheckResourceAttr(resourceName, "service_area", "global"),
-					resource.TestCheckResourceAttr(resourceName, "cache_settings.0.rules.0.rule_type", "all"),
-					resource.TestCheckResourceAttr(resourceName, "cache_settings.0.rules.0.ttl", "180"),
-					resource.TestCheckResourceAttr(resourceName, "cache_settings.0.rules.0.ttl_type", "d"),
-					resource.TestCheckResourceAttr(resourceName, "cache_settings.0.rules.0.priority", "2"),
 					resource.TestCheckResourceAttr(resourceName, "tags.#", "0"),
 				),
 			},
@@ -112,7 +107,8 @@ func TestAccCdnDomain_basic(t *testing.T) {
 				ImportStateVerify: true,
 				ImportStateIdFunc: testCDNDomainImportState(resourceName),
 				ImportStateVerifyIgnore: []string{
-					"enterprise_project_id",
+					"enterprise_project_id", "configs.0.url_signing.0.key", "configs.0.https_settings.0.certificate_body",
+					"configs.0.https_settings.0.private_key", "cache_settings",
 				},
 			},
 		},
@@ -124,33 +120,6 @@ resource "huaweicloud_cdn_domain" "test" {
   name                  = "%s"
   type                  = "web"
   service_area          = "outside_mainland_china"
-  enterprise_project_id = "0"
-
-  configs {
-    origin_protocol = "http"
-  }
-
-  sources {
-    active      = 1
-    origin      = "100.254.53.75"
-    origin_type = "ipaddr"
-    http_port   = 80
-    https_port  = 443
-  }
-
-  tags = {
-    key = "val"
-    foo = "bar"
-  }
-}
-`, acceptance.HW_CDN_DOMAIN_NAME)
-
-var testAccCdnDomain_update1 = fmt.Sprintf(`
-resource "huaweicloud_cdn_domain" "test" {
-  name                  = "%s"
-  type                  = "download"
-  service_area          = "global"
-  enterprise_project_id = "0"
 
   configs {
     origin_protocol = "http"
@@ -167,9 +136,45 @@ resource "huaweicloud_cdn_domain" "test" {
   cache_settings {
     rules {
       rule_type = "all"
-      ttl       = 180
+      ttl       = 365
       ttl_type  = "d"
       priority  = 2
+    }
+  }
+
+  tags = {
+    key = "val"
+    foo = "bar"
+  }
+}
+`, acceptance.HW_CDN_DOMAIN_NAME)
+
+var testAccCdnDomain_update1 = fmt.Sprintf(`
+resource "huaweicloud_cdn_domain" "test" {
+  name                  = "%s"
+  type                  = "download"
+  service_area          = "global"
+
+  configs {
+    origin_protocol = "http"
+  }
+
+  sources {
+    active      = 1
+    origin      = "100.254.53.75"
+    origin_type = "ipaddr"
+    http_port   = 80
+    https_port  = 443
+  }
+
+  cache_settings {
+    follow_origin = true
+    rules {
+      rule_type = "file_extension"
+      content   = ".jpg"
+      ttl       = 0
+      ttl_type  = "d"
+      priority  = 3
     }
   }
 }
@@ -180,7 +185,6 @@ resource "huaweicloud_cdn_domain" "test" {
   name                  = "%s"
   type                  = "web"
   service_area          = "mainland_china"
-  enterprise_project_id = "0"
 
   configs {
     origin_protocol = "http"
@@ -194,6 +198,8 @@ resource "huaweicloud_cdn_domain" "test" {
     http_port      = 8001
     https_port     = 8002
   }
+
+  cache_settings {}
 }
 `, acceptance.HW_CDN_DOMAIN_NAME)
 
@@ -202,7 +208,6 @@ resource "huaweicloud_cdn_domain" "test" {
   name                  = "%s"
   type                  = "web"
   service_area          = "mainland_china"
-  enterprise_project_id = "0"
 
   sources {
     active      = 1
@@ -252,6 +257,8 @@ func TestAccCdnDomain_configHttpSettings(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "configs.0.https_settings.0.https_enabled", "true"),
 					resource.TestCheckResourceAttr(resourceName, "configs.0.https_settings.0.http2_enabled", "true"),
 					resource.TestCheckResourceAttr(resourceName, "configs.0.https_settings.0.certificate_source", "0"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.https_settings.0.certificate_type", "server"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.https_settings.0.ocsp_stapling_status", "on"),
 					resource.TestCheckResourceAttr(resourceName, "configs.0.https_settings.0.https_status", "on"),
 					resource.TestCheckResourceAttr(resourceName, "configs.0.https_settings.0.http2_status", "on"),
 					testAccCheckTLSVersion(resourceName, "TLSv1.1,TLSv1.2"),
@@ -267,10 +274,12 @@ func TestAccCdnDomain_configHttpSettings(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "name", acceptance.HW_CDN_DOMAIN_NAME),
 					resource.TestCheckResourceAttr(resourceName, "configs.0.https_settings.0.certificate_name", "terraform-update"),
 					resource.TestCheckResourceAttr(resourceName, "configs.0.https_settings.0.https_enabled", "true"),
-					resource.TestCheckResourceAttr(resourceName, "configs.0.https_settings.0.http2_enabled", "false"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.https_settings.0.http2_enabled", "true"),
 					resource.TestCheckResourceAttr(resourceName, "configs.0.https_settings.0.certificate_source", "0"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.https_settings.0.certificate_type", "server"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.https_settings.0.ocsp_stapling_status", "off"),
 					resource.TestCheckResourceAttr(resourceName, "configs.0.https_settings.0.https_status", "on"),
-					resource.TestCheckResourceAttr(resourceName, "configs.0.https_settings.0.http2_status", "off"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.https_settings.0.http2_status", "on"),
 					testAccCheckTLSVersion(resourceName, "TLSv1.1,TLSv1.2,TLSv1.3"),
 				),
 			},
@@ -284,6 +293,16 @@ func TestAccCdnDomain_configHttpSettings(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "configs.0.https_settings.0.https_status", "off"),
 					resource.TestCheckResourceAttr(resourceName, "configs.0.https_settings.0.http2_status", "off"),
 				),
+			},
+			{
+				ResourceName:      resourceName,
+				ImportState:       true,
+				ImportStateVerify: true,
+				ImportStateIdFunc: testCDNDomainImportState(resourceName),
+				ImportStateVerifyIgnore: []string{
+					"enterprise_project_id", "configs.0.url_signing.0.key", "configs.0.https_settings.0.certificate_body",
+					"configs.0.https_settings.0.private_key", "cache_settings",
+				},
 			},
 		},
 	})
@@ -334,13 +353,15 @@ resource "huaweicloud_cdn_domain" "test" {
     range_based_retrieval_enabled = "true"
 
     https_settings {
-      certificate_name   = "terraform-test"
-      certificate_body   = file("%s")
-      http2_enabled      = true
-      https_enabled      = true
-      private_key        = file("%s")
-      tls_version        = "TLSv1.1,TLSv1.2"
-      certificate_source = 0
+      certificate_name     = "terraform-test"
+      certificate_body     = file("%s")
+      http2_enabled        = true
+      https_enabled        = true
+      private_key          = file("%s")
+      tls_version          = "TLSv1.1,TLSv1.2"
+      certificate_source   = 0
+      certificate_type     = "server"
+      ocsp_stapling_status = "on"
     }
   }
 }
@@ -365,13 +386,14 @@ resource "huaweicloud_cdn_domain" "test" {
     range_based_retrieval_enabled = "true"
 
     https_settings {
-      certificate_name   = "terraform-update"
-      certificate_body   = file("%s")
-      http2_enabled      = false
-      https_enabled      = true
-      private_key        = file("%s")
-      tls_version        = "TLSv1.1,TLSv1.2,TLSv1.3"
-      certificate_source = 0
+      certificate_name     = "terraform-update"
+      certificate_body     = file("%s")
+      http2_enabled        = true
+      https_enabled        = true
+      private_key          = file("%s")
+      tls_version          = "TLSv1.1,TLSv1.2,TLSv1.3"
+      certificate_source   = 0
+      ocsp_stapling_status = "off"
     }
   }
 }
@@ -433,7 +455,12 @@ func TestAccCdnDomain_configs(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "configs.0.range_based_retrieval_enabled", "true"),
 					resource.TestCheckResourceAttr(resourceName, "configs.0.cache_url_parameter_filter.0.type", "ignore_url_params"),
 					resource.TestCheckResourceAttr(resourceName, "configs.0.retrieval_request_header.0.name", "test-name"),
-					resource.TestCheckResourceAttr(resourceName, "configs.0.url_signing.0.status", "off"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.url_signing.0.enabled", "true"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.url_signing.0.type", "type_a"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.url_signing.0.key", "A27jtfSTy13q7A0UnTA9vpxYXEb"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.url_signing.0.time_format", "dec"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.url_signing.0.expire_time", "0"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.url_signing.0.status", "on"),
 					resource.TestCheckResourceAttr(resourceName, "configs.0.compress.0.status", "off"),
 					resource.TestCheckResourceAttr(resourceName, "configs.0.force_redirect.0.status", "on"),
 
@@ -485,7 +512,12 @@ func TestAccCdnDomain_configs(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "configs.0.retrieval_request_header.0.name", "test-name-update"),
 					resource.TestCheckResourceAttr(resourceName, "configs.0.retrieval_request_header.0.value", "test-val-update"),
 					resource.TestCheckResourceAttr(resourceName, "configs.0.retrieval_request_header.0.action", "set"),
-					resource.TestCheckResourceAttr(resourceName, "configs.0.url_signing.0.status", "off"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.url_signing.0.enabled", "true"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.url_signing.0.type", "type_c2"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.url_signing.0.key", "3P7k9s4r0aey9CB1mvvDHG2"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.url_signing.0.time_format", "hex"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.url_signing.0.expire_time", "31536000"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.url_signing.0.status", "on"),
 					resource.TestCheckResourceAttr(resourceName, "configs.0.compress.0.status", "off"),
 					resource.TestCheckResourceAttr(resourceName, "configs.0.force_redirect.0.status", "on"),
 
@@ -540,6 +572,8 @@ func TestAccCdnDomain_configs(t *testing.T) {
 
 					resource.TestCheckResourceAttr(resourceName, "configs.0.remote_auth.0.enabled", "false"),
 					resource.TestCheckResourceAttr(resourceName, "configs.0.remote_auth.0.remote_auth_rules.#", "0"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.url_signing.0.enabled", "false"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.url_signing.0.status", "off"),
 				),
 			},
 			{
@@ -548,7 +582,8 @@ func TestAccCdnDomain_configs(t *testing.T) {
 				ImportStateVerify: true,
 				ImportStateIdFunc: testCDNDomainImportState(resourceName),
 				ImportStateVerifyIgnore: []string{
-					"enterprise_project_id",
+					"enterprise_project_id", "configs.0.url_signing.0.key", "configs.0.https_settings.0.certificate_body",
+					"configs.0.https_settings.0.private_key", "cache_settings",
 				},
 			},
 		},
@@ -590,7 +625,11 @@ resource "huaweicloud_cdn_domain" "test" {
     }
 
     url_signing {
-      enabled = false
+      enabled     = true
+      type        = "type_a"
+      key         = "A27jtfSTy13q7A0UnTA9vpxYXEb"
+      time_format = "dec"
+      expire_time = 0
     }
 
     compress {
@@ -710,7 +749,11 @@ resource "huaweicloud_cdn_domain" "test" {
     }
 
     url_signing {
-      enabled = false
+      enabled     = true
+      type        = "type_c2"
+      key         = "3P7k9s4r0aey9CB1mvvDHG2"
+      time_format = "hex"
+      expire_time = 31536000
     }
 
     compress {
@@ -782,6 +825,10 @@ resource "huaweicloud_cdn_domain" "test" {
     remote_auth {
       enabled = false
     }
+
+    url_signing {
+      enabled = false
+    }
   }
 }
 `, acceptance.HW_CDN_DOMAIN_NAME)
@@ -842,7 +889,8 @@ func TestAccCdnDomain_configTypeWholeSite(t *testing.T) {
 				ImportStateVerify: true,
 				ImportStateIdFunc: testCDNDomainImportState(resourceName),
 				ImportStateVerifyIgnore: []string{
-					"enterprise_project_id",
+					"enterprise_project_id", "configs.0.url_signing.0.key", "configs.0.https_settings.0.certificate_body",
+					"configs.0.https_settings.0.private_key", "cache_settings",
 				},
 			},
 		},
@@ -919,6 +967,109 @@ resource "huaweicloud_cdn_domain" "test" {
     websocket {
       enabled = false
     }
+  }
+}
+`, acceptance.HW_CDN_DOMAIN_NAME)
+
+func TestAccCdnDomain_epsID_migrate(t *testing.T) {
+	var (
+		obj          interface{}
+		resourceName = "huaweicloud_cdn_domain.test"
+	)
+
+	rc := acceptance.InitResourceCheck(
+		resourceName,
+		&obj,
+		getCdnDomainFunc,
+	)
+
+	resource.ParallelTest(t, resource.TestCase{
+		PreCheck: func() {
+			acceptance.TestAccPreCheckCDN(t)
+			acceptance.TestAccPreCheckEpsID(t)
+		},
+		ProviderFactories: acceptance.TestAccProviderFactories,
+		CheckDestroy:      rc.CheckResourceDestroy(),
+		Steps: []resource.TestStep{
+			{
+				Config: TestAccCdnDomain_epsID_basic,
+				Check: resource.ComposeTestCheckFunc(
+					rc.CheckResourceExists(),
+					resource.TestCheckResourceAttr(resourceName, "name", acceptance.HW_CDN_DOMAIN_NAME),
+					resource.TestCheckResourceAttr(resourceName, "enterprise_project_id", "0"),
+				),
+			},
+			{
+				Config: TestAccCdnDomain_epsID_update1,
+				Check: resource.ComposeTestCheckFunc(
+					rc.CheckResourceExists(),
+					resource.TestCheckResourceAttr(resourceName, "name", acceptance.HW_CDN_DOMAIN_NAME),
+					resource.TestCheckResourceAttr(resourceName, "enterprise_project_id", acceptance.HW_ENTERPRISE_PROJECT_ID_TEST),
+				),
+			},
+			{
+				Config: TestAccCdnDomain_epsID_update2,
+				Check: resource.ComposeTestCheckFunc(
+					rc.CheckResourceExists(),
+					resource.TestCheckResourceAttr(resourceName, "name", acceptance.HW_CDN_DOMAIN_NAME),
+					resource.TestCheckResourceAttr(resourceName, "enterprise_project_id", "0"),
+				),
+			},
+			{
+				ResourceName:      resourceName,
+				ImportState:       true,
+				ImportStateVerify: true,
+				ImportStateIdFunc: testCDNDomainImportState(resourceName),
+				ImportStateVerifyIgnore: []string{
+					"enterprise_project_id", "configs.0.url_signing.0.key", "configs.0.https_settings.0.certificate_body",
+					"configs.0.https_settings.0.private_key", "cache_settings",
+				},
+			},
+		},
+	})
+}
+
+var TestAccCdnDomain_epsID_basic = fmt.Sprintf(`
+resource "huaweicloud_cdn_domain" "test" {
+  name                  = "%s"
+  type                  = "wholeSite"
+  service_area          = "outside_mainland_china"
+  enterprise_project_id = "0"
+
+  sources {
+    active      = 1
+    origin      = "100.254.53.75"
+    origin_type = "ipaddr"
+  }
+}
+`, acceptance.HW_CDN_DOMAIN_NAME)
+
+var TestAccCdnDomain_epsID_update1 = fmt.Sprintf(`
+resource "huaweicloud_cdn_domain" "test" {
+  name                  = "%s"
+  type                  = "wholeSite"
+  service_area          = "outside_mainland_china"
+  enterprise_project_id = "%s"
+
+  sources {
+    active      = 1
+    origin      = "100.254.53.75"
+    origin_type = "ipaddr"
+  }
+}
+`, acceptance.HW_CDN_DOMAIN_NAME, acceptance.HW_ENTERPRISE_PROJECT_ID_TEST)
+
+var TestAccCdnDomain_epsID_update2 = fmt.Sprintf(`
+resource "huaweicloud_cdn_domain" "test" {
+  name                  = "%s"
+  type                  = "wholeSite"
+  service_area          = "outside_mainland_china"
+  enterprise_project_id = "0"
+
+  sources {
+    active      = 1
+    origin      = "100.254.53.75"
+    origin_type = "ipaddr"
   }
 }
 `, acceptance.HW_CDN_DOMAIN_NAME)

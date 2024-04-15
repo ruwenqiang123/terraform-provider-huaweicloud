@@ -1,6 +1,6 @@
 info:
     version: ""
-    title: resource_huaweicloud_dli_template_sql
+    title: resource_huaweicloud_dli_sql_template
     description: ""
 schemes:
     - https

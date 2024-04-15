@@ -16,6 +16,7 @@ import (
 
 	"github.com/chnsz/golangsdk"
 	"github.com/chnsz/golangsdk/openstack/cdn/v1/domains"
+	"github.com/chnsz/golangsdk/openstack/eps/v1/enterpriseprojects"
 
 	cdnv2 "github.com/huaweicloud/huaweicloud-sdk-go-v3/services/cdn/v2"
 	"github.com/huaweicloud/huaweicloud-sdk-go-v3/services/cdn/v2/model"
@@ -58,6 +59,11 @@ var httpsConfig = schema.Schema{
 				Optional: true,
 				Computed: true,
 			},
+			"certificate_type": {
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 			"http2_enabled": {
 				Type:     schema.TypeBool,
 				Optional: true,
@@ -68,6 +74,11 @@ var httpsConfig = schema.Schema{
 				Optional:         true,
 				DiffSuppressFunc: utils.SuppressStringSepratedByCommaDiffs,
 				Computed:         true,
+			},
+			"ocsp_stapling_status": {
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
 			},
 			"https_status": {
 				Type:     schema.TypeString,
@@ -416,7 +427,7 @@ func ResourceCdnDomain() *schema.Resource {
 			"name": {
 				Type:     schema.TypeString,
 				Required: true,
-				ForceNew: true,
+				ForceNew: utils.GetForceNew(),
 			},
 			"type": {
 				Type:     schema.TypeString,
@@ -478,7 +489,6 @@ func ResourceCdnDomain() *schema.Resource {
 			"enterprise_project_id": {
 				Type:     schema.TypeString,
 				Optional: true,
-				ForceNew: true,
 			},
 			"configs": {
 				Type:     schema.TypeList,
@@ -518,6 +528,7 @@ func ResourceCdnDomain() *schema.Resource {
 				},
 			},
 
+			// The cloud will create a rule for `cache_settings` by default, so its value will not be set when querying.
 			"cache_settings": {
 				Type:     schema.TypeList,
 				Optional: true,
@@ -587,6 +598,11 @@ func ResourceCdnDomain() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
+			"domain_name": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "schema: Internal",
+			},
 		},
 	}
 }
@@ -607,11 +623,19 @@ func buildCreateDomainSources(d *schema.ResourceData) []domains.SourcesOpts {
 	return sourceRequests
 }
 
-func buildHttpStatusOpts(enable bool) string {
+func buildHTTPSStatusOpts(enable bool) string {
 	if enable {
 		return "on"
 	}
 	return "off"
+}
+
+func buildHTTP2StatusOpts(enable bool) string {
+	if enable {
+		return "on"
+	}
+	// Currently, European sites do not support this parameter, so we will handle it this way for the time being.
+	return ""
 }
 
 func buildHTTPSOpts(rawHTTPS []interface{}) *model.HttpPutBody {
@@ -621,13 +645,15 @@ func buildHTTPSOpts(rawHTTPS []interface{}) *model.HttpPutBody {
 
 	https := rawHTTPS[0].(map[string]interface{})
 	httpsOpts := model.HttpPutBody{
-		HttpsStatus:       utils.String(buildHttpStatusOpts(https["https_enabled"].(bool))),
-		CertificateName:   utils.StringIgnoreEmpty(https["certificate_name"].(string)),
-		CertificateValue:  utils.StringIgnoreEmpty(https["certificate_body"].(string)),
-		PrivateKey:        utils.StringIgnoreEmpty(https["private_key"].(string)),
-		CertificateSource: utils.Int32(int32(https["certificate_source"].(int))),
-		Http2Status:       utils.String(buildHttpStatusOpts(https["http2_enabled"].(bool))),
-		TlsVersion:        utils.StringIgnoreEmpty(https["tls_version"].(string)),
+		HttpsStatus:        utils.String(buildHTTPSStatusOpts(https["https_enabled"].(bool))),
+		CertificateName:    utils.StringIgnoreEmpty(https["certificate_name"].(string)),
+		CertificateValue:   utils.StringIgnoreEmpty(https["certificate_body"].(string)),
+		PrivateKey:         utils.StringIgnoreEmpty(https["private_key"].(string)),
+		CertificateSource:  utils.Int32(int32(https["certificate_source"].(int))),
+		CertificateType:    utils.StringIgnoreEmpty(https["certificate_type"].(string)),
+		Http2Status:        utils.StringIgnoreEmpty(buildHTTP2StatusOpts(https["http2_enabled"].(bool))),
+		TlsVersion:         utils.StringIgnoreEmpty(https["tls_version"].(string)),
+		OcspStaplingStatus: utils.StringIgnoreEmpty(https["ocsp_stapling_status"].(string)),
 	}
 
 	return &httpsOpts
@@ -687,7 +713,7 @@ func buildUrlAuthOpts(rawUrlAuth []interface{}) *model.UrlAuth {
 		Type:       utils.StringIgnoreEmpty(urlAuth["type"].(string)),
 		Key:        utils.StringIgnoreEmpty(urlAuth["key"].(string)),
 		TimeFormat: utils.StringIgnoreEmpty(urlAuth["time_format"].(string)),
-		ExpireTime: utils.Int32IgnoreEmpty(int32(urlAuth["expire_time"].(int))),
+		ExpireTime: utils.Int32(int32(urlAuth["expire_time"].(int))),
 	}
 
 	return &urlAuthOpts
@@ -920,7 +946,7 @@ func buildCacheRules(followOrigin bool, rules []interface{}) *[]model.CacheRules
 			FollowOrigin: utils.StringIgnoreEmpty(parseFunctionEnabledStatus(followOrigin)),
 			MatchType:    utils.StringIgnoreEmpty(parseCacheRuleType(rule["rule_type"].(string))),
 			MatchValue:   utils.StringIgnoreEmpty(rule["content"].(string)),
-			Ttl:          utils.Int32IgnoreEmpty(int32(rule["ttl"].(int))),
+			Ttl:          utils.Int32(int32(rule["ttl"].(int))),
 			TtlUnit:      parseCacheTTLUnits(rule["ttl_type"].(string)),
 			Priority:     int32(rule["priority"].(int)),
 		}
@@ -1141,15 +1167,17 @@ func flattenHTTPSAttrs(https *model.HttpGetBody, privateKey, certificateBody str
 		return nil
 	}
 	httpsAttrs := map[string]interface{}{
-		"https_status":       https.HttpsStatus,
-		"certificate_name":   https.CertificateName,
-		"certificate_body":   certificateBody,
-		"private_key":        privateKey,
-		"certificate_source": https.CertificateSource,
-		"http2_status":       https.Http2Status,
-		"tls_version":        https.TlsVersion,
-		"https_enabled":      analyseFunctionEnabledStatusPtr(https.HttpsStatus),
-		"http2_enabled":      analyseFunctionEnabledStatusPtr(https.Http2Status),
+		"https_status":         https.HttpsStatus,
+		"certificate_name":     https.CertificateName,
+		"certificate_body":     certificateBody,
+		"private_key":          privateKey,
+		"certificate_source":   https.CertificateSource,
+		"certificate_type":     https.CertificateType,
+		"http2_status":         https.Http2Status,
+		"tls_version":          https.TlsVersion,
+		"ocsp_stapling_status": https.OcspStaplingStatus,
+		"https_enabled":        analyseFunctionEnabledStatusPtr(https.HttpsStatus),
+		"http2_enabled":        analyseFunctionEnabledStatusPtr(https.Http2Status),
 	}
 
 	return []map[string]interface{}{httpsAttrs}
@@ -1386,31 +1414,6 @@ func flattenSourcesAttrs(sources *[]model.SourcesConfig) []map[string]interface{
 	return sourcesAttrs
 }
 
-func flattenCacheRulesAttrs(cacheRulesPtr *[]model.CacheRules) []map[string]interface{} {
-	if cacheRulesPtr == nil || len(*cacheRulesPtr) == 0 {
-		return nil
-	}
-
-	cacheRules := *cacheRulesPtr
-	sourcesAttrs := make([]map[string]interface{}, len(cacheRules))
-	for i, v := range cacheRules {
-		sourcesAttrs[i] = map[string]interface{}{
-			"rule_type": v.MatchType,
-			"content":   v.MatchValue,
-			"ttl":       v.Ttl,
-			"ttl_type":  v.TtlUnit,
-			"priority":  v.Priority,
-		}
-	}
-
-	return []map[string]interface{}{
-		{
-			"follow_origin": analyseFunctionEnabledStatus(utils.StringValue(cacheRules[0].FollowOrigin)),
-			"rules":         sourcesAttrs,
-		},
-	}
-}
-
 func flattenConfigAttrs(configsResp *model.ConfigsGetBody, d *schema.ResourceData) []map[string]interface{} {
 	privateKey := d.Get("configs.0.https_settings.0.private_key").(string)
 	certificateBody := d.Get("configs.0.https_settings.0.certificate_body").(string)
@@ -1473,7 +1476,12 @@ func resourceCdnDomainRead(_ context.Context, d *schema.ResourceData, meta inter
 		return diag.Errorf("error creating CDN v2 client: %s", err)
 	}
 
-	v, err := domains.GetByName(cdnClient, d.Get("name").(string), buildResourceExtensionOpts(d, cfg)).Extract()
+	domainName := d.Get("domain_name").(string)
+	if domainName == "" {
+		domainName = d.Get("name").(string)
+	}
+
+	v, err := domains.GetByName(cdnClient, domainName, buildResourceExtensionOpts(d, cfg)).Extract()
 	if err != nil {
 		return common.CheckDeletedDiag(d, parseDetailResponseError(err), "error retrieving CDN domain")
 	}
@@ -1502,8 +1510,8 @@ func resourceCdnDomainRead(_ context.Context, d *schema.ResourceData, meta inter
 		d.Set("service_area", v.ServiceArea),
 		d.Set("sources", flattenSourcesAttrs(configsResp.Sources)),
 		d.Set("configs", flattenConfigAttrs(configsResp, d)),
-		d.Set("cache_settings", flattenCacheRulesAttrs(configsResp.CacheRules)),
 		d.Set("tags", tags),
+		d.Set("domain_name", v.DomainName),
 	)
 	return diag.FromErr(mErr.ErrorOrNil())
 }
@@ -1530,8 +1538,13 @@ func parseDetailResponseError(err error) error {
 }
 
 func resourceCdnDomainUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+	if d.HasChange("name") && !d.IsNewResource() {
+		return diag.Errorf("error updating CDN domain name: not supported!")
+	}
+
 	cfg := meta.(*config.Config)
-	hcCdnClient, err := cfg.HcCdnV2Client(cfg.GetRegion(d))
+	region := cfg.GetRegion(d)
+	hcCdnClient, err := cfg.HcCdnV2Client(region)
 	if err != nil {
 		return diag.Errorf("error creating CDN v2 client: %s", err)
 	}
@@ -1542,7 +1555,7 @@ func resourceCdnDomainUpdate(ctx context.Context, d *schema.ResourceData, meta i
 			return diag.Errorf("error updating CDN domain configs settings: %s", err)
 		}
 
-		cdnClient, err := cfg.CdnV1Client(cfg.GetRegion(d))
+		cdnClient, err := cfg.CdnV1Client(region)
 		if err != nil {
 			return diag.Errorf("error creating CDN v1 client: %s", err)
 		}
@@ -1554,6 +1567,18 @@ func resourceCdnDomainUpdate(ctx context.Context, d *schema.ResourceData, meta i
 
 	if d.HasChange("tags") {
 		if err := updateDomainTags(hcCdnClient, d); err != nil {
+			return diag.FromErr(err)
+		}
+	}
+
+	if d.HasChange("enterprise_project_id") {
+		migrateOpts := enterpriseprojects.MigrateResourceOpts{
+			ResourceId:   d.Id(),
+			ResourceType: "cdn",
+			RegionId:     region,
+			ProjectId:    cfg.GetProjectID(region),
+		}
+		if err := common.MigrateEnterpriseProject(ctx, cfg, d, migrateOpts); err != nil {
 			return diag.FromErr(err)
 		}
 	}
@@ -1630,9 +1655,68 @@ func resourceCdnDomainDelete(ctx context.Context, d *schema.ResourceData, meta i
 		return diag.Errorf("error deleting CDN domain (%s): %s", d.Id(), err)
 	}
 
-	// an API issue will be raised in ForceNew scene, so wait for a while
-	time.Sleep(3 * time.Second) // lintignore:R018
+	if err := waitingForDomainDeleted(ctx, cdnClient, d, d.Timeout(schema.TimeoutDelete), opts); err != nil {
+		return diag.Errorf("error waiting for CDN domain (%s) deletion to complete: %s", d.Id(), err)
+	}
 	return nil
+}
+
+func waitingForDomainDeleted(ctx context.Context, client *golangsdk.ServiceClient, d *schema.ResourceData,
+	timeout time.Duration, opts *domains.ExtensionOpts) error {
+	domainName := d.Get("name").(string)
+	unexpectedStatus := []string{"online", "offline", "configuring", "configure_failed", "checking", "check_failed"}
+	stateConf := &resource.StateChangeConf{
+		Pending: []string{"PENDING"},
+		Target:  []string{"COMPLETED"},
+		Refresh: func() (interface{}, string, error) {
+			domain, err := domains.GetByName(client, domainName, opts).Extract()
+			if err != nil {
+				parseErr := parseDeleteDetailResponseError(err)
+				if _, ok := parseErr.(golangsdk.ErrDefault404); ok {
+					return "success", "COMPLETED", nil
+				}
+				return nil, "ERROR", err
+			}
+
+			if domain == nil {
+				return nil, "ERROR", fmt.Errorf("error retrieving CDN domain: Domain is not found in API response")
+			}
+
+			status := domain.DomainStatus
+			if utils.StrSliceContains(unexpectedStatus, status) {
+				return domain, status, nil
+			}
+			return domain, "PENDING", nil
+		},
+		Timeout:      timeout,
+		Delay:        20 * time.Second,
+		PollInterval: 20 * time.Second,
+	}
+	_, err := stateConf.WaitForStateContext(ctx)
+	return err
+}
+
+// When the deletion interface is successfully called, in the error information responded by the query details interface,
+// the following two situations need to be processed as 404:
+// {"error": {"error_code": "CDN.0170","error_msg": "domain not exist!"}}
+// {"error": {"error_code": "CDN.00010182","error_msg": "The resource is not belong to the enterprise project."}}
+func parseDeleteDetailResponseError(err error) error {
+	var errCode golangsdk.ErrDefault400
+	if errors.As(err, &errCode) {
+		var apiError interface{}
+		if jsonErr := json.Unmarshal(errCode.Body, &apiError); jsonErr != nil {
+			return err
+		}
+		errorCode, errorCodeErr := jmespath.Search("error.error_code", apiError)
+		if errorCodeErr != nil || errorCode == nil {
+			return err
+		}
+
+		if errorCode.(string) == "CDN.0170" || errorCode.(string) == "CDN.00010182" {
+			return golangsdk.ErrDefault404(errCode)
+		}
+	}
+	return err
 }
 
 func buildResourceExtensionOpts(d *schema.ResourceData, cfg *config.Config) *domains.ExtensionOpts {
@@ -1647,5 +1731,5 @@ func buildResourceExtensionOpts(d *schema.ResourceData, cfg *config.Config) *dom
 
 func resourceCDNDomainImportState(_ context.Context, d *schema.ResourceData,
 	_ interface{}) ([]*schema.ResourceData, error) {
-	return []*schema.ResourceData{d}, d.Set("name", d.Id())
+	return []*schema.ResourceData{d}, d.Set("domain_name", d.Id())
 }
