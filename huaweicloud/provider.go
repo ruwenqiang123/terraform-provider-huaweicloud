@@ -416,11 +416,13 @@ func Provider() *schema.Provider {
 			"huaweicloud_cbh_instances": cbh.DataSourceCbhInstances(),
 			"huaweicloud_cbh_flavors":   cbh.DataSourceCbhFlavors(),
 
+			"huaweicloud_cc_bandwidth_packages":           cc.DataSourceCcBandwidthPackages(),
 			"huaweicloud_cc_central_networks":             cc.DataSourceCcCentralNetworks(),
 			"huaweicloud_cc_central_network_connections":  cc.DataSourceCcCentralNetworkConnections(),
 			"huaweicloud_cc_connections":                  cc.DataSourceCloudConnections(),
 			"huaweicloud_cc_global_connection_bandwidths": cc.DataSourceCcGlobalConnectionBandwidths(),
 			"huaweicloud_cc_central_network_policies":     cc.DataSourceCcCentralNetworkPolicies(),
+			"huaweicloud_cc_network_instances":            cc.DataSourceCcNetworkInstances(),
 
 			"huaweicloud_cce_addon_template":      cce.DataSourceAddonTemplate(),
 			"huaweicloud_cce_cluster":             cce.DataSourceCCEClusterV3(),
@@ -768,8 +770,9 @@ func Provider() *schema.Provider {
 			"huaweicloud_kms_key_v1":      dew.DataSourceKmsKey(),
 			"huaweicloud_kms_data_key_v1": dew.DataSourceKmsDataKeyV1(),
 
-			"huaweicloud_rds_flavors_v3":     rds.DataSourceRdsFlavor(),
-			"huaweicloud_sfs_file_system_v2": sfs.DataSourceSFSFileSystemV2(),
+			"huaweicloud_rds_flavors_v3":           rds.DataSourceRdsFlavor(),
+			"huaweicloud_sfs_file_system_v2":       sfs.DataSourceSFSFileSystemV2(),
+			"huaweicloud_rds_sql_audit_operations": rds.DataSourceRdsSqlAuditTypes(),
 
 			"huaweicloud_vpc_v1":                    vpc.DataSourceVpcV1(),
 			"huaweicloud_vpc_ids_v1":                vpc.DataSourceVpcIdsV1(),
@@ -987,6 +990,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_css_thesaurus":                   css.ResourceCssthesaurus(),
 			"huaweicloud_css_configuration":               css.ResourceCssConfiguration(),
 			"huaweicloud_css_scan_task":                   css.ResourceScanTask(),
+			"huaweicloud_css_log_setting":                 css.ResourceLogSetting(),
 			"huaweicloud_css_logstash_cluster":            css.ResourceLogstashCluster(),
 			"huaweicloud_css_logstash_configuration":      css.ResourceLogstashConfiguration(),
 			"huaweicloud_css_logstash_pipeline":           css.ResourceLogstashPipeline(),
