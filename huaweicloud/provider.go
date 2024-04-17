@@ -418,11 +418,13 @@ func Provider() *schema.Provider {
 
 			"huaweicloud_cc_bandwidth_packages":           cc.DataSourceCcBandwidthPackages(),
 			"huaweicloud_cc_central_networks":             cc.DataSourceCcCentralNetworks(),
+			"huaweicloud_cc_central_network_capabilities": cc.DataSourceCcCentralNetworkCapabilities(),
 			"huaweicloud_cc_central_network_connections":  cc.DataSourceCcCentralNetworkConnections(),
 			"huaweicloud_cc_connections":                  cc.DataSourceCloudConnections(),
 			"huaweicloud_cc_global_connection_bandwidths": cc.DataSourceCcGlobalConnectionBandwidths(),
 			"huaweicloud_cc_central_network_policies":     cc.DataSourceCcCentralNetworkPolicies(),
 			"huaweicloud_cc_network_instances":            cc.DataSourceCcNetworkInstances(),
+			"huaweicloud_cc_inter_region_bandwidths":      cc.DataSourceCcInterRegionBandwidths(),
 
 			"huaweicloud_cce_addon_template":      cce.DataSourceAddonTemplate(),
 			"huaweicloud_cce_cluster":             cce.DataSourceCCEClusterV3(),
@@ -512,6 +514,7 @@ func Provider() *schema.Provider {
 
 			"huaweicloud_dns_floating_ptrrecords": dns.DataSourceFloatingPtrrecords(),
 			"huaweicloud_dns_line_groups":         dns.DataSourceLineGroups(),
+			"huaweicloud_dns_nameservers":         dns.DataSourceNameservers(),
 			"huaweicloud_dns_recordsets":          dns.DataSourceRecordsets(),
 			"huaweicloud_dns_zones":               dns.DataSourceZones(),
 
@@ -560,6 +563,8 @@ func Provider() *schema.Provider {
 			"huaweicloud_gaussdb_redis_instance":               gaussdb.DataSourceGaussRedisInstance(),
 			"huaweicloud_gaussdb_mysql_backups":                gaussdb.DataSourceGaussdbMysqlBackups(),
 			"huaweicloud_gaussdb_mysql_restore_time_ranges":    gaussdb.DataSourceGaussdbMysqlRestoreTimeRanges(),
+
+			"huaweicloud_hss_host_groups": hss.DataSourceHostGroups(),
 
 			"huaweicloud_identity_permissions": iam.DataSourceIdentityPermissions(),
 			"huaweicloud_identity_role":        iam.DataSourceIdentityRole(),
@@ -1027,6 +1032,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_dis_stream": dis.ResourceDisStream(),
 
 			"huaweicloud_dli_database":                        dli.ResourceDliSqlDatabaseV1(),
+			"huaweicloud_dli_database_privilege":              dli.ResourceDatabasePrivilege(),
 			"huaweicloud_dli_elastic_resource_pool":           dli.ResourceElasticResourcePool(),
 			"huaweicloud_dli_package":                         dli.ResourceDliPackageV2(),
 			"huaweicloud_dli_queue":                           dli.ResourceDliQueue(),
