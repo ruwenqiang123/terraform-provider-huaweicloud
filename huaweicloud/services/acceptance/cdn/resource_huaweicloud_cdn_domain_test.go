@@ -135,10 +135,12 @@ resource "huaweicloud_cdn_domain" "test" {
 
   cache_settings {
     rules {
-      rule_type = "all"
-      ttl       = 365
-      ttl_type  = "d"
-      priority  = 2
+      rule_type           = "all"
+      ttl                 = 365
+      ttl_type            = "d"
+      priority            = 2
+      url_parameter_type  = "del_params"
+      url_parameter_value = "test_value"
     }
   }
 
@@ -170,11 +172,12 @@ resource "huaweicloud_cdn_domain" "test" {
   cache_settings {
     follow_origin = true
     rules {
-      rule_type = "file_extension"
-      content   = ".jpg"
-      ttl       = 0
-      ttl_type  = "d"
-      priority  = 3
+      rule_type          = "file_extension"
+      content            = ".jpg"
+      ttl                = 0
+      ttl_type           = "d"
+      priority           = 3
+      url_parameter_type = "ignore_url_params"
     }
   }
 }
@@ -466,14 +469,21 @@ func TestAccCdnDomain_configs(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "configs.0.description", "test description"),
 					resource.TestCheckResourceAttr(resourceName, "configs.0.slice_etag_status", "on"),
 					resource.TestCheckResourceAttr(resourceName, "configs.0.origin_receive_timeout", "60"),
-					resource.TestCheckResourceAttr(resourceName, "configs.0.cache_url_parameter_filter.0.type", "ignore_url_params"),
 					resource.TestCheckResourceAttr(resourceName, "configs.0.retrieval_request_header.0.name", "test-name"),
 					resource.TestCheckResourceAttr(resourceName, "configs.0.url_signing.0.enabled", "true"),
 					resource.TestCheckResourceAttr(resourceName, "configs.0.url_signing.0.type", "type_a"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.url_signing.0.sign_method", "md5"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.url_signing.0.match_type", "all"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.url_signing.0.sign_arg", "Psd_123"),
 					resource.TestCheckResourceAttr(resourceName, "configs.0.url_signing.0.key", "A27jtfSTy13q7A0UnTA9vpxYXEb"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.url_signing.0.backup_key", "S36klgTFa60q3V8DmSK2hwfBOYp"),
 					resource.TestCheckResourceAttr(resourceName, "configs.0.url_signing.0.time_format", "dec"),
 					resource.TestCheckResourceAttr(resourceName, "configs.0.url_signing.0.expire_time", "0"),
 					resource.TestCheckResourceAttr(resourceName, "configs.0.url_signing.0.status", "on"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.url_signing.0.inherit_config.0.enabled", "true"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.url_signing.0.inherit_config.0.inherit_type", "m3u8,mpd"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.url_signing.0.inherit_config.0.inherit_time_type", "sys_time"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.url_signing.0.inherit_config.0.status", "on"),
 					resource.TestCheckResourceAttr(resourceName, "configs.0.compress.0.status", "off"),
 					resource.TestCheckResourceAttr(resourceName, "configs.0.force_redirect.0.enabled", "true"),
 					resource.TestCheckResourceAttr(resourceName, "configs.0.force_redirect.0.type", "http"),
@@ -529,17 +539,23 @@ func TestAccCdnDomain_configs(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "configs.0.description", "update description"),
 					resource.TestCheckResourceAttr(resourceName, "configs.0.slice_etag_status", "off"),
 					resource.TestCheckResourceAttr(resourceName, "configs.0.origin_receive_timeout", "30"),
-					resource.TestCheckResourceAttr(resourceName, "configs.0.cache_url_parameter_filter.0.type", "del_params"),
-					resource.TestCheckResourceAttr(resourceName, "configs.0.cache_url_parameter_filter.0.value", "test_value"),
 					resource.TestCheckResourceAttr(resourceName, "configs.0.retrieval_request_header.0.name", "test-name-update"),
 					resource.TestCheckResourceAttr(resourceName, "configs.0.retrieval_request_header.0.value", "test-val-update"),
 					resource.TestCheckResourceAttr(resourceName, "configs.0.retrieval_request_header.0.action", "set"),
 					resource.TestCheckResourceAttr(resourceName, "configs.0.url_signing.0.enabled", "true"),
 					resource.TestCheckResourceAttr(resourceName, "configs.0.url_signing.0.type", "type_c2"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.url_signing.0.sign_method", "sha256"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.url_signing.0.match_type", "all"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.url_signing.0.sign_arg", "Dma_001"),
 					resource.TestCheckResourceAttr(resourceName, "configs.0.url_signing.0.key", "3P7k9s4r0aey9CB1mvvDHG2"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.url_signing.0.backup_key", "5F8a6c3r1xgp7DL0jkeBYZ4"),
 					resource.TestCheckResourceAttr(resourceName, "configs.0.url_signing.0.time_format", "hex"),
 					resource.TestCheckResourceAttr(resourceName, "configs.0.url_signing.0.expire_time", "31536000"),
 					resource.TestCheckResourceAttr(resourceName, "configs.0.url_signing.0.status", "on"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.url_signing.0.inherit_config.0.enabled", "true"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.url_signing.0.inherit_config.0.inherit_type", "mpd"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.url_signing.0.inherit_config.0.inherit_time_type", "parent_url_time"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.url_signing.0.inherit_config.0.status", "on"),
 					resource.TestCheckResourceAttr(resourceName, "configs.0.compress.0.status", "off"),
 					resource.TestCheckResourceAttr(resourceName, "configs.0.force_redirect.0.enabled", "true"),
 					resource.TestCheckResourceAttr(resourceName, "configs.0.force_redirect.0.type", "http"),
@@ -603,6 +619,21 @@ func TestAccCdnDomain_configs(t *testing.T) {
 
 					resource.TestCheckResourceAttr(resourceName, "configs.0.remote_auth.0.enabled", "false"),
 					resource.TestCheckResourceAttr(resourceName, "configs.0.remote_auth.0.remote_auth_rules.#", "0"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.url_signing.0.enabled", "true"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.url_signing.0.status", "on"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.url_signing.0.inherit_config.0.enabled", "false"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.url_signing.0.inherit_config.0.status", "off"),
+				),
+			},
+			{
+				Config: testAccCdnDomain_configsUpdate3,
+				Check: resource.ComposeTestCheckFunc(
+					rc.CheckResourceExists(),
+					resource.TestCheckResourceAttr(resourceName, "name", acceptance.HW_CDN_DOMAIN_NAME),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.flexible_origin.#", "0"),
+
+					resource.TestCheckResourceAttr(resourceName, "configs.0.remote_auth.0.enabled", "false"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.remote_auth.0.remote_auth_rules.#", "0"),
 					resource.TestCheckResourceAttr(resourceName, "configs.0.url_signing.0.enabled", "false"),
 					resource.TestCheckResourceAttr(resourceName, "configs.0.url_signing.0.status", "off"),
 
@@ -618,8 +649,8 @@ func TestAccCdnDomain_configs(t *testing.T) {
 				ImportStateVerify: true,
 				ImportStateIdFunc: testCDNDomainImportState(resourceName),
 				ImportStateVerifyIgnore: []string{
-					"enterprise_project_id", "configs.0.url_signing.0.key", "configs.0.https_settings.0.certificate_body",
-					"configs.0.https_settings.0.private_key", "cache_settings",
+					"enterprise_project_id", "configs.0.url_signing.0.key", "configs.0.url_signing.0.backup_key",
+					"configs.0.https_settings.0.certificate_body", "configs.0.https_settings.0.private_key", "cache_settings",
 				},
 			},
 		},
@@ -646,10 +677,6 @@ resource "huaweicloud_cdn_domain" "test" {
     description                   = "test description"
     origin_receive_timeout        = "60"
 
-    cache_url_parameter_filter {
-      type = "ignore_url_params"
-    }
-
     retrieval_request_header {
       name   = "test-name"
       value  = "test-val"
@@ -665,9 +692,19 @@ resource "huaweicloud_cdn_domain" "test" {
     url_signing {
       enabled     = true
       type        = "type_a"
+      sign_method = "md5"
+      match_type  = "all"
+      sign_arg    = "Psd_123"
       key         = "A27jtfSTy13q7A0UnTA9vpxYXEb"
+      backup_key  = "S36klgTFa60q3V8DmSK2hwfBOYp"
       time_format = "dec"
       expire_time = 0
+
+      inherit_config {
+        enabled           = true
+        inherit_type      = "m3u8,mpd"
+        inherit_time_type = "sys_time"
+      }
     }
 
     compress {
@@ -779,11 +816,6 @@ resource "huaweicloud_cdn_domain" "test" {
     slice_etag_status             = "off"
     origin_receive_timeout        = "30"
 
-    cache_url_parameter_filter {
-      type  = "del_params"
-      value = "test_value"
-    }
-
     retrieval_request_header {
       name   = "test-name-update"
       value  = "test-val-update"
@@ -799,9 +831,19 @@ resource "huaweicloud_cdn_domain" "test" {
     url_signing {
       enabled     = true
       type        = "type_c2"
+      sign_method = "sha256"
+      match_type  = "all"
+      sign_arg    = "Dma_001"
       key         = "3P7k9s4r0aey9CB1mvvDHG2"
+      backup_key  = "5F8a6c3r1xgp7DL0jkeBYZ4"
       time_format = "hex"
       expire_time = 31536000
+
+      inherit_config {
+        enabled           = true
+        inherit_type      = "mpd"
+        inherit_time_type = "parent_url_time"
+      }
     }
 
     compress {
@@ -878,6 +920,47 @@ resource "huaweicloud_cdn_domain" "test" {
     range_based_retrieval_enabled = false
     slice_etag_status             = "on"
     origin_receive_timeout        = "5"
+
+    remote_auth {
+      enabled = false
+    }
+
+    url_signing {
+      enabled     = true
+      type        = "type_c2"
+      sign_method = "sha256"
+      match_type  = "all"
+      sign_arg    = "web506"
+      key         = "3P7k9s4r0aey9CB1mvvDHG2"
+      backup_key  = "5F8a6c3r1xgp7DL0jkeBYZ4"
+      time_format = "hex"
+      expire_time = 31536000
+
+      inherit_config {
+        enabled = false
+      }
+    }
+  }
+}
+`, acceptance.HW_CDN_DOMAIN_NAME)
+
+var testAccCdnDomain_configsUpdate3 = fmt.Sprintf(`
+resource "huaweicloud_cdn_domain" "test" {
+  name                  = "%s"
+  type                  = "web"
+  service_area          = "outside_mainland_china"
+  enterprise_project_id = 0
+
+  sources {
+    active      = 1
+    origin      = "100.254.53.75"
+    origin_type = "ipaddr"
+  }
+
+  configs {
+    origin_protocol               = "follow"
+    ipv6_enable                   = false
+    range_based_retrieval_enabled = false
 
     remote_auth {
       enabled = false

@@ -326,6 +326,18 @@ var (
 	HW_LTS_CCE_HOST_GROUP_ID = os.Getenv("HW_LTS_CCE_HOST_GROUP_ID")
 	HW_LTS_CCE_CLUSTER_ID    = os.Getenv("HW_LTS_CCE_CLUSTER_ID")
 
+	HW_LTS_LOG_CONVERGE_ORGANIZATION_ID       = os.Getenv("HW_LTS_LOG_CONVERGE_ORGANIZATION_ID")
+	HW_LTS_LOG_CONVERGE_MANAGEMENT_ACCOUNT_ID = os.Getenv("HW_LTS_LOG_CONVERGE_MANAGEMENT_ACCOUNT_ID")
+	HW_LTS_LOG_CONVERGE_MEMBER_ACCOUNT_ID     = os.Getenv("HW_LTS_LOG_CONVERGE_MEMBER_ACCOUNT_ID")
+
+	HW_LTS_LOG_CONVERGE_SOURCE_LOG_GROUP_ID   = os.Getenv("HW_LTS_LOG_CONVERGE_SOURCE_LOG_GROUP_ID")
+	HW_LTS_LOG_CONVERGE_TARGET_LOG_GROUP_NAME = os.Getenv("HW_LTS_LOG_CONVERGE_TARGET_LOG_GROUP_NAME")
+	HW_LTS_LOG_CONVERGE_TARGET_LOG_GROUP_ID   = os.Getenv("HW_LTS_LOG_CONVERGE_TARGET_LOG_GROUP_ID")
+
+	HW_LTS_LOG_CONVERGE_SOURCE_LOG_STREAM_ID   = os.Getenv("HW_LTS_LOG_CONVERGE_SOURCE_LOG_STREAM_ID")
+	HW_LTS_LOG_CONVERGE_TARGET_LOG_STREAM_NAME = os.Getenv("HW_LTS_LOG_CONVERGE_TARGET_LOG_STREAM_NAME")
+	HW_LTS_LOG_CONVERGE_TARGET_LOG_STREAM_ID   = os.Getenv("HW_LTS_LOG_CONVERGE_TARGET_LOG_STREAM_ID")
+
 	HW_VPCEP_SERVICE_ID = os.Getenv("HW_VPCEP_SERVICE_ID")
 
 	HW_HSS_HOST_PROTECTION_HOST_ID  = os.Getenv("HW_HSS_HOST_PROTECTION_HOST_ID")
@@ -995,6 +1007,20 @@ func TestAccPreCheckCCRegionName(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckCCConnectionRouteProjectID(t *testing.T) {
+	if HW_PROJECT_ID_1 == "" || HW_PROJECT_ID_2 == "" {
+		t.Skip("HW_PROJECT_ID_1, HW_PROJECT_ID_2 must be set for this acceptance test")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckCCConnectionRouteRegionName(t *testing.T) {
+	if HW_REGION_NAME_1 == "" || HW_REGION_NAME_2 == "" {
+		t.Skip("HW_REGION_NAME_1, HW_REGION_NAME_2 must be set for this acceptance test")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckWorkspaceAD(t *testing.T) {
 	if HW_WORKSPACE_AD_DOMAIN_NAME == "" || HW_WORKSPACE_AD_SERVER_PWD == "" || HW_WORKSPACE_AD_DOMAIN_IP == "" ||
 		HW_WORKSPACE_AD_VPC_ID == "" || HW_WORKSPACE_AD_NETWORK_ID == "" {
@@ -1324,6 +1350,33 @@ func TestAccPreCheckLTSCCEAccess(t *testing.T) {
 		HW_LTS_CCE_CLUSTER_ID == "" || HW_LTS_CCE_HOST_GROUP_ID == "" {
 		t.Skip("The cce access config of HW_LTS_LOG_STREAM_ID, HW_LTS_LOG_GROUP_ID, HW_LTS_CCE_CLUSTER_ID" +
 			" and HW_LTS_CCE_HOST_GROUP_ID must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckLTSLogConvergeBaseConfig(t *testing.T) {
+	if HW_LTS_LOG_CONVERGE_ORGANIZATION_ID == "" || HW_LTS_LOG_CONVERGE_MANAGEMENT_ACCOUNT_ID == "" ||
+		HW_LTS_LOG_CONVERGE_MEMBER_ACCOUNT_ID == "" {
+		t.Skip("The cce access config of HW_LTS_LOG_CONVERGE_ORGANIZATION_ID, HW_LTS_LOG_CONVERGE_MANAGEMENT_ACCOUNT_ID, " +
+			"HW_LTS_LOG_CONVERGE_MEMBER_ACCOUNT_ID must be set for the log converge configuration acceptance test")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckLTSLogConvergeGroupConfig(t *testing.T) {
+	if HW_LTS_LOG_CONVERGE_SOURCE_LOG_GROUP_ID == "" || HW_LTS_LOG_CONVERGE_TARGET_LOG_GROUP_NAME == "" ||
+		HW_LTS_LOG_CONVERGE_TARGET_LOG_GROUP_ID == "" {
+		t.Skip("The cce access config of HW_LTS_LOG_CONVERGE_SOURCE_LOG_GROUP_ID, HW_LTS_LOG_CONVERGE_TARGET_LOG_GROUP_NAME " +
+			"and HW_LTS_LOG_CONVERGE_TARGET_LOG_GROUP_ID must be set for the log converge configuration acceptance test")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckLTSLogConvergeStreamConfig(t *testing.T) {
+	if HW_LTS_LOG_CONVERGE_SOURCE_LOG_STREAM_ID == "" || HW_LTS_LOG_CONVERGE_TARGET_LOG_STREAM_NAME == "" ||
+		HW_LTS_LOG_CONVERGE_TARGET_LOG_STREAM_ID == "" {
+		t.Skip("The cce access config of HW_LTS_LOG_CONVERGE_SOURCE_LOG_STREAM_ID, HW_LTS_LOG_CONVERGE_TARGET_LOG_STREAM_NAME, " +
+			"and HW_LTS_LOG_CONVERGE_TARGET_LOG_STREAM_ID must be set for the log converge configuration acceptance test")
 	}
 }
 
