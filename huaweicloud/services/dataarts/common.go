@@ -13,9 +13,11 @@ import (
 // For the DataArts Studio service, there are some known 404 error codes:
 // + Workspace:
 //   - DLM.4001: Instance or workspace does not exist.
+//   - DLS.6036: Workspace does not exist.
 //
 // + Data Service:
 //   - DLM.4205: catalog does not found.
+//   - DLM.3027: Permission set does not found.
 func ParseQueryError400(err error, specErrors []string) error {
 	var err400 golangsdk.ErrDefault400
 	if errors.As(err, &err400) {

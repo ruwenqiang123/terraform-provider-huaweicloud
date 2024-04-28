@@ -135,6 +135,7 @@ func ResourceRdsReadReplicaInstance() *schema.Resource {
 			"ssl_enable": {
 				Type:     schema.TypeBool,
 				Optional: true,
+				Computed: true,
 			},
 			"parameters": {
 				Type: schema.TypeSet,
@@ -153,6 +154,17 @@ func ResourceRdsReadReplicaInstance() *schema.Resource {
 				Set:      parameterToHash,
 				Optional: true,
 				Computed: true,
+			},
+			"maintain_begin": {
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"maintain_end": {
+				Type:         schema.TypeString,
+				Optional:     true,
+				Computed:     true,
+				RequiredWith: []string{"maintain_begin"},
 			},
 			"db": {
 				Type:     schema.TypeList,
@@ -318,6 +330,10 @@ func resourceRdsReadReplicaInstanceCreate(ctx context.Context, d *schema.Resourc
 		return diag.FromErr(err)
 	}
 
+	if err = updateRdsInstanceMaintainWindow(d, client, instanceID); err != nil {
+		return diag.FromErr(err)
+	}
+
 	if v, ok := d.GetOk("db.0.port"); ok && v.(int) != res.Port {
 		if err = updateRdsInstanceDBPort(ctx, d, client, instanceID); err != nil {
 			return diag.FromErr(err)
@@ -417,6 +433,7 @@ func resourceRdsReadReplicaInstanceRead(ctx context.Context, d *schema.ResourceD
 	d.Set("type", instance.Type)
 	d.Set("status", instance.Status)
 	d.Set("enterprise_project_id", instance.EnterpriseProjectId)
+	d.Set("ssl_enable", instance.EnableSsl)
 	d.Set("tags", utils.TagsToMap(instance.Tags))
 
 	if len(instance.PrivateIps) > 0 {
@@ -430,6 +447,12 @@ func resourceRdsReadReplicaInstanceRead(ctx context.Context, d *schema.ResourceD
 		d.Set("primary_instance_id", primaryInstanceID)
 	} else {
 		return diag.FromErr(err)
+	}
+
+	maintainWindow := strings.Split(instance.MaintenanceWindow, "-")
+	if len(maintainWindow) == 2 {
+		d.Set("maintain_begin", maintainWindow[0])
+		d.Set("maintain_end", maintainWindow[1])
 	}
 
 	volumeList := make([]map[string]interface{}, 0, 1)
@@ -490,6 +513,10 @@ func resourceRdsReadReplicaInstanceUpdate(ctx context.Context, d *schema.Resourc
 	}
 
 	if err = updateRdsInstanceVolumeSize(ctx, d, config, client, instanceID); err != nil {
+		return diag.FromErr(err)
+	}
+
+	if err = updateRdsInstanceMaintainWindow(d, client, instanceID); err != nil {
 		return diag.FromErr(err)
 	}
 

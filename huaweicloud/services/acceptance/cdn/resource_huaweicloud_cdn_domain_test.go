@@ -484,7 +484,10 @@ func TestAccCdnDomain_configs(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "configs.0.url_signing.0.inherit_config.0.inherit_type", "m3u8,mpd"),
 					resource.TestCheckResourceAttr(resourceName, "configs.0.url_signing.0.inherit_config.0.inherit_time_type", "sys_time"),
 					resource.TestCheckResourceAttr(resourceName, "configs.0.url_signing.0.inherit_config.0.status", "on"),
-					resource.TestCheckResourceAttr(resourceName, "configs.0.compress.0.status", "off"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.compress.0.status", "on"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.compress.0.enabled", "true"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.compress.0.type", "gzip"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.compress.0.file_type", ".js,.html,.css,.xml,.json,.shtml,.htm"),
 					resource.TestCheckResourceAttr(resourceName, "configs.0.force_redirect.0.enabled", "true"),
 					resource.TestCheckResourceAttr(resourceName, "configs.0.force_redirect.0.type", "http"),
 					resource.TestCheckResourceAttr(resourceName, "configs.0.force_redirect.0.redirect_code", "301"),
@@ -493,7 +496,24 @@ func TestAccCdnDomain_configs(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "configs.0.referer.0.type", "white"),
 					resource.TestCheckResourceAttr(resourceName, "configs.0.referer.0.include_empty", "false"),
 
+					resource.TestCheckResourceAttr(resourceName, "configs.0.video_seek.0.enable_video_seek", "true"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.video_seek.0.enable_flv_by_time_seek", "true"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.video_seek.0.start_parameter", "test-start"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.video_seek.0.end_parameter", "test-end"),
+
 					resource.TestCheckResourceAttr(resourceName, "configs.0.flexible_origin.#", "2"),
+
+					resource.TestCheckResourceAttr(resourceName, "configs.0.request_limit_rules.#", "2"),
+
+					resource.TestCheckResourceAttr(resourceName, "configs.0.error_code_cache.#", "2"),
+
+					resource.TestCheckResourceAttr(resourceName, "configs.0.ip_filter.0.type", "black"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.ip_filter.0.value", "5.12.3.65,35.2.65.21"),
+
+					resource.TestCheckResourceAttr(resourceName, "configs.0.origin_request_url_rewrite.#", "2"),
+
+					resource.TestCheckResourceAttr(resourceName, "configs.0.user_agent_filter.0.type", "white"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.user_agent_filter.0.ua_list.#", "3"),
 
 					resource.TestCheckResourceAttr(resourceName, "configs.0.remote_auth.0.enabled", "true"),
 					resource.TestCheckResourceAttr(resourceName,
@@ -556,7 +576,10 @@ func TestAccCdnDomain_configs(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "configs.0.url_signing.0.inherit_config.0.inherit_type", "mpd"),
 					resource.TestCheckResourceAttr(resourceName, "configs.0.url_signing.0.inherit_config.0.inherit_time_type", "parent_url_time"),
 					resource.TestCheckResourceAttr(resourceName, "configs.0.url_signing.0.inherit_config.0.status", "on"),
-					resource.TestCheckResourceAttr(resourceName, "configs.0.compress.0.status", "off"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.compress.0.status", "on"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.compress.0.enabled", "true"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.compress.0.type", "br"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.compress.0.file_type", ".js,.html"),
 					resource.TestCheckResourceAttr(resourceName, "configs.0.force_redirect.0.enabled", "true"),
 					resource.TestCheckResourceAttr(resourceName, "configs.0.force_redirect.0.type", "http"),
 					resource.TestCheckResourceAttr(resourceName, "configs.0.force_redirect.0.redirect_code", "302"),
@@ -564,6 +587,11 @@ func TestAccCdnDomain_configs(t *testing.T) {
 
 					resource.TestCheckResourceAttr(resourceName, "configs.0.referer.0.type", "black"),
 					resource.TestCheckResourceAttr(resourceName, "configs.0.referer.0.include_empty", "true"),
+
+					resource.TestCheckResourceAttr(resourceName, "configs.0.video_seek.0.enable_video_seek", "true"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.video_seek.0.enable_flv_by_time_seek", "false"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.video_seek.0.start_parameter", "test-startUpdate"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.video_seek.0.end_parameter", ""),
 
 					resource.TestCheckResourceAttr(resourceName, "configs.0.flexible_origin.#", "1"),
 					resource.TestCheckResourceAttr(resourceName, "configs.0.flexible_origin.0.match_type", "file_path"),
@@ -573,6 +601,30 @@ func TestAccCdnDomain_configs(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "configs.0.flexible_origin.0.back_sources.0.https_port", "470"),
 					resource.TestCheckResourceAttr(resourceName, "configs.0.flexible_origin.0.back_sources.0.ip_or_domain", "www.hshs.cdd"),
 					resource.TestCheckResourceAttr(resourceName, "configs.0.flexible_origin.0.back_sources.0.sources_type", "domain"),
+
+					resource.TestCheckResourceAttr(resourceName, "configs.0.request_limit_rules.#", "1"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.request_limit_rules.0.limit_rate_after", "0"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.request_limit_rules.0.limit_rate_value", "104857600"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.request_limit_rules.0.match_type", "catalog"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.request_limit_rules.0.match_value", "/test/ff"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.request_limit_rules.0.priority", "4"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.request_limit_rules.0.type", "size"),
+
+					resource.TestCheckResourceAttr(resourceName, "configs.0.error_code_cache.#", "1"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.error_code_cache.0.code", "403"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.error_code_cache.0.ttl", "70"),
+
+					resource.TestCheckResourceAttr(resourceName, "configs.0.ip_filter.0.type", "white"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.ip_filter.0.value", "5.12.3.66"),
+
+					resource.TestCheckResourceAttr(resourceName, "configs.0.origin_request_url_rewrite.#", "1"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.origin_request_url_rewrite.0.match_type", "file_path"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.origin_request_url_rewrite.0.priority", "10"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.origin_request_url_rewrite.0.source_url", "/tt/abc.txt"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.origin_request_url_rewrite.0.target_url", "/new/$1/$2.html"),
+
+					resource.TestCheckResourceAttr(resourceName, "configs.0.user_agent_filter.0.type", "black"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.user_agent_filter.0.ua_list.0", "t1*"),
 
 					resource.TestCheckResourceAttr(resourceName, "configs.0.remote_auth.0.enabled", "true"),
 					resource.TestCheckResourceAttr(resourceName,
@@ -616,6 +668,12 @@ func TestAccCdnDomain_configs(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "configs.0.slice_etag_status", "on"),
 					resource.TestCheckResourceAttr(resourceName, "configs.0.origin_receive_timeout", "5"),
 					resource.TestCheckResourceAttr(resourceName, "configs.0.flexible_origin.#", "0"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.request_limit_rules.#", "0"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.error_code_cache.#", "0"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.ip_filter.0.type", "off"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.origin_request_url_rewrite.#", "0"),
+
+					resource.TestCheckResourceAttr(resourceName, "configs.0.user_agent_filter.0.type", "off"),
 
 					resource.TestCheckResourceAttr(resourceName, "configs.0.remote_auth.0.enabled", "false"),
 					resource.TestCheckResourceAttr(resourceName, "configs.0.remote_auth.0.remote_auth_rules.#", "0"),
@@ -623,6 +681,11 @@ func TestAccCdnDomain_configs(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "configs.0.url_signing.0.status", "on"),
 					resource.TestCheckResourceAttr(resourceName, "configs.0.url_signing.0.inherit_config.0.enabled", "false"),
 					resource.TestCheckResourceAttr(resourceName, "configs.0.url_signing.0.inherit_config.0.status", "off"),
+
+					resource.TestCheckResourceAttr(resourceName, "configs.0.compress.0.status", "off"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.compress.0.enabled", "false"),
+
+					resource.TestCheckResourceAttr(resourceName, "configs.0.video_seek.0.enable_video_seek", "false"),
 				),
 			},
 			{
@@ -708,7 +771,8 @@ resource "huaweicloud_cdn_domain" "test" {
     }
 
     compress {
-      enabled = false
+      enabled = true
+      type    = "gzip"
     }
 
     force_redirect {
@@ -721,6 +785,13 @@ resource "huaweicloud_cdn_domain" "test" {
       type          = "white"
       value         = "*.common.com,192.187.2.43,www.test.top:4990"
       include_empty = false
+    }
+
+    video_seek {
+      enable_video_seek       = true
+      enable_flv_by_time_seek = true
+      start_parameter         = "test-start"
+      end_parameter           = "test-end"
     }
 
     flexible_origin {
@@ -746,6 +817,60 @@ resource "huaweicloud_cdn_domain" "test" {
         ip_or_domain = "165.5.1.4"
         sources_type = "ipaddr"
       }
+    }
+
+    request_limit_rules {
+      limit_rate_after = 0
+      limit_rate_value = 0
+      match_type       = "all"
+      priority         = 2
+      type             = "size"
+    }
+    
+    request_limit_rules {
+      limit_rate_after = 1073741824
+      limit_rate_value = 104857600
+      match_type       = "catalog"
+      match_value      = "/test/ff"
+      priority         = 5
+      type             = "size"
+    }
+
+    error_code_cache {
+      code = 301
+      ttl  = 0
+    }
+
+    error_code_cache {
+      code = 500
+      ttl  = 31536000
+    }
+
+    ip_filter {
+      type  = "black"
+      value = "5.12.3.65,35.2.65.21"
+    }
+
+    origin_request_url_rewrite {
+      match_type = "all"
+      priority   = 2
+      target_url = "/nn.tx"
+    }
+
+    origin_request_url_rewrite {
+      match_type = "file_path"
+      priority   = 5
+      source_url = "/tt/ab.txt"
+      target_url = "/new/$1/$2.html"
+    }
+
+    user_agent_filter {
+      type    = "white"
+      ua_list = [
+        "t1",
+        "t2",
+        "t3*",
+      ]
     }
 
     remote_auth {
@@ -847,7 +972,9 @@ resource "huaweicloud_cdn_domain" "test" {
     }
 
     compress {
-      enabled = false
+      enabled   = true
+      type      = "br"
+      file_type = ".js,.html"
     }
 
     force_redirect {
@@ -862,6 +989,12 @@ resource "huaweicloud_cdn_domain" "test" {
       include_empty = true
     }
 
+    video_seek {
+      enable_video_seek       = true
+      enable_flv_by_time_seek = false
+      start_parameter         = "test-startUpdate"
+    }
+
     flexible_origin {
       match_type    = "file_path"
       match_pattern = "/test/folder01;/test/folder02"
@@ -873,6 +1006,39 @@ resource "huaweicloud_cdn_domain" "test" {
         ip_or_domain = "www.hshs.cdd"
         sources_type = "domain"
       }
+    }
+
+    request_limit_rules {
+      limit_rate_after = 0
+      limit_rate_value = 104857600
+      match_type       = "catalog"
+      match_value      = "/test/ff"
+      priority         = 4
+      type             = "size"
+    }
+
+    error_code_cache {
+      code = 403
+      ttl  = 70
+    }
+
+    ip_filter {
+      type  = "white"
+      value = "5.12.3.66"
+    }
+
+    origin_request_url_rewrite {
+      match_type = "file_path"
+      priority   = 10
+      source_url = "/tt/abc.txt"
+      target_url = "/new/$1/$2.html"
+    }
+
+    user_agent_filter {
+      type    = "black"
+      ua_list = [
+        "t1*",
+      ]
     }
 
     remote_auth {
@@ -939,6 +1105,22 @@ resource "huaweicloud_cdn_domain" "test" {
       inherit_config {
         enabled = false
       }
+    }
+
+    compress {
+      enabled = false
+    }
+
+    video_seek {
+      enable_video_seek = false
+    }
+
+    ip_filter {
+      type = "off"
+    }
+
+    user_agent_filter {
+      type = "off"
     }
   }
 }

@@ -136,6 +136,27 @@ resource "huaweicloud_cdn_domain" "domain_1" {
       }
     }
 
+    request_limit_rules {
+      limit_rate_after = 50
+      limit_rate_value = 1048576
+      match_type       = "catalog"
+      match_value      = "/test/ff"
+      priority         = 4
+      type             = "size"
+    }
+
+    error_code_cache {
+      code = 403
+      ttl  = 70
+    }
+
+    origin_request_url_rewrite {
+      match_type = "file_path"
+      priority   = 10
+      source_url = "/tt/abc.txt"
+      target_url = "/new/$1/$2.html"
+    }
+
     remote_auth {
       enabled = true
 
@@ -330,6 +351,37 @@ The `configs` block support:
 
   -> You can define referer whitelists and blacklists to control who can access specific domain names.
 
+* `video_seek` - (Optional, List) Specifies the video seek settings. The [video_seek](#video_seek_object) structure
+  is documented below.
+
+  -> 1. You need to configure a cache rule for `FLV` and `MP4` files and ignored all URL parameters in `cache_settings`.
+  <br/>2. Video seek is valid only when your origin server supports range requests.
+  <br/>3. Only `MP4` and `FLV` videos are supported.
+
+* `request_limit_rules` - (Optional, List) Specifies the request rate limiting rules.
+  The [request_limit_rules](#request_limit_rules_object) structure is documented below.
+
+  -> Up to 60 request limit rules can be configured.
+
+* `error_code_cache` - (Optional, List) Specifies the status code cache TTL.
+  The [error_code_cache](#error_code_cache_object) structure is documented below.
+
+  -> 1. The status code cache TTL cannot be configured for domain names with special configurations.
+  <br/>2. Domain names whose service type is whole site acceleration do not support configuring this field.
+  <br/>3. By default, CDN caches status codes `400`, `404`, `416`, `500`, `502`, and `504` for `3` seconds and does not
+  cache other status codes.
+
+* `ip_filter` - (Optional, List) Specifies the IP address blacklist or whitelist.
+  The [ip_filter](#ip_filter_object) structure is documented below.
+
+* `origin_request_url_rewrite` - (Optional, List) Specifies the rules of rewriting origin request URLs.
+  The [origin_request_url_rewrite](#origin_request_url_rewrite_object) structure is documented below.
+
+  -> Up to 20 rules can be configured.
+
+* `user_agent_filter` - (Optional, List) Specifies the User-Agent blacklist or whitelist settings.
+  The [user_agent_filter](#user_agent_filter_object) structure is documented below.
+
 <a name="https_settings_object"></a>
 The `https_settings` block support:
 
@@ -472,6 +524,10 @@ The `compress` blocks support:
 
 * `type` - (Optional, String) Specifies the smart compression type.
   Possible values are: **gzip** (gzip) and **br** (Brotli).
+
+* `file_type` - (Optional, String) Specifies the formats of files to be compressed. Enter up to 200 characters.
+  Multiple formats are separated by commas (,). Each format contains up to 50 characters.
+  Defaults to **.js,.html,.css,.xml,.json,.shtml,.htm**.
 
 <a name="ip_frequency_limit_object"></a>
 The `ip_frequency_limit` block support:
@@ -644,6 +700,97 @@ The `referer` block support:
   A referer whitelist including blank `referers` indicates that requests without any `referers` are allowed to access.
 
   Defaults to **false**.
+
+<a name="video_seek_object"></a>
+The `video_seek` block support:
+
+* `enable_video_seek` - (Required, Bool) Specifies the video seek status. **true**: enabled; **false**: disabled.
+
+* `enable_flv_by_time_seek` - (Optional, Bool) Specifies the time-based `FLV` seek status.
+  **true**: enabled; **false**: disabled. Defaults to **false**.
+
+* `start_parameter` - (Optional, String) Specifies the video playback start parameter in user request URLs.
+  The value contains up to `64` characters. Only letters, digits, and underscores (_) are allowed.
+
+* `end_parameter` - (Optional, String) Specifies the video playback end parameter in user request URLs.
+  The value contains up to `64` characters. Only letters, digits, and underscores (_) are allowed.
+
+<a name="request_limit_rules_object"></a>
+The `request_limit_rules` block support:
+
+* `priority` - (Required, Int) Specifies the unique priority. A larger value indicates a higher priority.
+  The value ranges from **1** to **100**.
+
+* `match_type` - (Required, String) Specifies the match type. The options are **all** (all files) and **catalog** (directory).
+
+* `type` - (Required, String) Specifies the rate limit mode. Currently, only rate limit by traffic is supported.
+  This parameter can only be set to **size**.
+
+* `limit_rate_after` - (Required, Int) Specifies the rate limiting condition. Unit: byte.
+  The value ranges from **0** to **1,073,741,824**.
+
+* `limit_rate_value` - (Required, Int) Specifies the rate limiting value, in bit/s.
+  The value ranges from **0** to **104,857,600**.
+
+-> The speed is limited to the value of `limit_rate_value` after `limit_rate_after` bytes are transmitted.
+
+* `match_value` - (Optional, String) Specifies the match type value. This field is required when `match_type` is
+  set to **catalog**. The value is a directory address starting with a slash (/), for example, **/test**.
+
+<a name="error_code_cache_object"></a>
+The `error_code_cache` block support:
+
+* `code` - (Required, Int) Specifies the error code. Valid values are: **301**, **302**, **400**, **403**, **404**,
+  **405**, **414**, **500**, **501**, **502**, **503**, and **504**.
+
+* `ttl` - (Required, Int) Specifies the error code cache TTL, in seconds. The value ranges from **0** to **31,536,000**.
+
+<a name="ip_filter_object"></a>
+The `ip_filter` block support:
+
+* `type` - (Required, String) Specifies the IP ACL type. Valid values are:
+  + **off**: Disable the IP ACL.
+  + **black**: IP address blacklist.
+  + **white**: IP address whitelist.
+
+  Defaults to **off**.
+
+* `value` - (Optional, String) Specifies the IP address blacklist or whitelist. This field is required when `type` is
+  set to **black** or **white**. A list contains up to `500` IP addresses and IP address segments, which are separated
+  by commas (,). IPv6 addresses are supported. Duplicate IP addresses and IP address segments will be removed.
+  Addresses with wildcard characters are not supported, for example, `192.168.0.*`.
+
+<a name="origin_request_url_rewrite_object"></a>
+The `origin_request_url_rewrite` block support:
+
+* `priority` - (Required, Int) Specifies the priority of a URL rewrite rule. The priority of a rule is mandatory and
+  must be unique. The rule with the highest priority will be used for matching first. The value ranges from **1** to
+  **100**. A greater number indicates a higher priority.
+
+* `match_type` - (Required, String) Specifies the match type. Valid values are:
+  + **all**: All files.
+  + **file_path**: URI path.
+  + **wildcard**: Wildcard.
+  + **full_path**: Full path.
+
+* `target_url` - (Required, String) Specifies a URI starts with a slash (/) and does not contain `http://`, `https://`,
+  or the domain name. The value contains up to `256` characters. The nth wildcard (*) field can be substituted with
+  `$n`, where n = 1, 2, 3..., for example, `/newtest/$1/$2.jpg`.
+
+* `source_url` - (Optional, String) Specifies the URI to be rewritten. The URI starts with a slash (/) and does not
+  contain `http://`, `https://`, or the domain name. The value contains up to `512` characters.
+  Wildcards (*) are supported, for example, `/test/*/*.mp4`. This field is invalid when `match_type` is set to **all**.
+
+<a name="user_agent_filter_object"></a>
+The `user_agent_filter` block support:
+
+* `type` - (Required, String) Specifies the User-Agent blacklist or whitelist type. Valid values are:
+  + **off**: The User-Agent blacklist/whitelist is disabled.
+  + **black**: The User-Agent blacklist.
+  + **white**: The User-Agent whitelist.
+
+* `ua_list` - (Optional, List) Specifies the User-Agent blacklist or whitelist. This parameter is required when `type`
+  is set to **black** or **white**. Up to `10` rules can be configured. A rule contains up to `100` characters.
 
 <a name="cache_settings_object"></a>
 The `cache_settings` block support:

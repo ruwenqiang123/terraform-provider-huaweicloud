@@ -283,6 +283,15 @@ func GetSecondsLevelMonitoring(c *golangsdk.ServiceClient, instanceId string) (*
 	return &r, err
 }
 
+// GetReplicaSetName is a method to get the replica set name.
+func GetReplicaSetName(c *golangsdk.ServiceClient, instanceId string) (*ReplicaSetNameOpts, error) {
+	var r ReplicaSetNameOpts
+	_, err := c.Get(replicaSetNameURL(c, instanceId), &r, &golangsdk.RequestOpts{
+		MoreHeaders: requestOpts.MoreHeaders,
+	})
+	return &r, err
+}
+
 // CreateBackupPolicy is a method to create the backup policy.
 func CreateBackupPolicy(c *golangsdk.ServiceClient, instanceId string, backPolicy BackupStrategy) (*BackupPolicyResp, error) {
 	opts := BackupPolicyOpts{
@@ -309,12 +318,35 @@ func GetBackupPolicy(c *golangsdk.ServiceClient, instanceId string) (*BackupPoli
 	return &r, err
 }
 
+type ReplicaSetNameOpts struct {
+	Name string `json:"name" required:"true"`
+}
+
+type RestartOpts struct {
+	TargetType string `json:"target_type,omitempty"`
+	TargetId   string `json:"target_id" required:"true"`
+}
+
 type AvailabilityZoneOpts struct {
 	TargetAzs string `json:"target_azs" required:"true"`
 }
 
 type RemarkOpts struct {
 	Remark string `json:"remark"`
+}
+
+// UpdateReplicaSetName is a method to update the replica set name.
+func UpdateReplicaSetName(c *golangsdk.ServiceClient, instanceId string, opts ReplicaSetNameOpts) (*CommonResp, error) {
+	b, err := golangsdk.BuildRequestBody(opts, "")
+	if err != nil {
+		return nil, err
+	}
+
+	var r CommonResp
+	_, err = c.Put(replicaSetNameURL(c, instanceId), b, &r, &golangsdk.RequestOpts{
+		MoreHeaders: requestOpts.MoreHeaders,
+	})
+	return &r, err
 }
 
 // UpdateAvailabilityZone is a method to update the AvailabilityZone.
@@ -356,6 +388,19 @@ func UpdateSlowLogStatus(c *golangsdk.ServiceClient, instanceId string, slowLogS
 func GetSlowLogStatus(c *golangsdk.ServiceClient, instanceId string) (*SlowLogStatusResp, error) {
 	var r SlowLogStatusResp
 	_, err := c.Get(slowLogStatusURL(c, instanceId, "status"), &r, &golangsdk.RequestOpts{
+		MoreHeaders: requestOpts.MoreHeaders,
+	})
+	return &r, err
+}
+
+func RestartInstance(c *golangsdk.ServiceClient, instanceId string, opts RestartOpts) (*CommonResp, error) {
+	b, err := golangsdk.BuildRequestBody(opts, "")
+	if err != nil {
+		return nil, err
+	}
+
+	var r CommonResp
+	_, err = c.Post(restartURL(c, instanceId), b, &r, &golangsdk.RequestOpts{
 		MoreHeaders: requestOpts.MoreHeaders,
 	})
 	return &r, err

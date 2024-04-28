@@ -48,10 +48,13 @@ type ctxType string
 // @API RDS GET /v3/{project_id}/instances/{instance_id}/configurations
 // @API RDS GET /v3/{project_id}/instances/{instance_id}/binlog/clear-policy
 // @API RDS GET /v3/{project_id}/instances/{instance_id}/msdtc/hosts
+// @API RDS GET /v3/{project_id}/instances/{instance_id}/tde-status
 // @API RDS PUT /v3/{project_id}/instances/{instance_id}/name
 // @API RDS PUT /v3/{project_id}/instances/{instance_id}/failover/mode
 // @API RDS PUT /v3/{project_id}/instances/{instance_id}/collations
 // @API RDS POST /v3/{project_id}/instances/{instance_id}/msdtc/host
+// @API RDS PUT /v3/{project_id}/instances/{instance_id}/tde
+// @API RDS PUT /v3/{project_id}/instances/{instance_id}/readonly-status
 // @API RDS PUT /v3/{project_id}/instances/{instance_id}/port
 // @API RDS PUT /v3/{project_id}/instances/{instance_id}/ip
 // @API RDS PUT /v3/{project_id}/instances/{instance_id}/security-group
@@ -295,6 +298,7 @@ func ResourceRdsInstance() *schema.Resource {
 			"ssl_enable": {
 				Type:     schema.TypeBool,
 				Optional: true,
+				Computed: true,
 			},
 
 			"binlog_retention_hours": {
@@ -328,6 +332,13 @@ func ResourceRdsInstance() *schema.Resource {
 				Type:     schema.TypeBool,
 				Optional: true,
 				Computed: true,
+			},
+			"read_write_permissions": {
+				Type:     schema.TypeString,
+				Optional: true,
+				ValidateFunc: validation.StringInSlice([]string{
+					"readonly", "readwrite",
+				}, false),
 			},
 			"rotate_day": {
 				Type:         schema.TypeInt,
@@ -614,6 +625,12 @@ func resourceRdsInstanceCreate(ctx context.Context, d *schema.ResourceData, meta
 		return diag.FromErr(err)
 	}
 
+	if v, ok := d.GetOk("read_write_permissions"); ok && v.(string) == "readonly" {
+		if err = updateReadWritePermissions(ctx, d, client, instanceID); err != nil {
+			return diag.FromErr(err)
+		}
+	}
+
 	tagRaw := d.Get("tags").(map[string]interface{})
 	if len(tagRaw) > 0 {
 		taglist := utils.ExpandResourceTags(tagRaw)
@@ -686,6 +703,7 @@ func resourceRdsInstanceRead(ctx context.Context, d *schema.ResourceData, meta i
 	d.Set("enterprise_project_id", instance.EnterpriseProjectId)
 	d.Set("switch_strategy", instance.SwitchStrategy)
 	d.Set("charging_mode", instance.ChargeInfo.ChargeMode)
+	d.Set("ssl_enable", instance.EnableSsl)
 	d.Set("tags", utils.TagsToMap(instance.Tags))
 
 	publicIps := make([]interface{}, len(instance.PublicIps))
@@ -807,8 +825,6 @@ func resourceRdsInstanceRead(ctx context.Context, d *schema.ResourceData, meta i
 		if tdeStatus.TdeStatus == "open" {
 			tdeEnabled = true
 		}
-		log.Printf("[DEBUG] get tdeStatus value: %#v", tdeStatus)
-		log.Printf("[DEBUG] get tdeEnabled value: %#v", tdeEnabled)
 		d.Set("tde_enabled", tdeEnabled)
 	}
 
@@ -1002,6 +1018,10 @@ func resourceRdsInstanceUpdate(ctx context.Context, d *schema.ResourceData, meta
 	}
 
 	if err = updateTde(ctx, d, client, instanceID); err != nil {
+		return diag.FromErr(err)
+	}
+
+	if err = updateReadWritePermissions(ctx, d, client, instanceID); err != nil {
 		return diag.FromErr(err)
 	}
 
@@ -1865,6 +1885,47 @@ func updateTde(ctx context.Context, d *schema.ResourceData, client *golangsdk.Se
 	return nil
 }
 
+func updateReadWritePermissions(ctx context.Context, d *schema.ResourceData, client *golangsdk.ServiceClient,
+	instanceID string) error {
+	if !d.HasChanges("read_write_permissions") {
+		return nil
+	}
+
+	readonly := false
+	if d.Get("read_write_permissions") == "readonly" {
+		readonly = true
+	}
+
+	modifyReadWritePermissionsOpts := instances.ModifyReadWritePermissionsOpts{
+		Readonly: readonly,
+	}
+
+	retryFunc := func() (interface{}, bool, error) {
+		res, err := instances.ModifyReadWritePermissions(client, modifyReadWritePermissionsOpts, instanceID).Extract()
+		retry, err := handleMultiOperationsError(err)
+		return res, retry, err
+	}
+	res, err := common.RetryContextWithWaitForState(&common.RetryContextWithWaitForStateParam{
+		Ctx:          ctx,
+		RetryFunc:    retryFunc,
+		WaitFunc:     rdsInstanceStateRefreshFunc(client, instanceID),
+		WaitTarget:   []string{"ACTIVE"},
+		Timeout:      d.Timeout(schema.TimeoutUpdate),
+		DelayTimeout: 10 * time.Second,
+		PollInterval: 10 * time.Second,
+	})
+	if err != nil {
+		return fmt.Errorf("error updating instance read write permissions: %s ", err)
+	}
+	job := res.(*instances.JobResponse)
+
+	if err = checkRDSInstanceJobFinish(client, job.JobId, d.Timeout(schema.TimeoutUpdate)); err != nil {
+		return fmt.Errorf("error waiting for RDS instance (%s) update read write permissions: %s", instanceID, err)
+	}
+
+	return nil
+}
+
 func updatePowerAction(ctx context.Context, d *schema.ResourceData, client *golangsdk.ServiceClient, powerAction string) error {
 	var job *instances.JobResponse
 	var err error
@@ -2011,7 +2072,34 @@ func configRdsInstanceSSL(ctx context.Context, d *schema.ResourceData, client *g
 	if err != nil {
 		return fmt.Errorf("error updating instance SSL configuration: %s ", err)
 	}
+	// wait for the instance ssl to be 'ACTIVE'.
+	stateConf := &resource.StateChangeConf{
+		Target:       []string{strconv.FormatBool(sslEnable)},
+		Refresh:      rdsInstanceSslRefreshFunc(client, instanceID),
+		Timeout:      d.Timeout(schema.TimeoutUpdate),
+		Delay:        2 * time.Second,
+		PollInterval: 2 * time.Second,
+	}
+	if _, err = stateConf.WaitForStateContext(ctx); err != nil {
+		return fmt.Errorf("error waiting for RDS instance (%s) ssl_enable modified to: %#v", instanceID, sslEnable)
+	}
 	return nil
+}
+
+func rdsInstanceSslRefreshFunc(client *golangsdk.ServiceClient, instanceID string) resource.StateRefreshFunc {
+	return func() (interface{}, string, error) {
+		instance, err := GetRdsInstanceByID(client, instanceID)
+		if err != nil {
+			return nil, "FOUND ERROR", err
+		}
+		if instance.Id == "" {
+			return instance, "DELETED", fmt.Errorf("the instance(%s) has been deleted", instance.Id)
+		}
+		if instance.Status == "FAILED" {
+			return nil, instance.Status, fmt.Errorf("the instance status is: %s", instance.Status)
+		}
+		return instance, strconv.FormatBool(instance.EnableSsl), nil
+	}
 }
 
 func checkRDSInstanceJobFinish(client *golangsdk.ServiceClient, jobID string, timeout time.Duration) error {

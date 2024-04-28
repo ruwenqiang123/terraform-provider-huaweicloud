@@ -15,6 +15,7 @@ import (
 	"github.com/jmespath/go-jmespath"
 
 	"github.com/chnsz/golangsdk"
+	"github.com/chnsz/golangsdk/openstack/eps/v1/enterpriseprojects"
 	"github.com/chnsz/golangsdk/openstack/networking/v1/eips"
 
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/common"
@@ -27,6 +28,8 @@ import (
 // @API CBH POST /v2/{project_id}/cbs/instance
 // @API CBH GET /v2/{project_id}/cbs/instance/list
 // @API CBH PUT /v2/{project_id}/cbs/instance/password
+// @API CBH PUT /v2/{project_id}/cbs/instance/{server_id}/security-groups
+// @API CBH PUT /v2/{project_id}/cbs/instance
 // @API BSS GET /v2/orders/customer-orders/details/{order_id}
 // @API BSS POST /v2/orders/suscriptions/resources/query
 // @API BSS POST /v2/orders/subscriptions/resources/unsubscribe
@@ -44,6 +47,7 @@ func ResourceCBHInstance() *schema.Resource {
 
 		Timeouts: &schema.ResourceTimeout{
 			Create: schema.DefaultTimeout(60 * time.Minute),
+			Update: schema.DefaultTimeout(60 * time.Minute),
 			Delete: schema.DefaultTimeout(30 * time.Minute),
 		},
 
@@ -63,7 +67,6 @@ func ResourceCBHInstance() *schema.Resource {
 			"flavor_id": {
 				Type:        schema.TypeString,
 				Required:    true,
-				ForceNew:    true,
 				Description: `Specifies the product ID of the CBH server.`,
 			},
 			"vpc_id": {
@@ -81,8 +84,7 @@ func ResourceCBHInstance() *schema.Resource {
 			"security_group_id": {
 				Type:        schema.TypeString,
 				Required:    true,
-				ForceNew:    true,
-				Description: `Specifies the ID of the security group.`,
+				Description: `Specifies the IDs of the security group.`,
 			},
 			"availability_zone": {
 				Type:        schema.TypeString,
@@ -143,6 +145,17 @@ func ResourceCBHInstance() *schema.Resource {
 				ForceNew:    true,
 				Description: `Specifies whether the IPv6 network is enabled.`,
 			},
+			"attach_disk_size": {
+				Type:        schema.TypeInt,
+				Optional:    true,
+				Description: `Specifies the size of the additional data disk for the CBH instance.`,
+			},
+			"enterprise_project_id": {
+				Type:        schema.TypeString,
+				Optional:    true,
+				Computed:    true,
+				Description: "Specifies the enterprise project ID to which the CBH instance belongs.",
+			},
 			"public_ip": {
 				Type:        schema.TypeString,
 				Optional:    true,
@@ -163,6 +176,11 @@ func ResourceCBHInstance() *schema.Resource {
 				Type:        schema.TypeString,
 				Computed:    true,
 				Description: `Indicates the current version of the instance image.`,
+			},
+			"data_disk_size": {
+				Type:        schema.TypeFloat,
+				Computed:    true,
+				Description: `Indicates the data disk size of the instance.`,
 			},
 		},
 	}
@@ -214,6 +232,16 @@ func resourceCBHInstanceCreate(ctx context.Context, d *schema.ResourceData, meta
 		return diag.Errorf("error waiting for CBH instance (%s) creation to active: %s", d.Id(), err)
 	}
 
+	// After successfully creating an instance using the first security group ID, check if it is necessary to update the
+	// security group to the target value.
+	securityGroupIDs := d.Get("security_group_id").(string)
+	sgIDs := strings.Split(securityGroupIDs, ",")
+	if len(sgIDs) > 1 {
+		if err := updateSecurityGroup(client, d.Id(), sgIDs); err != nil {
+			return diag.Errorf("error updating the security group after successful creation of CBH instance (%s): %s", d.Id(), err)
+		}
+	}
+
 	return resourceCBHInstanceRead(ctx, d, meta)
 }
 
@@ -227,7 +255,7 @@ func createCBHInstance(client *golangsdk.ServiceClient, d *schema.ResourceData, 
 	createInstancePath = strings.ReplaceAll(createInstancePath, "{project_id}", client.ProjectID)
 	createInstanceOpt := golangsdk.RequestOpts{
 		KeepResponseBody: true,
-		JSONBody:         utils.RemoveNil(buildCreateCBHInstanceBodyParam(d, cfg.GetRegion(d), publicIp)),
+		JSONBody:         utils.RemoveNil(buildCreateCBHInstanceBodyParam(d, cfg.GetRegion(d), cfg.GetEnterpriseProjectID(d), publicIp)),
 	}
 
 	createInstanceResp, err := client.Request("POST", createInstancePath, &createInstanceOpt)
@@ -246,19 +274,21 @@ func createCBHInstance(client *golangsdk.ServiceClient, d *schema.ResourceData, 
 	return orderId.(string), nil
 }
 
-func buildCreateCBHInstanceBodyParam(d *schema.ResourceData, region string, publicIp interface{}) map[string]interface{} {
+func buildCreateCBHInstanceBodyParam(d *schema.ResourceData, region string, epsId string, publicIp interface{}) map[string]interface{} {
 	bodyParam := map[string]interface{}{
-		"specification":     d.Get("flavor_id"),
-		"instance_name":     d.Get("name"),
-		"password":          d.Get("password"),
-		"region":            region,
-		"availability_zone": d.Get("availability_zone"),
-		"charging_mode":     buildCreateChargingModeParam(d),
-		"period_type":       buildCreatePeriodTypeParam(d),
-		"period_num":        utils.ValueIngoreEmpty(d.Get("period")),
-		"is_auto_renew":     buildCreateIsAutoRenewParam(d),
-		"is_auto_pay":       1,
-		"network":           buildCreateNetworkBodyParam(d, publicIp),
+		"specification":         d.Get("flavor_id"),
+		"instance_name":         d.Get("name"),
+		"password":              d.Get("password"),
+		"region":                region,
+		"availability_zone":     d.Get("availability_zone"),
+		"charging_mode":         buildCreateChargingModeParam(d),
+		"period_type":           buildCreatePeriodTypeParam(d),
+		"period_num":            utils.ValueIngoreEmpty(d.Get("period")),
+		"is_auto_renew":         buildCreateIsAutoRenewParam(d),
+		"is_auto_pay":           1,
+		"network":               buildCreateNetworkBodyParam(d, publicIp),
+		"attach_disk_size":      utils.ValueIngoreEmpty(d.Get("attach_disk_size")),
+		"enterprise_project_id": utils.ValueIngoreEmpty(epsId),
 	}
 	// The default value of the field `ipv6_enable` is false
 	if d.Get("ipv6_enable").(bool) {
@@ -328,9 +358,16 @@ func buildCreateNetworkPublicIpBodyParam(d *schema.ResourceData, cfg *config.Con
 }
 
 func buildCreateNetworkSecurityGroupsBodyParam(d *schema.ResourceData) interface{} {
+	securityGroupIDs := d.Get("security_group_id").(string)
+	sgIDList := strings.Split(securityGroupIDs, ",")
+	if len(sgIDList) == 0 {
+		return nil
+	}
+	// When creating an instance, if multiple security group IDs are specified,
+	// prioritize using the first one for creation.
 	return []map[string]interface{}{
 		{
-			"id": d.Get("security_group_id"),
+			"id": sgIDList[0],
 		},
 	}
 }
@@ -404,16 +441,67 @@ func waitingForCBHInstanceActive(ctx context.Context, client *golangsdk.ServiceC
 	return err
 }
 
+func waitingForCBHInstanceTaskCompleted(ctx context.Context, client *golangsdk.ServiceClient, d *schema.ResourceData,
+	timeout time.Duration) error {
+	expression := fmt.Sprintf("[?server_id == '%s']|[0]", d.Id())
+	unexpectedTaskStatus := []string{"delete_wait", "frozen", "unfrozen", "updating", "configuring-ha",
+		"data-migrating", "rollback", "traffic-switchover"}
+	stateConf := &resource.StateChangeConf{
+		Pending: []string{"PENDING"},
+		Target:  []string{"COMPLETED"},
+		Refresh: func() (interface{}, string, error) {
+			instances, err := getCBHInstanceList(client)
+			if err != nil {
+				return nil, "ERROR", err
+			}
+			instance := utils.PathSearch(expression, instances, nil)
+			if instance == nil {
+				return nil, "ERROR", golangsdk.ErrDefault404{}
+			}
+
+			taskStatus := utils.PathSearch("status_info.task_status", instance, "").(string)
+			if taskStatus == "NO_TASK" {
+				return instance, "COMPLETED", nil
+			}
+
+			if taskStatus == "" {
+				return instance, "ERROR", fmt.Errorf("the cbh instnace task_status is not found in list API response")
+			}
+
+			if utils.StrSliceContains(unexpectedTaskStatus, taskStatus) {
+				return instance, taskStatus, nil
+			}
+
+			return instance, "PENDING", nil
+		},
+		Timeout:      timeout,
+		Delay:        10 * time.Second,
+		PollInterval: 10 * time.Second,
+	}
+
+	_, err := stateConf.WaitForStateContext(ctx)
+	return err
+}
+
 func resourceCBHInstanceUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	var (
 		cfg                      = meta.(*config.Config)
 		region                   = cfg.GetRegion(d)
 		updateCBHInstanceProduct = "cbh"
+		ID                       = d.Id()
 	)
 
 	client, err := cfg.NewServiceClient(updateCBHInstanceProduct, region)
 	if err != nil {
 		return diag.Errorf("error creating CBH client: %s", err)
+	}
+
+	if d.HasChanges("security_group_id") {
+		securityGroupIDs := d.Get("security_group_id").(string)
+		sgIDs := strings.Split(securityGroupIDs, ",")
+		if err := updateSecurityGroup(client, ID, sgIDs); err != nil {
+			return diag.Errorf("error updating the security group of the CBH instance (%s): %s", ID, err)
+		}
 	}
 
 	if d.HasChanges("public_ip_id") {
@@ -428,28 +516,187 @@ func resourceCBHInstanceUpdate(ctx context.Context, d *schema.ResourceData, meta
 		}
 	}
 
+	// Due to API limitations, update `flavor_id` and `attach_disk_size` must call the API separately.
+	if d.HasChanges("flavor_id") {
+		orderId, err := updateFlavorId(client, ID, d.Get("flavor_id").(string))
+		if err != nil {
+			return diag.FromErr(err)
+		}
+
+		bssClient, err := cfg.BssV2Client(cfg.GetRegion(d))
+		if err != nil {
+			return diag.Errorf("error creating BSS v2 client: %s", err)
+		}
+
+		if err := common.WaitOrderComplete(ctx, bssClient, orderId, d.Timeout(schema.TimeoutUpdate)); err != nil {
+			return diag.FromErr(err)
+		}
+
+		if err := waitingForCBHInstanceActive(ctx, client, d, d.Timeout(schema.TimeoutUpdate)); err != nil {
+			return diag.Errorf("error waiting for CBH instance (%s) update to active: %s", ID, err)
+		}
+
+		// After updating the `flavor_id` and `attach_disk_size`, the instance will automatically restart;
+		// At this point, the instance is restarting, but the value of the `status` attribute is already **active**,
+		// so we need to continue waiting for the instance's `task_status` attribute to become **NO_TASK**
+		// before we can proceed.
+		if err := waitingForCBHInstanceTaskCompleted(ctx, client, d, d.Timeout(schema.TimeoutUpdate)); err != nil {
+			return diag.Errorf("error waiting for CBH instance (%s) update flavor to complete: %s", ID, err)
+		}
+	}
+
+	if d.HasChanges("attach_disk_size") {
+		orderId, err := updateAttachDiskSize(client, ID, int32(d.Get("attach_disk_size").(int)))
+		if err != nil {
+			return diag.FromErr(err)
+		}
+
+		bssClient, err := cfg.BssV2Client(cfg.GetRegion(d))
+		if err != nil {
+			return diag.Errorf("error creating BSS v2 client: %s", err)
+		}
+
+		if err := common.WaitOrderComplete(ctx, bssClient, orderId, d.Timeout(schema.TimeoutUpdate)); err != nil {
+			return diag.FromErr(err)
+		}
+
+		if err := waitingForCBHInstanceActive(ctx, client, d, d.Timeout(schema.TimeoutUpdate)); err != nil {
+			return diag.Errorf("error waiting for CBH instance (%s) update to active: %s", ID, err)
+		}
+
+		if err := waitingForCBHInstanceTaskCompleted(ctx, client, d, d.Timeout(schema.TimeoutUpdate)); err != nil {
+			return diag.Errorf("error waiting for CBH instance (%s) update additional disk to complete: %s", ID, err)
+		}
+	}
+
 	if d.HasChange("auto_renew") {
 		bssClient, err := cfg.BssV2Client(region)
 		if err != nil {
 			return diag.Errorf("error creating BSS V2 client: %s", err)
 		}
 
-		instances, err := getCBHInstanceList(client)
+		resourceId, err := getInstanceResourceIdById(client, ID)
 		if err != nil {
 			return diag.FromErr(err)
 		}
-		expression := fmt.Sprintf("[?server_id == '%s']|[0].resource_info.resource_id", d.Id())
-		resourceId := utils.PathSearch(expression, instances, "").(string)
+
 		if resourceId == "" {
 			return diag.Errorf("error updating the auto-renew of the CBH instance (%s): "+
-				"resource ID is not found in list API response", d.Id())
+				"resource ID is not found in list API response", ID)
 		}
 
 		if err = common.UpdateAutoRenew(bssClient, d.Get("auto_renew").(string), resourceId); err != nil {
-			return diag.Errorf("error updating the auto-renew of the CBH instance (%s): %s", d.Id(), err)
+			return diag.Errorf("error updating the auto-renew of the CBH instance (%s): %s", ID, err)
 		}
 	}
+
+	if d.HasChange("enterprise_project_id") {
+		resourceId, err := getInstanceResourceIdById(client, ID)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+
+		if resourceId == "" {
+			return diag.Errorf("error updating the enterprise project ID of the CBH instance (%s): "+
+				"resource ID is not found in list API response", ID)
+		}
+
+		migrateOpts := enterpriseprojects.MigrateResourceOpts{
+			ResourceId:   resourceId,
+			ResourceType: "cbh",
+			RegionId:     region,
+			ProjectId:    client.ProjectID,
+		}
+		if err := common.MigrateEnterpriseProject(ctx, cfg, d, migrateOpts); err != nil {
+			return diag.FromErr(err)
+		}
+	}
+
 	return resourceCBHInstanceRead(ctx, d, meta)
+}
+
+func getInstanceResourceIdById(client *golangsdk.ServiceClient, instanceId string) (string, error) {
+	instances, err := getCBHInstanceList(client)
+	if err != nil {
+		return "", err
+	}
+	expression := fmt.Sprintf("[?server_id == '%s']|[0].resource_info.resource_id", instanceId)
+	resourceId := utils.PathSearch(expression, instances, "").(string)
+
+	return resourceId, nil
+}
+
+func updateFlavorId(client *golangsdk.ServiceClient, resourceId, flavorId string) (string, error) {
+	updateFlavorIdPath := client.Endpoint + "v2/{project_id}/cbs/instance"
+	updateFlavorIdPath = strings.ReplaceAll(updateFlavorIdPath, "{project_id}", client.ProjectID)
+	updateFlavorIdOpt := golangsdk.RequestOpts{
+		KeepResponseBody: true,
+		JSONBody: map[string]interface{}{
+			"server_id":              resourceId,
+			"new_resource_spec_code": flavorId,
+			"is_auto_pay":            1,
+		},
+	}
+	updateInstanceResp, err := client.Request("PUT", updateFlavorIdPath, &updateFlavorIdOpt)
+	if err != nil {
+		return "", fmt.Errorf("error updating CBH instance flavor: %s", err)
+	}
+
+	updateInstanceRespBody, err := utils.FlattenResponse(updateInstanceResp)
+	if err != nil {
+		return "", err
+	}
+
+	orderId, err := jmespath.Search("order_id", updateInstanceRespBody)
+	if err != nil || orderId == nil {
+		return "", fmt.Errorf("error updating CBH instance flavor: order_id is not found in API response")
+	}
+
+	return orderId.(string), nil
+}
+
+func updateAttachDiskSize(client *golangsdk.ServiceClient, resourceId string, attachDiskSize int32) (string, error) {
+	updateAttachDiskSizePath := client.Endpoint + "v2/{project_id}/cbs/instance"
+	updateAttachDiskSizePath = strings.ReplaceAll(updateAttachDiskSizePath, "{project_id}", client.ProjectID)
+	updateAttachDiskSizeOpt := golangsdk.RequestOpts{
+		KeepResponseBody: true,
+		JSONBody: map[string]interface{}{
+			"server_id":        resourceId,
+			"attach_disk_size": attachDiskSize,
+			"is_auto_pay":      1,
+		},
+	}
+	updateInstanceResp, err := client.Request("PUT", updateAttachDiskSizePath, &updateAttachDiskSizeOpt)
+	if err != nil {
+		return "", fmt.Errorf("error updating CBH instance additional disk: %s", err)
+	}
+
+	updateInstanceRespBody, err := utils.FlattenResponse(updateInstanceResp)
+	if err != nil {
+		return "", err
+	}
+
+	orderId, err := jmespath.Search("order_id", updateInstanceRespBody)
+	if err != nil || orderId == nil {
+		return "", fmt.Errorf("error updating CBH instance additional disk: order_id is not found in API response")
+	}
+
+	return orderId.(string), nil
+}
+
+func updateSecurityGroup(client *golangsdk.ServiceClient, resourceId string, sgIDs []string) error {
+	updateSecurityGroupPath := client.Endpoint + "v2/{project_id}/cbs/instance/{server_id}/security-groups"
+	updateSecurityGroupPath = strings.ReplaceAll(updateSecurityGroupPath, "{project_id}", client.ProjectID)
+	updateSecurityGroupPath = strings.ReplaceAll(updateSecurityGroupPath, "{server_id}", resourceId)
+	updateSecurityGroupOpt := golangsdk.RequestOpts{
+		KeepResponseBody: true,
+		JSONBody: map[string]interface{}{
+			"security_groups": sgIDs,
+		},
+	}
+	_, err := client.Request("PUT", updateSecurityGroupPath, &updateSecurityGroupOpt)
+
+	return err
 }
 
 func updatePublicIpId(client *golangsdk.ServiceClient, d *schema.ResourceData) error {
@@ -571,8 +818,10 @@ func resourceCBHInstanceRead(_ context.Context, d *schema.ResourceData, meta int
 		d.Set("subnet_id", utils.PathSearch("network.subnet_id", instance, nil)),
 		d.Set("security_group_id", utils.PathSearch("network.security_group_id", instance, nil)),
 		d.Set("flavor_id", utils.PathSearch("resource_info.specification", instance, nil)),
+		d.Set("data_disk_size", utils.PathSearch("resource_info.data_disk_size", instance, float64(0)).(float64)),
 		d.Set("availability_zone", utils.PathSearch("az_info.zone", instance, nil)),
 		d.Set("version", utils.PathSearch("bastion_version", instance, nil)),
+		d.Set("enterprise_project_id", utils.PathSearch("enterprise_project_id", instance, nil)),
 	)
 	return diag.FromErr(mErr.ErrorOrNil())
 }

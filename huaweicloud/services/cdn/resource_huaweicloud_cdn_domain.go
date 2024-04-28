@@ -259,6 +259,11 @@ var compress = schema.Schema{
 				Optional: true,
 				Computed: true,
 			},
+			"file_type": {
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 			"status": {
 				Type:     schema.TypeString,
 				Computed: true,
@@ -522,6 +527,151 @@ var referer = schema.Schema{
 	},
 }
 
+var videoSeek = schema.Schema{
+	Type:     schema.TypeList,
+	Optional: true,
+	Computed: true,
+	MaxItems: 1,
+	Elem: &schema.Resource{
+		Schema: map[string]*schema.Schema{
+			"enable_video_seek": {
+				Type:     schema.TypeBool,
+				Required: true,
+			},
+			"enable_flv_by_time_seek": {
+				Type:     schema.TypeBool,
+				Optional: true,
+				Computed: true,
+			},
+			"start_parameter": {
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"end_parameter": {
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+		},
+	},
+}
+
+var requestLimitRules = schema.Schema{
+	Type:     schema.TypeSet,
+	Optional: true,
+	Elem: &schema.Resource{
+		Schema: map[string]*schema.Schema{
+			"priority": {
+				Type:     schema.TypeInt,
+				Required: true,
+			},
+			"match_type": {
+				Type:     schema.TypeString,
+				Required: true,
+			},
+			"type": {
+				Type:     schema.TypeString,
+				Required: true,
+			},
+			"limit_rate_after": {
+				Type:     schema.TypeInt,
+				Required: true,
+			},
+			"limit_rate_value": {
+				Type:     schema.TypeInt,
+				Required: true,
+			},
+			"match_value": {
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+		},
+	},
+}
+
+var errorCodeCache = schema.Schema{
+	Type:     schema.TypeSet,
+	Optional: true,
+	Elem: &schema.Resource{
+		Schema: map[string]*schema.Schema{
+			"code": {
+				Type:     schema.TypeInt,
+				Required: true,
+			},
+			"ttl": {
+				Type:     schema.TypeInt,
+				Required: true,
+			},
+		},
+	},
+}
+
+var ipFilter = schema.Schema{
+	Type:     schema.TypeList,
+	Optional: true,
+	Computed: true,
+	MaxItems: 1,
+	Elem: &schema.Resource{
+		Schema: map[string]*schema.Schema{
+			"type": {
+				Type:     schema.TypeString,
+				Required: true,
+			},
+			"value": {
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+		},
+	},
+}
+
+var originRequestUrlRewrite = schema.Schema{
+	Type:     schema.TypeSet,
+	Optional: true,
+	Elem: &schema.Resource{
+		Schema: map[string]*schema.Schema{
+			"priority": {
+				Type:     schema.TypeInt,
+				Required: true,
+			},
+			"match_type": {
+				Type:     schema.TypeString,
+				Required: true,
+			},
+			"target_url": {
+				Type:     schema.TypeString,
+				Required: true,
+			},
+			"source_url": {
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+		},
+	},
+}
+
+var userAgentFilter = schema.Schema{
+	Type:     schema.TypeList,
+	Optional: true,
+	Computed: true,
+	MaxItems: 1,
+	Elem: &schema.Resource{
+		Schema: map[string]*schema.Schema{
+			"type": {
+				Type:     schema.TypeString,
+				Required: true,
+			},
+			"ua_list": {
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+				Computed: true,
+			},
+		},
+	},
+}
+
 // @API CDN POST /v1.0/cdn/domains
 // @API CDN GET /v1.0/cdn/configuration/domains/{domain_name}
 // @API CDN PUT /v1.0/cdn/domains/{domainId}/disable
@@ -665,6 +815,12 @@ func ResourceCdnDomain() *schema.Resource {
 						"remote_auth":                &remoteAuth,
 						"quic":                       &quic,
 						"referer":                    &referer,
+						"video_seek":                 &videoSeek,
+						"request_limit_rules":        &requestLimitRules,
+						"error_code_cache":           &errorCodeCache,
+						"ip_filter":                  &ipFilter,
+						"origin_request_url_rewrite": &originRequestUrlRewrite,
+						"user_agent_filter":          &userAgentFilter,
 					},
 				},
 			},
@@ -910,8 +1066,9 @@ func buildCompressOpts(rawCompress []interface{}) *model.Compress {
 
 	compress := rawCompress[0].(map[string]interface{})
 	compressOpts := model.Compress{
-		Status: parseFunctionEnabledStatus(compress["enabled"].(bool)),
-		Type:   utils.StringIgnoreEmpty(compress["type"].(string)),
+		Status:   parseFunctionEnabledStatus(compress["enabled"].(bool)),
+		Type:     utils.StringIgnoreEmpty(compress["type"].(string)),
+		FileType: utils.StringIgnoreEmpty(compress["file_type"].(string)),
 	}
 
 	return &compressOpts
@@ -1083,6 +1240,113 @@ func buildRefererOpts(rawReferer []interface{}) *model.RefererConfig {
 	return &refererOpts
 }
 
+func buildVideoSeekOpts(rawVideoSeek []interface{}) *model.VideoSeek {
+	if len(rawVideoSeek) != 1 {
+		return nil
+	}
+
+	videoSeek := rawVideoSeek[0].(map[string]interface{})
+	videoSeekOpts := model.VideoSeek{
+		EnableVideoSeek:     videoSeek["enable_video_seek"].(bool),
+		EnableFlvByTimeSeek: utils.Bool(videoSeek["enable_flv_by_time_seek"].(bool)),
+		StartParameter:      utils.String(videoSeek["start_parameter"].(string)),
+		EndParameter:        utils.String(videoSeek["end_parameter"].(string)),
+	}
+
+	return &videoSeekOpts
+}
+
+func buildRequestLimitRulesOpts(rawRequestLimitRules []interface{}) *[]model.RequestLimitRules {
+	if len(rawRequestLimitRules) < 1 {
+		// Define an empty array to clear all request limit rules
+		rst := make([]model.RequestLimitRules, 0)
+		return &rst
+	}
+
+	requestLimitRulesOpts := make([]model.RequestLimitRules, len(rawRequestLimitRules))
+	for i, v := range rawRequestLimitRules {
+		ruleMap := v.(map[string]interface{})
+		ruleOpt := model.RequestLimitRules{
+			Priority:       int32(ruleMap["priority"].(int)),
+			MatchType:      ruleMap["match_type"].(string),
+			MatchValue:     utils.String(ruleMap["match_value"].(string)),
+			Type:           ruleMap["type"].(string),
+			LimitRateAfter: int64(ruleMap["limit_rate_after"].(int)),
+			LimitRateValue: int32(ruleMap["limit_rate_value"].(int)),
+		}
+		requestLimitRulesOpts[i] = ruleOpt
+	}
+	return &requestLimitRulesOpts
+}
+
+func buildErrorCodeCacheOpts(rawErrorCodeCache []interface{}) *[]model.ErrorCodeCache {
+	if len(rawErrorCodeCache) < 1 {
+		// Define an empty array to clear all error code cache
+		rst := make([]model.ErrorCodeCache, 0)
+		return &rst
+	}
+
+	errorCodeCacheOpts := make([]model.ErrorCodeCache, len(rawErrorCodeCache))
+	for i, v := range rawErrorCodeCache {
+		cacheMap := v.(map[string]interface{})
+		cacheOpt := model.ErrorCodeCache{
+			Code: utils.Int32(int32(cacheMap["code"].(int))),
+			Ttl:  utils.Int32(int32(cacheMap["ttl"].(int))),
+		}
+		errorCodeCacheOpts[i] = cacheOpt
+	}
+	return &errorCodeCacheOpts
+}
+
+func buildIpFilterOpts(rawIpFilter []interface{}) *model.IpFilter {
+	if len(rawIpFilter) != 1 {
+		return nil
+	}
+
+	ipFilter := rawIpFilter[0].(map[string]interface{})
+	ipFilterOpts := model.IpFilter{
+		Type:  ipFilter["type"].(string),
+		Value: utils.String(ipFilter["value"].(string)),
+	}
+
+	return &ipFilterOpts
+}
+
+func buildOriginRequestUrlRewriteOpts(rawOriginRequestUrlRewrite []interface{}) *[]model.OriginRequestUrlRewrite {
+	if len(rawOriginRequestUrlRewrite) < 1 {
+		// Define an empty array to clear all origin request url rewrite
+		rst := make([]model.OriginRequestUrlRewrite, 0)
+		return &rst
+	}
+
+	originRequestUrlRewriteOpts := make([]model.OriginRequestUrlRewrite, len(rawOriginRequestUrlRewrite))
+	for i, v := range rawOriginRequestUrlRewrite {
+		urlMap := v.(map[string]interface{})
+		urlOpt := model.OriginRequestUrlRewrite{
+			Priority:  int32(urlMap["priority"].(int)),
+			MatchType: urlMap["match_type"].(string),
+			TargetUrl: urlMap["target_url"].(string),
+			SourceUrl: utils.StringIgnoreEmpty(urlMap["source_url"].(string)),
+		}
+		originRequestUrlRewriteOpts[i] = urlOpt
+	}
+	return &originRequestUrlRewriteOpts
+}
+
+func buildUserAgentFilterOpts(rawUserAgentFilter []interface{}) *model.UserAgentFilter {
+	if len(rawUserAgentFilter) != 1 {
+		return nil
+	}
+
+	userAgentFilter := rawUserAgentFilter[0].(map[string]interface{})
+	userAgentFilterOpts := model.UserAgentFilter{
+		Type:   userAgentFilter["type"].(string),
+		UaList: utils.ExpandToStringListPointer(userAgentFilter["ua_list"].(*schema.Set).List()),
+	}
+
+	return &userAgentFilterOpts
+}
+
 func buildSourcesOpts(rawSources []interface{}) *[]model.SourcesConfig {
 	if len(rawSources) < 1 {
 		return nil
@@ -1221,6 +1485,25 @@ func buildUpdateDomainFullConfigsOpts(configsOpts *model.Configs, configs map[st
 	}
 	if d.HasChange("configs.0.referer") {
 		configsOpts.Referer = buildRefererOpts(configs["referer"].([]interface{}))
+	}
+	if d.HasChange("configs.0.video_seek") {
+		configsOpts.VideoSeek = buildVideoSeekOpts(configs["video_seek"].([]interface{}))
+	}
+	if d.HasChange("configs.0.request_limit_rules") {
+		configsOpts.RequestLimitRules = buildRequestLimitRulesOpts(configs["request_limit_rules"].(*schema.Set).List())
+	}
+	if d.HasChange("configs.0.error_code_cache") {
+		configsOpts.ErrorCodeCache = buildErrorCodeCacheOpts(configs["error_code_cache"].(*schema.Set).List())
+	}
+	if d.HasChange("configs.0.ip_filter") {
+		configsOpts.IpFilter = buildIpFilterOpts(configs["ip_filter"].([]interface{}))
+	}
+	if d.HasChange("configs.0.origin_request_url_rewrite") {
+		originRequestUrlRewrites := configs["origin_request_url_rewrite"].(*schema.Set).List()
+		configsOpts.OriginRequestUrlRewrite = buildOriginRequestUrlRewriteOpts(originRequestUrlRewrites)
+	}
+	if d.HasChange("configs.0.user_agent_filter") {
+		configsOpts.UserAgentFilter = buildUserAgentFilterOpts(configs["user_agent_filter"].([]interface{}))
 	}
 }
 
@@ -1490,9 +1773,10 @@ func flattenCompressAttrs(compress *model.Compress) []map[string]interface{} {
 	}
 
 	compressAttrs := map[string]interface{}{
-		"status":  compress.Status,
-		"type":    compress.Type,
-		"enabled": analyseFunctionEnabledStatus(compress.Status),
+		"status":    compress.Status,
+		"type":      compress.Type,
+		"file_type": compress.FileType,
+		"enabled":   analyseFunctionEnabledStatus(compress.Status),
 	}
 
 	return []map[string]interface{}{compressAttrs}
@@ -1651,6 +1935,101 @@ func flattenRefererAttrs(referer *model.RefererConfig) []map[string]interface{} 
 	return []map[string]interface{}{refererAttrs}
 }
 
+func flattenVideoSeekAttrs(videoSeek *model.VideoSeek) []map[string]interface{} {
+	if videoSeek == nil {
+		// When closing `video_seek`, the API response body will not return the information of this field.
+		// In order to avoid plan problems in terraform, a default value is added.
+		return []map[string]interface{}{{
+			"enable_video_seek": false,
+		}}
+	}
+
+	return []map[string]interface{}{{
+		"enable_video_seek":       videoSeek.EnableVideoSeek,
+		"enable_flv_by_time_seek": videoSeek.EnableFlvByTimeSeek,
+		"start_parameter":         videoSeek.StartParameter,
+		"end_parameter":           videoSeek.EndParameter,
+	}}
+}
+
+func flattenRequestLimitRulesAttrs(requestLimitRules *[]model.RequestLimitRules) []map[string]interface{} {
+	if requestLimitRules == nil || len(*requestLimitRules) == 0 {
+		return nil
+	}
+
+	requestLimitRulesAttrs := make([]map[string]interface{}, len(*requestLimitRules))
+	for i, v := range *requestLimitRules {
+		requestLimitRulesAttrs[i] = map[string]interface{}{
+			"priority":         v.Priority,
+			"match_type":       v.MatchType,
+			"match_value":      v.MatchValue,
+			"type":             v.Type,
+			"limit_rate_after": v.LimitRateAfter,
+			"limit_rate_value": v.LimitRateValue,
+		}
+	}
+	return requestLimitRulesAttrs
+}
+
+func flattenErrorCodeCacheAttrs(errorCodeCache *[]model.ErrorCodeCache) []map[string]interface{} {
+	if errorCodeCache == nil || len(*errorCodeCache) == 0 {
+		return nil
+	}
+
+	errorCodeCacheAttrs := make([]map[string]interface{}, len(*errorCodeCache))
+	for i, v := range *errorCodeCache {
+		errorCodeCacheAttrs[i] = map[string]interface{}{
+			"code": v.Code,
+			"ttl":  v.Ttl,
+		}
+	}
+	return errorCodeCacheAttrs
+}
+
+func flattenIpFilterAttrs(ipFilter *model.IpFilter) []map[string]interface{} {
+	if ipFilter == nil {
+		return nil
+	}
+
+	ipFilterAttrs := map[string]interface{}{
+		"type":  ipFilter.Type,
+		"value": ipFilter.Value,
+	}
+	return []map[string]interface{}{ipFilterAttrs}
+}
+
+func flattenOriginRequestUrlRewriteAttrs(originRequestUrlRewrite *[]model.OriginRequestUrlRewrite) []map[string]interface{} {
+	if originRequestUrlRewrite == nil || len(*originRequestUrlRewrite) == 0 {
+		return nil
+	}
+
+	originRequestUrlRewriteAttrs := make([]map[string]interface{}, len(*originRequestUrlRewrite))
+	for i, v := range *originRequestUrlRewrite {
+		originRequestUrlRewriteAttrs[i] = map[string]interface{}{
+			"priority":   v.Priority,
+			"match_type": v.MatchType,
+			"target_url": v.TargetUrl,
+			"source_url": v.SourceUrl,
+		}
+	}
+	return originRequestUrlRewriteAttrs
+}
+
+func flattenUserAgentFilterAttrs(userAgentFilter *model.UserAgentFilter) []map[string]interface{} {
+	if userAgentFilter == nil {
+		return nil
+	}
+
+	userAgentFilterAttrs := map[string]interface{}{
+		"type": userAgentFilter.Type,
+	}
+	if uaList := userAgentFilter.UaList; uaList != nil {
+		userAgentFilterAttrs["ua_list"] = *uaList
+	}
+
+	return []map[string]interface{}{userAgentFilterAttrs}
+}
+
 func flattenSourcesAttrs(sources *[]model.SourcesConfig) []map[string]interface{} {
 	if sources == nil || len(*sources) == 0 {
 		return nil
@@ -1702,6 +2081,12 @@ func flattenConfigAttrs(configsResp *model.ConfigsGetBody, d *schema.ResourceDat
 		"origin_receive_timeout":        configsResp.OriginReceiveTimeout,
 		"quic":                          flattenQUICAttrs(configsResp.Quic),
 		"referer":                       flattenRefererAttrs(configsResp.Referer),
+		"video_seek":                    flattenVideoSeekAttrs(configsResp.VideoSeek),
+		"request_limit_rules":           flattenRequestLimitRulesAttrs(configsResp.RequestLimitRules),
+		"error_code_cache":              flattenErrorCodeCacheAttrs(configsResp.ErrorCodeCache),
+		"ip_filter":                     flattenIpFilterAttrs(configsResp.IpFilter),
+		"origin_request_url_rewrite":    flattenOriginRequestUrlRewriteAttrs(configsResp.OriginRequestUrlRewrite),
+		"user_agent_filter":             flattenUserAgentFilterAttrs(configsResp.UserAgentFilter),
 	}
 	return []map[string]interface{}{configsAttrs}
 }

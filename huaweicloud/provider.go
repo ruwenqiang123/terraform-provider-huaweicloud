@@ -2,6 +2,7 @@ package huaweicloud
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"os"
@@ -10,6 +11,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/mitchellh/go-homedir"
 
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/config"
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/aad"
@@ -231,6 +233,12 @@ func Provider() *schema.Provider {
 							Description: descriptions["assume_role_domain_name"],
 							DefaultFunc: schema.EnvDefaultFunc("HW_ASSUME_ROLE_DOMAIN_NAME", nil),
 						},
+						"domain_id": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: descriptions["assume_role_domain_id"],
+							DefaultFunc: schema.EnvDefaultFunc("HW_ASSUME_ROLE_DOMAIN_ID", nil),
+						},
 					},
 				},
 			},
@@ -409,6 +417,9 @@ func Provider() *schema.Provider {
 			"huaweicloud_bms_flavors":   bms.DataSourceBmsFlavors(),
 			"huaweicloud_bms_instances": bms.DataSourceBmsInstances(),
 
+			"huaweicloud_cae_environments": cae.DataSourceEnvironments(),
+			"huaweicloud_cae_applications": cae.DataSourceApplications(),
+
 			"huaweicloud_cbr_backup":   cbr.DataSourceBackup(),
 			"huaweicloud_cbr_vaults":   cbr.DataSourceVaults(),
 			"huaweicloud_cbr_policies": cbr.DataSourcePolicies(),
@@ -425,11 +436,13 @@ func Provider() *schema.Provider {
 			"huaweicloud_cc_inter_region_bandwidths":                 cc.DataSourceCcInterRegionBandwidths(),
 			"huaweicloud_cc_global_connection_bandwidths":            cc.DataSourceCcGlobalConnectionBandwidths(),
 			"huaweicloud_cc_global_connection_bandwidth_line_levels": cc.DataSourceCcGlobalConnectionBandwidthLineLevels(),
+			"huaweicloud_cc_global_connection_bandwidth_spec_codes":  cc.DataSourceCcGlobalConnectionBandwidthSpecCodes(),
 			"huaweicloud_cc_network_instances":                       cc.DataSourceCcNetworkInstances(),
 			"huaweicloud_cc_connection_routes":                       cc.DataSourceCcConnectionRoutes(),
 			"huaweicloud_cc_central_network_policies_change_set":     cc.DataSourceCcCentralNetworkPoliciesChangeSet(),
 			"huaweicloud_cc_connection_tags":                         cc.DataSourceCcConnectionTags(),
 			"huaweicloud_cc_global_connection_bandwidth_sites":       cc.DataSourceCcGlobalConnectionBandwidthSites(),
+			"huaweicloud_cc_permissions":                             cc.DataSourceCcPermissions(),
 
 			"huaweicloud_cce_addon_template":      cce.DataSourceAddonTemplate(),
 			"huaweicloud_cce_cluster":             cce.DataSourceCCEClusterV3(),
@@ -490,6 +503,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_dcs_backups":         dcs.DataSourceBackups(),
 			"huaweicloud_dcs_hotkey_analyses": dcs.DataSourceDcsHotkeyAnalyses(),
 			"huaweicloud_dcs_bigkey_analyses": dcs.DataSourceDcsBigkeyAnalyses(),
+			"huaweicloud_dcs_accounts":        dcs.DataSourceDcsAccounts(),
 
 			"huaweicloud_dds_flavors":       dds.DataSourceDDSFlavorV3(),
 			"huaweicloud_dds_instances":     dds.DataSourceDdsInstance(),
@@ -499,6 +513,10 @@ func Provider() *schema.Provider {
 			"huaweicloud_dli_datasource_connections": dli.DataSourceConnections(),
 			"huaweicloud_dli_elastic_resource_pools": dli.DataSourceDliElasticPools(),
 			"huaweicloud_dli_quotas":                 dli.DataSourceDliQuotas(),
+			"huaweicloud_dli_sql_templates":          dli.DataSourceDliSqlTemplates(),
+
+			"huaweicloud_dli_flink_templates": dli.DataSourceDliFlinkTemplates(),
+			"huaweicloud_dli_spark_templates": dli.DataSourceDliSparkTemplates(),
 
 			"huaweicloud_dms_kafka_flavors":             dms.DataSourceKafkaFlavors(),
 			"huaweicloud_dms_kafka_instances":           dms.DataSourceDmsKafkaInstances(),
@@ -579,6 +597,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_identity_projects":    iam.DataSourceIdentityProjects(),
 			"huaweicloud_identity_users":       iam.DataSourceIdentityUsers(),
 			"huaweicloud_identity_agencies":    iam.DataSourceIdentityAgencies(),
+			"huaweicloud_identity_providers":   iam.DataSourceIamIdentityProviders(),
 
 			"huaweicloud_identitycenter_instance": identitycenter.DataSourceIdentityCenter(),
 			"huaweicloud_identitycenter_groups":   identitycenter.DataSourceIdentityCenterGroups(),
@@ -691,6 +710,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_rds_parametergroups":               rds.DataSourceParametergroups(),
 			"huaweicloud_rds_sql_audit_operations":          rds.DataSourceRdsSqlAuditTypes(),
 			"huaweicloud_rds_cross_region_backups":          rds.DataSourceRdsCrossRegionBackups(),
+			"huaweicloud_rds_cross_region_backup_instances": rds.DataSourceRdsCrossRegionBackupInstances(),
 
 			"huaweicloud_rms_policy_definitions":                 rms.DataSourcePolicyDefinitions(),
 			"huaweicloud_rms_assignment_package_templates":       rms.DataSourceTemplates(),
@@ -757,15 +777,17 @@ func Provider() *schema.Provider {
 			"huaweicloud_vpn_connections":                vpn.DataSourceVpnConnections(),
 			"huaweicloud_vpn_connection_health_checks":   vpn.DataSourceVpnConnectionHealthChecks(),
 
-			"huaweicloud_waf_certificate":              waf.DataSourceWafCertificateV1(),
-			"huaweicloud_waf_policies":                 waf.DataSourceWafPoliciesV1(),
-			"huaweicloud_waf_dedicated_instances":      waf.DataSourceWafDedicatedInstancesV1(),
-			"huaweicloud_waf_reference_tables":         waf.DataSourceWafReferenceTablesV1(),
-			"huaweicloud_waf_instance_groups":          waf.DataSourceWafInstanceGroups(),
-			"huaweicloud_waf_dedicated_domains":        waf.DataSourceWafDedicatedDomains(),
-			"huaweicloud_waf_domains":                  waf.DataSourceWafDomains(),
-			"huaweicloud_waf_address_groups":           waf.DataSourceWafAddressGroups(),
-			"huaweicloud_waf_rules_precise_protection": waf.DataSourceWafRulesPreciseProtection(),
+			"huaweicloud_waf_address_groups":                   waf.DataSourceWafAddressGroups(),
+			"huaweicloud_waf_certificate":                      waf.DataSourceWafCertificateV1(),
+			"huaweicloud_waf_dedicated_domains":                waf.DataSourceWafDedicatedDomains(),
+			"huaweicloud_waf_dedicated_instances":              waf.DataSourceWafDedicatedInstancesV1(),
+			"huaweicloud_waf_domains":                          waf.DataSourceWafDomains(),
+			"huaweicloud_waf_instance_groups":                  waf.DataSourceWafInstanceGroups(),
+			"huaweicloud_waf_policies":                         waf.DataSourceWafPoliciesV1(),
+			"huaweicloud_waf_reference_tables":                 waf.DataSourceWafReferenceTablesV1(),
+			"huaweicloud_waf_rules_blacklist":                  waf.DataSourceWafRulesBlacklist(),
+			"huaweicloud_waf_rules_geolocation_access_control": waf.DataSourceWafRulesGeolocationAccessControl(),
+			"huaweicloud_waf_rules_precise_protection":         waf.DataSourceWafRulesPreciseProtection(),
 
 			"huaweicloud_dws_flavors":                 dws.DataSourceDwsFlavors(),
 			"huaweicloud_dws_logical_cluster_rings":   dws.DataSourceLogicalClusterRings(),
@@ -1022,7 +1044,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_dcs_hotkey_analysis":  dcs.ResourceHotKeyAnalysis(),
 			"huaweicloud_dcs_bigkey_analysis":  dcs.ResourceBigKeyAnalysis(),
 			"huaweicloud_dcs_account":          dcs.ResourceDcsAccount(),
-			"huaweicloud_dcs_isntance_restore": dcs.ResourceDcsRestore(),
+			"huaweicloud_dcs_instance_restore": dcs.ResourceDcsRestore(),
 			"huaweicloud_dcs_diagnosis_task":   dcs.ResourceDiagnosisTask(),
 
 			"huaweicloud_dds_database_role":      dds.ResourceDatabaseRole(),
@@ -1032,6 +1054,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_dds_parameter_template": dds.ResourceDdsParameterTemplate(),
 			"huaweicloud_dds_audit_log_policy":   dds.ResourceDdsAuditLogPolicy(),
 			"huaweicloud_dds_lts_log":            dds.ResourceDdsLtsLog(),
+			"huaweicloud_dds_instance_restart":   dds.ResourceDDSInstanceRestart(),
 
 			"huaweicloud_ddm_instance":               ddm.ResourceDdmInstance(),
 			"huaweicloud_ddm_schema":                 ddm.ResourceDdmSchema(),
@@ -1194,6 +1217,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_identity_provider":              iam.ResourceIdentityProvider(),
 			"huaweicloud_identity_password_policy":       iam.ResourceIdentityPasswordPolicy(),
 			"huaweicloud_identity_protection_policy":     iam.ResourceIdentityProtectionPolicy(),
+			"huaweicloud_identity_login_policy":          iam.ResourceIdentityLoginPolicy(),
 			"huaweicloud_identity_virtual_mfa_device":    iam.ResourceIdentityVirtualMFADevice(),
 			"huaweicloud_identity_user_token":            iam.ResourceIdentityUserToken(),
 
@@ -1314,8 +1338,10 @@ func Provider() *schema.Provider {
 			"huaweicloud_dataarts_factory_job":      dataarts.ResourceFactoryJob(),
 			"huaweicloud_dataarts_factory_script":   dataarts.ResourceDataArtsFactoryScript(),
 			// DataArts Security
-			"huaweicloud_dataarts_security_permission_set":        dataarts.ResourceSecurityPermissionSet(),
-			"huaweicloud_dataarts_security_data_recognition_rule": dataarts.ResourceSecurityRule(),
+			"huaweicloud_dataarts_security_data_recognition_rule":    dataarts.ResourceSecurityRule(),
+			"huaweicloud_dataarts_security_permission_set":           dataarts.ResourceSecurityPermissionSet(),
+			"huaweicloud_dataarts_security_permission_set_member":    dataarts.ResourceSecurityPermissionSetMember(),
+			"huaweicloud_dataarts_security_permission_set_privilege": dataarts.ResourceSecurityPermissionSetPrivilege(),
 			// DataArts DataService
 			"huaweicloud_dataarts_dataservice_app":     dataarts.ResourceDataServiceApp(),
 			"huaweicloud_dataarts_dataservice_catalog": dataarts.ResourceDatatServiceCatalog(),
@@ -1373,6 +1399,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_rds_pg_plugin":                    rds.ResourceRdsPgPlugin(),
 			"huaweicloud_rds_pg_hba":                       rds.ResourcePgHba(),
 			"huaweicloud_rds_lts_log":                      rds.ResourceRdsLtsLog(),
+			"huaweicloud_rds_recycling_policy":             rds.ResourceRecyclingPolicy(),
 
 			"huaweicloud_rms_policy_assignment":                  rms.ResourcePolicyAssignment(),
 			"huaweicloud_rms_resource_aggregator":                rms.ResourceAggregator(),
@@ -1555,8 +1582,9 @@ func Provider() *schema.Provider {
 			"huaweicloud_dns_recordset_v2": dns.ResourceDNSRecordSetV2(),
 			"huaweicloud_dns_zone_v2":      dns.ResourceDNSZone(),
 
-			"huaweicloud_dcs_instance_v1": dcs.ResourceDcsInstance(),
-			"huaweicloud_dds_instance_v3": dds.ResourceDdsInstanceV3(),
+			"huaweicloud_dcs_instance_v1":      dcs.ResourceDcsInstance(),
+			"huaweicloud_dds_instance_v3":      dds.ResourceDdsInstanceV3(),
+			"huaweicloud_dcs_isntance_restore": dcs.ResourceDcsRestore(),
 
 			"huaweicloud_kms_key_v1": dew.ResourceKmsKey(),
 
@@ -1770,6 +1798,8 @@ func init() {
 
 		"assume_role_domain_name": "The name of domain for assume role.",
 
+		"assume_role_domain_id": "The id of domain for v5 assume role.",
+
 		"cloud": "The endpoint of cloud provider, defaults to myhuaweicloud.com",
 
 		"endpoints": "The custom endpoints used to override the default endpoint URL.",
@@ -1789,46 +1819,6 @@ func init() {
 func configureProvider(_ context.Context, d *schema.ResourceData, terraformVersion string) (interface{},
 	diag.Diagnostics) {
 	var tenantName, tenantID, delegatedProject, identityEndpoint string
-	region := d.Get("region").(string)
-	cloud := getCloudDomain(d.Get("cloud").(string), region)
-
-	isRegional := d.Get("regional").(bool)
-	if strings.HasPrefix(region, prefixEuropeRegion) {
-		// the default format of endpoints in Europe site is xxx.{{region}}.{{cloud}}
-		isRegional = true
-	}
-
-	// project_name is prior to tenant_name
-	// if neither of them was set, use region as the default project
-	if v, ok := d.GetOk("project_name"); ok && v.(string) != "" {
-		tenantName = v.(string)
-	} else if v, ok := d.GetOk("tenant_name"); ok && v.(string) != "" {
-		tenantName = v.(string)
-	} else {
-		tenantName = region
-	}
-
-	// project_id is prior to tenant_id
-	if v, ok := d.GetOk("project_id"); ok && v.(string) != "" {
-		tenantID = v.(string)
-	} else {
-		tenantID = d.Get("tenant_id").(string)
-	}
-
-	// Use region as delegated_project if it's not set
-	if v, ok := d.GetOk("delegated_project"); ok && v.(string) != "" {
-		delegatedProject = v.(string)
-	} else {
-		delegatedProject = region
-	}
-
-	// use auth_url as identityEndpoint if specified
-	if v, ok := d.GetOk("auth_url"); ok {
-		identityEndpoint = v.(string)
-	} else {
-		// use cloud as basis for identityEndpoint
-		identityEndpoint = fmt.Sprintf("https://iam.%s.%s/v3", region, cloud)
-	}
 
 	conf := config.Config{
 		AccessKey:           d.Get("access_key").(string),
@@ -1838,21 +1828,14 @@ func configureProvider(_ context.Context, d *schema.ResourceData, terraformVersi
 		ClientKeyFile:       d.Get("key").(string),
 		DomainID:            d.Get("domain_id").(string),
 		DomainName:          d.Get("domain_name").(string),
-		IdentityEndpoint:    identityEndpoint,
 		Insecure:            d.Get("insecure").(bool),
 		Password:            d.Get("password").(string),
 		Token:               d.Get("token").(string),
 		SecurityToken:       d.Get("security_token").(string),
-		Region:              region,
-		TenantID:            tenantID,
-		TenantName:          tenantName,
 		Username:            d.Get("user_name").(string),
 		UserID:              d.Get("user_id").(string),
 		AgencyName:          d.Get("agency_name").(string),
 		AgencyDomainName:    d.Get("agency_domain_name").(string),
-		DelegatedProject:    delegatedProject,
-		Cloud:               cloud,
-		RegionClient:        isRegional,
 		MaxRetries:          d.Get("max_retries").(int),
 		EnterpriseProjectID: d.Get("enterprise_project_id").(string),
 		SharedConfigFile:    d.Get("shared_config_file").(string),
@@ -1869,15 +1852,79 @@ func configureProvider(_ context.Context, d *schema.ResourceData, terraformVersi
 		// without assume_role block in provider
 		delegatedAgencyName := os.Getenv("HW_ASSUME_ROLE_AGENCY_NAME")
 		delegatedDomianName := os.Getenv("HW_ASSUME_ROLE_DOMAIN_NAME")
+		delegatedDomianID := os.Getenv("HW_ASSUME_ROLE_DOMAIN_ID")
 		if delegatedAgencyName != "" && delegatedDomianName != "" {
 			conf.AssumeRoleAgency = delegatedAgencyName
 			conf.AssumeRoleDomain = delegatedDomianName
+			conf.AssumeRoleDomainID = delegatedDomianID
 		}
 	} else {
 		assumeRole := assumeRoleList[0].(map[string]interface{})
 		conf.AssumeRoleAgency = assumeRole["agency_name"].(string)
 		conf.AssumeRoleDomain = assumeRole["domain_name"].(string)
+		conf.AssumeRoleDomainID = assumeRole["domain_id"].(string)
 	}
+
+	conf.Region = d.Get("region").(string)
+
+	if conf.SharedConfigFile != "" {
+		err := readConfig(&conf)
+		if err != nil {
+			return nil, diag.FromErr(err)
+		}
+	}
+	if conf.Region == "" {
+		return nil, diag.Errorf("region should be provided")
+	}
+
+	cloud := getCloudDomain(d.Get("cloud").(string), conf.Region)
+	conf.Cloud = cloud
+
+	isRegional := d.Get("regional").(bool)
+	if strings.HasPrefix(conf.Region, prefixEuropeRegion) {
+		// the default format of endpoints in Europe site is xxx.{{region}}.{{cloud}}
+		isRegional = true
+	}
+	conf.RegionClient = isRegional
+
+	// if can't read from shared config, keep the original way
+	if conf.TenantID == "" {
+		// project_id is prior to tenant_id
+		if v, ok := d.GetOk("project_id"); ok && v.(string) != "" {
+			tenantID = v.(string)
+		} else {
+			tenantID = d.Get("tenant_id").(string)
+		}
+		conf.TenantID = tenantID
+
+		// project_name is prior to tenant_name
+		// if neither of them was set, use region as the default project
+		if v, ok := d.GetOk("project_name"); ok && v.(string) != "" {
+			tenantName = v.(string)
+		} else if v, ok := d.GetOk("tenant_name"); ok && v.(string) != "" {
+			tenantName = v.(string)
+		} else {
+			tenantName = conf.Region
+		}
+		conf.TenantName = tenantName
+	}
+
+	// Use region as delegated_project if it's not set
+	if v, ok := d.GetOk("delegated_project"); ok && v.(string) != "" {
+		delegatedProject = v.(string)
+	} else {
+		delegatedProject = conf.Region
+	}
+	conf.DelegatedProject = delegatedProject
+
+	// use auth_url as identityEndpoint if specified
+	if v, ok := d.GetOk("auth_url"); ok {
+		identityEndpoint = v.(string)
+	} else {
+		// use cloud as basis for identityEndpoint
+		identityEndpoint = fmt.Sprintf("https://iam.%s.%s/v3", conf.Region, cloud)
+	}
+	conf.IdentityEndpoint = identityEndpoint
 
 	// get custom endpoints
 	endpoints, err := flattenProviderEndpoints(d)
@@ -1962,4 +2009,66 @@ func getCloudDomain(cloud, region string) string {
 		return defaultEuropeCloud
 	}
 	return defaultCloud
+}
+
+func readConfig(c *config.Config) error {
+	profilePath, err := homedir.Expand(c.SharedConfigFile)
+	if err != nil {
+		return err
+	}
+
+	current := c.Profile
+	var providerConfig config.Profile
+	_, err = os.Stat(profilePath)
+	if os.IsNotExist(err) {
+		return fmt.Errorf("The specified shared config file %s does not exist", profilePath)
+	}
+
+	data, err := os.ReadFile(profilePath)
+	if err != nil {
+		return fmt.Errorf("Err reading from shared config file: %s", err)
+	}
+	sharedConfig := config.SharedConfig{}
+	err = json.Unmarshal(data, &sharedConfig)
+	if err != nil {
+		return err
+	}
+
+	// fetch current from shared config if not specified with provider
+	if current == "" {
+		current = sharedConfig.Current
+	}
+
+	// fetch the current profile config
+	for _, v := range sharedConfig.Profiles {
+		if current == v.Name {
+			providerConfig = v
+			break
+		}
+	}
+	if (providerConfig == config.Profile{}) {
+		return fmt.Errorf("Error finding profile %s from shared config file", current)
+	}
+
+	c.AccessKey = providerConfig.AccessKeyId
+	c.SecretKey = providerConfig.SecretAccessKey
+	// non required fields
+	if providerConfig.Region != "" {
+		c.Region = providerConfig.Region
+	}
+	if providerConfig.DomainId != "" {
+		c.DomainID = providerConfig.DomainId
+	}
+	if providerConfig.ProjectId != "" {
+		c.TenantID = providerConfig.ProjectId
+	}
+	// assume role
+	if providerConfig.AgencyName != "" {
+		c.AssumeRoleAgency = providerConfig.AgencyName
+	}
+	if providerConfig.AgencyDomainName != "" {
+		c.AssumeRoleDomain = providerConfig.AgencyDomainName
+	}
+
+	return nil
 }
