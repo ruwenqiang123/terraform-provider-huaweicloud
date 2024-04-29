@@ -462,6 +462,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_cfw_firewalls":      cfw.DataSourceFirewalls(),
 			"huaweicloud_cfw_service_groups": cfw.DataSourceCfwServiceGroups(),
 			"huaweicloud_cfw_address_groups": cfw.DataSourceCfwAddressGroups(),
+			"huaweicloud_cfw_attack_logs":    cfw.DataSourceCfwAttackLogs(),
 
 			"huaweicloud_cnad_advanced_instances":         cnad.DataSourceInstances(),
 			"huaweicloud_cnad_advanced_available_objects": cnad.DataSourceAvailableProtectedObjects(),
@@ -687,9 +688,10 @@ func Provider() *schema.Provider {
 			"huaweicloud_obs_buckets":       obs.DataSourceObsBuckets(),
 			"huaweicloud_obs_bucket_object": obs.DataSourceObsBucketObject(),
 
-			"huaweicloud_ram_resource_permissions": ram.DataSourceRAMPermissions(),
-			"huaweicloud_ram_shared_resources":     ram.DataSourceRAMSharedResources(),
-			"huaweicloud_ram_shared_principals":    ram.DataSourceRAMSharedPrincipals(),
+			"huaweicloud_ram_resource_permissions":       ram.DataSourceRAMPermissions(),
+			"huaweicloud_ram_resource_share_invitations": ram.DataSourceResourceShareInvitations(),
+			"huaweicloud_ram_shared_resources":           ram.DataSourceRAMSharedResources(),
+			"huaweicloud_ram_shared_principals":          ram.DataSourceRAMSharedPrincipals(),
 
 			"huaweicloud_rds_flavors":                       rds.DataSourceRdsFlavor(),
 			"huaweicloud_rds_engine_versions":               rds.DataSourceRdsEngineVersionsV3(),
@@ -1339,6 +1341,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_dataarts_factory_script":   dataarts.ResourceDataArtsFactoryScript(),
 			// DataArts Security
 			"huaweicloud_dataarts_security_data_recognition_rule":    dataarts.ResourceSecurityRule(),
+			"huaweicloud_dataarts_security_data_secrecy_level":       dataarts.ResourceSecurityDataSecrecyLevel(),
 			"huaweicloud_dataarts_security_permission_set":           dataarts.ResourceSecurityPermissionSet(),
 			"huaweicloud_dataarts_security_permission_set_member":    dataarts.ResourceSecurityPermissionSetMember(),
 			"huaweicloud_dataarts_security_permission_set_privilege": dataarts.ResourceSecurityPermissionSetPrivilege(),
@@ -1379,7 +1382,8 @@ func Provider() *schema.Provider {
 			"huaweicloud_oms_migration_task":       oms.ResourceMigrationTask(),
 			"huaweicloud_oms_migration_task_group": oms.ResourceMigrationTaskGroup(),
 
-			"huaweicloud_ram_resource_share": ram.ResourceRAMShare(),
+			"huaweicloud_ram_resource_share":          ram.ResourceRAMShare(),
+			"huaweicloud_ram_resource_share_accepter": ram.ResourceShareAccepter(),
 
 			"huaweicloud_rds_mysql_account":                rds.ResourceMysqlAccount(),
 			"huaweicloud_rds_mysql_binlog":                 rds.ResourceMysqlBinlog(),
