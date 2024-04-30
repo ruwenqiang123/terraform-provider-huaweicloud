@@ -1,5 +1,8 @@
 ---
 subcategory: "Elastic Load Balance (ELB)"
+layout: "huaweicloud"
+page_title: "HuaweiCloud: huaweicloud_lb_member"
+description: ""
 ---
 
 # huaweicloud_lb_member
@@ -48,6 +51,10 @@ The following arguments are supported:
 In addition to all arguments above, the following attributes are exported:
 
 * `id` - The unique ID for the member.
+
+* `backend_server_status` - Indicates the administrative status of the backend server.
+
+* `operating_status` - Indicates the health check result of the backend server.
 
 ## Timeouts
 

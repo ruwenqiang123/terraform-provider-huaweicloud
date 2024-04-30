@@ -1,5 +1,8 @@
 ---
 subcategory: "Virtual Private Network (VPN)"
+layout: "huaweicloud"
+page_title: "HuaweiCloud: huaweicloud_vpn_gateway"
+description: ""
 ---
 
 # huaweicloud_vpn_gateway
@@ -305,6 +308,8 @@ In addition to all arguments above, the following attributes are exported:
 * `used_connection_group` - The number of used connection groups.
 
 * `used_connection_number` - The number of used connections.
+
+* `er_attachment_id` - The ER attachment ID.
 
 * `eip1` - The master 1 IP in active-active VPN gateway or the master IP in active-standby VPN gateway.
   The [object](#Gateway_GetResponseEip) structure is documented below.

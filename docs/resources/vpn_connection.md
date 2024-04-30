@@ -1,5 +1,8 @@
 ---
 subcategory: "Virtual Private Network (VPN)"
+layout: "huaweicloud"
+page_title: "HuaweiCloud: huaweicloud_vpn_connection"
+description: ""
 ---
 
 # huaweicloud_vpn_connection
@@ -89,9 +92,11 @@ The following arguments are supported:
 
 * `customer_gateway_id` - (Required, String) The customer gateway ID.
 
-* `peer_subnets` - (Required, List) The CIDR list of customer subnets.
-
 * `psk` - (Required, String) The pre-shared key.
+
+* `peer_subnets` - (Optional, List) The CIDR list of customer subnets. This parameter must be empty
+  when the `attachment_type` of the VPN gateway is set to **er** and `vpn_type` is set to **policy** or **bgp**.
+  This parameter is mandatory in other scenarios.
 
 * `tunnel_local_address` - (Optional, String) The local tunnel address.
 
