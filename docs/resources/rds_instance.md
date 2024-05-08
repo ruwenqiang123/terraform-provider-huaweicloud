@@ -278,6 +278,9 @@ The following arguments are supported:
 
   -> **NOTE:** Only adding MSDTC hosts is supported, deletion is not allowed.
 
+* `private_dns_name_prefix` - (Optional, String) Specifies the prefix of the private domain name. The value contains
+  **8** to **64** characters. Only uppercase letters, lowercase letters, and digits are allowed.
+
 The `db` block supports:
 
 * `type` - (Required, String, ForceNew) Specifies the DB engine. Available value are **MySQL**, **PostgreSQL**,
@@ -323,6 +326,11 @@ The `db` block supports:
 * `read_write_permissions` - (Optional, String) Specifies the read write permissions of the instance. Valid values:
   + **readwrite**: read write permissions.
   + **readonly**: readonly permissions.
+
+* `seconds_level_monitoring_enabled` - (Optional, Bool) Specifies whether to enable seconds level monitoring.
+
+* `seconds_level_monitoring_interval` - (Optional, Int) Specifies the seconds level monitoring interval. Valid values:
+  **1**, **5**. It is mandatory when `seconds_level_monitoring_enabled` is **true**.
 
 The `volume` block supports:
 
@@ -410,6 +418,8 @@ In addition to all arguments above, the following attributes are exported:
 * `nodes` - Indicates the instance nodes information. Structure is documented below.
 
 * `private_ips` - Indicates the private IP address list. It is a blank string until an ECS is created.
+
+* `private_dns_names` - Indicates the private domain name list of the DB instance.
 
 * `public_ips` - Indicates the public IP address list.
 
