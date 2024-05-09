@@ -85,7 +85,8 @@ func resourceDDSInstanceModifyIPCreate(ctx context.Context, d *schema.ResourceDa
 
 func resourceDDSInstanceModifyIPRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	conf := meta.(*config.Config)
-	client, err := conf.DdsV3Client(conf.GetRegion(d))
+	region := conf.GetRegion(d)
+	client, err := conf.DdsV3Client(region)
 	if err != nil {
 		return diag.Errorf("error creating DDS client: %s ", err)
 	}
@@ -111,10 +112,11 @@ func resourceDDSInstanceModifyIPRead(_ context.Context, d *schema.ResourceData, 
 	jsonPaths := fmt.Sprintf("instances|[0].groups[*].nodes[?id=='%s'][]|[0].private_ip", nodeID)
 	privateIP := utils.PathSearch(jsonPaths, getInstanceInfoRespBody, "")
 	if privateIP.(string) == "" {
-		return diag.Errorf("error getting private ip of node(%s)", nodeID)
+		return common.CheckDeletedDiag(d, golangsdk.ErrDefault404{}, "error retrieving private IP")
 	}
 
 	mErr := multierror.Append(
+		d.Set("region", region),
 		d.Set("new_ip", privateIP),
 	)
 	if err := mErr.ErrorOrNil(); err != nil {

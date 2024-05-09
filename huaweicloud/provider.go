@@ -401,8 +401,9 @@ func Provider() *schema.Provider {
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
-			"huaweicloud_apig_environments": apig.DataSourceEnvironments(),
-			"huaweicloud_apig_groups":       apig.DataSourceGroups(),
+			"huaweicloud_apig_api_associated_acl_policies": apig.DataSourceApiAssociatedAclPolicies(),
+			"huaweicloud_apig_environments":                apig.DataSourceEnvironments(),
+			"huaweicloud_apig_groups":                      apig.DataSourceGroups(),
 
 			"huaweicloud_as_configurations":      as.DataSourceASConfigurations(),
 			"huaweicloud_as_groups":              as.DataSourceASGroups(),
@@ -595,8 +596,9 @@ func Provider() *schema.Provider {
 			"huaweicloud_gaussdb_mysql_backups":                gaussdb.DataSourceGaussdbMysqlBackups(),
 			"huaweicloud_gaussdb_mysql_restore_time_ranges":    gaussdb.DataSourceGaussdbMysqlRestoreTimeRanges(),
 
-			"huaweicloud_hss_host_groups": hss.DataSourceHostGroups(),
-			"huaweicloud_hss_hosts":       hss.DataSourceHosts(),
+			"huaweicloud_hss_host_groups":     hss.DataSourceHostGroups(),
+			"huaweicloud_hss_hosts":           hss.DataSourceHosts(),
+			"huaweicloud_hss_webtamper_hosts": hss.DataSourceWebTamperHosts(),
 
 			"huaweicloud_identity_permissions": iam.DataSourceIdentityPermissions(),
 			"huaweicloud_identity_role":        iam.DataSourceIdentityRole(),
@@ -720,6 +722,8 @@ func Provider() *schema.Provider {
 			"huaweicloud_rds_sql_audit_operations":          rds.DataSourceRdsSqlAuditTypes(),
 			"huaweicloud_rds_cross_region_backups":          rds.DataSourceRdsCrossRegionBackups(),
 			"huaweicloud_rds_cross_region_backup_instances": rds.DataSourceRdsCrossRegionBackupInstances(),
+			"huaweicloud_rds_sql_audit_logs":                rds.DataSourceRdsSqlAuditLogs(),
+			"huaweicloud_rds_error_logs":                    rds.DataSourceRdsErrorLogs(),
 
 			"huaweicloud_rms_policy_definitions":                 rms.DataSourcePolicyDefinitions(),
 			"huaweicloud_rms_assignment_package_templates":       rms.DataSourceTemplates(),
@@ -914,6 +918,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_apig_channel":                     apig.ResourceChannel(),
 			"huaweicloud_apig_custom_authorizer":           apig.ResourceApigCustomAuthorizerV2(),
 			"huaweicloud_apig_environment":                 apig.ResourceApigEnvironmentV2(),
+			"huaweicloud_apig_environment_variable":        apig.ResourceEnvironmentVariable(),
 			"huaweicloud_apig_group":                       apig.ResourceApigGroupV2(),
 			"huaweicloud_apig_instance_routes":             apig.ResourceInstanceRoutes(),
 			"huaweicloud_apig_instance":                    apig.ResourceApigInstanceV2(),
@@ -1069,6 +1074,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_dds_lts_log":                     dds.ResourceDdsLtsLog(),
 			"huaweicloud_dds_instance_restart":            dds.ResourceDDSInstanceRestart(),
 			"huaweicloud_dds_instance_internal_ip_modify": dds.ResourceDDSInstanceModifyIP(),
+			"huaweicloud_dds_instance_eip_associate":      dds.ResourceDDSInstanceBindEIP(),
 
 			"huaweicloud_ddm_instance":               ddm.ResourceDdmInstance(),
 			"huaweicloud_ddm_schema":                 ddm.ResourceDdmSchema(),
