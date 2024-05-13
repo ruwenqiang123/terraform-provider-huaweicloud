@@ -3,11 +3,15 @@ package filters
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"reflect"
 	"strings"
 
 	"github.com/thedevsaddam/gojsonq"
+	"github.com/tidwall/gjson"
 )
+
+type Filter func(item gjson.Result) bool
 
 type QueryCond struct {
 	Key      string
@@ -20,6 +24,7 @@ type JsonFilter struct {
 	node     string
 	jsonData any
 	queries  []QueryCond
+	filter   Filter
 }
 
 func (f *JsonFilter) GetQ() *gojsonq.JSONQ {
@@ -32,6 +37,7 @@ func New() *JsonFilter {
 			Macro("has", has).
 			Macro("hasContains", hasContain),
 		queries: make([]QueryCond, 0),
+		filter:  nil,
 	}
 }
 
@@ -65,6 +71,15 @@ func (f *JsonFilter) Where(key, operator string, val any) *JsonFilter {
 	return f
 }
 
+func (f *JsonFilter) Filter(filter Filter) *JsonFilter {
+	f.filter = filter
+	return f
+}
+
+func (f *JsonFilter) GetFilter() Filter {
+	return f.filter
+}
+
 func (f *JsonFilter) Get() (any, error) {
 	dt := reflect.TypeOf(f.jsonData)
 	if dt.Kind() == reflect.Slice {
@@ -83,7 +98,7 @@ func (f *JsonFilter) filterSlice() (any, error) {
 	for _, q := range f.queries {
 		query = query.Where(q.Key, q.Operator, q.Value)
 	}
-	return query.Get(), nil
+	return f.applyFilter(query.Get()), nil
 }
 
 func (f *JsonFilter) filterJson() (any, error) {
@@ -108,11 +123,37 @@ func (f *JsonFilter) filterJson() (any, error) {
 
 	switch mp := f.jsonData.(type) {
 	case map[string]interface{}:
-		mp = putMap(f.node, mp, query.Get())
+		mp = putMap(f.node, mp, f.applyFilter(query.Get()))
 		return mp, nil
 	default:
 		return nil, fmt.Errorf("failed to parse object")
 	}
+}
+
+func (f *JsonFilter) applyFilter(slice any) any {
+	if f.filter == nil || reflect.TypeOf(slice).Kind() != reflect.Slice {
+		return slice
+	}
+
+	arr, ok := slice.([]any)
+	if !ok {
+		return slice
+	}
+
+	resultData := make([]any, 0)
+	for _, item := range arr {
+		b, err := json.Marshal(item)
+		if err != nil {
+			log.Printf("[ERROR] failed to apply custom filters: %s", err)
+			continue
+		}
+		j := gjson.ParseBytes(b)
+		if f.filter(j) {
+			resultData = append(resultData, item)
+		}
+	}
+
+	return resultData
 }
 
 func putMap(keyPath string, mp map[string]any, val any) map[string]any {
@@ -164,6 +205,40 @@ func index[S ~[]E, E comparable](s S, v E) int {
 }
 
 func has(x interface{}, y interface{}) (bool, error) {
+	if y == nil {
+		return true, nil
+	}
+
+	rf := reflect.ValueOf(x)
+	switch rf.Kind() {
+	case reflect.Array, reflect.Slice:
+		return sliceHas(x, y)
+	case reflect.Map:
+		return mapHas(x, y)
+	default:
+		return false, fmt.Errorf("[has] unsupported comparison type: %s", rf.Kind())
+	}
+}
+
+func mapHas(x interface{}, y interface{}) (bool, error) {
+	xRef := reflect.ValueOf(x)
+	yRef := reflect.ValueOf(y)
+	if xRef.Kind() != reflect.Map || yRef.Kind() != reflect.Map {
+		return false, fmt.Errorf("[mapHas] types must all be map: %s %s", xRef.Kind(), xRef.Kind())
+	}
+	for _, k := range yRef.MapKeys() {
+		yVal := yRef.MapIndex(k)
+		xVal := xRef.MapIndex(k)
+		if xVal.IsValid() && !xVal.IsNil() && isEqual(xVal, yVal) {
+			continue
+		}
+		return false, nil
+	}
+
+	return true, nil
+}
+
+func sliceHas(x interface{}, y interface{}) (bool, error) {
 	xVal := toStrSlice(x)
 	rf := reflect.ValueOf(y)
 	if rf.IsValid() && rf.Kind() != reflect.Slice {
@@ -182,6 +257,18 @@ func has(x interface{}, y interface{}) (bool, error) {
 }
 
 func hasContain(x interface{}, y interface{}) (bool, error) {
+	rf := reflect.ValueOf(x)
+	switch rf.Kind() {
+	case reflect.Array, reflect.Slice:
+		return sliceHasContain(x, y)
+	case reflect.Map:
+		return mapHasContain(x, y)
+	default:
+		return false, fmt.Errorf("[hasContain] unsupported comparison type: %s", rf.Kind())
+	}
+}
+
+func sliceHasContain(x interface{}, y interface{}) (bool, error) {
 	xArr := toStrSlice(x)
 	yArr := make([]string, 0)
 	rf := reflect.ValueOf(y)
@@ -200,4 +287,39 @@ func hasContain(x interface{}, y interface{}) (bool, error) {
 		}
 	}
 	return false, nil
+}
+
+func mapHasContain(x interface{}, y interface{}) (bool, error) {
+	if reflect.TypeOf(x).Kind() != reflect.Map || reflect.TypeOf(y).Kind() != reflect.Map {
+		return false, fmt.Errorf("[mapHas] types must all be map: %s %s", reflect.TypeOf(x), reflect.TypeOf(y))
+	}
+
+	xRef := reflect.ValueOf(x)
+	yRef := reflect.ValueOf(y)
+
+	keys := yRef.MapKeys()
+	for _, k := range keys {
+		yVal := yRef.MapIndex(k)
+		xVal := xRef.MapIndex(k)
+		if xVal.IsValid() && !xVal.IsNil() && isEqual(xVal, yVal) {
+			return true, nil
+		}
+	}
+
+	return false, nil
+}
+
+// isEqual compare two basic type variables for equality
+// x and y may be of int32 and interface type, and are converted to string before comparison
+func isEqual(x, y reflect.Value) bool {
+	if x.Kind() == reflect.Pointer {
+		x = x.Elem()
+	}
+	if y.Kind() == reflect.Pointer {
+		y = y.Elem()
+	}
+
+	vx := fmt.Sprintf("%v", x.Interface())
+	vy := fmt.Sprintf("%v", y.Interface())
+	return vx == vy
 }

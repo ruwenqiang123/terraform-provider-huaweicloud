@@ -98,6 +98,19 @@ func (c *HttpHelper) MarkerPager(dataPath, nextExp, markerKey string) *HttpHelpe
 	return c
 }
 
+func (c *HttpHelper) CustomPager(dataPath string, nextUrlFunc URLFunc) *HttpHelper {
+	timestamp, _ := uuid.GenerateUUID()
+	c.pager = func(r pagination.PageResult) pagination.Page {
+		return CustomPager{
+			PageResult:  r,
+			uuid:        timestamp,
+			DataPath:    dataPath,
+			NextURLFunc: nextUrlFunc,
+		}
+	}
+	return c
+}
+
 func (c *HttpHelper) PageSizePager(dataPath, pageNumKey, perPageKey string, perPage int) *HttpHelper {
 	if perPage > 0 {
 		c.queryExt[perPageKey] = perPage
@@ -314,7 +327,8 @@ func (c *HttpHelper) doFilter() {
 	for _, filter := range c.filters {
 		query := filters.New().
 			Data(data).
-			From(filter.GetFrom())
+			From(filter.GetFrom()).
+			Filter(filter.GetFilter())
 
 		for _, q := range filter.GetQueries() {
 			query = query.Where(q.Key, q.Operator, q.Value)

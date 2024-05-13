@@ -108,7 +108,7 @@ func TestAccDDSV3Instance_basic(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					rc.CheckResourceExists(),
 					resource.TestCheckResourceAttr(resourceName, "name", rName),
-					testAccCheckDDSV3InstanceFlavor(&instance, "mongos", "spec_code", "dds.mongodb.s6.large.4.mongos"),
+					testAccCheckDDSV3InstanceFlavor(&instance, "config", "spec_code", "dds.mongodb.s6.xlarge.2.config"),
 				),
 			},
 			{
@@ -237,6 +237,7 @@ func TestAccDDSV3Instance_withConfigurationSharding(t *testing.T) {
 					resource.TestCheckResourceAttrPair(resourceName, "configuration.1.id", "huaweicloud_dds_parameter_template.shard1", "id"),
 					resource.TestCheckResourceAttr(resourceName, "configuration.2.type", "config"),
 					resource.TestCheckResourceAttrPair(resourceName, "configuration.2.id", "huaweicloud_dds_parameter_template.config1", "id"),
+					testAccCheckDDSV3InstanceFlavor(&instance, "replica", "num", 3),
 				),
 			},
 			{
@@ -250,6 +251,7 @@ func TestAccDDSV3Instance_withConfigurationSharding(t *testing.T) {
 					resource.TestCheckResourceAttrPair(resourceName, "configuration.1.id", "huaweicloud_dds_parameter_template.shard2", "id"),
 					resource.TestCheckResourceAttr(resourceName, "configuration.2.type", "config"),
 					resource.TestCheckResourceAttrPair(resourceName, "configuration.2.id", "huaweicloud_dds_parameter_template.config2", "id"),
+					testAccCheckDDSV3InstanceFlavor(&instance, "replica", "num", 5),
 				),
 			},
 		},
@@ -337,7 +339,7 @@ func TestAccDDSV3Instance_withSecondLevelMonitoring(t *testing.T) {
 func testAccCheckDDSV3InstanceFlavor(instance *instances.InstanceResponse, groupType, key string, v interface{}) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		if key == "num" {
-			if groupType != "mongos" {
+			if groupType == "shard" {
 				groupIDs := make([]string, 0)
 				for _, group := range instance.Groups {
 					if group.Type == "shard" {
@@ -353,11 +355,10 @@ func testAccCheckDDSV3InstanceFlavor(instance *instances.InstanceResponse, group
 			}
 
 			for _, group := range instance.Groups {
-				if group.Type == "mongos" {
+				if group.Type == groupType {
 					if len(group.Nodes) != v.(int) {
 						return fmt.Errorf(
-							"Error updating DDS instance: num of mongos nodes expect %d, but got %d",
-							v.(int), len(group.Nodes))
+							"Error updating DDS instance: num of %s nodes expect %d, but got %d", groupType, v.(int), len(group.Nodes))
 					}
 					return nil
 				}
@@ -636,7 +637,7 @@ resource "huaweicloud_dds_instance" "instance" {
   flavor {
     type      = "mongos"
     num       = 2
-    spec_code = "dds.mongodb.s6.large.4.mongos"
+    spec_code = "dds.mongodb.s6.large.2.mongos"
   }
   flavor {
     type      = "shard"
@@ -650,7 +651,7 @@ resource "huaweicloud_dds_instance" "instance" {
     num       = 1
     storage   = "ULTRAHIGH"
     size      = 20
-    spec_code = "dds.mongodb.s6.large.2.config"
+    spec_code = "dds.mongodb.s6.xlarge.2.config"
   }
 
   backup_strategy {
@@ -1070,7 +1071,7 @@ resource "huaweicloud_dds_instance" "instance" {
   flavor {
     type      = "replica"
     storage   = "ULTRAHIGH"
-    num       = 1
+    num       = 3
     size      = 20
     spec_code = "dds.mongodb.s6.large.2.repset"
   }
@@ -1108,7 +1109,7 @@ resource "huaweicloud_dds_instance" "instance" {
   flavor {
     type      = "replica"
     storage   = "ULTRAHIGH"
-    num       = 1
+    num       = 5
     size      = 20
     spec_code = "dds.mongodb.s6.large.2.repset"
   }
