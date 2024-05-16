@@ -317,6 +317,8 @@ var (
 	HW_DCS_ACCOUNT_WHITELIST = os.Getenv("HW_DCS_ACCOUNT_WHITELIST")
 
 	HW_DCS_INSTANCE_ID = os.Getenv("HW_DCS_INSTANCE_ID")
+	HW_DCS_BEGIN_TIME  = os.Getenv("HW_DCS_BEGIN_TIME")
+	HW_DCS_END_TIME    = os.Getenv("HW_DCS_END_TIME")
 
 	HW_LTS_AGENCY_STREAM_NAME = os.Getenv("HW_LTS_AGENCY_STREAM_NAME")
 	HW_LTS_AGENCY_STREAM_ID   = os.Getenv("HW_LTS_AGENCY_STREAM_ID")
@@ -351,9 +353,11 @@ var (
 	HW_HSS_HOST_PROTECTION_QUOTA_ID = os.Getenv("HW_HSS_HOST_PROTECTION_QUOTA_ID")
 
 	HW_DDS_SECOND_LEVEL_MONITORING_ENABLED = os.Getenv("HW_DDS_SECOND_LEVEL_MONITORING_ENABLED")
+	HW_DDS_INSTANCE_ID                     = os.Getenv("HW_DDS_INSTANCE_ID")
 
 	HW_RDS_CROSS_REGION_BACKUP_INSTANCE_ID = os.Getenv("HW_RDS_CROSS_REGION_BACKUP_INSTANCE_ID")
 	HW_RDS_INSTANCE_ID                     = os.Getenv("HW_RDS_INSTANCE_ID")
+	HW_RDS_BACKUP_ID                       = os.Getenv("HW_RDS_BACKUP_ID")
 	HW_RDS_START_TIME                      = os.Getenv("HW_RDS_START_TIME")
 	HW_RDS_END_TIME                        = os.Getenv("HW_RDS_END_TIME")
 )
@@ -1613,6 +1617,13 @@ func TestAccPreCheckDCSInstanceID(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckDcsTimeRange(t *testing.T) {
+	if HW_DCS_BEGIN_TIME == "" || HW_DCS_END_TIME == "" {
+		t.Skip("HW_DCS_BEGIN_TIME and HW_DCS_END_TIME must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckCCMPushCertificateID(t *testing.T) {
 	if HW_CERT_BATCH_PUSH_ID == "" {
 		t.Skip("HW_CERT_BATCH_PUSH_ID must be set for the acceptance test")
@@ -1648,6 +1659,13 @@ func TestAccPreCheckHSSHostProtectionQuotaId(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckDDSInstanceID(t *testing.T) {
+	if HW_DDS_INSTANCE_ID == "" {
+		t.Skip("HW_DDS_INSTANCE_ID must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckDDSSecondLevelMonitoringEnabled(t *testing.T) {
 	if HW_DDS_SECOND_LEVEL_MONITORING_ENABLED == "" {
 		t.Skip("HW_DDS_SECOND_LEVEL_MONITORING_ENABLED must be set for the acceptance test")
@@ -1664,13 +1682,20 @@ func TestAccPreCheckRdsCrossRegionBackupInstanceId(t *testing.T) {
 // lintignore:AT003
 func TestAccPreCheckRdsInstanceId(t *testing.T) {
 	if HW_RDS_INSTANCE_ID == "" {
-		t.Skip("HW_RDS_INSTANCE_ID must be set for CFW acceptance tests")
+		t.Skip("HW_RDS_INSTANCE_ID must be set for RDS acceptance tests")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckRdsBackupId(t *testing.T) {
+	if HW_RDS_BACKUP_ID == "" {
+		t.Skip("HW_RDS_BACKUP_ID must be set for RDS acceptance tests")
 	}
 }
 
 // lintignore:AT003
 func TestAccPreCheckRdsTimeRange(t *testing.T) {
 	if HW_RDS_START_TIME == "" || HW_RDS_END_TIME == "" {
-		t.Skip("HW_RDS_START_TIME and HW_RDS_END_TIME must be set for CFW acceptance tests")
+		t.Skip("HW_RDS_START_TIME and HW_RDS_END_TIME must be set for RDS acceptance tests")
 	}
 }

@@ -28,6 +28,9 @@ resource "huaweicloud_dds_instance" "instance" {
   security_group_id = "{{ security_group_id }}"
   password          = var.dds_password
   mode              = "Sharding"
+  maintain_begin    = "02:00"
+  maintain_end      = "03:00"
+
   flavor {
     type      = "mongos"
     num       = 2
@@ -135,7 +138,18 @@ The following arguments are supported:
 
 **NOTE:** The instance will be restarted in the background when switching SSL. Please operate with caution.
 
+* `maintain_begin` - (Optional, String) Specifies begin time of the time range within which you are allowed to start a
+  task that affects the running of database instances. It must be a valid value in the format of **hh:mm** in UTC+0,
+  such as **02:00**, meanwhile, this time in console displays in the format of **hh:mm** in UTC+08:00, e.g. **10:00**.
+
+* `maintain_end` - (Optional, String) Specifies end time of the time range within which you are allowed to start a
+  task that affects the running of database instances. It must be a valid value in the format of **hh:mm** in UTC+0,
+  such as **04:00**, meanwhile, this time in console displays in the format of **hh:mm** in UTC+08:00, e.g. **12:00**.
+
 * `second_level_monitoring_enabled` - (Optional, Bool) Specifies whether to enable second level monitoring.
+
+* `slow_log_desensitization` - (Optional, String) Specifies whether to enable slow original log.
+  The value can be **on** or **off**.
 
 * `charging_mode` - (Optional, String, ForceNew) Specifies the charging mode of the instance.
   The valid values are as follows:
@@ -245,9 +259,23 @@ In addition to all arguments above, the following attributes are exported:
 * `db_username` - Indicates the DB Administrator name.
 * `status` - Indicates the the DB instance status.
 * `port` - Indicates the database port number. The port range is 2100 to 9500.
-* `nodes` - Indicates the instance nodes information. Structure is documented below.
+* `groups` - Indicates the instance groups information.
+  The [groups](#DdsInstance_InstanceGroup) structure is documented below.
 
-The `nodes` block contains:
+<a name="DdsInstance_InstanceGroup"></a>
+The `groups` block supports:
+
+* `id` - Indicates the group ID.
+* `type` - Indicates the node type.
+* `name` - Indicates the group name.
+* `status` - Indicates the group status.
+* `size` - Indicates the disk size.
+* `used` - Indicates the disk usage.
+* `nodes` - Indicates the nodes info.
+  The [nodes](#DdsInstance_InstanceGroupNode) structure is documented below.
+
+<a name="DdsInstance_InstanceGroupNode"></a>
+The `nodes` block supports:
 
 * `id` - Indicates the node ID.
 * `name` - Indicates the node name.

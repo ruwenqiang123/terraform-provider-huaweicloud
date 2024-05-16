@@ -93,6 +93,7 @@ func TestAccDDSV3Instance_basic(t *testing.T) {
 					rc.CheckResourceExists(),
 					resource.TestCheckResourceAttr(resourceName, "name", rName),
 					testAccCheckDDSV3InstanceFlavor(&instance, "shard", "num", 3),
+					resource.TestCheckResourceAttr(resourceName, "slow_log_desensitization", "off"),
 				),
 			},
 			{
@@ -290,6 +291,8 @@ func TestAccDDSV3Instance_withConfigurationReplicaSet(t *testing.T) {
 					rc.CheckResourceExists(),
 					resource.TestCheckResourceAttr(resourceName, "name", rName),
 					resource.TestCheckResourceAttr(resourceName, "configuration.0.type", "replica"),
+					resource.TestCheckResourceAttr(resourceName, "maintain_begin", "02:00"),
+					resource.TestCheckResourceAttr(resourceName, "maintain_end", "03:00"),
 					resource.TestCheckResourceAttrPair(resourceName, "configuration.0.id", "huaweicloud_dds_parameter_template.replica2", "id"),
 				),
 			},
@@ -512,13 +515,14 @@ func testAccDDSInstanceV3Config_updateFlavorNum(rName string) string {
 data "huaweicloud_availability_zones" "test" {}
 
 resource "huaweicloud_dds_instance" "instance" {
-  name              = "%s"
-  availability_zone = data.huaweicloud_availability_zones.test.names[0]
-  vpc_id            = huaweicloud_vpc.test.id
-  subnet_id         = huaweicloud_vpc_subnet.test.id
-  security_group_id = huaweicloud_networking_secgroup.test.id
-  password          = "Terraform@123"
-  mode              = "Sharding"
+  name                     = "%s"
+  availability_zone        = data.huaweicloud_availability_zones.test.names[0]
+  vpc_id                   = huaweicloud_vpc.test.id
+  subnet_id                = huaweicloud_vpc_subnet.test.id
+  security_group_id        = huaweicloud_networking_secgroup.test.id
+  password                 = "Terraform@123"
+  mode                     = "Sharding"
+  slow_log_desensitization = "off"
 
   datastore {
     type           = "DDS-Community"
@@ -1096,6 +1100,8 @@ resource "huaweicloud_dds_instance" "instance" {
   password          = "Terraform@123"
   mode              = "ReplicaSet"
   replica_set_name  = "replicaName"
+  maintain_begin    = "02:00"
+  maintain_end      = "03:00"
 
   datastore {
     type           = "DDS-Community"

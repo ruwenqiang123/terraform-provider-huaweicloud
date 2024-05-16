@@ -401,6 +401,7 @@ func Provider() *schema.Provider {
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
+			"huaweicloud_apig_acl_policies":                       apig.DataSourceAclPolicies(),
 			"huaweicloud_apig_api_associated_acl_policies":        apig.DataSourceApiAssociatedAclPolicies(),
 			"huaweicloud_apig_api_associated_throttling_policies": apig.DataSourceApiAssociatedThrottlingPolicies(),
 			"huaweicloud_apig_environments":                       apig.DataSourceEnvironments(),
@@ -469,6 +470,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_cfw_address_groups":      cfw.DataSourceCfwAddressGroups(),
 			"huaweicloud_cfw_black_white_lists":   cfw.DataSourceCfwBlackWhiteLists(),
 			"huaweicloud_cfw_domain_name_groups":  cfw.DataSourceCfwDomainNameGroups(),
+			"huaweicloud_cfw_protection_rules":    cfw.DataSourceCfwProtectionRules(),
 			"huaweicloud_cfw_service_groups":      cfw.DataSourceCfwServiceGroups(),
 			"huaweicloud_cfw_access_control_logs": cfw.DataSourceCfwAccessControlLogs(),
 			"huaweicloud_cfw_attack_logs":         cfw.DataSourceCfwAttackLogs(),
@@ -519,10 +521,12 @@ func Provider() *schema.Provider {
 			"huaweicloud_dcs_hotkey_analyses": dcs.DataSourceDcsHotkeyAnalyses(),
 			"huaweicloud_dcs_bigkey_analyses": dcs.DataSourceDcsBigkeyAnalyses(),
 			"huaweicloud_dcs_accounts":        dcs.DataSourceDcsAccounts(),
+			"huaweicloud_dcs_diagnosis_tasks": dcs.DataSourceDcsDiagnosisTasks(),
 
-			"huaweicloud_dds_flavors":       dds.DataSourceDDSFlavorV3(),
-			"huaweicloud_dds_instances":     dds.DataSourceDdsInstance(),
-			"huaweicloud_dds_storage_types": dds.DataSourceDdsStorageTypes(),
+			"huaweicloud_dds_flavors":             dds.DataSourceDDSFlavorV3(),
+			"huaweicloud_dds_instances":           dds.DataSourceDdsInstance(),
+			"huaweicloud_dds_storage_types":       dds.DataSourceDdsStorageTypes(),
+			"huaweicloud_dds_restore_time_ranges": dds.DataSourceDdsRestoreTimeRanges(),
 
 			"huaweicloud_dli_datasource_auths":       dli.DataSourceAuths(),
 			"huaweicloud_dli_datasource_connections": dli.DataSourceConnections(),
@@ -735,6 +739,8 @@ func Provider() *schema.Provider {
 			"huaweicloud_rds_sql_audit_logs":                rds.DataSourceRdsSqlAuditLogs(),
 			"huaweicloud_rds_error_logs":                    rds.DataSourceRdsErrorLogs(),
 			"huaweicloud_rds_slow_logs":                     rds.DataSourceRdsSlowLogs(),
+			"huaweicloud_rds_pg_sql_limits":                 rds.DataSourceRdsPgSqlLimits(),
+			"huaweicloud_rds_recycling_instances":           rds.DataSourceRdsRecyclingInstances(),
 
 			"huaweicloud_rms_policy_definitions":                 rms.DataSourcePolicyDefinitions(),
 			"huaweicloud_rms_assignment_package_templates":       rms.DataSourceTemplates(),
@@ -878,6 +884,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_vpc_route_v2":     vpc.DataSourceVpcRouteV2(),
 			"huaweicloud_vpc_route_ids_v2": vpc.DataSourceVpcRouteIdsV2(),
 			"huaweicloud_vpc_routes":       vpc.DataSourceVpcRoutes(),
+			"huaweicloud_vpc_flow_logs":    vpc.DataSourceVpcFlowLogs(),
 
 			// Deprecated
 			"huaweicloud_antiddos":                      deprecated.DataSourceAntiDdosV1(),
@@ -1093,6 +1100,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_dds_instance_restart":            dds.ResourceDDSInstanceRestart(),
 			"huaweicloud_dds_instance_internal_ip_modify": dds.ResourceDDSInstanceModifyIP(),
 			"huaweicloud_dds_instance_eip_associate":      dds.ResourceDDSInstanceBindEIP(),
+			"huaweicloud_dds_instance_recovery":           dds.ResourceDDSInstanceRecovery(),
 
 			"huaweicloud_ddm_instance":               ddm.ResourceDdmInstance(),
 			"huaweicloud_ddm_schema":                 ddm.ResourceDdmSchema(),

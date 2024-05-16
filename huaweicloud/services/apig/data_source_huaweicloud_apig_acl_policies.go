@@ -16,10 +16,10 @@ import (
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/utils"
 )
 
-// @API APIG GET /v2/{project_id}/apigw/instances/{instance_id}/acl-bindings/binded-acls
-func DataSourceApiAssociatedAclPolicies() *schema.Resource {
+// @API APIG GET /v2/{project_id}/apigw/instances/{instance_id}/acls
+func DataSourceAclPolicies() *schema.Resource {
 	return &schema.Resource{
-		ReadContext: dataSourceApiAssociatedAclPoliciesRead,
+		ReadContext: dataSourceAclPoliciesRead,
 
 		Schema: map[string]*schema.Schema{
 			"region": {
@@ -30,42 +30,27 @@ func DataSourceApiAssociatedAclPolicies() *schema.Resource {
 			"instance_id": {
 				Type:        schema.TypeString,
 				Required:    true,
-				Description: `The ID of the dedicated instance to which the ACL policies belong.`,
-			},
-			"api_id": {
-				Type:        schema.TypeString,
-				Required:    true,
-				Description: `The ID of the API bound to the ACL policy.`,
+				Description: `Specifies the ID of the dedicated instance to which the ACL policies belong.`,
 			},
 			"policy_id": {
 				Type:        schema.TypeString,
 				Optional:    true,
-				Description: `The ID of the ACL policy.`,
+				Description: `Specifies the ID of the ACL policy.`,
 			},
 			"name": {
 				Type:        schema.TypeString,
 				Optional:    true,
-				Description: `The name of the ACL policy.`,
+				Description: `Specifies the name of the ACL policy.`,
 			},
 			"type": {
 				Type:        schema.TypeString,
 				Optional:    true,
-				Description: `The type of the ACL policy.`,
-			},
-			"env_id": {
-				Type:        schema.TypeString,
-				Optional:    true,
-				Description: `The ID of the environment where the API is published.`,
-			},
-			"env_name": {
-				Type:        schema.TypeString,
-				Optional:    true,
-				Description: `The name of the environment where the API is published.`,
+				Description: `Specifies the type of the ACL policy.`,
 			},
 			"entity_type": {
 				Type:        schema.TypeString,
 				Optional:    true,
-				Description: `The entity type of the ACL policy.`,
+				Description: `Specifies the entity type of the ACL policy.`,
 			},
 			"policies": {
 				Type:        schema.TypeList,
@@ -91,32 +76,22 @@ func DataSourceApiAssociatedAclPolicies() *schema.Resource {
 						"value": {
 							Type:        schema.TypeString,
 							Computed:    true,
-							Description: `One or more objects from which the access will be controlled.`,
+							Description: `The value of the ACL policy.`,
 						},
-						"env_id": {
-							Type:        schema.TypeString,
+						"bind_num": {
+							Type:        schema.TypeInt,
 							Computed:    true,
-							Description: `The ID of the environment where the API is published.`,
-						},
-						"env_name": {
-							Type:        schema.TypeString,
-							Computed:    true,
-							Description: `The name of the environment where the API is published.`,
+							Description: `The number of bound APIs.`,
 						},
 						"entity_type": {
 							Type:        schema.TypeString,
 							Computed:    true,
 							Description: `The entity type of the ACL policy.`,
 						},
-						"bind_id": {
+						"updated_at": {
 							Type:        schema.TypeString,
 							Computed:    true,
-							Description: `The bind ID.`,
-						},
-						"bind_time": {
-							Type:        schema.TypeString,
-							Computed:    true,
-							Description: `The time that the ACL policy is bound to the API.`,
+							Description: `The latest update time of the policy.`,
 						},
 					},
 				},
@@ -125,28 +100,27 @@ func DataSourceApiAssociatedAclPolicies() *schema.Resource {
 	}
 }
 
-func buildListApiAssociatedAclPoliciesParams(d *schema.ResourceData) string {
+func buildListAclPoliciesParams(d *schema.ResourceData) string {
 	res := ""
-	if v, ok := d.GetOk("env_id"); ok {
-		res = fmt.Sprintf("%s&env_id=%v", res, v)
+	if policyId, ok := d.GetOk("policy_id"); ok {
+		res = fmt.Sprintf("%s&id=%v", res, policyId)
 	}
-	if v, ok := d.GetOk("env_name"); ok {
-		res = fmt.Sprintf("%s&env_name=%v", res, v)
+	if name, ok := d.GetOk("name"); ok {
+		res = fmt.Sprintf("%s&acl_name=%v", res, name)
 	}
-	if v, ok := d.GetOk("policy_id"); ok {
-		res = fmt.Sprintf("%s&acl_id=%v", res, v)
+	if aclType, ok := d.GetOk("type"); ok {
+		res = fmt.Sprintf("%s&acl_type=%v", res, aclType)
 	}
-	if v, ok := d.GetOk("name"); ok {
-		res = fmt.Sprintf("%s&acl_name=%v", res, v)
+	if entityType, ok := d.GetOk("entity_type"); ok {
+		res = fmt.Sprintf("%s&entity_type=%v", res, entityType)
 	}
 	return res
 }
 
-func queryApiAssociatedAclPolicies(client *golangsdk.ServiceClient, d *schema.ResourceData) ([]interface{}, error) {
+func queryAclPolicies(client *golangsdk.ServiceClient, d *schema.ResourceData) ([]interface{}, error) {
 	var (
-		httpUrl    = "v2/{project_id}/apigw/instances/{instance_id}/acl-bindings/binded-acls?api_id={api_id}"
+		httpUrl    = "v2/{project_id}/apigw/instances/{instance_id}/acls?limit=500"
 		instanceId = d.Get("instance_id").(string)
-		apiId      = d.Get("api_id").(string)
 		offset     = 0
 		result     = make([]interface{}, 0)
 	)
@@ -154,9 +128,8 @@ func queryApiAssociatedAclPolicies(client *golangsdk.ServiceClient, d *schema.Re
 	listPath := client.Endpoint + httpUrl
 	listPath = strings.ReplaceAll(listPath, "{project_id}", client.ProjectID)
 	listPath = strings.ReplaceAll(listPath, "{instance_id}", instanceId)
-	listPath = strings.ReplaceAll(listPath, "{api_id}", apiId)
 
-	queryParams := buildListApiAssociatedAclPoliciesParams(d)
+	queryParams := buildListAclPoliciesParams(d)
 	listPath += queryParams
 
 	opt := golangsdk.RequestOpts{
@@ -164,11 +137,11 @@ func queryApiAssociatedAclPolicies(client *golangsdk.ServiceClient, d *schema.Re
 	}
 
 	for {
-		listPathWithOffset := fmt.Sprintf("%s&limit=100&offset=%d", listPath, offset)
+		listPathWithOffset := fmt.Sprintf("%s&offset=%d", listPath, offset)
 		requestResp, err := client.Request("GET", listPathWithOffset, &opt)
 		if err != nil {
-			return nil, fmt.Errorf("error retrieving associated ACL policies (bound to the API: %s) under specified "+
-				"dedicated instance (%s): %s", apiId, instanceId, err)
+			return nil, fmt.Errorf("error retrieving ACL policies under specified "+
+				"dedicated instance (%s): %s", instanceId, err)
 		}
 		respBody, err := utils.FlattenResponse(requestResp)
 		if err != nil {
@@ -184,7 +157,7 @@ func queryApiAssociatedAclPolicies(client *golangsdk.ServiceClient, d *schema.Re
 	return result, nil
 }
 
-func dataSourceApiAssociatedAclPoliciesRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func dataSourceAclPoliciesRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	var (
 		cfg    = meta.(*config.Config)
 		region = cfg.GetRegion(d)
@@ -194,7 +167,7 @@ func dataSourceApiAssociatedAclPoliciesRead(_ context.Context, d *schema.Resourc
 	if err != nil {
 		return diag.Errorf("error creating APIG client: %s", err)
 	}
-	policies, err := queryApiAssociatedAclPolicies(client, d)
+	policies, err := queryAclPolicies(client, d)
 	if err != nil {
 		return diag.FromErr(err)
 	}
@@ -207,30 +180,12 @@ func dataSourceApiAssociatedAclPoliciesRead(_ context.Context, d *schema.Resourc
 
 	mErr := multierror.Append(nil,
 		d.Set("region", region),
-		d.Set("policies", filterAssociatedAclPolicies(flattenAssociatedAclPolicies(policies), d)),
+		d.Set("policies", flattenAclPolicies(policies)),
 	)
 	return diag.FromErr(mErr.ErrorOrNil())
 }
 
-func filterAssociatedAclPolicies(all []interface{}, d *schema.ResourceData) []interface{} {
-	rst := make([]interface{}, 0, len(all))
-
-	for _, v := range all {
-		if param, ok := d.GetOk("entity_type"); ok &&
-			fmt.Sprint(param) != fmt.Sprint(utils.PathSearch("entity_type", v, nil)) {
-			continue
-		}
-		if param, ok := d.GetOk("type"); ok &&
-			fmt.Sprint(param) != fmt.Sprint(utils.PathSearch("type", v, nil)) {
-			continue
-		}
-
-		rst = append(rst, v)
-	}
-	return rst
-}
-
-func flattenAssociatedAclPolicies(policies []interface{}) []interface{} {
+func flattenAclPolicies(policies []interface{}) []interface{} {
 	if len(policies) < 1 {
 		return nil
 	}
@@ -238,15 +193,13 @@ func flattenAssociatedAclPolicies(policies []interface{}) []interface{} {
 	result := make([]interface{}, 0, len(policies))
 	for _, policy := range policies {
 		result = append(result, map[string]interface{}{
-			"id":          utils.PathSearch("acl_id", policy, nil),
+			"id":          utils.PathSearch("id", policy, nil),
 			"name":        utils.PathSearch("acl_name", policy, nil),
 			"type":        utils.PathSearch("acl_type", policy, nil),
 			"value":       utils.PathSearch("acl_value", policy, nil),
+			"bind_num":    utils.PathSearch("bind_num", policy, nil),
 			"entity_type": utils.PathSearch("entity_type", policy, nil),
-			"env_id":      utils.PathSearch("env_id", policy, nil),
-			"env_name":    utils.PathSearch("env_name", policy, nil),
-			"bind_id":     utils.PathSearch("bind_id", policy, nil),
-			"bind_time":   utils.PathSearch("bind_time", policy, nil),
+			"updated_at":  utils.PathSearch("update_time", policy, nil),
 		})
 	}
 	return result
