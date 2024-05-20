@@ -87,6 +87,7 @@ var (
 	HW_RAM_SHARE_INVITATION_ID       = os.Getenv("HW_RAM_SHARE_INVITATION_ID")
 
 	HW_CDN_DOMAIN_NAME              = os.Getenv("HW_CDN_DOMAIN_NAME")
+	HW_CDN_DOMAIN_URL               = os.Getenv("HW_CDN_DOMAIN_URL")
 	HW_CDN_CERT_PATH                = os.Getenv("HW_CDN_CERT_PATH")
 	HW_CDN_PRIVATE_KEY_PATH         = os.Getenv("HW_CDN_PRIVATE_KEY_PATH")
 	HW_CDN_ENABLE_FLAG              = os.Getenv("HW_CDN_ENABLE_FLAG")
@@ -145,9 +146,10 @@ var (
 	// The internet access port to which the Workspace service.
 	HW_WORKSPACE_INTERNET_ACCESS_PORT = os.Getenv("HW_WORKSPACE_INTERNET_ACCESS_PORT")
 
-	HW_FGS_AGENCY_NAME = os.Getenv("HW_FGS_AGENCY_NAME")
-	HW_FGS_TEMPLATE_ID = os.Getenv("HW_FGS_TEMPLATE_ID")
-	HW_FGS_GPU_TYPE    = os.Getenv("HW_FGS_GPU_TYPE")
+	HW_FGS_AGENCY_NAME         = os.Getenv("HW_FGS_AGENCY_NAME")
+	HW_FGS_TEMPLATE_ID         = os.Getenv("HW_FGS_TEMPLATE_ID")
+	HW_FGS_GPU_TYPE            = os.Getenv("HW_FGS_GPU_TYPE")
+	HW_FGS_DEPENDENCY_OBS_LINK = os.Getenv("HW_FGS_DEPENDENCY_OBS_LINK")
 
 	HW_KMS_ENVIRONMENT     = os.Getenv("HW_KMS_ENVIRONMENT")
 	HW_KMS_HSM_CLUSTER_ID  = os.Getenv("HW_KMS_HSM_CLUSTER_ID")
@@ -590,6 +592,13 @@ func TestAccPreCheckFgsTemplateId(t *testing.T) {
 func TestAccPreCheckFgsGpuType(t *testing.T) {
 	if HW_FGS_GPU_TYPE == "" {
 		t.Skip("HW_FGS_GPU_TYPE must be set for FGS acceptance tests")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckFgsDependencyLink(t *testing.T) {
+	if HW_FGS_DEPENDENCY_OBS_LINK == "" {
+		t.Skip("HW_FGS_DEPENDENCY_OBS_LINK must be set for FGS acceptance tests")
 	}
 }
 
@@ -1440,6 +1449,13 @@ func TestAccPreCheckCCINamespace(t *testing.T) {
 func TestAccPreCheckCDN(t *testing.T) {
 	if HW_CDN_DOMAIN_NAME == "" {
 		t.Skip("This environment does not support CDN tests")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckCDNURL(t *testing.T) {
+	if HW_CDN_DOMAIN_URL == "" {
+		t.Skip("HW_CDN_DOMAIN_URL must be set for the acceptance test")
 	}
 }
 
