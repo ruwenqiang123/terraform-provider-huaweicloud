@@ -22,9 +22,9 @@ var (
 )
 
 // @API RDS GET /v3/{project_id}/instances/{instance_id}/parameter/{name}
-func DataSourceRdsPgPluginParameterValues() *schema.Resource {
+func DataSourceRdsPgPluginParameterValueRange() *schema.Resource {
 	return &schema.Resource{
-		ReadContext: resourcePgPluginParameterValuesRead,
+		ReadContext: resourcePgPluginParameterValueRangeRead,
 
 		Schema: map[string]*schema.Schema{
 			"region": {
@@ -64,7 +64,7 @@ func DataSourceRdsPgPluginParameterValues() *schema.Resource {
 	}
 }
 
-func resourcePgPluginParameterValuesRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourcePgPluginParameterValueRangeRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	cfg := meta.(*config.Config)
 	region := cfg.GetRegion(d)
 

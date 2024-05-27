@@ -188,6 +188,9 @@ var (
 	HW_CFW_START_TIME         = os.Getenv("HW_CFW_START_TIME")
 	HW_CFW_END_TIME           = os.Getenv("HW_CFW_END_TIME")
 
+	HW_CTS_START_TIME = os.Getenv("HW_CTS_START_TIME")
+	HW_CTS_END_TIME   = os.Getenv("HW_CTS_END_TIME")
+
 	// The cluster ID of the CCE
 	HW_CCE_CLUSTER_ID = os.Getenv("HW_CCE_CLUSTER_ID")
 	// The absolute chart path of the CCE
@@ -282,6 +285,9 @@ var (
 	HW_CC_PEER_CONNECTION_ID = os.Getenv("HW_CC_PEER_CONNECTION_ID")
 
 	HW_CC_PERMISSION_ID = os.Getenv("HW_CC_PERMISSION_ID")
+
+	HW_CSS_ELB_AGENCY         = os.Getenv("HW_CSS_ELB_AGENCY")
+	HW_CSS_LOW_ENGINE_VERSION = os.Getenv("HW_CSS_LOW_ENGINE_VERSION")
 
 	HW_CERT_BATCH_PUSH_ID     = os.Getenv("HW_CERT_BATCH_PUSH_ID")
 	HW_CERT_BATCH_PUSH_WAF_ID = os.Getenv("HW_CERT_BATCH_PUSH_WAF_ID")
@@ -800,7 +806,7 @@ func TestAccPreCheckRAM(t *testing.T) {
 }
 
 // lintignore:AT003
-func TestAccPreCheckRAMSharedPrincipals(t *testing.T) {
+func TestAccPreCheckRAMEnableFlag(t *testing.T) {
 	if HW_RAM_ENABLE_FLAG == "" {
 		t.Skip("Skip the RAM acceptance tests.")
 	}
@@ -1047,6 +1053,13 @@ func TestAccPreCheckCCConnectionRouteProjectID(t *testing.T) {
 func TestAccPreCheckCCConnectionRouteRegionName(t *testing.T) {
 	if HW_REGION_NAME_1 == "" || HW_REGION_NAME_2 == "" {
 		t.Skip("HW_REGION_NAME_1, HW_REGION_NAME_2 must be set for this acceptance test")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckCtsTimeRange(t *testing.T) {
+	if HW_CTS_START_TIME == "" || HW_CTS_END_TIME == "" {
+		t.Skip("HW_CTS_START_TIME and HW_CTS_END_TIME must be set for CTS acceptance tests")
 	}
 }
 
@@ -1495,6 +1508,13 @@ func TestAccPreCheckCCPermission(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckCSSElbAgency(t *testing.T) {
+	if HW_CSS_ELB_AGENCY == "" {
+		t.Skip("HW_CSS_ELB_AGENCY must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckASScalingGroupID(t *testing.T) {
 	if HW_AS_SCALING_GROUP_ID == "" {
 		t.Skip("HW_AS_SCALING_GROUP_ID must be set for the acceptance test")
@@ -1713,5 +1733,12 @@ func TestAccPreCheckRdsBackupId(t *testing.T) {
 func TestAccPreCheckRdsTimeRange(t *testing.T) {
 	if HW_RDS_START_TIME == "" || HW_RDS_END_TIME == "" {
 		t.Skip("HW_RDS_START_TIME and HW_RDS_END_TIME must be set for RDS acceptance tests")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckCssLowEngineVersion(t *testing.T) {
+	if HW_CSS_LOW_ENGINE_VERSION == "" {
+		t.Skip("HW_CSS_LOW_ENGINE_VERSION must be set for CSS acceptance tests")
 	}
 }

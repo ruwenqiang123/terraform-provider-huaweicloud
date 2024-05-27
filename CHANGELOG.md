@@ -1,5 +1,17 @@
 # CHANGELOG
 
+## 1.64.4 (May 26, 2024)
+
+ENHANCEMENTS:
+
+* resource/huaweicloud_drs_job: make it possible to delete job if no order id returned [GH-4894]
+
+## 1.64.3 (May 25, 2024)
+
+BUG FIXES:
+
+* resource/huaweicloud_drs_job: raise error if orderID is empty [GH-4887]
+
 ## 1.64.2 (May 17, 2024)
 
 BUG FIXES:
@@ -11,7 +23,7 @@ BUG FIXES:
 
 ENHANCEMENTS:
 
-* resource/huaweicloud_vpn_gateway: Add er_attachment_id support [GH-4731]
+* resource/huaweicloud_vpn_gateway: add er_attachment_id support [GH-4731]
 
 ## 1.64.0 (April 29, 2024)
 
@@ -66,7 +78,7 @@ ENHANCEMENTS:
 
 ENHANCEMENTS:
 
-* resource/huaweicloud_cfw_firewall: Support creating east-west firewall afterwards [GH-4703]
+* resource/huaweicloud_cfw_firewall: Add east-west firewall create afterwards support [GH-4703]
 * resource/huaweicloud_cfw_firewall: Add tags update support [GH-4693]
 * resource/huaweicloud_cfw_firewall: Add attachment_id import support [GH-4689]
 * resource/huaweicloud_rds_instance: Add read write permission support [GH-4679]
@@ -81,7 +93,7 @@ BUG FIXES:
 
 ENHANCEMENTS:
 
-* authentication: Add v5 agency assume support [GH-4690]
+* authentication: add v5 agency assume support [GH-4690]
 
 ## 1.63.1 (April 12, 2024)
 
@@ -95,7 +107,7 @@ ENHANCEMENTS:
 
 BUG FIXES:
 
-* resource/huaweicloud_cfw_address_group_member: Fix the issue of fetching member with ip range [GH-4582]
+* resource/huaweicloud_cfw_address_group_member: fix the issue of fetching member with ip range [GH-4582]
 
 ## 1.63.0 (March 30, 2024)
 
@@ -146,7 +158,7 @@ ENHANCEMENTS:
 
 BUG FIXES:
 
-* resource/huaweicloud_lts_stream: solve the problem that eps cannot be set [GH-4527]
+* resource/huaweicloud_lts_stream: fix the problem that eps cannot be set [GH-4527]
 
 ## 1.62.1 (March 6, 2024)
 
