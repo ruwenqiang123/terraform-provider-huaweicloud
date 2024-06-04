@@ -31,6 +31,8 @@ import (
 // @API GA GET /v1/accelerators/{accelerator_id}
 // @API GA PUT /v1/accelerators/{accelerator_id}
 // @API GA DELETE /v1/accelerators/{accelerator_id}
+// @API GA POST /v1/{resource_type}/{resource_id}/tags/create
+// @API GA DELETE /v1/{resource_type}/{resource_id}/tags/delete
 func ResourceAccelerator() *schema.Resource {
 	return &schema.Resource{
 		CreateContext: resourceAcceleratorCreate,
@@ -90,7 +92,7 @@ func ResourceAccelerator() *schema.Resource {
 					validation.StringLenBetween(0, 36),
 				),
 			},
-			"tags": common.TagsForceNewSchema(),
+			"tags": common.TagsSchema(),
 
 			"status": {
 				Type:     schema.TypeString,
@@ -256,10 +258,10 @@ func buildCreateAcceleratorBodyParams(d *schema.ResourceData, conf *config.Confi
 
 func buildCreateAcceleratorAcceleratorChildBody(d *schema.ResourceData, conf *config.Config) map[string]interface{} {
 	params := map[string]interface{}{
-		"name":                  utils.ValueIngoreEmpty(d.Get("name")),
+		"name":                  utils.ValueIgnoreEmpty(d.Get("name")),
 		"ip_sets":               buildCreateAcceleratorIpSetsChildBody(d),
-		"description":           utils.ValueIngoreEmpty(d.Get("description")),
-		"enterprise_project_id": utils.ValueIngoreEmpty(common.GetEnterpriseProjectID(d, conf)),
+		"description":           utils.ValueIgnoreEmpty(d.Get("description")),
+		"enterprise_project_id": utils.ValueIgnoreEmpty(common.GetEnterpriseProjectID(d, conf)),
 		"tags":                  utils.ExpandResourceTagsMap(d.Get("tags").(map[string]interface{})),
 	}
 	return params
@@ -273,9 +275,9 @@ func buildCreateAcceleratorIpSetsChildBody(d *schema.ResourceData) []map[string]
 
 	raw := rawParams[0].(map[string]interface{})
 	params := map[string]interface{}{
-		"area":       utils.ValueIngoreEmpty(raw["area"]),
-		"ip_address": utils.ValueIngoreEmpty(raw["ip_address"]),
-		"ip_type":    utils.ValueIngoreEmpty(raw["ip_type"]),
+		"area":       utils.ValueIgnoreEmpty(raw["area"]),
+		"ip_address": utils.ValueIgnoreEmpty(raw["ip_address"]),
+		"ip_type":    utils.ValueIgnoreEmpty(raw["ip_type"]),
 	}
 
 	return []map[string]interface{}{params}
@@ -485,7 +487,78 @@ func resourceAcceleratorUpdate(ctx context.Context, d *schema.ResourceData, meta
 			return diag.Errorf("error waiting for the Update of Accelerator (%s) to complete: %s", d.Id(), err)
 		}
 	}
+
+	// update tags
+	if d.HasChange("tags") {
+		client, err := conf.NewServiceClient("ga", region)
+		if err != nil {
+			return diag.Errorf("error creating GA Client: %s", err)
+		}
+
+		oldRaw, newRaw := d.GetChange("tags")
+		oldMap := oldRaw.(map[string]interface{})
+		newMap := newRaw.(map[string]interface{})
+
+		// remove old tags
+		if len(oldMap) > 0 {
+			if err = deleteTags(client, "ga-accelerators", d.Id(), oldMap); err != nil {
+				return diag.FromErr(err)
+			}
+		}
+
+		// set new tags
+		if len(newMap) > 0 {
+			if err := createTags(client, "ga-accelerators", d.Id(), newMap); err != nil {
+				return diag.FromErr(err)
+			}
+		}
+	}
+
 	return resourceAcceleratorRead(ctx, d, meta)
+}
+
+func createTags(createTagsClient *golangsdk.ServiceClient, resourceType, resourceId string, tags map[string]interface{}) error {
+	createTagsHttpUrl := "v1/{resource_type}/{resource_id}/tags/create"
+	createTagsPath := createTagsClient.Endpoint + createTagsHttpUrl
+	createTagsPath = strings.ReplaceAll(createTagsPath, "{resource_type}", resourceType)
+	createTagsPath = strings.ReplaceAll(createTagsPath, "{resource_id}", resourceId)
+	createTagsOpt := golangsdk.RequestOpts{
+		KeepResponseBody: true,
+		OkCodes: []int{
+			204,
+		},
+	}
+	createTagsOpt.JSONBody = map[string]interface{}{
+		"tags": utils.ExpandResourceTags(tags),
+	}
+
+	_, err := createTagsClient.Request("POST", createTagsPath, &createTagsOpt)
+	if err != nil {
+		return fmt.Errorf("error creating tags: %s", err)
+	}
+	return nil
+}
+
+func deleteTags(deleteTagsClient *golangsdk.ServiceClient, resourceType, resourceId string, tags map[string]interface{}) error {
+	deleteTagsHttpUrl := "v1/{resource_type}/{resource_id}/tags/delete"
+	deleteTagsPath := deleteTagsClient.Endpoint + deleteTagsHttpUrl
+	deleteTagsPath = strings.ReplaceAll(deleteTagsPath, "{resource_type}", resourceType)
+	deleteTagsPath = strings.ReplaceAll(deleteTagsPath, "{resource_id}", resourceId)
+	deleteTagsOpt := golangsdk.RequestOpts{
+		KeepResponseBody: true,
+		OkCodes: []int{
+			204,
+		},
+	}
+	deleteTagsOpt.JSONBody = map[string]interface{}{
+		"tags": utils.ExpandResourceTags(tags),
+	}
+
+	_, err := deleteTagsClient.Request("DELETE", deleteTagsPath, &deleteTagsOpt)
+	if err != nil {
+		return fmt.Errorf("error deleting tags: %s", err)
+	}
+	return nil
 }
 
 func buildUpdateAcceleratorBodyParams(d *schema.ResourceData) map[string]interface{} {
@@ -497,8 +570,8 @@ func buildUpdateAcceleratorBodyParams(d *schema.ResourceData) map[string]interfa
 
 func buildUpdateAcceleratorAcceleratorChildBody(d *schema.ResourceData) map[string]interface{} {
 	params := map[string]interface{}{
-		"name":        utils.ValueIngoreEmpty(d.Get("name")),
-		"description": utils.ValueIngoreEmpty(d.Get("description")),
+		"name":        utils.ValueIgnoreEmpty(d.Get("name")),
+		"description": utils.ValueIgnoreEmpty(d.Get("description")),
 	}
 	return params
 }

@@ -27,11 +27,13 @@ import (
 
 // @API Organizations POST /v1/organizations/accounts
 // @API Organizations GET /v1/organizations/accounts/{account_id}
+// @API Organizations GET /v1/organizations/{resource_type}/{resource_id}/tags
 // @API Organizations POST /v1/organizations/accounts/{account_id}/move
 // @API Organizations GET /v1/organizations/entities
 // @API Organizations GET /v1/organizations/create-account-status/{create_account_status_id}
 // @API Organizations POST /v1/organizations/{resource_type}/{resource_id}/tags/delete
 // @API Organizations POST /v1/organizations/{resource_type}/{resource_id}/tags/create
+// @API Organizations POST /v1/organizations/accounts/{account_id}/close
 func ResourceAccount() *schema.Resource {
 	return &schema.Resource{
 		CreateContext: resourceAccountCreate,
@@ -204,9 +206,9 @@ func accountStateRefreshFunc(client *golangsdk.ServiceClient, accountStatusId st
 func buildCreateAccountBodyParams(d *schema.ResourceData) map[string]interface{} {
 	bodyParams := map[string]interface{}{
 		"name":        d.Get("name"),
-		"email":       utils.ValueIngoreEmpty(d.Get("email")),
-		"phone":       utils.ValueIngoreEmpty(d.Get("phone")),
-		"agency_name": utils.ValueIngoreEmpty(d.Get("agency_name")),
+		"email":       utils.ValueIgnoreEmpty(d.Get("email")),
+		"phone":       utils.ValueIgnoreEmpty(d.Get("phone")),
+		"agency_name": utils.ValueIgnoreEmpty(d.Get("agency_name")),
 		"tags":        utils.ExpandResourceTags(d.Get("tags").(map[string]interface{})),
 	}
 	return bodyParams

@@ -30,6 +30,8 @@ import (
 // @API GA DELETE /v1/listeners/{listener_id}
 // @API GA GET /v1/listeners/{listener_id}
 // @API GA PUT /v1/listeners/{listener_id}
+// @API GA POST /v1/{resource_type}/{resource_id}/tags/create
+// @API GA DELETE /v1/{resource_type}/{resource_id}/tags/delete
 func ResourceListener() *schema.Resource {
 	return &schema.Resource{
 		CreateContext: resourceListenerCreate,
@@ -110,7 +112,7 @@ func ResourceListener() *schema.Resource {
 					validation.StringLenBetween(0, 255),
 				),
 			},
-			"tags": common.TagsForceNewSchema(),
+			"tags": common.TagsSchema(),
 
 			"status": {
 				Type:     schema.TypeString,
@@ -205,12 +207,12 @@ func resourceListenerCreate(ctx context.Context, d *schema.ResourceData, meta in
 func buildCreateListenerBodyParams(d *schema.ResourceData) map[string]interface{} {
 	bodyParams := map[string]interface{}{
 		"listener": map[string]interface{}{
-			"accelerator_id":  utils.ValueIngoreEmpty(d.Get("accelerator_id")),
-			"client_affinity": utils.ValueIngoreEmpty(d.Get("client_affinity")),
-			"description":     utils.ValueIngoreEmpty(d.Get("description")),
-			"name":            utils.ValueIngoreEmpty(d.Get("name")),
+			"accelerator_id":  utils.ValueIgnoreEmpty(d.Get("accelerator_id")),
+			"client_affinity": utils.ValueIgnoreEmpty(d.Get("client_affinity")),
+			"description":     utils.ValueIgnoreEmpty(d.Get("description")),
+			"name":            utils.ValueIgnoreEmpty(d.Get("name")),
 			"port_ranges":     buildCreateListenerRequestBodyPortRange(d.Get("port_ranges")),
-			"protocol":        utils.ValueIngoreEmpty(d.Get("protocol")),
+			"protocol":        utils.ValueIgnoreEmpty(d.Get("protocol")),
 			"tags":            utils.ExpandResourceTagsMap(d.Get("tags").(map[string]interface{})),
 		},
 	}
@@ -227,8 +229,8 @@ func buildCreateListenerRequestBodyPortRange(rawParams interface{}) []map[string
 		for i, v := range rawArray {
 			raw := v.(map[string]interface{})
 			rst[i] = map[string]interface{}{
-				"from_port": utils.ValueIngoreEmpty(raw["from_port"]),
-				"to_port":   utils.ValueIngoreEmpty(raw["to_port"]),
+				"from_port": utils.ValueIgnoreEmpty(raw["from_port"]),
+				"to_port":   utils.ValueIgnoreEmpty(raw["to_port"]),
 			}
 		}
 		return rst
@@ -420,15 +422,42 @@ func resourceListenerUpdate(ctx context.Context, d *schema.ResourceData, meta in
 			return diag.Errorf("error waiting for the Update of Listener (%s) to complete: %s", d.Id(), err)
 		}
 	}
+
+	// update tags
+	if d.HasChange("tags") {
+		client, err := conf.NewServiceClient("ga", region)
+		if err != nil {
+			return diag.Errorf("error creating GA Client: %s", err)
+		}
+
+		oldRaw, newRaw := d.GetChange("tags")
+		oldMap := oldRaw.(map[string]interface{})
+		newMap := newRaw.(map[string]interface{})
+
+		// remove old tags
+		if len(oldMap) > 0 {
+			if err = deleteTags(client, "ga-listeners", d.Id(), oldMap); err != nil {
+				return diag.FromErr(err)
+			}
+		}
+
+		// set new tags
+		if len(newMap) > 0 {
+			if err := createTags(client, "ga-listeners", d.Id(), newMap); err != nil {
+				return diag.FromErr(err)
+			}
+		}
+	}
+
 	return resourceListenerRead(ctx, d, meta)
 }
 
 func buildUpdateListenerBodyParams(d *schema.ResourceData) map[string]interface{} {
 	bodyParams := map[string]interface{}{
 		"listener": map[string]interface{}{
-			"client_affinity": utils.ValueIngoreEmpty(d.Get("client_affinity")),
+			"client_affinity": utils.ValueIgnoreEmpty(d.Get("client_affinity")),
 			"description":     d.Get("description"),
-			"name":            utils.ValueIngoreEmpty(d.Get("name")),
+			"name":            utils.ValueIgnoreEmpty(d.Get("name")),
 			"port_ranges":     buildUpdateListenerRequestBodyPortRange(d.Get("port_ranges")),
 		},
 	}
@@ -445,8 +474,8 @@ func buildUpdateListenerRequestBodyPortRange(rawParams interface{}) []map[string
 		for i, v := range rawArray {
 			raw := v.(map[string]interface{})
 			rst[i] = map[string]interface{}{
-				"from_port": utils.ValueIngoreEmpty(raw["from_port"]),
-				"to_port":   utils.ValueIngoreEmpty(raw["to_port"]),
+				"from_port": utils.ValueIgnoreEmpty(raw["from_port"]),
+				"to_port":   utils.ValueIgnoreEmpty(raw["to_port"]),
 			}
 		}
 		return rst
