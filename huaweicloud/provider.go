@@ -412,6 +412,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_apig_api_basic_configurations":           apig.DataSourceApiBasicConfigurations(),
 			"huaweicloud_apig_appcodes":                           apig.DataSourceAppcodes(),
 			"huaweicloud_apig_applications":                       apig.DataSourceApplications(),
+			"huaweicloud_apig_application_acl":                    apig.DataSourceApplicationAcl(),
 			"huaweicloud_apig_application_quotas":                 apig.DataSourceApigApplicationQuotas(),
 			"huaweicloud_apig_channels":                           apig.DataSourceChannels(),
 			"huaweicloud_apig_custom_authorizers":                 apig.DataSourceCustomAuthorizers(),
@@ -425,11 +426,13 @@ func Provider() *schema.Provider {
 			"huaweicloud_apig_signatures":                         apig.DataSourceSignatures(),
 			"huaweicloud_apig_throttling_policies":                apig.DataSourceThrottlingPolicies(),
 
+			"huaweicloud_as_activity_logs":       as.DataSourceActivityLogs(),
 			"huaweicloud_as_configurations":      as.DataSourceASConfigurations(),
 			"huaweicloud_as_groups":              as.DataSourceASGroups(),
-			"huaweicloud_as_activity_logs":       as.DataSourceActivityLogs(),
-			"huaweicloud_as_policies":            as.DataSourceASPolicies(),
+			"huaweicloud_as_instances":           as.DataSourceASInstances(),
 			"huaweicloud_as_lifecycle_hooks":     as.DataSourceLifeCycleHooks(),
+			"huaweicloud_as_notifications":       as.DataSourceAsNotifications(),
+			"huaweicloud_as_policies":            as.DataSourceASPolicies(),
 			"huaweicloud_as_policy_execute_logs": as.DataSourcePolicyExecuteLogs(),
 
 			"huaweicloud_account":            DataSourceAccount(),
@@ -578,6 +581,7 @@ func Provider() *schema.Provider {
 
 			"huaweicloud_dms_kafka_flavors":             dms.DataSourceKafkaFlavors(),
 			"huaweicloud_dms_kafka_instances":           dms.DataSourceDmsKafkaInstances(),
+			"huaweicloud_dms_kafka_consumer_groups":     dms.DataSourceDmsKafkaConsumerGroups(),
 			"huaweicloud_dms_product":                   dms.DataSourceDmsProduct(),
 			"huaweicloud_dms_maintainwindow":            dms.DataSourceDmsMaintainWindow(),
 			"huaweicloud_dms_kafka_smart_connect_tasks": dms.DataSourceDmsKafkaSmartConnectTasks(),
@@ -596,6 +600,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_dms_rocketmq_flavors":               dms.DataSourceRocketMQFlavors(),
 			"huaweicloud_dms_rocketmq_migration_tasks":       dms.DataSourceDmsRocketmqMigrationTasks(),
 			"huaweicloud_dms_rocketmq_topic_consumer_groups": dms.DataSourceDmsRocketmqTopicConsumerGroups(),
+			"huaweicloud_dms_rocketmq_extend_flavors":        dms.DataSourceDmsRocketmqExtendFlavors(),
 
 			"huaweicloud_dns_floating_ptrrecords": dns.DataSourceFloatingPtrrecords(),
 			"huaweicloud_dns_line_groups":         dns.DataSourceLineGroups(),
@@ -990,8 +995,10 @@ func Provider() *schema.Provider {
 			"huaweicloud_apig_api_publishment":                apig.ResourceApigApiPublishment(),
 			"huaweicloud_apig_appcode":                        apig.ResourceAppcode(),
 			"huaweicloud_apig_application":                    apig.ResourceApigApplicationV2(),
+			"huaweicloud_apig_application_acl":                apig.ResourceApplicationAcl(),
 			"huaweicloud_apig_application_authorization":      apig.ResourceAppAuth(),
 			"huaweicloud_apig_application_quota":              apig.ResourceApplicationQuota(),
+			"huaweicloud_apig_application_quota_associate":    apig.ResourceApplicationQuotaAssociate(),
 			"huaweicloud_apig_certificate":                    apig.ResourceCertificate(),
 			"huaweicloud_apig_channel":                        apig.ResourceChannel(),
 			"huaweicloud_apig_custom_authorizer":              apig.ResourceApigCustomAuthorizerV2(),
@@ -1141,9 +1148,10 @@ func Provider() *schema.Provider {
 
 			"huaweicloud_dbss_instance": dbss.ResourceInstance(),
 
-			"huaweicloud_dc_virtual_gateway":   dc.ResourceVirtualGateway(),
-			"huaweicloud_dc_virtual_interface": dc.ResourceVirtualInterface(),
-			"huaweicloud_dc_hosted_connect":    dc.ResourceHostedConnect(),
+			"huaweicloud_dc_virtual_gateway":            dc.ResourceVirtualGateway(),
+			"huaweicloud_dc_virtual_interface":          dc.ResourceVirtualInterface(),
+			"huaweicloud_dc_virtual_interface_accepter": dc.ResourceInterfaceAccepter(),
+			"huaweicloud_dc_hosted_connect":             dc.ResourceHostedConnect(),
 
 			"huaweicloud_dcs_instance":         dcs.ResourceDcsInstance(),
 			"huaweicloud_dcs_backup":           dcs.ResourceDcsBackup(),
@@ -1457,6 +1465,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_dataarts_security_permission_set_member":    dataarts.ResourceSecurityPermissionSetMember(),
 			"huaweicloud_dataarts_security_permission_set_privilege": dataarts.ResourceSecurityPermissionSetPrivilege(),
 			// DataArts DataService
+			"huaweicloud_dataarts_dataservice_api":     dataarts.ResourceDataServiceApi(),
 			"huaweicloud_dataarts_dataservice_app":     dataarts.ResourceDataServiceApp(),
 			"huaweicloud_dataarts_dataservice_catalog": dataarts.ResourceDatatServiceCatalog(),
 

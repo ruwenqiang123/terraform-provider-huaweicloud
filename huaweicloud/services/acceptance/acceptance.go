@@ -35,15 +35,16 @@ var (
 	HW_ENTERPRISE_PROJECT_ID_TEST         = os.Getenv("HW_ENTERPRISE_PROJECT_ID_TEST")
 	HW_ENTERPRISE_MIGRATE_PROJECT_ID_TEST = os.Getenv("HW_ENTERPRISE_MIGRATE_PROJECT_ID_TEST")
 
-	HW_FLAVOR_ID             = os.Getenv("HW_FLAVOR_ID")
-	HW_FLAVOR_NAME           = os.Getenv("HW_FLAVOR_NAME")
-	HW_IMAGE_ID              = os.Getenv("HW_IMAGE_ID")
-	HW_IMAGE_NAME            = os.Getenv("HW_IMAGE_NAME")
-	HW_VPC_ID                = os.Getenv("HW_VPC_ID")
-	HW_NETWORK_ID            = os.Getenv("HW_NETWORK_ID")
-	HW_SUBNET_ID             = os.Getenv("HW_SUBNET_ID")
-	HW_ENTERPRISE_PROJECT_ID = os.Getenv("HW_ENTERPRISE_PROJECT_ID")
-	HW_ADMIN                 = os.Getenv("HW_ADMIN")
+	HW_FLAVOR_ID              = os.Getenv("HW_FLAVOR_ID")
+	HW_FLAVOR_NAME            = os.Getenv("HW_FLAVOR_NAME")
+	HW_IMAGE_ID               = os.Getenv("HW_IMAGE_ID")
+	HW_IMAGE_NAME             = os.Getenv("HW_IMAGE_NAME")
+	HW_IMS_DATA_DISK_IMAGE_ID = os.Getenv("HW_IMS_DATA_DISK_IMAGE_ID")
+	HW_VPC_ID                 = os.Getenv("HW_VPC_ID")
+	HW_NETWORK_ID             = os.Getenv("HW_NETWORK_ID")
+	HW_SUBNET_ID              = os.Getenv("HW_SUBNET_ID")
+	HW_ENTERPRISE_PROJECT_ID  = os.Getenv("HW_ENTERPRISE_PROJECT_ID")
+	HW_ADMIN                  = os.Getenv("HW_ADMIN")
 
 	HW_CAE_ENVIRONMENT_ID     = os.Getenv("HW_CAE_ENVIRONMENT_ID")
 	HW_CAE_APPLICATION_ID     = os.Getenv("HW_CAE_APPLICATION_ID")
@@ -183,6 +184,7 @@ var (
 	HW_DC_RESOURCE_TENANT_ID   = os.Getenv("HW_DC_RESOURCE_TENANT_ID")
 	HW_DC_HOSTTING_ID          = os.Getenv("HW_DC_HOSTTING_ID")
 	HW_DC_TARGET_TENANT_VGW_ID = os.Getenv("HW_DC_TARGET_TENANT_VGW_ID")
+	HW_DC_VIRTUAL_INTERFACE_ID = os.Getenv("HW_DC_VIRTUAL_INTERFACE_ID")
 
 	// The CFW instance ID
 	HW_CFW_INSTANCE_ID        = os.Getenv("HW_CFW_INSTANCE_ID")
@@ -300,6 +302,7 @@ var (
 	HW_DATAARTS_WORKSPACE_ID                               = os.Getenv("HW_DATAARTS_WORKSPACE_ID")
 	HW_DATAARTS_CDM_NAME                                   = os.Getenv("HW_DATAARTS_CDM_NAME")
 	HW_DATAARTS_MANAGER_ID                                 = os.Getenv("HW_DATAARTS_MANAGER_ID")
+	HW_DATAARTS_MANAGER_NAME                               = os.Getenv("HW_DATAARTS_MANAGER_NAME")
 	HW_DATAARTS_BIZ_CATALOG_ID                             = os.Getenv("HW_DATAARTS_BIZ_CATALOG_ID")
 	HW_DATAARTS_SECRECY_LEVEL_ID                           = os.Getenv("HW_DATAARTS_SECRECY_LEVEL_ID")
 	HW_DATAARTS_SECRECY_LEVEL_ID_UPDATE                    = os.Getenv("HW_DATAARTS_SECRECY_LEVEL_ID_UPDATE")
@@ -1127,6 +1130,13 @@ func TestAccPreCheckTargetTenantDcVGW(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckDCVirtualInterfaceID(t *testing.T) {
+	if HW_DC_VIRTUAL_INTERFACE_ID == "" {
+		t.Skip("HW_DC_VIRTUAL_INTERFACE_ID must be set for this acceptance test")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckCfw(t *testing.T) {
 	if HW_CFW_INSTANCE_ID == "" {
 		t.Skip("HW_CFW_INSTANCE_ID must be set for CFW acceptance tests")
@@ -1548,6 +1558,13 @@ func TestAccPreCheckDataArtsManagerID(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckDataArtsManagerName(t *testing.T) {
+	if HW_DATAARTS_MANAGER_NAME == "" {
+		t.Skip("HW_DATAARTS_MANAGER_NAME must be set for DataArts Studio DataService API acceptance tests")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckDataArtsBizCatalogID(t *testing.T) {
 	if HW_DATAARTS_BIZ_CATALOG_ID == "" {
 		t.Skip("HW_DATAARTS_BIZ_CATALOG_ID must be set for the acceptance test")
@@ -1766,5 +1783,12 @@ func TestAccPreCheckDMSRocketMQTopicName(t *testing.T) {
 func TestAccPreCheckAsDedicatedHostId(t *testing.T) {
 	if HW_DEDICATED_HOST_ID == "" {
 		t.Skip("HW_DEDICATED_HOST_ID must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckAsDataDiskImageId(t *testing.T) {
+	if HW_IMS_DATA_DISK_IMAGE_ID == "" {
+		t.Skip("HW_IMS_DATA_DISK_IMAGE_ID must be set for the acceptance test")
 	}
 }
