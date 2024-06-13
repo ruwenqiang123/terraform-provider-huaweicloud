@@ -410,6 +410,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_apig_api_associated_signatures":          apig.DataSourceApiAssociatedSignatures(),
 			"huaweicloud_apig_api_associated_throttling_policies": apig.DataSourceApiAssociatedThrottlingPolicies(),
 			"huaweicloud_apig_api_basic_configurations":           apig.DataSourceApiBasicConfigurations(),
+			"huaweicloud_apig_api":                                apig.DataSourceApi(),
 			"huaweicloud_apig_appcodes":                           apig.DataSourceAppcodes(),
 			"huaweicloud_apig_applications":                       apig.DataSourceApplications(),
 			"huaweicloud_apig_application_acl":                    apig.DataSourceApplicationAcl(),
@@ -605,6 +606,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_dns_floating_ptrrecords": dns.DataSourceFloatingPtrrecords(),
 			"huaweicloud_dns_line_groups":         dns.DataSourceLineGroups(),
 			"huaweicloud_dns_nameservers":         dns.DataSourceNameservers(),
+			"huaweicloud_dns_quotas":              dns.DataSourceDNSQuotas(),
 			"huaweicloud_dns_recordsets":          dns.DataSourceRecordsets(),
 			"huaweicloud_dns_zones":               dns.DataSourceZones(),
 
@@ -631,6 +633,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_fgs_application_templates": fgs.DataSourceFunctionGraphApplicationTemplates(),
 			"huaweicloud_fgs_dependencies":          fgs.DataSourceFunctionGraphDependencies(),
 			"huaweicloud_fgs_dependency_versions":   fgs.DataSourceDependencieVersions(),
+			"huaweicloud_fgs_function_triggers":     fgs.DataSourceFunctionTriggers(),
 			"huaweicloud_fgs_functions":             fgs.DataSourceFunctionGraphFunctions(),
 
 			"huaweicloud_ga_accelerators":       ga.DataSourceAccelerators(),
@@ -921,9 +924,10 @@ func Provider() *schema.Provider {
 
 			"huaweicloud_dcs_maintainwindow_v1": dcs.DataSourceDcsMaintainWindow(),
 
-			"huaweicloud_dds_flavors_v3":   dds.DataSourceDDSFlavorV3(),
-			"huaweicloud_identity_role_v3": iam.DataSourceIdentityRole(),
-			"huaweicloud_cdm_flavors_v1":   cdm.DataSourceCdmFlavors(),
+			"huaweicloud_dds_flavors_v3":               dds.DataSourceDDSFlavorV3(),
+			"huaweicloud_identity_role_v3":             iam.DataSourceIdentityRole(),
+			"huaweicloud_identity_virtual_mfa_devices": iam.DataSourceIamIdentityVirtualMfaDevices(),
+			"huaweicloud_cdm_flavors_v1":               cdm.DataSourceCdmFlavors(),
 
 			"huaweicloud_ddm_engines":        ddm.DataSourceDdmEngines(),
 			"huaweicloud_ddm_flavors":        ddm.DataSourceDdmFlavors(),
@@ -1139,6 +1143,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_css_scan_task":                   css.ResourceScanTask(),
 			"huaweicloud_css_es_loadbalancer_config":      css.ResourceEsLoadbalancerConfig(),
 			"huaweicloud_css_log_setting":                 css.ResourceLogSetting(),
+			"huaweicloud_css_manual_log_backup":           css.ResourceManualLogBackup(),
 			"huaweicloud_css_logstash_cluster":            css.ResourceLogstashCluster(),
 			"huaweicloud_css_logstash_cluster_restart":    css.ResourceLogstashClusterRestart(),
 			"huaweicloud_css_logstash_configuration":      css.ResourceLogstashConfiguration(),
