@@ -25,7 +25,7 @@
                   "set",
                   "string"
                 ],
-                "description": "The whitelists list of endpoint service.",
+                "description": "The whitelist records of the endpoint service.",
                 "required": true
               }
             }
