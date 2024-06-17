@@ -400,6 +400,13 @@ func Provider() *schema.Provider {
 				Description: descriptions["max_retries"],
 				DefaultFunc: schema.EnvDefaultFunc("HW_MAX_RETRIES", 5),
 			},
+
+			"enable_force_new": {
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Description: descriptions["enable_force_new"],
+				DefaultFunc: schema.EnvDefaultFunc("HW_ENABLE_FORCE_NEW", false),
+			},
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
@@ -433,6 +440,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_as_instances":           as.DataSourceASInstances(),
 			"huaweicloud_as_lifecycle_hooks":     as.DataSourceLifeCycleHooks(),
 			"huaweicloud_as_notifications":       as.DataSourceAsNotifications(),
+			"huaweicloud_as_planned_tasks":       as.DataSourceAsPlannedTasks(),
 			"huaweicloud_as_policies":            as.DataSourceASPolicies(),
 			"huaweicloud_as_policy_execute_logs": as.DataSourcePolicyExecuteLogs(),
 
@@ -581,12 +589,15 @@ func Provider() *schema.Provider {
 			"huaweicloud_dli_sql_templates":          dli.DataSourceDliSqlTemplates(),
 
 			"huaweicloud_dms_kafka_flavors":             dms.DataSourceKafkaFlavors(),
+			"huaweicloud_dms_kafka_extend_flavors":      dms.DataSourceDmsKafkaExtendFlavors(),
 			"huaweicloud_dms_kafka_instances":           dms.DataSourceDmsKafkaInstances(),
 			"huaweicloud_dms_kafka_consumer_groups":     dms.DataSourceDmsKafkaConsumerGroups(),
 			"huaweicloud_dms_product":                   dms.DataSourceDmsProduct(),
 			"huaweicloud_dms_maintainwindow":            dms.DataSourceDmsMaintainWindow(),
 			"huaweicloud_dms_kafka_smart_connect_tasks": dms.DataSourceDmsKafkaSmartConnectTasks(),
+			"huaweicloud_dms_kafka_user_client_quotas":  dms.DataSourceDmsKafkaUserClientQuotas(),
 			"huaweicloud_dms_kafka_topics":              dms.DataSourceDmsKafkaTopics(),
+			"huaweicloud_dms_kafka_users":               dms.DataSourceDmsKafkaUsers(),
 
 			"huaweicloud_dms_rabbitmq_flavors":        dms.DataSourceRabbitMQFlavors(),
 			"huaweicloud_dms_rabbitmq_plugins":        dms.DataSourceDmsRabbitmqPlugins(),
@@ -1952,6 +1963,8 @@ func init() {
 		"max_retries": "How many times HTTP connection should be retried until giving up.",
 
 		"enterprise_project_id": "enterprise project id",
+
+		"enable_force_new": "Whether to enable ForceNew",
 	}
 }
 
@@ -1983,6 +1996,7 @@ func configureProvider(_ context.Context, d *schema.ResourceData, terraformVersi
 		RegionProjectIDMap:  make(map[string]string),
 		RPLock:              new(sync.Mutex),
 		SecurityKeyLock:     new(sync.Mutex),
+		EnableForceNew:      d.Get("enable_force_new").(bool),
 	}
 
 	// get assume role
