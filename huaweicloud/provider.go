@@ -437,6 +437,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_as_activity_logs":       as.DataSourceActivityLogs(),
 			"huaweicloud_as_configurations":      as.DataSourceASConfigurations(),
 			"huaweicloud_as_groups":              as.DataSourceASGroups(),
+			"huaweicloud_as_hook_instances":      as.DataSourceAsHookInstances(),
 			"huaweicloud_as_instances":           as.DataSourceASInstances(),
 			"huaweicloud_as_lifecycle_hooks":     as.DataSourceLifeCycleHooks(),
 			"huaweicloud_as_notifications":       as.DataSourceAsNotifications(),
@@ -552,6 +553,7 @@ func Provider() *schema.Provider {
 
 			"huaweicloud_dbss_flavors": dbss.DataSourceDbssFlavors(),
 
+			"huaweicloud_dc_connections":        dc.DataSourceDcConnections(),
 			"huaweicloud_dc_virtual_gateways":   dc.DataSourceDCVirtualGateways(),
 			"huaweicloud_dc_virtual_interfaces": dc.DataSourceDCVirtualInterfaces(),
 
@@ -614,6 +616,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_dms_rocketmq_topic_consumer_groups": dms.DataSourceDmsRocketmqTopicConsumerGroups(),
 			"huaweicloud_dms_rocketmq_extend_flavors":        dms.DataSourceDmsRocketmqExtendFlavors(),
 
+			"huaweicloud_dns_custom_lines":        dns.DataSourceDNSCustomLines(),
 			"huaweicloud_dns_floating_ptrrecords": dns.DataSourceFloatingPtrrecords(),
 			"huaweicloud_dns_line_groups":         dns.DataSourceLineGroups(),
 			"huaweicloud_dns_nameservers":         dns.DataSourceNameservers(),
@@ -1055,8 +1058,9 @@ func Provider() *schema.Provider {
 			"huaweicloud_cbr_policy":                cbr.ResourcePolicy(),
 			"huaweicloud_cbr_vault":                 cbr.ResourceVault(),
 
-			"huaweicloud_cbh_instance":    cbh.ResourceCBHInstance(),
-			"huaweicloud_cbh_ha_instance": cbh.ResourceCBHHAInstance(),
+			"huaweicloud_cbh_instance":                   cbh.ResourceCBHInstance(),
+			"huaweicloud_cbh_ha_instance":                cbh.ResourceCBHHAInstance(),
+			"huaweicloud_cbh_asset_agency_authorization": cbh.ResourceAssetAgencyAuthorization(),
 
 			"huaweicloud_cc_connection":                                     cc.ResourceCloudConnection(),
 			"huaweicloud_cc_network_instance":                               cc.ResourceNetworkInstance(),
@@ -1107,6 +1111,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_ces_resource_group": ces.ResourceResourceGroup(),
 			"huaweicloud_ces_alarm_template": ces.ResourceCesAlarmTemplate(),
 
+			"huaweicloud_cfw_acl_rule":             cfw.ResourceAclRule(),
 			"huaweicloud_cfw_address_group":        cfw.ResourceAddressGroup(),
 			"huaweicloud_cfw_address_group_member": cfw.ResourceAddressGroupMember(),
 			"huaweicloud_cfw_black_white_list":     cfw.ResourceBlackWhiteList(),
