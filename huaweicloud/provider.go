@@ -15,6 +15,7 @@ import (
 
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/config"
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/aad"
+	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/accessanalyzer"
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/antiddos"
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/aom"
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/apig"
@@ -546,6 +547,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_css_upgrade_target_images":     css.DataSourceCssUpgradeTargetImages(),
 			"huaweicloud_css_logstash_templates":        css.DataSourceCssLogstashTemplates(),
 			"huaweicloud_css_cluster_tags":              css.DataSourceCssClusterTags(),
+			"huaweicloud_css_log_backup_records":        css.DataSourceCssLogBackupRecords(),
 
 			"huaweicloud_dataarts_architecture_ds_template_optionals": dataarts.DataSourceTemplateOptionalFields(),
 			"huaweicloud_dataarts_studio_data_connections":            dataarts.DataSourceDataConnections(),
@@ -675,9 +677,10 @@ func Provider() *schema.Provider {
 			"huaweicloud_gaussdb_mysql_restore_time_ranges":    gaussdb.DataSourceGaussdbMysqlRestoreTimeRanges(),
 			"huaweicloud_gaussdb_mysql_databases":              gaussdb.DataSourceGaussdbMysqlDatabases(),
 
-			"huaweicloud_hss_host_groups":     hss.DataSourceHostGroups(),
-			"huaweicloud_hss_hosts":           hss.DataSourceHosts(),
-			"huaweicloud_hss_webtamper_hosts": hss.DataSourceWebTamperHosts(),
+			"huaweicloud_hss_ransomware_protection_policies": hss.DataSourceRansomwareProtectionPolicies(),
+			"huaweicloud_hss_host_groups":                    hss.DataSourceHostGroups(),
+			"huaweicloud_hss_hosts":                          hss.DataSourceHosts(),
+			"huaweicloud_hss_webtamper_hosts":                hss.DataSourceWebTamperHosts(),
 
 			"huaweicloud_identity_permissions": iam.DataSourceIdentityPermissions(),
 			"huaweicloud_identity_role":        iam.DataSourceIdentityRole(),
@@ -792,6 +795,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_rds_sqlserver_database_privileges":   rds.DataSourceSQLServerDatabasePrivileges(),
 			"huaweicloud_rds_pg_plugins":                      rds.DataSourcePgPlugins(),
 			"huaweicloud_rds_pg_accounts":                     rds.DataSourcePgAccounts(),
+			"huaweicloud_rds_pg_roles":                        rds.DataSourceRdsPgRoles(),
 			"huaweicloud_rds_pg_databases":                    rds.DataSourcePgDatabases(),
 			"huaweicloud_rds_mysql_databases":                 rds.DataSourceRdsMysqlDatabases(),
 			"huaweicloud_rds_mysql_database_privileges":       rds.DataSourceRdsMysqlDatabasePrivileges(),
@@ -810,6 +814,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_rds_pg_plugin_parameter_values":      rds.DataSourceRdsPgPluginParameterValues(),
 			"huaweicloud_rds_restore_time_ranges":             rds.DataSourceRdsRestoreTimeRanges(),
 			"huaweicloud_rds_extend_log_files":                rds.DataSourceRdsExtendLogFiles(),
+			"huaweicloud_rds_extend_log_links":                rds.DataSourceRdsExtendLogLinks(),
 			"huaweicloud_rds_slow_log_files":                  rds.DataSourceRdsSlowLogFiles(),
 
 			"huaweicloud_rms_policy_definitions":                    rms.DataSourcePolicyDefinitions(),
@@ -992,6 +997,8 @@ func Provider() *schema.Provider {
 			"huaweicloud_aad_forward_rule": aad.ResourceForwardRule(),
 
 			"huaweicloud_antiddos_basic": antiddos.ResourceCloudNativeAntiDdos(),
+
+			"huaweicloud_access_analyzer": accessanalyzer.ResourceAccessAnalyzer(),
 
 			"huaweicloud_aom_alarm_rule":             aom.ResourceAlarmRule(),
 			"huaweicloud_aom_event_alarm_rule":       aom.ResourceEventAlarmRule(),
@@ -1556,6 +1563,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_rds_recycling_policy":             rds.ResourceRecyclingPolicy(),
 			"huaweicloud_rds_primary_standby_switch":       rds.ResourceRdsInstanceSwitch(),
 			"huaweicloud_rds_database_logs_shrinking":      rds.ResourceRdsDbLogsShrinking(),
+			"huaweicloud_rds_extend_log_link":              rds.ResourceRdsExtendLogLink(),
 
 			"huaweicloud_rms_policy_assignment":                  rms.ResourcePolicyAssignment(),
 			"huaweicloud_rms_resource_aggregator":                rms.ResourceAggregator(),
