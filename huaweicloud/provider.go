@@ -22,6 +22,7 @@ import (
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/apigateway"
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/apm"
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/as"
+	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/asm"
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/bcs"
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/bms"
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/cae"
@@ -681,6 +682,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_hss_host_groups":                    hss.DataSourceHostGroups(),
 			"huaweicloud_hss_hosts":                          hss.DataSourceHosts(),
 			"huaweicloud_hss_webtamper_hosts":                hss.DataSourceWebTamperHosts(),
+			"huaweicloud_hss_quotas":                         hss.DataSourceQuotas(),
 
 			"huaweicloud_identity_permissions": iam.DataSourceIdentityPermissions(),
 			"huaweicloud_identity_role":        iam.DataSourceIdentityRole(),
@@ -731,6 +733,11 @@ func Provider() *schema.Provider {
 			"huaweicloud_lb_certificate":  lb.DataSourceLBCertificateV2(),
 			"huaweicloud_lb_pools":        lb.DataSourcePools(),
 
+			"huaweicloud_lts_groups":                       lts.DataSourceLtsGroups(),
+			"huaweicloud_lts_host_groups":                  lts.DataSourceLtsHostGroups(),
+			"huaweicloud_lts_notification_templates":       lts.DataSourceLtsNotificationTemplates(),
+			"huaweicloud_lts_search_criteria":              lts.DataSourceLtsSearchCriteria(),
+			"huaweicloud_lts_streams":                      lts.DataSourceLtsStreams(),
 			"huaweicloud_lts_structuring_custom_templates": lts.DataSourceCustomTemplates(),
 
 			"huaweicloud_elb_certificate":          elb.DataSourceELBCertificateV3(),
@@ -806,6 +813,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_rds_cross_region_backups":            rds.DataSourceRdsCrossRegionBackups(),
 			"huaweicloud_rds_cross_region_backup_instances":   rds.DataSourceRdsCrossRegionBackupInstances(),
 			"huaweicloud_rds_sql_audit_logs":                  rds.DataSourceRdsSqlAuditLogs(),
+			"huaweicloud_rds_sql_audit_log_links":             rds.DataSourceRdsSqlAuditLogLinks(),
 			"huaweicloud_rds_error_logs":                      rds.DataSourceRdsErrorLogs(),
 			"huaweicloud_rds_slow_logs":                       rds.DataSourceRdsSlowLogs(),
 			"huaweicloud_rds_pg_sql_limits":                   rds.DataSourceRdsPgSqlLimits(),
@@ -1045,14 +1053,17 @@ func Provider() *schema.Provider {
 			"huaweicloud_apig_throttling_policy":              apig.ResourceApigThrottlingPolicyV2(),
 			"huaweicloud_apig_endpoint_whitelist":             apig.ResourceEndpointWhiteList(),
 
-			"huaweicloud_as_configuration":    as.ResourceASConfiguration(),
-			"huaweicloud_as_group":            as.ResourceASGroup(),
-			"huaweicloud_as_lifecycle_hook":   as.ResourceASLifecycleHook(),
-			"huaweicloud_as_instance_attach":  as.ResourceASInstanceAttach(),
-			"huaweicloud_as_notification":     as.ResourceAsNotification(),
-			"huaweicloud_as_policy":           as.ResourceASPolicy(),
-			"huaweicloud_as_bandwidth_policy": as.ResourceASBandWidthPolicy(),
-			"huaweicloud_as_planned_task":     as.ResourcePlannedTask(),
+			"huaweicloud_as_configuration":           as.ResourceASConfiguration(),
+			"huaweicloud_as_group":                   as.ResourceASGroup(),
+			"huaweicloud_as_lifecycle_hook":          as.ResourceASLifecycleHook(),
+			"huaweicloud_as_instance_attach":         as.ResourceASInstanceAttach(),
+			"huaweicloud_as_notification":            as.ResourceAsNotification(),
+			"huaweicloud_as_policy":                  as.ResourceASPolicy(),
+			"huaweicloud_as_bandwidth_policy":        as.ResourceASBandWidthPolicy(),
+			"huaweicloud_as_planned_task":            as.ResourcePlannedTask(),
+			"huaweicloud_as_lifecycle_hook_callback": as.ResourceLifecycleHookCallBack(),
+
+			"huaweicloud_asm_mesh": asm.ResourceAsmMesh(),
 
 			"huaweicloud_bms_instance": bms.ResourceBmsInstance(),
 			"huaweicloud_bcs_instance": bcs.ResourceInstance(),
@@ -1101,6 +1112,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_cci_network":      cci.ResourceCciNetworkV1(),
 			"huaweicloud_cci_pvc":          cci.ResourcePersistentVolumeClaimV1(),
 
+			"huaweicloud_ccm_certificate":         ccm.ResourceCCMCertificate(),
 			"huaweicloud_ccm_certificate_push":    ccm.ResourceCcmCertificatePush(),
 			"huaweicloud_ccm_private_ca":          ccm.ResourcePrivateCertificateAuthority(),
 			"huaweicloud_ccm_private_certificate": ccm.ResourceCcmPrivateCertificate(),
@@ -1162,16 +1174,19 @@ func Provider() *schema.Provider {
 
 			"huaweicloud_css_cluster":                     css.ResourceCssCluster(),
 			"huaweicloud_css_cluster_restart":             css.ResourceCssClusterRestart(),
+			"huaweicloud_css_cluster_node_replace":        css.ResourceCssClusterNodeReplace(),
 			"huaweicloud_css_snapshot":                    css.ResourceCssSnapshot(),
 			"huaweicloud_css_thesaurus":                   css.ResourceCssthesaurus(),
 			"huaweicloud_css_configuration":               css.ResourceCssConfiguration(),
 			"huaweicloud_css_scan_task":                   css.ResourceScanTask(),
 			"huaweicloud_css_es_loadbalancer_config":      css.ResourceEsLoadbalancerConfig(),
+			"huaweicloud_css_es_core_upgrade":             css.ResourceCssEsCoreUpgrade(),
 			"huaweicloud_css_log_setting":                 css.ResourceLogSetting(),
 			"huaweicloud_css_manual_log_backup":           css.ResourceManualLogBackup(),
 			"huaweicloud_css_logstash_cluster":            css.ResourceLogstashCluster(),
 			"huaweicloud_css_logstash_cluster_restart":    css.ResourceLogstashClusterRestart(),
 			"huaweicloud_css_logstash_configuration":      css.ResourceLogstashConfiguration(),
+			"huaweicloud_css_logstash_connectivity":       css.ResourceLogstashConnectivity(),
 			"huaweicloud_css_logstash_pipeline":           css.ResourceLogstashPipeline(),
 			"huaweicloud_css_logstash_custom_certificate": css.ResourceLogstashCertificate(),
 			"huaweicloud_css_logstash_custom_template":    css.ResourceLogstashCustomTemplate(),
@@ -1233,14 +1248,15 @@ func Provider() *schema.Provider {
 			"huaweicloud_dli_spark_template":                  dli.ResourceSparkTemplate(),
 			"huaweicloud_dli_agency":                          dli.ResourceDliAgency(),
 
-			"huaweicloud_dms_kafka_user":               dms.ResourceDmsKafkaUser(),
-			"huaweicloud_dms_kafka_permissions":        dms.ResourceDmsKafkaPermissions(),
-			"huaweicloud_dms_kafka_instance":           dms.ResourceDmsKafkaInstance(),
-			"huaweicloud_dms_kafka_topic":              dms.ResourceDmsKafkaTopic(),
-			"huaweicloud_dms_kafka_consumer_group":     dms.ResourceDmsKafkaConsumerGroup(),
-			"huaweicloud_dms_kafka_smart_connect":      dms.ResourceDmsKafkaSmartConnect(),
-			"huaweicloud_dms_kafka_smart_connect_task": dms.ResourceDmsKafkaSmartConnectTask(),
-			"huaweicloud_dms_kafka_user_client_quota":  dms.ResourceDmsKafkaUserClientQuota(),
+			"huaweicloud_dms_kafka_user":                 dms.ResourceDmsKafkaUser(),
+			"huaweicloud_dms_kafka_permissions":          dms.ResourceDmsKafkaPermissions(),
+			"huaweicloud_dms_kafka_instance":             dms.ResourceDmsKafkaInstance(),
+			"huaweicloud_dms_kafka_topic":                dms.ResourceDmsKafkaTopic(),
+			"huaweicloud_dms_kafka_consumer_group":       dms.ResourceDmsKafkaConsumerGroup(),
+			"huaweicloud_dms_kafka_smart_connect":        dms.ResourceDmsKafkaSmartConnect(),
+			"huaweicloud_dms_kafka_smart_connect_task":   dms.ResourceDmsKafkaSmartConnectTask(),
+			"huaweicloud_dms_kafkav2_smart_connect_task": dms.ResourceDmsKafkav2SmartConnectTask(),
+			"huaweicloud_dms_kafka_user_client_quota":    dms.ResourceDmsKafkaUserClientQuota(),
 
 			"huaweicloud_dms_rabbitmq_instance": dms.ResourceDmsRabbitmqInstance(),
 			"huaweicloud_dms_rabbitmq_plugin":   dms.ResourceDmsRabbitmqPlugin(),
@@ -1566,6 +1582,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_rds_extend_log_link":              rds.ResourceRdsExtendLogLink(),
 
 			"huaweicloud_rms_policy_assignment":                  rms.ResourcePolicyAssignment(),
+			"huaweicloud_rms_policy_assignment_evaluate":         rms.ResourcePolicyAssignmentEvaluate(),
 			"huaweicloud_rms_resource_aggregator":                rms.ResourceAggregator(),
 			"huaweicloud_rms_resource_aggregation_authorization": rms.ResourceAggregationAuthorization(),
 			"huaweicloud_rms_resource_recorder":                  rms.ResourceRecorder(),
