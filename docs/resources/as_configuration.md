@@ -128,7 +128,7 @@ The following arguments are supported:
   If omitted, the provider-level region will be used. Changing this will create a new resource.
 
 * `scaling_configuration_name` - (Required, String, ForceNew) Specifies the AS configuration name.
-  The name contains only letters, digits, underscores (_), and hyphens (-), and cannot exceed 64 characters.
+  The name contains only letters, digits, underscores (_), and hyphens (-), and cannot exceed `64` characters.
   Changing this will create a new resource.
 
 * `instance_config` - (Required, List, ForceNew) Specifies the information about instance configuration.
@@ -144,16 +144,13 @@ The `instance_config` block supports:
   If this argument is not specified, `flavor`, `image`, and `disk` arguments are mandatory.
   Changing this will create a new resource.
 
-* `flavor` - (Optional, String, ForceNew) Specifies the ECS flavor name. A maximum of 10 flavors can be selected.
+* `flavor` - (Optional, String, ForceNew) Specifies the ECS flavor name. A maximum of `10` flavors can be selected.
   Use a comma (,) to separate multiple flavor names. Changing this will create a new resource.
 
 * `image` - (Optional, String, ForceNew) Specifies the ECS image ID. Changing this will create a new resource.
 
 * `disk` - (Optional, List, ForceNew) Specifies the disk group information. System disks are mandatory and
   data disks are optional. The [disk](#instance_config_disk_object) structure is documented below.
-  Changing this will create a new resource.
-
-* `key_name` - (Required, String, ForceNew) Specifies the name of the SSH key pair used to log in to the instance.
   Changing this will create a new resource.
 
 * `security_group_ids` - (Required, List, ForceNew) Specifies an array of one or more security group IDs.
@@ -174,6 +171,9 @@ The `instance_config` block supports:
 
 * `ecs_group_id` - (Optional, String, ForceNew) Specifies the ECS group ID. Changing this will create a new resource.
 
+  -> To ensure service reliability, an ECS group allows ECSs within in the group to be automatically allocated to
+  different hosts.
+
 * `tenancy` - (Optional, String, ForceNew) Configure this field to **dedicated** to create ECS instances on DeHs.
   Before configuring this field, prepare DeHs. Changing this will create a new resource.
 
@@ -185,26 +185,43 @@ The `instance_config` block supports:
   <br/>If this parameter is not specified, the system automatically selects the DeH with the maximum available memory
   size from the DeHs that meet specifications requirements to create the ECSs, thereby balancing load of the DeHs.
 
-* `user_data` - (Optional, String, ForceNew) Specifies the user data to provide when launching the instance.
-  The file content must be encoded with Base64. Changing this will create a new resource.
+* `key_name` - (Optional, String, ForceNew) Specifies the name of the SSH key pair used to log in to the instance.
+  Changing this will create a new resource.
+
+* `user_data` - (Optional, String, ForceNew) Specifies the user data to be injected during the ECS creation process.
+  Changing this will create a new resource. For more information, see
+  [Passing User Data to ECSs](https://support.huaweicloud.com/intl/en-us/usermanual-ecs/en-us_topic_0032380449.html).
+
+  -> 1. The content to be injected must be encoded with base64. The maximum size of the content to be injected
+  (before encoding) is `32` KB.
+  <br/>2. If `key_name` is not specified, the data injected by `user_data` is the password of user `root` for logging in
+  to the ECS by default.
+  <br/>3. If both `key_name` and `user_data` are specified, `user_data` only injects user data.
+  <br/>4. This parameter is mandatory when you create a Linux ECS using the password authentication mode. Its value is
+  the initial user `root` password.
+  <br/>5. When the value of this field is used as a password, the recommended complexity for the password is as follows:
+  (1) The value ranges from `8` to `26` characters. (2) The value contains at least three of the following character
+  types: uppercase letters, lowercase letters, digits, and special characters `!@$%^-_=+[{}]:,./?`.
+
+~> Fields `key_name` and `user_data` cannot be empty together.
 
 * `public_ip` - (Optional, List, ForceNew) Specifies the EIP of the ECS instance.
-  The [object](#instance_config_public_ip_object) structure is documented below.
+  The [public_ip](#instance_config_public_ip_object) structure is documented below.
   Changing this will create a new resource.
 
 * `metadata` - (Optional, Map, ForceNew) Specifies the key/value pairs to make available from within the instance.
   Changing this will create a new resource.
 
 * `personality` - (Optional, List, ForceNew) Specifies the customize personality of an instance by defining one or
-  more files and their contents. The [object](#instance_config_personality_object) structure is documented below.
+  more files and their contents. The [personality](#instance_config_personality_object) structure is documented below.
   Changing this will create a new resource.
 
 <a name="instance_config_disk_object"></a>
 The `disk` block supports:
 
 * `size` - (Required, Int, ForceNew) Specifies the disk size. The unit is GB.
-  The system disk size ranges from 1 to 1024, and not less than the minimum value of the system disk in the
-  instance image. The data disk size ranges from 10 to 32768.
+  The system disk size ranges from `1` to `1024`, and not less than the minimum value of the system disk in the
+  instance image. The data disk size ranges from `10` to `32,768`.
   Changing this will create a new resource.
 
 * `volume_type` - (Required, String, ForceNew) Specifies the disk type. Changing this will create a new resource.
@@ -291,7 +308,7 @@ The `bandwidth` block supports:
   + **traffic**: Billing by traffic.
 
 * `size` - (Optional, Int, ForceNew) Specifies the bandwidth (Mbit/s). The value range for bandwidth billed by bandwidth
-  is 1 to 2000 and that for bandwidth billed by traffic is 1 to 300.
+  is `1` to `2,000` and that for bandwidth billed by traffic is `1` to `300`.
   Changing this creates a new resource.
 
 * `id` - (Optional, String, ForceNew) Specifies the ID of the shared bandwidth.
@@ -301,6 +318,9 @@ The `bandwidth` block supports:
 The `personality` block supports:
 
 * `path` - (Required, String, ForceNew) Specifies the path of the injected file. Changing this creates a new resource.
+  + For Linux OSs, specify the path, for example, **/etc/foo.txt**, for storing the injected file.
+  + For Windows, the injected file is automatically stored in the root directory of drive `C`. You only need to specify
+    the file name, for example, **foo**. The file name contains only letters and digits.
 
 * `content` - (Required, String, ForceNew) Specifies the content of the injected file, which must be encoded with base64.
   Changing this creates a new resource.

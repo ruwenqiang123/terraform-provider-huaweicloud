@@ -2,10 +2,10 @@ package er
 
 import (
 	"fmt"
+	"regexp"
 	"testing"
 
 	"github.com/hashicorp/go-uuid"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/acceptance"
@@ -13,16 +13,11 @@ import (
 
 func TestAccDataSourcePropagations_basic(t *testing.T) {
 	var (
-		dcName   = "data.huaweicloud_er_propagations.test"
-		name     = acceptance.RandomAccResourceName()
-		dc       = acceptance.InitDataSourceCheck(dcName)
-		bgpAsNum = acctest.RandIntRange(64512, 65534)
+		name       = acceptance.RandomAccResourceName()
+		baseConfig = testAccDataSourcePropagations_base(name)
 
-		byInstanceId   = "data.huaweicloud_er_propagations.not_found_instance_id"
-		dcByInstanceId = acceptance.InitDataSourceCheck(byInstanceId)
-
-		byRouteTableId   = "data.huaweicloud_er_propagations.not_found_route_table_id"
-		dcByRouteTableId = acceptance.InitDataSourceCheck(byRouteTableId)
+		all = "data.huaweicloud_er_propagations.test"
+		dc  = acceptance.InitDataSourceCheck(all)
 
 		byAttachmentId   = "data.huaweicloud_er_propagations.filter_by_attachment_id"
 		dcByAttachmentId = acceptance.InitDataSourceCheck(byAttachmentId)
@@ -32,77 +27,74 @@ func TestAccDataSourcePropagations_basic(t *testing.T) {
 
 		byStatus   = "data.huaweicloud_er_propagations.filter_by_status"
 		dcByStatus = acceptance.InitDataSourceCheck(byStatus)
+
+		byNotFoundInstanceId   = "data.huaweicloud_er_propagations.instance_id_not_found"
+		dcByNotFoundInstanceId = acceptance.InitDataSourceCheck(byNotFoundInstanceId)
 	)
 
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		PreCheck: func() {
 			acceptance.TestAccPreCheck(t)
 		},
 		ProviderFactories: acceptance.TestAccProviderFactories,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccDatasourcePropagations_basic(name, bgpAsNum),
+				Config: testAccDataSourcePropagations_basic_step1(baseConfig),
 				Check: resource.ComposeTestCheckFunc(
 					dc.CheckResourceExists(),
-
-					dcByInstanceId.CheckResourceExists(),
-					resource.TestCheckOutput("instance_id_not_found", "true"),
-
-					dcByRouteTableId.CheckResourceExists(),
-					resource.TestCheckOutput("route_table_id_not_found", "true"),
-					resource.TestCheckResourceAttrSet(byAttachmentId, "propagations.#"),
-					resource.TestCheckResourceAttrSet(byAttachmentId, "propagations.0.resource_id"),
-					resource.TestCheckResourceAttrSet(byAttachmentId, "propagations.0.created_at"),
-					resource.TestCheckResourceAttrSet(byAttachmentId, "propagations.0.updated_at"),
-
-					dcByStatus.CheckResourceExists(),
-					resource.TestCheckOutput("is_status_filter_useful", "true"),
-
+					resource.TestCheckResourceAttrSet(all, "propagations.#"),
+					resource.TestCheckResourceAttrSet(all, "propagations.0.resource_id"),
+					resource.TestMatchResourceAttr(all, "propagations.0.created_at",
+						regexp.MustCompile(`^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}?(Z|([+-]\d{2}:\d{2}))$`)),
+					resource.TestMatchResourceAttr(all, "propagations.0.updated_at",
+						regexp.MustCompile(`^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}?(Z|([+-]\d{2}:\d{2}))$`)),
+					// Check whether filter parameter 'status' is effective.
 					dcByAttachmentId.CheckResourceExists(),
 					resource.TestCheckOutput("is_attachment_id_filter_useful", "true"),
-
+					// Check whether filter parameter 'attachment_type' is effective.
 					dcByAttachmentType.CheckResourceExists(),
 					resource.TestCheckOutput("is_attachment_type_filter_useful", "true"),
-
+					// Check whether filter parameter 'status' is effective.
 					dcByStatus.CheckResourceExists(),
 					resource.TestCheckOutput("is_status_filter_useful", "true"),
 				),
+			},
+			{
+				// Checks whether the resource returns the expected empty list when the instance ID does not exist.
+				Config: testAccDataSourcePropagations_basic_step2(baseConfig),
+				Check: resource.ComposeTestCheckFunc(
+					dcByNotFoundInstanceId.CheckResourceExists(),
+					// If the instance ID does not exist, the data source will not report the error.
+					// Just return an empty list.
+					resource.TestCheckResourceAttr(byNotFoundInstanceId, "propagations.#", "0"),
+				),
+			},
+			{
+				// Checks whether the resource returns the expected error when the route table ID does not exist.
+				// Please ensure that the test account has 'ER FullAccess' permission for version 5.0.
+				Config: testAccDataSourcePropagations_basic_step3(baseConfig),
+				// If the routing table ID does not exist, the data source will report an error: 'route table {uuid} not found'.
+				ExpectError: regexp.MustCompile(`route table [a-f0-9-]+ not found`),
 			},
 		},
 	})
 }
 
-func testAccDatasourcePropagations_basic(name string, bgpAsNum int) string {
-	randUUID, _ := uuid.GenerateUUID()
-
+func testAccDataSourcePropagations_base(name string) string {
 	return fmt.Sprintf(`
 %[1]s
 
-data "huaweicloud_er_propagations" "not_found_instance_id" {
-  depends_on = [
-    huaweicloud_er_propagation.test,
-  ]
-
-  instance_id    = "%[2]s"
-  route_table_id = huaweicloud_er_route_table.test.id
-}
-  
-output "instance_id_not_found" {
-  value = length(data.huaweicloud_er_propagations.not_found_instance_id.propagations) == 0
-}
-  
-data "huaweicloud_er_propagations" "not_found_route_table_id" {
-  depends_on = [
-    huaweicloud_er_propagation.test,
-  ]
-
+resource "huaweicloud_er_propagation" "test" {
   instance_id    = huaweicloud_er_instance.test.id
-  route_table_id = "%[2]s"
+  route_table_id = huaweicloud_er_route_table.test.id
+  attachment_id  = huaweicloud_er_vpc_attachment.test.id
 }
-  
-output "route_table_id_not_found" {
-  value = length(data.huaweicloud_er_propagations.not_found_route_table_id.propagations) == 0
+`, testAccPropagation_base(name))
 }
+
+func testAccDataSourcePropagations_basic_step1(baseConfig string) string {
+	return fmt.Sprintf(`
+%[1]s
 
 data "huaweicloud_er_propagations" "test" {
   depends_on = [
@@ -128,7 +120,7 @@ data "huaweicloud_er_propagations" "filter_by_attachment_id" {
 }
 
 locals {
- attachment_id_filter_result = [
+  attachment_id_filter_result = [
     for v in data.huaweicloud_er_propagations.filter_by_attachment_id.propagations[*].attachment_id : 
     v == local.attachment_id
   ]
@@ -158,7 +150,7 @@ locals {
     v == local.attachment_type
   ]
 }
-   
+
 output "is_attachment_type_filter_useful" {
   value = alltrue(local.attachment_type_filter_result) && length(local.attachment_type_filter_result) > 0
 }
@@ -166,7 +158,7 @@ output "is_attachment_type_filter_useful" {
 locals {
   status = data.huaweicloud_er_propagations.test.propagations[0].status
 }
-  
+
 data "huaweicloud_er_propagations" "filter_by_status" {
   depends_on = [
     huaweicloud_er_propagation.test,
@@ -176,15 +168,49 @@ data "huaweicloud_er_propagations" "filter_by_status" {
   route_table_id = huaweicloud_er_route_table.test.id
   status         = local.status
 }
-  
+
 locals {
   status_filter_result = [
     for v in data.huaweicloud_er_propagations.filter_by_status.propagations[*].status : v == local.status
   ]
 }
-   
+
 output "is_status_filter_useful" {
   value = alltrue(local.status_filter_result) && length(local.status_filter_result) > 0
 }
-`, testAccPropagation_basic(name, bgpAsNum), randUUID)
+`, baseConfig)
+}
+
+func testAccDataSourcePropagations_basic_step2(baseConfig string) string {
+	randUUID, _ := uuid.GenerateUUID()
+
+	return fmt.Sprintf(`
+%[1]s
+
+data "huaweicloud_er_propagations" "instance_id_not_found" {
+  depends_on = [
+    huaweicloud_er_propagation.test,
+  ]
+
+  instance_id    = "%[2]s"
+  route_table_id = huaweicloud_er_route_table.test.id
+}
+`, baseConfig, randUUID)
+}
+
+func testAccDataSourcePropagations_basic_step3(baseConfig string) string {
+	randUUID, _ := uuid.GenerateUUID()
+
+	return fmt.Sprintf(`
+%[1]s
+
+data "huaweicloud_er_propagations" "route_table_id_not_found" {
+  depends_on = [
+    huaweicloud_er_propagation.test,
+  ]
+
+  instance_id    = huaweicloud_er_instance.test.id
+  route_table_id = "%[2]s"
+}
+`, baseConfig, randUUID)
 }

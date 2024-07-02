@@ -95,6 +95,7 @@ var (
 	HW_CDN_CERT_PATH                = os.Getenv("HW_CDN_CERT_PATH")
 	HW_CDN_PRIVATE_KEY_PATH         = os.Getenv("HW_CDN_PRIVATE_KEY_PATH")
 	HW_CDN_ENABLE_FLAG              = os.Getenv("HW_CDN_ENABLE_FLAG")
+	HW_CDN_TIMESTAMP                = os.Getenv("HW_CDN_TIMESTAMP")
 	HW_CERTIFICATE_KEY_PATH         = os.Getenv("HW_CERTIFICATE_KEY_PATH")
 	HW_CERTIFICATE_CHAIN_PATH       = os.Getenv("HW_CERTIFICATE_CHAIN_PATH")
 	HW_CERTIFICATE_PRIVATE_KEY_PATH = os.Getenv("HW_CERTIFICATE_PRIVATE_KEY_PATH")
@@ -207,10 +208,6 @@ var (
 	HW_CCE_CHART_PATH = os.Getenv("HW_CCE_CHART_PATH")
 	// The cluster name of the CCE
 	HW_CCE_CLUSTER_NAME = os.Getenv("HW_CCE_CLUSTER_NAME")
-	// The cluster ID of the CCE
-	HW_CCE_CLUSTER_ID_ANOTHER = os.Getenv("HW_CCE_CLUSTER_ID_ANOTHER")
-	// The cluster name of the CCE
-	HW_CCE_CLUSTER_NAME_ANOTHER = os.Getenv("HW_CCE_CLUSTER_NAME_ANOTHER")
 	// The partition az of the CCE
 	HW_CCE_PARTITION_AZ = os.Getenv("HW_CCE_PARTITION_AZ")
 	// The namespace of the workload is located
@@ -296,11 +293,13 @@ var (
 
 	HW_CC_PERMISSION_ID = os.Getenv("HW_CC_PERMISSION_ID")
 
+	HW_CSS_LOCAL_DISK_FLAVOR  = os.Getenv("HW_CSS_LOCAL_DISK_FLAVOR")
 	HW_CSS_ELB_AGENCY         = os.Getenv("HW_CSS_ELB_AGENCY")
 	HW_CSS_UPGRADE_AGENCY     = os.Getenv("HW_CSS_UPGRADE_AGENCY")
 	HW_CSS_LOW_ENGINE_VERSION = os.Getenv("HW_CSS_LOW_ENGINE_VERSION")
 	HW_CSS_TARGET_IMAGE_ID    = os.Getenv("HW_CSS_TARGET_IMAGE_ID")
 	HW_CSS_REPLACE_AGENCY     = os.Getenv("HW_CSS_REPLACE_AGENCY")
+	HW_CSS_AZ_MIGRATE_AGENCY  = os.Getenv("HW_CSS_AZ_MIGRATE_AGENCY")
 
 	HW_CERT_BATCH_PUSH_ID     = os.Getenv("HW_CERT_BATCH_PUSH_ID")
 	HW_CERT_BATCH_PUSH_WAF_ID = os.Getenv("HW_CERT_BATCH_PUSH_WAF_ID")
@@ -371,6 +370,11 @@ var (
 	HW_LTS_LOG_CONVERGE_SOURCE_LOG_STREAM_ID   = os.Getenv("HW_LTS_LOG_CONVERGE_SOURCE_LOG_STREAM_ID")
 	HW_LTS_LOG_CONVERGE_TARGET_LOG_STREAM_NAME = os.Getenv("HW_LTS_LOG_CONVERGE_TARGET_LOG_STREAM_NAME")
 	HW_LTS_LOG_CONVERGE_TARGET_LOG_STREAM_ID   = os.Getenv("HW_LTS_LOG_CONVERGE_TARGET_LOG_STREAM_ID")
+
+	HW_LTS_CLUSTER_ID           = os.Getenv("HW_LTS_CLUSTER_ID")
+	HW_LTS_CLUSTER_NAME         = os.Getenv("HW_LTS_CLUSTER_NAME")
+	HW_LTS_CLUSTER_ID_ANOTHER   = os.Getenv("HW_LTS_CLUSTER_ID_ANOTHER")
+	HW_LTS_CLUSTER_NAME_ANOTHER = os.Getenv("HW_LTS_CLUSTER_NAME_ANOTHER")
 
 	HW_VPCEP_SERVICE_ID = os.Getenv("HW_VPCEP_SERVICE_ID")
 
@@ -1390,15 +1394,15 @@ func TestAccPreCheckEgAgencyName(t *testing.T) {
 
 // lintignore:AT003
 func TestAccPreCheckLtsAomAccess(t *testing.T) {
-	if HW_CCE_CLUSTER_ID == "" || HW_CCE_CLUSTER_NAME == "" {
-		t.Skip("HW_CCE_CLUSTER_ID and HW_CCE_CLUSTER_NAME must be set for LTS AOM access acceptance tests")
+	if HW_LTS_CLUSTER_ID == "" || HW_LTS_CLUSTER_NAME == "" {
+		t.Skip("HW_LTS_CLUSTER_ID and HW_LTS_CLUSTER_NAME must be set for LTS AOM access acceptance tests")
 	}
 }
 
 // lintignore:AT003
 func TestAccPreCheckLtsAomAccessUpdate(t *testing.T) {
-	if HW_CCE_CLUSTER_ID_ANOTHER == "" || HW_CCE_CLUSTER_NAME_ANOTHER == "" {
-		t.Skip("HW_CCE_CLUSTER_ID_ANOTHER and HW_CCE_CLUSTER_NAME_ANOTHER must be set for LTS AOM access" +
+	if HW_LTS_CLUSTER_ID_ANOTHER == "" || HW_LTS_CLUSTER_NAME_ANOTHER == "" {
+		t.Skip("HW_LTS_CLUSTER_ID_ANOTHER and HW_LTS_CLUSTER_NAME_ANOTHER must be set for LTS AOM access" +
 			" acceptance tests")
 	}
 }
@@ -1545,6 +1549,13 @@ func TestAccPreCheckCCAuth(t *testing.T) {
 func TestAccPreCheckCCPermission(t *testing.T) {
 	if HW_CC_PERMISSION_ID == "" {
 		t.Skip("HW_CC_PERMISSION_ID must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckCSSLocalDiskFlavor(t *testing.T) {
+	if HW_CSS_LOCAL_DISK_FLAVOR == "" {
+		t.Skip("HW_CSS_LOCAL_DISK_FLAVOR must be set for the acceptance test")
 	}
 }
 
@@ -1834,6 +1845,13 @@ func TestAccPreCheckCssReplaceAgency(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckCssAzMigrateAgency(t *testing.T) {
+	if HW_CSS_AZ_MIGRATE_AGENCY == "" {
+		t.Skip("HW_CSS_AZ_MIGRATE_AGENCY must be set for CSS acceptance tests")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckDMSRocketMQInstanceID(t *testing.T) {
 	if HW_DMS_ROCKETMQ_INSTANCE_ID == "" {
 		t.Skip("HW_DMS_ROCKETMQ_INSTANCE_ID must be set for DMS acceptance tests")
@@ -1886,5 +1904,12 @@ func TestAccPreCheckSecurityGroupId(t *testing.T) {
 func TestAccPrecheckDcFlag(t *testing.T) {
 	if HW_DC_ENABLE_FLAG == "" {
 		t.Skip("HW_DC_ENABLE_FLAG must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
+func TestAccPrecheckTimeStamp(t *testing.T) {
+	if HW_CDN_TIMESTAMP == "" {
+		t.Skip("HW_CDN_TIMESTAMP must be set for the acceptance test")
 	}
 }

@@ -58,6 +58,8 @@ func TestAccDcsInstances_basic(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "parameters.0.id", "1"),
 					resource.TestCheckResourceAttr(resourceName, "parameters.0.name", "timeout"),
 					resource.TestCheckResourceAttr(resourceName, "parameters.0.value", "100"),
+					resource.TestCheckResourceAttrPair(resourceName, "enterprise_project_id",
+						"huaweicloud_enterprise_project.test.0", "id"),
 					resource.TestCheckResourceAttrSet(resourceName, "private_ip"),
 					resource.TestCheckResourceAttrSet(resourceName, "domain_name"),
 					resource.TestCheckResourceAttrSet(resourceName, "created_at"),
@@ -85,10 +87,10 @@ func TestAccDcsInstances_basic(t *testing.T) {
 			{
 				Config: testAccDcsV1Instance_updated(instanceName),
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr(resourceName, "port", "6388"),
+					resource.TestCheckResourceAttr(resourceName, "port", "6389"),
 					resource.TestCheckResourceAttrPair(resourceName, "flavor",
 						"data.huaweicloud_dcs_flavors.test", "flavors.0.name"),
-					resource.TestCheckResourceAttr(resourceName, "capacity", "1"),
+					resource.TestCheckResourceAttr(resourceName, "capacity", "0.5"),
 					resource.TestCheckResourceAttr(resourceName, "maintain_begin", "06:00:00"),
 					resource.TestCheckResourceAttr(resourceName, "maintain_end", "07:00:00"),
 					resource.TestCheckResourceAttr(resourceName, "backup_policy.0.begin_at", "01:00-02:00"),
@@ -97,6 +99,8 @@ func TestAccDcsInstances_basic(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "parameters.0.id", "10"),
 					resource.TestCheckResourceAttr(resourceName, "parameters.0.name", "latency-monitor-threshold"),
 					resource.TestCheckResourceAttr(resourceName, "parameters.0.value", "120"),
+					resource.TestCheckResourceAttrPair(resourceName, "enterprise_project_id",
+						"huaweicloud_enterprise_project.test.1", "id"),
 					resource.TestCheckResourceAttrSet(resourceName, "created_at"),
 					resource.TestCheckResourceAttrSet(resourceName, "launched_at"),
 					resource.TestCheckResourceAttrSet(resourceName, "subnet_cidr"),
@@ -124,7 +128,8 @@ func TestAccDcsInstances_basic(t *testing.T) {
 				ImportState:       true,
 				ImportStateVerify: true,
 				ImportStateVerifyIgnore: []string{"password", "auto_renew", "period", "period_unit", "rename_commands",
-					"internal_version", "save_days", "backup_type", "begin_at", "period_type", "backup_at", "parameters", "bandwidth_info"},
+					"internal_version", "save_days", "backup_type", "begin_at", "period_type", "backup_at", "parameters",
+					"used_memory", "bandwidth_info"},
 			},
 		},
 	})
@@ -192,7 +197,8 @@ func TestAccDcsInstances_ha_change_capacity(t *testing.T) {
 				ImportState:       true,
 				ImportStateVerify: true,
 				ImportStateVerifyIgnore: []string{"password", "auto_renew", "period", "period_unit", "rename_commands",
-					"internal_version", "save_days", "backup_type", "begin_at", "period_type", "backup_at", "bandwidth_info"},
+					"internal_version", "save_days", "backup_type", "begin_at", "period_type", "backup_at",
+					"bandwidth_info", "used_memory"},
 			},
 		},
 	})
@@ -249,7 +255,8 @@ func TestAccDcsInstances_ha_expand_replica(t *testing.T) {
 				ImportState:       true,
 				ImportStateVerify: true,
 				ImportStateVerifyIgnore: []string{"password", "auto_renew", "period", "period_unit", "rename_commands",
-					"internal_version", "save_days", "backup_type", "begin_at", "period_type", "backup_at", "bandwidth_info"},
+					"internal_version", "save_days", "backup_type", "begin_at", "period_type", "backup_at",
+					"bandwidth_info", "used_memory"},
 			},
 		},
 	})
@@ -306,7 +313,8 @@ func TestAccDcsInstances_ha_to_proxy(t *testing.T) {
 				ImportState:       true,
 				ImportStateVerify: true,
 				ImportStateVerifyIgnore: []string{"password", "auto_renew", "period", "period_unit", "rename_commands",
-					"internal_version", "save_days", "backup_type", "begin_at", "period_type", "backup_at", "bandwidth_info"},
+					"internal_version", "save_days", "backup_type", "begin_at", "period_type", "backup_at",
+					"bandwidth_info", "used_memory"},
 			},
 		},
 	})
@@ -374,7 +382,8 @@ func TestAccDcsInstances_rw_change_capacity(t *testing.T) {
 				ImportState:       true,
 				ImportStateVerify: true,
 				ImportStateVerifyIgnore: []string{"password", "auto_renew", "period", "period_unit", "rename_commands",
-					"internal_version", "save_days", "backup_type", "begin_at", "period_type", "backup_at", "bandwidth_info"},
+					"internal_version", "save_days", "backup_type", "begin_at", "period_type", "backup_at",
+					"bandwidth_info", "used_memory"},
 			},
 		},
 	})
@@ -431,7 +440,8 @@ func TestAccDcsInstances_rw_expand_replica(t *testing.T) {
 				ImportState:       true,
 				ImportStateVerify: true,
 				ImportStateVerifyIgnore: []string{"password", "auto_renew", "period", "period_unit", "rename_commands",
-					"internal_version", "save_days", "backup_type", "begin_at", "period_type", "backup_at", "bandwidth_info"},
+					"internal_version", "save_days", "backup_type", "begin_at", "period_type", "backup_at",
+					"bandwidth_info", "used_memory"},
 			},
 		},
 	})
@@ -488,7 +498,8 @@ func TestAccDcsInstances_rw_to_proxy(t *testing.T) {
 				ImportState:       true,
 				ImportStateVerify: true,
 				ImportStateVerifyIgnore: []string{"password", "auto_renew", "period", "period_unit", "rename_commands",
-					"internal_version", "save_days", "backup_type", "begin_at", "period_type", "backup_at", "bandwidth_info"},
+					"internal_version", "save_days", "backup_type", "begin_at", "period_type", "backup_at",
+					"bandwidth_info", "used_memory"},
 			},
 		},
 	})
@@ -556,7 +567,8 @@ func TestAccDcsInstances_proxy_change_capacity(t *testing.T) {
 				ImportState:       true,
 				ImportStateVerify: true,
 				ImportStateVerifyIgnore: []string{"password", "auto_renew", "period", "period_unit", "rename_commands",
-					"internal_version", "save_days", "backup_type", "begin_at", "period_type", "backup_at", "bandwidth_info"},
+					"internal_version", "save_days", "backup_type", "begin_at", "period_type", "backup_at",
+					"bandwidth_info", "used_memory"},
 			},
 		},
 	})
@@ -613,7 +625,8 @@ func TestAccDcsInstances_proxy_to_ha(t *testing.T) {
 				ImportState:       true,
 				ImportStateVerify: true,
 				ImportStateVerifyIgnore: []string{"password", "auto_renew", "period", "period_unit", "rename_commands",
-					"internal_version", "save_days", "backup_type", "begin_at", "period_type", "backup_at", "bandwidth_info"},
+					"internal_version", "save_days", "backup_type", "begin_at", "period_type", "backup_at",
+					"bandwidth_info", "used_memory"},
 			},
 		},
 	})
@@ -670,7 +683,8 @@ func TestAccDcsInstances_proxy_to_rw(t *testing.T) {
 				ImportState:       true,
 				ImportStateVerify: true,
 				ImportStateVerifyIgnore: []string{"password", "auto_renew", "period", "period_unit", "rename_commands",
-					"internal_version", "save_days", "backup_type", "begin_at", "period_type", "backup_at", "bandwidth_info"},
+					"internal_version", "save_days", "backup_type", "begin_at", "period_type", "backup_at",
+					"bandwidth_info", "used_memory"},
 			},
 		},
 	})
@@ -738,7 +752,8 @@ func TestAccDcsInstances_cluster_change_capacity(t *testing.T) {
 				ImportState:       true,
 				ImportStateVerify: true,
 				ImportStateVerifyIgnore: []string{"password", "auto_renew", "period", "period_unit", "rename_commands",
-					"internal_version", "save_days", "backup_type", "begin_at", "period_type", "backup_at", "bandwidth_info"},
+					"internal_version", "save_days", "backup_type", "begin_at", "period_type", "backup_at",
+					"bandwidth_info", "used_memory"},
 			},
 		},
 	})
@@ -795,48 +810,8 @@ func TestAccDcsInstances_cluster_expand_replica(t *testing.T) {
 				ImportState:       true,
 				ImportStateVerify: true,
 				ImportStateVerifyIgnore: []string{"password", "auto_renew", "period", "period_unit", "rename_commands",
-					"internal_version", "save_days", "backup_type", "begin_at", "period_type", "backup_at", "bandwidth_info"},
-			},
-		},
-	})
-}
-
-func TestAccDcsInstances_withEpsId(t *testing.T) {
-	var instance instances.DcsInstance
-	var instanceName = fmt.Sprintf("dcs_instance_%s", acctest.RandString(5))
-	resourceName := "huaweicloud_dcs_instance.instance_1"
-
-	rc := acceptance.InitResourceCheck(
-		resourceName,
-		&instance,
-		getDcsResourceFunc,
-	)
-
-	resource.ParallelTest(t, resource.TestCase{
-		PreCheck: func() {
-			acceptance.TestAccPreCheck(t)
-			acceptance.TestAccPreCheckMigrateEpsID(t)
-		},
-		ProviderFactories: acceptance.TestAccProviderFactories,
-		CheckDestroy:      rc.CheckResourceDestroy(),
-		Steps: []resource.TestStep{
-			{
-				Config: testAccDcsV1Instance_epsId(instanceName, acceptance.HW_ENTERPRISE_PROJECT_ID_TEST),
-				Check: resource.ComposeTestCheckFunc(
-					rc.CheckResourceExists(),
-					resource.TestCheckResourceAttr(resourceName, "name", instanceName),
-					resource.TestCheckResourceAttr(resourceName, "enterprise_project_id",
-						acceptance.HW_ENTERPRISE_PROJECT_ID_TEST),
-				),
-			},
-			{
-				Config: testAccDcsV1Instance_epsId(instanceName, acceptance.HW_ENTERPRISE_MIGRATE_PROJECT_ID_TEST),
-				Check: resource.ComposeTestCheckFunc(
-					rc.CheckResourceExists(),
-					resource.TestCheckResourceAttr(resourceName, "name", instanceName),
-					resource.TestCheckResourceAttr(resourceName, "enterprise_project_id",
-						acceptance.HW_ENTERPRISE_MIGRATE_PROJECT_ID_TEST),
-				),
+					"internal_version", "save_days", "backup_type", "begin_at", "period_type", "backup_at",
+					"bandwidth_info", "used_memory"},
 			},
 		},
 	})
@@ -970,7 +945,7 @@ func TestAccDcsInstances_prePaid(t *testing.T) {
 		CheckDestroy:      rc.CheckResourceDestroy(),
 		Steps: []resource.TestStep{
 			{
-				Config: testAccDcsInstance_prePaid(rName, false),
+				Config: testAccDcsInstance_prePaid(rName),
 				Check: resource.ComposeTestCheckFunc(
 					rc.CheckResourceExists(),
 					resource.TestCheckResourceAttr(resourceName, "name", rName),
@@ -978,16 +953,17 @@ func TestAccDcsInstances_prePaid(t *testing.T) {
 				),
 			},
 			{
-				Config: testAccDcsInstance_prePaid(rName, true),
+				Config: testAccDcsInstance_prePaid_update(rName),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr(resourceName, "auto_renew", "true"),
 				),
 			},
 			{
-				ResourceName:            resourceName,
-				ImportState:             true,
-				ImportStateVerify:       true,
-				ImportStateVerifyIgnore: []string{"password", "auto_renew", "period", "period_unit", "bandwidth_info"},
+				ResourceName:      resourceName,
+				ImportState:       true,
+				ImportStateVerify: true,
+				ImportStateVerifyIgnore: []string{"password", "auto_renew", "period", "period_unit", "bandwidth_info",
+					"used_memory"},
 			},
 		},
 	})
@@ -1049,7 +1025,8 @@ func TestAccDcsInstances_ssl(t *testing.T) {
 				ImportState:       true,
 				ImportStateVerify: true,
 				ImportStateVerifyIgnore: []string{"password", "auto_renew", "period", "period_unit", "rename_commands",
-					"internal_version", "save_days", "backup_type", "begin_at", "period_type", "backup_at", "parameters", "bandwidth_info"},
+					"internal_version", "save_days", "backup_type", "begin_at", "period_type", "backup_at", "parameters",
+					"bandwidth_info", "used_memory"},
 			},
 		},
 	})
@@ -1073,8 +1050,15 @@ data "huaweicloud_dcs_flavors" "test" {
   engine_version = "5.0"
 }
 
+resource "huaweicloud_enterprise_project" "test" {
+  count = 2
+
+  name        = "%[1]s_${count.index}"
+  description = "terraform test"
+}
+
 resource "huaweicloud_dcs_instance" "instance_1" {
-  name               = "%s"
+  name               = "%[1]s"
   engine_version     = "5.0"
   password           = "Huawei_test"
   engine             = "Redis"
@@ -1086,6 +1070,8 @@ resource "huaweicloud_dcs_instance" "instance_1" {
   flavor             = data.huaweicloud_dcs_flavors.test.flavors[0].name
   maintain_begin     = "22:00:00"
   maintain_end       = "23:00:00"
+
+  enterprise_project_id = huaweicloud_enterprise_project.test[0].id
 
   backup_policy {
     backup_type = "auto"
@@ -1130,23 +1116,32 @@ data "huaweicloud_vpc_subnet" "test" {
 
 data "huaweicloud_dcs_flavors" "test" {
   cache_mode     = "ha"
-  capacity       = 1
+  capacity       = 0.5
   engine_version = "5.0"
 }
 
+resource "huaweicloud_enterprise_project" "test" {
+  count = 2
+
+  name        = "%[1]s_${count.index}"
+  description = "terraform test"
+}
+
 resource "huaweicloud_dcs_instance" "instance_1" {
-  name               = "%s"
+  name               = "%[1]s"
   engine_version     = "5.0"
   password           = "Huawei_test"
   engine             = "Redis"
-  port               = 6388
-  capacity           = 1
+  port               = 6389
+  capacity           = 0.5
   vpc_id             = data.huaweicloud_vpc.test.id
   subnet_id          = data.huaweicloud_vpc_subnet.test.id
   availability_zones = [data.huaweicloud_availability_zones.test.names[0]]
   flavor             = data.huaweicloud_dcs_flavors.test.flavors[0].name
   maintain_begin     = "06:00:00"
   maintain_end       = "07:00:00"
+
+  enterprise_project_id = huaweicloud_enterprise_project.test[1].id
 
   backup_policy {
     backup_type = "auto"
@@ -1842,45 +1837,6 @@ resource "huaweicloud_dcs_instance" "instance_1" {
 }`, instanceName)
 }
 
-func testAccDcsV1Instance_epsId(instanceName, epsId string) string {
-	return fmt.Sprintf(`
-data "huaweicloud_availability_zones" "test" {}
-
-data "huaweicloud_vpc" "test" {
-  name = "vpc-default"
-}
-
-data "huaweicloud_vpc_subnet" "test" {
-  name = "subnet-default"
-}
-
-data "huaweicloud_dcs_flavors" "test" {
-  cache_mode = "ha"
-  capacity   = 0.125
-}
-
-resource "huaweicloud_dcs_instance" "instance_1" {
-  name               = "%s"
-  engine_version     = "5.0"
-  password           = "Huawei_test"
-  engine             = "Redis"
-  capacity           = 0.125
-  vpc_id             = data.huaweicloud_vpc.test.id
-  subnet_id          = data.huaweicloud_vpc_subnet.test.id
-  availability_zones = [data.huaweicloud_availability_zones.test.names[0]]
-  flavor             = data.huaweicloud_dcs_flavors.test.flavors[0].name
-
-  backup_policy {
-    backup_type = "auto"
-    begin_at    = "00:00-01:00"
-    period_type = "weekly"
-    backup_at   = [1]
-    save_days   = 1
-  }
-  enterprise_project_id = "%s"
-}`, instanceName, epsId)
-}
-
 func testAccDcsV1Instance_tiny(instanceName string) string {
 	return fmt.Sprintf(`
 data "huaweicloud_availability_zones" "test" {}
@@ -2035,7 +1991,7 @@ resource "huaweicloud_dcs_instance" "instance_1" {
 }`, instanceName)
 }
 
-func testAccDcsInstance_prePaid(instanceName string, isAutoRenew bool) string {
+func testAccDcsInstance_prePaid(instanceName string) string {
 	return fmt.Sprintf(`
 data "huaweicloud_availability_zones" "test" {}
 
@@ -2066,8 +2022,43 @@ resource "huaweicloud_dcs_instance" "test" {
   charging_mode = "prePaid"
   period_unit   = "month"
   period        = 1
-  auto_renew    = "%v"
-}`, instanceName, isAutoRenew)
+  auto_renew    = "false"
+}`, instanceName)
+}
+
+func testAccDcsInstance_prePaid_update(instanceName string) string {
+	return fmt.Sprintf(`
+data "huaweicloud_availability_zones" "test" {}
+
+data "huaweicloud_vpc" "test" {
+  name = "vpc-default"
+}
+
+data "huaweicloud_vpc_subnet" "test" {
+  name = "subnet-default"
+}
+
+data "huaweicloud_dcs_flavors" "test" {
+  cache_mode = "ha"
+  capacity   = 0.5
+}
+
+resource "huaweicloud_dcs_instance" "test" {
+  vpc_id             = data.huaweicloud_vpc.test.id
+  subnet_id          = data.huaweicloud_vpc_subnet.test.id
+  availability_zones = try(slice(data.huaweicloud_availability_zones.test.names, 0, 1), [])
+  name               = "%s"
+  engine             = "Redis"
+  engine_version     = "5.0"
+  flavor             = data.huaweicloud_dcs_flavors.test.flavors[0].name
+  capacity           = 0.5
+  password           = "Huawei_test"
+
+  charging_mode = "prePaid"
+  period_unit   = "month"
+  period        = 1
+  auto_renew    = "true"
+}`, instanceName)
 }
 
 func testAccDcsV1Instance_ssl(instanceName string) string {

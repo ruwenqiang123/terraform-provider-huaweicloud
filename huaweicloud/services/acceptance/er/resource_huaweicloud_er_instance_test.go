@@ -58,7 +58,7 @@ func TestAccInstance_basic(t *testing.T) {
 		getInstanceResourceFunc,
 	)
 
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		PreCheck: func() {
 			acceptance.TestAccPreCheck(t)
 		},
@@ -73,6 +73,12 @@ func TestAccInstance_basic(t *testing.T) {
 					resource.TestCheckResourceAttrPair(rName, "availability_zones.0",
 						"data.huaweicloud_er_availability_zones.test", "names.0"),
 					resource.TestCheckResourceAttr(rName, "asn", fmt.Sprintf("%v", bgpAsNum)),
+					resource.TestCheckResourceAttr(rName, "description", "Created by script"),
+					resource.TestCheckResourceAttr(rName, "enable_default_propagation", "true"),
+					resource.TestCheckResourceAttr(rName, "enable_default_association", "true"),
+					resource.TestCheckResourceAttr(rName, "auto_accept_shared_attachments", "true"),
+					resource.TestCheckResourceAttrSet(rName, "default_propagation_route_table_id"),
+					resource.TestCheckResourceAttrSet(rName, "default_association_route_table_id"),
 					resource.TestCheckResourceAttr(rName, "tags.foo", "bar"),
 					resource.TestCheckResourceAttr(rName, "tags.key", "value"),
 					resource.TestCheckResourceAttrSet(rName, "status"),
@@ -85,7 +91,13 @@ func TestAccInstance_basic(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					rc.CheckResourceExists(),
 					resource.TestCheckResourceAttr(rName, "name", name),
+					resource.TestCheckResourceAttrPair(rName, "availability_zones.0",
+						"data.huaweicloud_er_availability_zones.test", "names.1"),
 					resource.TestCheckResourceAttr(rName, "asn", fmt.Sprintf("%v", bgpAsNum)),
+					resource.TestCheckResourceAttr(rName, "description", ""),
+					resource.TestCheckResourceAttr(rName, "enable_default_propagation", "false"),
+					resource.TestCheckResourceAttr(rName, "enable_default_association", "false"),
+					resource.TestCheckResourceAttr(rName, "auto_accept_shared_attachments", "false"),
 					resource.TestCheckResourceAttr(rName, "tags.foo", "baar"),
 					resource.TestCheckResourceAttr(rName, "tags.newkey", "value"),
 				),
@@ -106,8 +118,13 @@ data "huaweicloud_er_availability_zones" "test" {}
 resource "huaweicloud_er_instance" "test" {
   availability_zones = slice(data.huaweicloud_er_availability_zones.test.names, 0, 1)
 
-  name = "%[1]s"
-  asn  = %[2]d
+  name        = "%[1]s"
+  asn         = %[2]d
+  description = "Created by script"
+
+  enable_default_propagation     = true
+  enable_default_association     = true
+  auto_accept_shared_attachments = true
 
   tags = {
     foo = "bar"
@@ -122,10 +139,14 @@ func testInstance_basic_step2(name string, bgpAsNum int) string {
 data "huaweicloud_er_availability_zones" "test" {}
 
 resource "huaweicloud_er_instance" "test" {
-  availability_zones = slice(data.huaweicloud_er_availability_zones.test.names, 0, 1)
+  availability_zones = slice(data.huaweicloud_er_availability_zones.test.names, 1, 2)
 
   name = "%[1]s"
   asn  = %[2]d
+
+  enable_default_propagation     = false
+  enable_default_association     = false
+  auto_accept_shared_attachments = false
 
   tags = {
     foo    = "baar"
@@ -150,7 +171,7 @@ func TestAccInstance_updateWithEpsId(t *testing.T) {
 	srcEPS := acceptance.HW_ENTERPRISE_PROJECT_ID_TEST
 	destEPS := acceptance.HW_ENTERPRISE_MIGRATE_PROJECT_ID_TEST
 
-	resource.Test(t, resource.TestCase{
+	resource.ParallelTest(t, resource.TestCase{
 		PreCheck: func() {
 			acceptance.TestAccPreCheck(t)
 			acceptance.TestAccPreCheckMigrateEpsID(t)
