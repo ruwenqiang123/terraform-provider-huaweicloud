@@ -46,6 +46,11 @@ var (
 	HW_SECURITY_GROUP_ID      = os.Getenv("HW_SECURITY_GROUP_ID")
 	HW_ENTERPRISE_PROJECT_ID  = os.Getenv("HW_ENTERPRISE_PROJECT_ID")
 	HW_ADMIN                  = os.Getenv("HW_ADMIN")
+	HW_IAM_V5                 = os.Getenv("HW_IAM_V5")
+	HW_RUNNER_PUBLIC_IP       = os.Getenv("HW_RUNNER_PUBLIC_IP")
+
+	HW_APIG_DEDICATED_INSTANCE_ID             = os.Getenv("HW_APIG_DEDICATED_INSTANCE_ID")
+	HW_APIG_DEDICATED_INSTANCE_USED_SUBNET_ID = os.Getenv("HW_APIG_DEDICATED_INSTANCE_USED_SUBNET_ID")
 
 	HW_CAE_ENVIRONMENT_ID     = os.Getenv("HW_CAE_ENVIRONMENT_ID")
 	HW_CAE_APPLICATION_ID     = os.Getenv("HW_CAE_APPLICATION_ID")
@@ -576,6 +581,20 @@ func TestAccPreCheckUserId(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckApigSubResourcesRelatedInfo(t *testing.T) {
+	if HW_APIG_DEDICATED_INSTANCE_ID == "" {
+		t.Skip("Before running APIG acceptance tests, please ensure the env 'HW_APIG_DEDICATED_INSTANCE_ID' has been configured")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckApigChannelRelatedInfo(t *testing.T) {
+	if HW_APIG_DEDICATED_INSTANCE_USED_SUBNET_ID == "" {
+		t.Skip("Before running APIG acceptance tests, please ensure the env 'HW_APIG_DEDICATED_INSTANCE_USED_SUBNET_ID' has been configured")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckSms(t *testing.T) {
 	if HW_SMS_SOURCE_SERVER == "" {
 		t.Skip("HW_SMS_SOURCE_SERVER must be set for SMS acceptance tests")
@@ -703,6 +722,20 @@ func TestAccPreCheckOmsInstance(t *testing.T) {
 func TestAccPreCheckAdminOnly(t *testing.T) {
 	if HW_ADMIN == "" {
 		t.Skip("Skipping test because it requires the admin privileges")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckIAMV5(t *testing.T) {
+	if HW_IAM_V5 == "" {
+		t.Skip("This environment does not support IAM v5 tests")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckRunnerPublicIP(t *testing.T) {
+	if HW_RUNNER_PUBLIC_IP == "" {
+		t.Skip("HW_RUNNER_PUBLIC_IP must be set for this acceptance test.")
 	}
 }
 
