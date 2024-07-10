@@ -502,6 +502,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_cdn_cache_history_tasks": cdn.DataSourceCacheHistoryTasks(),
 			"huaweicloud_cdn_billing_option":      cdn.DataSourceBillingOption(),
 			"huaweicloud_cdn_logs":                cdn.DataSourceCdnLogs(),
+			"huaweicloud_cdn_analytics":           cdn.DataSourceCdnAnalytics(),
 
 			"huaweicloud_cfw_firewalls":             cfw.DataSourceFirewalls(),
 			"huaweicloud_cfw_address_groups":        cfw.DataSourceCfwAddressGroups(),
@@ -656,8 +657,10 @@ func Provider() *schema.Provider {
 			"huaweicloud_fgs_application_templates": fgs.DataSourceFunctionGraphApplicationTemplates(),
 			"huaweicloud_fgs_dependencies":          fgs.DataSourceFunctionGraphDependencies(),
 			"huaweicloud_fgs_dependency_versions":   fgs.DataSourceDependencieVersions(),
+			"huaweicloud_fgs_function_events":       fgs.DataSourceFunctionEvents(),
 			"huaweicloud_fgs_function_triggers":     fgs.DataSourceFunctionTriggers(),
 			"huaweicloud_fgs_functions":             fgs.DataSourceFunctionGraphFunctions(),
+			"huaweicloud_fgs_quotas":                fgs.DataSourceQuotas(),
 
 			"huaweicloud_ga_accelerators":       ga.DataSourceAccelerators(),
 			"huaweicloud_ga_address_groups":     ga.DataSourceAddressGroups(),
@@ -1636,6 +1639,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_sfs_turbo":            sfs.ResourceSFSTurbo(),
 			"huaweicloud_sfs_turbo_dir":        sfs.ResourceSfsTurboDir(),
 			"huaweicloud_sfs_turbo_dir_quota":  sfs.ResourceSfsTurboDirQuota(),
+			"huaweicloud_sfs_turbo_du_task":    sfs.ResourceDuTask(),
 			"huaweicloud_sfs_turbo_obs_target": sfs.ResourceOBSTarget(),
 			"huaweicloud_sfs_turbo_perm_rule":  sfs.ResourceSFSTurboPermRule(),
 
