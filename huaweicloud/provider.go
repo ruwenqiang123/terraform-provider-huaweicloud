@@ -943,6 +943,8 @@ func Provider() *schema.Provider {
 			"huaweicloud_dws_event_subscriptions":     dws.DataSourceEventSubscriptions(),
 
 			"huaweicloud_dws_availability_zones": dws.DataSourceDwsAvailabilityZones(),
+			"huaweicloud_dws_quotas":             dws.DataSourceDwsQuotas(),
+			"huaweicloud_dws_snapshots":          dws.DataSourceDwsSnapshots(),
 			"huaweicloud_dws_workload_queues":    dws.DataSourceWorkloadQueues(),
 
 			"huaweicloud_workspace_desktops": workspace.DataSourceDesktops(),
@@ -1377,6 +1379,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_gaussdb_mysql_parameter_template": gaussdb.ResourceGaussDBMysqlTemplate(),
 			"huaweicloud_gaussdb_mysql_backup":             gaussdb.ResourceGaussDBMysqlBackup(),
 			"huaweicloud_gaussdb_mysql_restore":            gaussdb.ResourceGaussDBMysqlRestore(),
+			"huaweicloud_gaussdb_mysql_eip_associate":      gaussdb.ResourceGaussMysqlEipAssociate(),
 
 			"huaweicloud_gaussdb_opengauss_instance": gaussdb.ResourceOpenGaussInstance(),
 
@@ -1645,14 +1648,16 @@ func Provider() *schema.Provider {
 			"huaweicloud_sfs_turbo":            sfs.ResourceSFSTurbo(),
 			"huaweicloud_sfs_turbo_dir":        sfs.ResourceSfsTurboDir(),
 			"huaweicloud_sfs_turbo_dir_quota":  sfs.ResourceSfsTurboDirQuota(),
+			"huaweicloud_sfs_turbo_data_task":  sfs.ResourceDataTask(),
 			"huaweicloud_sfs_turbo_du_task":    sfs.ResourceDuTask(),
 			"huaweicloud_sfs_turbo_obs_target": sfs.ResourceOBSTarget(),
 			"huaweicloud_sfs_turbo_perm_rule":  sfs.ResourceSFSTurboPermRule(),
 
-			"huaweicloud_smn_topic":            smn.ResourceTopic(),
-			"huaweicloud_smn_subscription":     smn.ResourceSubscription(),
-			"huaweicloud_smn_message_template": smn.ResourceSmnMessageTemplate(),
-			"huaweicloud_smn_logtank":          smn.ResourceSmnLogtank(),
+			"huaweicloud_smn_topic":             smn.ResourceTopic(),
+			"huaweicloud_smn_subscription":      smn.ResourceSubscription(),
+			"huaweicloud_smn_message_template":  smn.ResourceSmnMessageTemplate(),
+			"huaweicloud_smn_logtank":           smn.ResourceSmnLogtank(),
+			"huaweicloud_smn_message_detection": smn.ResourceMessageDetection(),
 
 			"huaweicloud_sms_server_template": sms.ResourceServerTemplate(),
 			"huaweicloud_sms_task":            sms.ResourceMigrateTask(),
