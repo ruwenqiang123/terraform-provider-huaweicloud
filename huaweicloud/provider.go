@@ -614,6 +614,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_dms_rabbitmq_plugins":        dms.DataSourceDmsRabbitmqPlugins(),
 			"huaweicloud_dms_rabbitmq_instances":      dms.DataSourceDmsRabbitMQInstances(),
 			"huaweicloud_dms_rabbitmq_extend_flavors": dms.DataSourceDmsRabbitmqExtendFlavors(),
+			"huaweicloud_dms_rabbitmq_vhosts":         dms.DataSourceDmsRabbitmqVhosts(),
 
 			"huaweicloud_dms_rocketmq_broker":                dms.DataSourceDmsRocketMQBroker(),
 			"huaweicloud_dms_rocketmq_instances":             dms.DataSourceDmsRocketMQInstances(),
@@ -1285,6 +1286,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_dms_kafka_permissions":               dms.ResourceDmsKafkaPermissions(),
 			"huaweicloud_dms_kafka_instance":                  dms.ResourceDmsKafkaInstance(),
 			"huaweicloud_dms_kafka_topic":                     dms.ResourceDmsKafkaTopic(),
+			"huaweicloud_dms_kafka_partition_reassign":        dms.ResourceDmsKafkaPartitionReassign(),
 			"huaweicloud_dms_kafka_consumer_group":            dms.ResourceDmsKafkaConsumerGroup(),
 			"huaweicloud_dms_kafka_smart_connect":             dms.ResourceDmsKafkaSmartConnect(),
 			"huaweicloud_dms_kafka_smart_connect_task":        dms.ResourceDmsKafkaSmartConnectTask(),
@@ -1294,6 +1296,7 @@ func Provider() *schema.Provider {
 
 			"huaweicloud_dms_rabbitmq_instance": dms.ResourceDmsRabbitmqInstance(),
 			"huaweicloud_dms_rabbitmq_plugin":   dms.ResourceDmsRabbitmqPlugin(),
+			"huaweicloud_dms_rabbitmq_vhost":    dms.ResourceDmsRabbitmqVhost(),
 
 			"huaweicloud_dms_rocketmq_instance":       dms.ResourceDmsRocketMQInstance(),
 			"huaweicloud_dms_rocketmq_consumer_group": dms.ResourceDmsRocketMQConsumerGroup(),
@@ -1378,6 +1381,7 @@ func Provider() *schema.Provider {
 
 			"huaweicloud_gaussdb_mysql_instance":           gaussdb.ResourceGaussDBInstance(),
 			"huaweicloud_gaussdb_mysql_proxy":              gaussdb.ResourceGaussDBProxy(),
+			"huaweicloud_gaussdb_mysql_proxy_restart":      gaussdb.ResourceGaussDBProxyRestart(),
 			"huaweicloud_gaussdb_mysql_database":           gaussdb.ResourceGaussDBDatabase(),
 			"huaweicloud_gaussdb_mysql_account":            gaussdb.ResourceGaussDBAccount(),
 			"huaweicloud_gaussdb_mysql_account_privilege":  gaussdb.ResourceGaussDBAccountPrivilege(),
