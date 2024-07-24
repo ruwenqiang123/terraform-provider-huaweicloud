@@ -96,11 +96,24 @@ func TestAccGaussDBMySQLProxy_basic(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "new_node_auto_add_status", "OFF"),
 					resource.TestCheckResourceAttr(resourceName, "port", "3339"),
 					resource.TestCheckResourceAttr(resourceName, "transaction_split", "ON"),
+					resource.TestCheckResourceAttr(resourceName, "connection_pool_type", "SESSION"),
+					resource.TestCheckResourceAttr(resourceName, "switch_connection_pool_type_enabled", "true"),
 					resource.TestCheckResourceAttr(resourceName, "master_node_weight.#", "1"),
 					resource.TestCheckResourceAttr(resourceName, "readonly_nodes_weight.#", "1"),
 					resource.TestCheckResourceAttr(resourceName, "parameters.0.name", "multiStatementType"),
 					resource.TestCheckResourceAttr(resourceName, "parameters.0.value", "Loose"),
 					resource.TestCheckResourceAttr(resourceName, "parameters.0.elem_type", "system"),
+					resource.TestCheckResourceAttr(resourceName, "consistence_mode", "session"),
+					resource.TestCheckResourceAttrSet(resourceName, "address"),
+					resource.TestCheckResourceAttrSet(resourceName, "current_version"),
+					resource.TestCheckResourceAttrSet(resourceName, "can_upgrade"),
+					resource.TestCheckResourceAttrSet(resourceName, "nodes.#"),
+					resource.TestCheckResourceAttrSet(resourceName, "nodes.0.id"),
+					resource.TestCheckResourceAttrSet(resourceName, "nodes.0.status"),
+					resource.TestCheckResourceAttrSet(resourceName, "nodes.0.name"),
+					resource.TestCheckResourceAttrSet(resourceName, "nodes.0.role"),
+					resource.TestCheckResourceAttrSet(resourceName, "nodes.0.az_code"),
+					resource.TestCheckResourceAttrSet(resourceName, "nodes.0.frozen_flag"),
 				),
 			},
 			{
@@ -120,11 +133,14 @@ func TestAccGaussDBMySQLProxy_basic(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "new_node_weight", "20"),
 					resource.TestCheckResourceAttr(resourceName, "port", "3338"),
 					resource.TestCheckResourceAttr(resourceName, "transaction_split", "OFF"),
+					resource.TestCheckResourceAttr(resourceName, "connection_pool_type", "CLOSED"),
+					resource.TestCheckResourceAttr(resourceName, "switch_connection_pool_type_enabled", "true"),
 					resource.TestCheckResourceAttr(resourceName, "master_node_weight.#", "1"),
 					resource.TestCheckResourceAttr(resourceName, "readonly_nodes_weight.#", "2"),
 					resource.TestCheckResourceAttr(resourceName, "parameters.0.name", "looseImciApThreshold"),
 					resource.TestCheckResourceAttr(resourceName, "parameters.0.value", "6000"),
 					resource.TestCheckResourceAttr(resourceName, "parameters.0.elem_type", "system"),
+					resource.TestCheckResourceAttr(resourceName, "consistence_mode", "eventual"),
 				),
 			},
 			{
@@ -201,6 +217,8 @@ resource "huaweicloud_gaussdb_mysql_proxy" "test" {
   new_node_weight          = 20
   port                     = 3339
   transaction_split        = "ON"
+  consistence_mode         = "session"
+  connection_pool_type     = "SESSION"
 
   master_node_weight {
     id     = local.sort_nodes[0].id
@@ -237,6 +255,8 @@ resource "huaweicloud_gaussdb_mysql_proxy" "test" {
   new_node_weight          = 20
   port                     = 3338
   transaction_split        = "OFF"
+  consistence_mode         = "eventual"
+  connection_pool_type     = "CLOSED"
 
   master_node_weight {
     id     = local.sort_nodes[0].id
@@ -278,6 +298,8 @@ resource "huaweicloud_gaussdb_mysql_proxy" "test" {
   new_node_weight          = 20
   port                     = 3338
   transaction_split        = "OFF"
+  consistence_mode         = "eventual"
+  connection_pool_type     = "CLOSED"
 
   master_node_weight {
     id     = local.sort_nodes[0].id

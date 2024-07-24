@@ -83,6 +83,19 @@ The following arguments are supported:
 
   Defaults to **OFF**.
 
+* `consistence_mode` - (Optional, String) Specifies the consistency mode of the proxy. Value options:
+  + **session**: session consistency.
+  + **global**: global consistency.
+  + **eventual**: eventual consistency.
+
+  Defaults to **eventual**.
+
+* `connection_pool_type` - (Optional, String) Specifies the connection pool type. Value options:
+  + **CLOSED**: The connection pool is not used.
+  + **SESSION**: The session-level connection pool is used.
+
+  Defaults to **CLOSED**.
+
 <a name="node_weight_struct"></a>
 The `master_node_weight` and `readonly_nodes_weight` block supports:
 
@@ -110,8 +123,14 @@ In addition to all arguments above, the following attributes are exported:
 
 * `address` - Indicates the address of the proxy.
 
+* `switch_connection_pool_type_enabled` - Indicates whether the proxy supports session-level connection pool.
+
 * `nodes` - Indicates the node information of the proxy.
   The [nodes](#nodes_struct) structure is documented below.
+
+* `current_version` - Indicates the current version of the proxy.
+
+* `can_upgrade` - Indicates whether the proxy can be upgrade.
 
 <a name="nodes_struct"></a>
 The `nodes` block supports:

@@ -691,6 +691,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_gaussdb_mysql_restore_time_ranges":    gaussdb.DataSourceGaussdbMysqlRestoreTimeRanges(),
 			"huaweicloud_gaussdb_mysql_databases":              gaussdb.DataSourceGaussdbMysqlDatabases(),
 			"huaweicloud_gaussdb_mysql_proxy_flavors":          gaussdb.DataSourceGaussdbMysqlProxyFlavors(),
+			"huaweicloud_gaussdb_mysql_proxies":                gaussdb.DataSourceGaussdbMysqlProxies(),
 
 			"huaweicloud_hss_ransomware_protection_policies": hss.DataSourceRansomwareProtectionPolicies(),
 			"huaweicloud_hss_host_groups":                    hss.DataSourceHostGroups(),
@@ -1177,6 +1178,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_cfw_domain_name_group":    cfw.ResourceDomainNameGroup(),
 			"huaweicloud_cfw_lts_log":              cfw.ResourceLtsLog(),
 			"huaweicloud_cfw_dns_resolution":       cfw.ResourceDNSResolution(),
+			"huaweicloud_cfw_capture_task":         cfw.ResourceCaptureTask(),
 
 			"huaweicloud_cloudtable_cluster": cloudtable.ResourceCloudTableCluster(),
 
