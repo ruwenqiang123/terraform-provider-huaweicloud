@@ -730,6 +730,7 @@ func Provider() *schema.Provider {
 
 			"huaweicloud_kms_key":      dew.DataSourceKmsKey(),
 			"huaweicloud_kms_data_key": dew.DataSourceKmsDataKeyV1(),
+			"huaweicloud_kms_grants":   dew.DataSourceKmsGrants(),
 			"huaweicloud_kps_keypairs": dew.DataSourceKeypairs(),
 
 			"huaweicloud_iotda_device_certificates":  iotda.DataSourceDeviceCertificates(),
@@ -872,6 +873,7 @@ func Provider() *schema.Provider {
 
 			// Deprecated, use `huaweicloud_ccm_certificates` instead
 			"huaweicloud_ccm_private_certificates": ccm.DataSourcePrivateCertificates(),
+			"huaweicloud_ccm_private_cas":          ccm.DataSourcePrivateCas(),
 			"huaweicloud_scm_certificates":         ccm.DataSourceCertificates(),
 
 			"huaweicloud_sfs_file_system":       sfs.DataSourceSFSFileSystemV2(),
@@ -879,6 +881,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_sfs_turbo_data_tasks":  sfs.DataSourceSfsTurboDataTasks(),
 			"huaweicloud_sfs_turbo_du_tasks":    sfs.DataSourceSfsTurboDuTasks(),
 			"huaweicloud_sfs_turbo_obs_targets": sfs.DataSourceSfsTurboObsTargets(),
+			"huaweicloud_sfs_turbo_perm_rules":  sfs.DataSourceSfsTurboPermRules(),
 
 			"huaweicloud_swr_organizations":             swr.DataSourceOrganizations(),
 			"huaweicloud_swr_repositories":              swr.DataSourceRepositories(),
@@ -951,6 +954,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_dws_event_subscriptions":     dws.DataSourceEventSubscriptions(),
 
 			"huaweicloud_dws_availability_zones": dws.DataSourceDwsAvailabilityZones(),
+			"huaweicloud_dws_clusters":           dws.DataSourceDwsClusters(),
 			"huaweicloud_dws_quotas":             dws.DataSourceDwsQuotas(),
 			"huaweicloud_dws_snapshots":          dws.DataSourceDwsSnapshots(),
 			"huaweicloud_dws_workload_queues":    dws.DataSourceWorkloadQueues(),
@@ -1362,8 +1366,10 @@ func Provider() *schema.Provider {
 			"huaweicloud_er_vpc_attachment": er.ResourceVpcAttachment(),
 			"huaweicloud_er_flow_log":       er.ResourceFlowLog(),
 
-			"huaweicloud_evs_snapshot": evs.ResourceEvsSnapshotV2(),
-			"huaweicloud_evs_volume":   evs.ResourceEvsVolume(),
+			"huaweicloud_evs_snapshot":          evs.ResourceEvsSnapshotV2(),
+			"huaweicloud_evs_volume":            evs.ResourceEvsVolume(),
+			"huaweicloud_evs_snapshot_rollback": evs.ResourceSnapshotRollBack(),
+			"huaweicloud_evs_volume_transfer":   evs.ResourceVolumeTransfer(),
 
 			"huaweicloud_fgs_application":                fgs.ResourceApplication(),
 			"huaweicloud_fgs_async_invoke_configuration": fgs.ResourceAsyncInvokeConfiguration(),
