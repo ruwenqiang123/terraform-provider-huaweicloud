@@ -494,6 +494,10 @@ func Provider() *schema.Provider {
 			"huaweicloud_cci_namespaces":          cci.DataSourceCciNamespaces(),
 
 			"huaweicloud_ccm_certificates":               ccm.DataSourceCertificates(),
+			"huaweicloud_ccm_certificate_export":         ccm.DataSourceCertificateExport(),
+			"huaweicloud_ccm_private_cas":                ccm.DataSourcePrivateCas(),
+			"huaweicloud_ccm_private_ca_export":          ccm.DataSourcePrivateCaExport(),
+			"huaweicloud_ccm_private_certificates":       ccm.DataSourcePrivateCertificates(),
 			"huaweicloud_ccm_private_certificate_export": ccm.DataSourceCcmPrivateCertificateExport(),
 
 			"huaweicloud_cdn_domain_statistics":   cdn.DataSourceStatistics(),
@@ -509,6 +513,8 @@ func Provider() *schema.Provider {
 			"huaweicloud_cfw_address_groups":        cfw.DataSourceCfwAddressGroups(),
 			"huaweicloud_cfw_address_group_members": cfw.DataSourceCfwAddressGroupMembers(),
 			"huaweicloud_cfw_black_white_lists":     cfw.DataSourceCfwBlackWhiteLists(),
+			"huaweicloud_cfw_capture_tasks":         cfw.DataSourceCfwCaptureTasks(),
+			"huaweicloud_cfw_capture_task_results":  cfw.DataSourceCfwCaptureTaskResults(),
 			"huaweicloud_cfw_domain_name_groups":    cfw.DataSourceCfwDomainNameGroups(),
 			"huaweicloud_cfw_protection_rules":      cfw.DataSourceCfwProtectionRules(),
 			"huaweicloud_cfw_service_groups":        cfw.DataSourceCfwServiceGroups(),
@@ -872,9 +878,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_sms_source_servers": sms.DataSourceServers(),
 
 			// Deprecated, use `huaweicloud_ccm_certificates` instead
-			"huaweicloud_ccm_private_certificates": ccm.DataSourcePrivateCertificates(),
-			"huaweicloud_ccm_private_cas":          ccm.DataSourcePrivateCas(),
-			"huaweicloud_scm_certificates":         ccm.DataSourceCertificates(),
+			"huaweicloud_scm_certificates": ccm.DataSourceCertificates(),
 
 			"huaweicloud_sfs_file_system":       sfs.DataSourceSFSFileSystemV2(),
 			"huaweicloud_sfs_turbos":            sfs.DataSourceTurbos(),
@@ -948,16 +952,16 @@ func Provider() *schema.Provider {
 			"huaweicloud_waf_rules_precise_protection":             waf.DataSourceWafRulesPreciseProtection(),
 			"huaweicloud_waf_rules_web_tamper_protection":          waf.DataSourceWafRulesWebTamperProtection(),
 
-			"huaweicloud_dws_flavors":                 dws.DataSourceDwsFlavors(),
-			"huaweicloud_dws_logical_cluster_rings":   dws.DataSourceLogicalClusterRings(),
+			"huaweicloud_dws_availability_zones":      dws.DataSourceDwsAvailabilityZones(),
+			"huaweicloud_dws_clusters":                dws.DataSourceDwsClusters(),
 			"huaweicloud_dws_disaster_recovery_tasks": dws.DataSourceDisasterRecoveryTasks(),
 			"huaweicloud_dws_event_subscriptions":     dws.DataSourceEventSubscriptions(),
-
-			"huaweicloud_dws_availability_zones": dws.DataSourceDwsAvailabilityZones(),
-			"huaweicloud_dws_clusters":           dws.DataSourceDwsClusters(),
-			"huaweicloud_dws_quotas":             dws.DataSourceDwsQuotas(),
-			"huaweicloud_dws_snapshots":          dws.DataSourceDwsSnapshots(),
-			"huaweicloud_dws_workload_queues":    dws.DataSourceWorkloadQueues(),
+			"huaweicloud_dws_flavors":                 dws.DataSourceDwsFlavors(),
+			"huaweicloud_dws_logical_cluster_rings":   dws.DataSourceLogicalClusterRings(),
+			"huaweicloud_dws_logical_clusters":        dws.DataSourceDwsLogicalClusters(),
+			"huaweicloud_dws_quotas":                  dws.DataSourceDwsQuotas(),
+			"huaweicloud_dws_snapshots":               dws.DataSourceDwsSnapshots(),
+			"huaweicloud_dws_workload_queues":         dws.DataSourceWorkloadQueues(),
 
 			"huaweicloud_workspace_desktops": workspace.DataSourceDesktops(),
 			"huaweicloud_workspace_flavors":  workspace.DataSourceWorkspaceFlavors(),
@@ -1004,6 +1008,8 @@ func Provider() *schema.Provider {
 			"huaweicloud_organizations_organizational_units": organizations.DataSourceOrganizationalUnits(),
 			"huaweicloud_organizations_accounts":             organizations.DataSourceAccounts(),
 			"huaweicloud_organizations_policies":             organizations.DataSourcePolicies(),
+			"huaweicloud_organizations_sent_invitations":     organizations.DataSourceOrganizationsSentInvitations(),
+			"huaweicloud_organizations_received_invitations": organizations.DataSourceOrganizationsReceivedInvitations(),
 
 			// Deprecated ongoing (without DeprecationMessage), used by other providers
 			"huaweicloud_vpc_route":                  vpc.DataSourceVpcRouteV2(),

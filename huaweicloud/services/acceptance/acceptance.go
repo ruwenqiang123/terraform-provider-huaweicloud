@@ -117,6 +117,7 @@ var (
 	HW_CERTIFICATE_NAME             = os.Getenv("HW_CERTIFICATE_NAME")
 	HW_DMS_ENVIRONMENT              = os.Getenv("HW_DMS_ENVIRONMENT")
 	HW_SMS_SOURCE_SERVER            = os.Getenv("HW_SMS_SOURCE_SERVER")
+	HW_CCM_SSL_CERTIFICATE_ID       = os.Getenv("HW_CCM_SSL_CERTIFICATE_ID")
 
 	HW_DLI_AUTHORIZED_USER_NAME         = os.Getenv("HW_DLI_AUTHORIZED_USER_NAME")
 	HW_DLI_FLINK_JAR_OBS_PATH           = os.Getenv("HW_DLI_FLINK_JAR_OBS_PATH")
@@ -383,13 +384,8 @@ var (
 	HW_LTS_LOG_CONVERGE_MANAGEMENT_ACCOUNT_ID = os.Getenv("HW_LTS_LOG_CONVERGE_MANAGEMENT_ACCOUNT_ID")
 	HW_LTS_LOG_CONVERGE_MEMBER_ACCOUNT_ID     = os.Getenv("HW_LTS_LOG_CONVERGE_MEMBER_ACCOUNT_ID")
 
-	HW_LTS_LOG_CONVERGE_SOURCE_LOG_GROUP_ID   = os.Getenv("HW_LTS_LOG_CONVERGE_SOURCE_LOG_GROUP_ID")
-	HW_LTS_LOG_CONVERGE_TARGET_LOG_GROUP_NAME = os.Getenv("HW_LTS_LOG_CONVERGE_TARGET_LOG_GROUP_NAME")
-	HW_LTS_LOG_CONVERGE_TARGET_LOG_GROUP_ID   = os.Getenv("HW_LTS_LOG_CONVERGE_TARGET_LOG_GROUP_ID")
-
-	HW_LTS_LOG_CONVERGE_SOURCE_LOG_STREAM_ID   = os.Getenv("HW_LTS_LOG_CONVERGE_SOURCE_LOG_STREAM_ID")
-	HW_LTS_LOG_CONVERGE_TARGET_LOG_STREAM_NAME = os.Getenv("HW_LTS_LOG_CONVERGE_TARGET_LOG_STREAM_NAME")
-	HW_LTS_LOG_CONVERGE_TARGET_LOG_STREAM_ID   = os.Getenv("HW_LTS_LOG_CONVERGE_TARGET_LOG_STREAM_ID")
+	HW_LTS_LOG_CONVERGE_SOURCE_LOG_GROUP_ID  = os.Getenv("HW_LTS_LOG_CONVERGE_SOURCE_LOG_GROUP_ID")
+	HW_LTS_LOG_CONVERGE_SOURCE_LOG_STREAM_ID = os.Getenv("HW_LTS_LOG_CONVERGE_SOURCE_LOG_STREAM_ID")
 
 	HW_LTS_CLUSTER_ID           = os.Getenv("HW_LTS_CLUSTER_ID")
 	HW_LTS_CLUSTER_NAME         = os.Getenv("HW_LTS_CLUSTER_NAME")
@@ -1113,6 +1109,13 @@ func TestAccPreCheckCCMCertificateName(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckCCMSSLCertificateId(t *testing.T) {
+	if HW_CCM_SSL_CERTIFICATE_ID == "" {
+		t.Skip("HW_CCM_SSL_CERTIFICATE_ID must be set for CCM SSL acceptance tests.")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckKms(t *testing.T) {
 	if HW_KMS_ENVIRONMENT == "" {
 		t.Skip("This environment does not support KMS tests")
@@ -1574,20 +1577,10 @@ func TestAccPreCheckLTSLogConvergeBaseConfig(t *testing.T) {
 }
 
 // lintignore:AT003
-func TestAccPreCheckLTSLogConvergeGroupConfig(t *testing.T) {
-	if HW_LTS_LOG_CONVERGE_SOURCE_LOG_GROUP_ID == "" || HW_LTS_LOG_CONVERGE_TARGET_LOG_GROUP_NAME == "" ||
-		HW_LTS_LOG_CONVERGE_TARGET_LOG_GROUP_ID == "" {
-		t.Skip("The cce access config of HW_LTS_LOG_CONVERGE_SOURCE_LOG_GROUP_ID, HW_LTS_LOG_CONVERGE_TARGET_LOG_GROUP_NAME " +
-			"and HW_LTS_LOG_CONVERGE_TARGET_LOG_GROUP_ID must be set for the log converge configuration acceptance test")
-	}
-}
-
-// lintignore:AT003
-func TestAccPreCheckLTSLogConvergeStreamConfig(t *testing.T) {
-	if HW_LTS_LOG_CONVERGE_SOURCE_LOG_STREAM_ID == "" || HW_LTS_LOG_CONVERGE_TARGET_LOG_STREAM_NAME == "" ||
-		HW_LTS_LOG_CONVERGE_TARGET_LOG_STREAM_ID == "" {
-		t.Skip("The cce access config of HW_LTS_LOG_CONVERGE_SOURCE_LOG_STREAM_ID, HW_LTS_LOG_CONVERGE_TARGET_LOG_STREAM_NAME, " +
-			"and HW_LTS_LOG_CONVERGE_TARGET_LOG_STREAM_ID must be set for the log converge configuration acceptance test")
+func TestAccPreCheckLTSLogConvergeMappingConfig(t *testing.T) {
+	if HW_LTS_LOG_CONVERGE_SOURCE_LOG_GROUP_ID == "" || HW_LTS_LOG_CONVERGE_SOURCE_LOG_STREAM_ID == "" {
+		t.Skip("The environment variables of HW_LTS_LOG_CONVERGE_SOURCE_LOG_GROUP_ID and HW_LTS_LOG_CONVERGE_SOURCE_LOG_STREAM_ID " +
+			"must be set for the log converge configuration acceptance test")
 	}
 }
 
