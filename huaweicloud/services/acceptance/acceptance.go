@@ -108,16 +108,20 @@ var (
 	HW_CDN_END_TIME         = os.Getenv("HW_CDN_END_TIME")
 	HW_CDN_STAT_TYPE        = os.Getenv("HW_CDN_STAT_TYPE")
 
-	HW_CERTIFICATE_KEY_PATH         = os.Getenv("HW_CERTIFICATE_KEY_PATH")
-	HW_CERTIFICATE_CHAIN_PATH       = os.Getenv("HW_CERTIFICATE_CHAIN_PATH")
-	HW_CERTIFICATE_PRIVATE_KEY_PATH = os.Getenv("HW_CERTIFICATE_PRIVATE_KEY_PATH")
-	HW_CERTIFICATE_SERVICE          = os.Getenv("HW_CERTIFICATE_SERVICE")
-	HW_CERTIFICATE_PROJECT          = os.Getenv("HW_CERTIFICATE_PROJECT")
-	HW_CERTIFICATE_PROJECT_UPDATED  = os.Getenv("HW_CERTIFICATE_PROJECT_UPDATED")
-	HW_CERTIFICATE_NAME             = os.Getenv("HW_CERTIFICATE_NAME")
-	HW_DMS_ENVIRONMENT              = os.Getenv("HW_DMS_ENVIRONMENT")
-	HW_SMS_SOURCE_SERVER            = os.Getenv("HW_SMS_SOURCE_SERVER")
-	HW_CCM_SSL_CERTIFICATE_ID       = os.Getenv("HW_CCM_SSL_CERTIFICATE_ID")
+	// CCM environment
+	HW_CCM_CERTIFICATE_CONTENT_PATH    = os.Getenv("HW_CCM_CERTIFICATE_CONTENT_PATH")
+	HW_CCM_CERTIFICATE_CHAIN_PATH      = os.Getenv("HW_CCM_CERTIFICATE_CHAIN_PATH")
+	HW_CCM_PRIVATE_KEY_PATH            = os.Getenv("HW_CCM_PRIVATE_KEY_PATH")
+	HW_CCM_ENC_CERTIFICATE_PATH        = os.Getenv("HW_CCM_ENC_CERTIFICATE_PATH")
+	HW_CCM_ENC_PRIVATE_KEY_PATH        = os.Getenv("HW_CCM_ENC_PRIVATE_KEY_PATH")
+	HW_CCM_CERTIFICATE_SERVICE         = os.Getenv("HW_CCM_CERTIFICATE_SERVICE")
+	HW_CCM_CERTIFICATE_PROJECT         = os.Getenv("HW_CCM_CERTIFICATE_PROJECT")
+	HW_CCM_CERTIFICATE_PROJECT_UPDATED = os.Getenv("HW_CCM_CERTIFICATE_PROJECT_UPDATED")
+	HW_CCM_CERTIFICATE_NAME            = os.Getenv("HW_CCM_CERTIFICATE_NAME")
+	HW_CCM_SSL_CERTIFICATE_ID          = os.Getenv("HW_CCM_SSL_CERTIFICATE_ID")
+
+	HW_DMS_ENVIRONMENT   = os.Getenv("HW_DMS_ENVIRONMENT")
+	HW_SMS_SOURCE_SERVER = os.Getenv("HW_SMS_SOURCE_SERVER")
 
 	HW_DLI_AUTHORIZED_USER_NAME         = os.Getenv("HW_DLI_AUTHORIZED_USER_NAME")
 	HW_DLI_FLINK_JAR_OBS_PATH           = os.Getenv("HW_DLI_FLINK_JAR_OBS_PATH")
@@ -185,6 +189,7 @@ var (
 
 	HW_MULTI_ACCOUNT_ENVIRONMENT            = os.Getenv("HW_MULTI_ACCOUNT_ENVIRONMENT")
 	HW_ORGANIZATIONS_OPEN                   = os.Getenv("HW_ORGANIZATIONS_OPEN")
+	HW_ORGANIZATIONS_ACCOUNT_ID             = os.Getenv("HW_ORGANIZATIONS_ACCOUNT_ID")
 	HW_ORGANIZATIONS_ACCOUNT_NAME           = os.Getenv("HW_ORGANIZATIONS_ACCOUNT_NAME")
 	HW_ORGANIZATIONS_INVITE_ACCOUNT_ID      = os.Getenv("HW_ORGANIZATIONS_INVITE_ACCOUNT_ID")
 	HW_ORGANIZATIONS_ORGANIZATIONAL_UNIT_ID = os.Getenv("HW_ORGANIZATIONS_ORGANIZATIONAL_UNIT_ID")
@@ -263,7 +268,8 @@ var (
 	HW_MODELARTS_USER_LOGIN_PASSWORD = os.Getenv("HW_MODELARTS_USER_LOGIN_PASSWORD")
 
 	// The CMDB sub-application ID of AOM service
-	HW_AOM_SUB_APPLICATION_ID = os.Getenv("HW_AOM_SUB_APPLICATION_ID")
+	HW_AOM_SUB_APPLICATION_ID                    = os.Getenv("HW_AOM_SUB_APPLICATION_ID")
+	HW_AOM_MULTI_ACCOUNT_AGGREGATION_RULE_ENABLE = os.Getenv("HW_AOM_MULTI_ACCOUNT_AGGREGATION_RULE_ENABLE")
 
 	// the ID of ECS instance which has installed uniagent
 	HW_COC_INSTANCE_ID = os.Getenv("HW_COC_INSTANCE_ID")
@@ -330,6 +336,7 @@ var (
 	HW_AS_INSTANCE_ID          = os.Getenv("HW_AS_INSTANCE_ID")
 	HW_AS_LIFECYCLE_HOOK_NAME  = os.Getenv("HW_AS_LIFECYCLE_HOOK_NAME")
 
+	// Common
 	HW_DATAARTS_WORKSPACE_ID                               = os.Getenv("HW_DATAARTS_WORKSPACE_ID")
 	HW_DATAARTS_CDM_NAME                                   = os.Getenv("HW_DATAARTS_CDM_NAME")
 	HW_DATAARTS_MANAGER_ID                                 = os.Getenv("HW_DATAARTS_MANAGER_ID")
@@ -342,14 +349,22 @@ var (
 	HW_DATAARTS_BUILTIN_RULE_ID                            = os.Getenv("HW_DATAARTS_BUILTIN_RULE_ID")
 	HW_DATAARTS_BUILTIN_RULE_NAME                          = os.Getenv("HW_DATAARTS_BUILTIN_RULE_NAME")
 	HW_DATAARTS_SUBJECT_ID                                 = os.Getenv("HW_DATAARTS_SUBJECT_ID")
-	HW_DATAARTS_CONNECTION_NAME                            = os.Getenv("HW_DATAARTS_CONNECTION_NAME")
 	HW_DATAARTS_ARCHITECTURE_USER_ID                       = os.Getenv("HW_DATAARTS_ARCHITECTURE_USER_ID")
 	HW_DATAARTS_ARCHITECTURE_USER_NAME                     = os.Getenv("HW_DATAARTS_ARCHITECTURE_USER_NAME")
+	HW_DATAARTS_ARCHITECTURE_SUBJECT_BIZ_ID                = os.Getenv("HW_DATAARTS_ARCHITECTURE_SUBJECT_BIZ_ID")
 	HW_DATAARTS_SECURITY_PERMISSSIONSET_MEMBER_OBJECT_ID   = os.Getenv("HW_DATAARTS_SECURITY_PERMISSSIONSET_MEMBER_OBJECT_ID")
 	HW_DATAARTS_SECURITY_PERMISSSIONSET_MEMBER_OBJECT_NAME = os.Getenv("HW_DATAARTS_SECURITY_PERMISSSIONSET_MEMBER_OBJECT_NAME")
+	// Management Center
+	HW_DATAARTS_CONNECTION_ID   = os.Getenv("HW_DATAARTS_CONNECTION_ID")
+	HW_DATAARTS_CONNECTION_NAME = os.Getenv("HW_DATAARTS_CONNECTION_NAME")
+	// Data Service
+	HW_DATAARTS_REVIEWER_NAME  = os.Getenv("HW_DATAARTS_REVIEWER_NAME")
+	HW_DATAARTS_LTS_QUEUE_NAME = os.Getenv("HW_DATAARTS_LTS_QUEUE_NAME")
 
 	HW_EVS_AVAILABILITY_ZONE_GPSSD2 = os.Getenv("HW_EVS_AVAILABILITY_ZONE_GPSSD2")
 	HW_EVS_AVAILABILITY_ZONE_ESSD2  = os.Getenv("HW_EVS_AVAILABILITY_ZONE_ESSD2")
+	HW_EVS_TRANSFER_ID              = os.Getenv("HW_EVS_TRANSFER_ID")
+	HW_EVS_TRANSFER_AUTH_KEY        = os.Getenv("HW_EVS_TRANSFER_AUTH_KEY")
 
 	HW_ECS_LAUNCH_TEMPLATE_ID = os.Getenv("HW_ECS_LAUNCH_TEMPLATE_ID")
 
@@ -484,6 +499,13 @@ func TestAccPreCheckCaeComponent(t *testing.T) {
 func TestAccPreCheckOrganizationsOpen(t *testing.T) {
 	if HW_ORGANIZATIONS_OPEN == "" {
 		t.Skip("HW_ORGANIZATIONS_OPEN must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckOrganizationsAccountId(t *testing.T) {
+	if HW_ORGANIZATIONS_ACCOUNT_ID == "" {
+		t.Skip("HW_ORGANIZATIONS_ACCOUNT_ID must be set for the acceptance test")
 	}
 }
 
@@ -844,13 +866,26 @@ func TestAccPreCheckHighCostAllow(t *testing.T) {
 }
 
 // lintignore:AT003
-func TestAccPreCheckCCMCertificateImport(t *testing.T) {
-	if HW_CERTIFICATE_KEY_PATH == "" || HW_CERTIFICATE_CHAIN_PATH == "" ||
-		HW_CERTIFICATE_PRIVATE_KEY_PATH == "" || HW_CERTIFICATE_SERVICE == "" ||
-		HW_CERTIFICATE_PROJECT == "" || HW_CERTIFICATE_PROJECT_UPDATED == "" {
-		t.Skip("HW_CERTIFICATE_KEY_PATH, HW_CERTIFICATE_CHAIN_PATH, HW_CERTIFICATE_PRIVATE_KEY_PATH, " +
-			"HW_CERTIFICATE_SERVICE, HW_CERTIFICATE_PROJECT and HW_CERTIFICATE_TARGET_UPDATED " +
-			"can not be empty for SCM certificate tests")
+func TestAccPreCheckCCMBaseCertificateImport(t *testing.T) {
+	if HW_CCM_CERTIFICATE_CONTENT_PATH == "" || HW_CCM_CERTIFICATE_CHAIN_PATH == "" || HW_CCM_PRIVATE_KEY_PATH == "" {
+		t.Skip("HW_CCM_CERTIFICATE_CONTENT_PATH, HW_CCM_CERTIFICATE_CHAIN_PATH and HW_CCM_PRIVATE_KEY_PATH " +
+			"must be set for CCM certificate import tests.")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckCCMEncCertificateImport(t *testing.T) {
+	if HW_CCM_ENC_CERTIFICATE_PATH == "" || HW_CCM_ENC_PRIVATE_KEY_PATH == "" {
+		t.Skip("HW_CCM_ENC_CERTIFICATE_PATH and HW_CCM_ENC_PRIVATE_KEY_PATH " +
+			"must be set for CCM certificate enc import tests.")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckCCMCertificatePush(t *testing.T) {
+	if HW_CCM_CERTIFICATE_SERVICE == "" || HW_CCM_CERTIFICATE_PROJECT == "" || HW_CCM_CERTIFICATE_PROJECT_UPDATED == "" {
+		t.Skip("HW_CCM_CERTIFICATE_SERVICE, HW_CCM_CERTIFICATE_PROJECT and HW_CCM_CERTIFICATE_PROJECT_UPDATED " +
+			"must be set for CCM push certificate tests.")
 	}
 }
 
@@ -1103,8 +1138,8 @@ func TestAccPreCheckAadForwardRule(t *testing.T) {
 
 // lintignore:AT003
 func TestAccPreCheckCCMCertificateName(t *testing.T) {
-	if HW_CERTIFICATE_NAME == "" {
-		t.Skip("HW_CERTIFICATE_NAME must be set for SCM acceptance tests.")
+	if HW_CCM_CERTIFICATE_NAME == "" {
+		t.Skip("HW_CCM_CERTIFICATE_NAME must be set for CCM SSL acceptance tests.")
 	}
 }
 
@@ -1592,6 +1627,13 @@ func TestAccPreCheckAomSubApplicationId(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckMultiAccountAggregationRuleEnable(t *testing.T) {
+	if HW_AOM_MULTI_ACCOUNT_AGGREGATION_RULE_ENABLE == "" {
+		t.Skip("HW_AOM_MULTI_ACCOUNT_AGGREGATION_RULE_ENABLE must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckCocInstanceID(t *testing.T) {
 	if HW_COC_INSTANCE_ID == "" {
 		t.Skip("HW_COC_INSTANCE_ID must be set for the acceptance test")
@@ -1732,6 +1774,20 @@ func TestAccPreCheckDataArtsWorkSpaceID(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckDataArtsReviewerName(t *testing.T) {
+	if HW_DATAARTS_REVIEWER_NAME == "" {
+		t.Skip("HW_DATAARTS_REVIEWER_NAME must be set for DataService tests")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckDataArtsRelatedLtsQueueName(t *testing.T) {
+	if HW_DATAARTS_LTS_QUEUE_NAME == "" {
+		t.Skip("HW_DATAARTS_LTS_QUEUE_NAME must be set for the DataService tests")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckDataArtsManagerID(t *testing.T) {
 	if HW_DATAARTS_MANAGER_ID == "" {
 		t.Skip("This environment does not support DataArts Studio permission set tests")
@@ -1792,9 +1848,23 @@ func TestAccPreCheckDataArtsConnectionName(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckDataArtsConnectionID(t *testing.T) {
+	if HW_DATAARTS_CONNECTION_ID == "" {
+		t.Skip("HW_DATAARTS_CONNECTION_ID must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckDataArtsArchitectureReviewer(t *testing.T) {
 	if HW_DATAARTS_ARCHITECTURE_USER_ID == "" || HW_DATAARTS_ARCHITECTURE_USER_NAME == "" {
 		t.Skip("HW_DATAARTS_ARCHITECTURE_USER_ID and HW_DATAARTS_ARCHITECTURE_USER_NAME must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckDataArtsArchitectureBatchPublishment(t *testing.T) {
+	if HW_DATAARTS_ARCHITECTURE_SUBJECT_BIZ_ID == "" {
+		t.Skip("HW_DATAARTS_ARCHITECTURE_SUBJECT_BIZ_ID must be set for the acceptance test")
 	}
 }
 
@@ -2048,5 +2118,12 @@ func TestAccPrecheckCDNAnalytics(t *testing.T) {
 func TestAccPrecheckSFSTurboBackupId(t *testing.T) {
 	if HW_SFS_TURBO_BACKUP_ID == "" {
 		t.Skip("HW_SFS_TURBO_BACKUP_ID must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
+func TestAccPrecheckEVSTransferAccepter(t *testing.T) {
+	if HW_EVS_TRANSFER_ID == "" || HW_EVS_TRANSFER_AUTH_KEY == "" {
+		t.Skip("HW_EVS_TRANSFER_ID and HW_EVS_TRANSFER_AUTH_KEY must be set for the acceptance test")
 	}
 }

@@ -102,7 +102,7 @@ func resourceDmsRabbitmqVhostRead(_ context.Context, d *schema.ResourceData, met
 
 	vhost, err := GetRabbitmqVhost(client, instanceID, name)
 	if err != nil {
-		return common.CheckDeletedDiag(d, golangsdk.ErrDefault404{}, "error retrieving the vhost")
+		return common.CheckDeletedDiag(d, err, "error retrieving the vhost")
 	}
 
 	mErr := multierror.Append(nil,
