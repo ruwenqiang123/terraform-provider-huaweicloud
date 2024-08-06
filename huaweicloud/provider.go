@@ -884,6 +884,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_rms_resources_summary":                     rms.DataSourceResourcesSummary(),
 			"huaweicloud_rms_resource_aggregation_pending_requests": rms.DataSourceRmsAggregationPendingRequests(),
 			"huaweicloud_rms_resource_aggregator_source_statuses":   rms.DataSourceRmsAggregatorSourceStatuses(),
+			"huaweicloud_rms_policy_states":                         rms.DataSourcePolicyStates(),
 
 			"huaweicloud_sdrs_domain": sdrs.DataSourceSDRSDomain(),
 
@@ -1030,6 +1031,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_organizations_services":             organizations.DataSourceOrganizationsServices(),
 			"huaweicloud_organizations_trusted_services":     organizations.DataSourceOrganizationsTrustedServices(),
 			"huaweicloud_organizations_effective_policies":   organizations.DataSourceOrganizationsEffectivePolicies(),
+			"huaweicloud_organizations_tag_policy_services":  organizations.DataSourceOrganizationsTagPolicyServices(),
 
 			// Deprecated ongoing (without DeprecationMessage), used by other providers
 			"huaweicloud_vpc_route":                  vpc.DataSourceVpcRouteV2(),
@@ -1160,6 +1162,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_cc_global_connection_bandwidth_associate":          cc.ResourceGlobalConnectionBandwidthAssociate(),
 
 			"huaweicloud_cce_cluster":             cce.ResourceCluster(),
+			"huaweicloud_cce_cluster_log_config":  cce.ResourceClusterLogConfig(),
 			"huaweicloud_cce_node":                cce.ResourceNode(),
 			"huaweicloud_cce_node_attach":         cce.ResourceNodeAttach(),
 			"huaweicloud_cce_addon":               cce.ResourceAddon(),
@@ -1502,11 +1505,12 @@ func Provider() *schema.Provider {
 			"huaweicloud_iotda_upgrade_package":     iotda.ResourceUpgradePackage(),
 			"huaweicloud_iotda_batchtask":           iotda.ResourceBatchTask(),
 
-			"huaweicloud_kms_key":                dew.ResourceKmsKey(),
-			"huaweicloud_kps_keypair":            dew.ResourceKeypair(),
-			"huaweicloud_kms_grant":              dew.ResourceKmsGrant(),
-			"huaweicloud_kms_dedicated_keystore": dew.ResourceKmsDedicatedKeystore(),
-			"huaweicloud_kms_key_material":       dew.ResourceKmsKeyMaterial(),
+			"huaweicloud_kms_data_encrypt_decrypt": dew.ResourceKmsDataEncryptDecrypt(),
+			"huaweicloud_kms_key":                  dew.ResourceKmsKey(),
+			"huaweicloud_kps_keypair":              dew.ResourceKeypair(),
+			"huaweicloud_kms_grant":                dew.ResourceKmsGrant(),
+			"huaweicloud_kms_dedicated_keystore":   dew.ResourceKmsDedicatedKeystore(),
+			"huaweicloud_kms_key_material":         dew.ResourceKmsKeyMaterial(),
 
 			"huaweicloud_lb_certificate":  lb.ResourceCertificateV2(),
 			"huaweicloud_lb_l7policy":     lb.ResourceL7PolicyV2(),
@@ -1689,6 +1693,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_secmaster_playbook_version":      secmaster.ResourcePlaybookVersion(),
 			"huaweicloud_secmaster_playbook_rule":         secmaster.ResourcePlaybookRule(),
 			"huaweicloud_secmaster_playbook_action":       secmaster.ResourcePlaybookAction(),
+			"huaweicloud_secmaster_playbook_approval":     secmaster.ResourcePlaybookApproval(),
 
 			"huaweicloud_servicestage_application":                 servicestage.ResourceApplication(),
 			"huaweicloud_servicestage_component_instance":          servicestage.ResourceComponentInstance(),
@@ -1926,6 +1931,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_organizations_account_associate":       organizations.ResourceAccountAssociate(),
 			"huaweicloud_organizations_account_invite":          organizations.ResourceAccountInvite(),
 			"huaweicloud_organizations_account_invite_accepter": organizations.ResourceAccountInviteAccepter(),
+			"huaweicloud_organizations_account_invite_decliner": organizations.ResourceAccountInviteDecliner(),
 			"huaweicloud_organizations_trusted_service":         organizations.ResourceTrustedService(),
 			"huaweicloud_organizations_policy":                  organizations.ResourcePolicy(),
 			"huaweicloud_organizations_policy_attach":           organizations.ResourcePolicyAttach(),

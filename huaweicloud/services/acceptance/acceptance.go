@@ -260,6 +260,7 @@ var (
 	// The SecMaster indicator ID
 	HW_SECMASTER_INDICATOR_TYPE_ID        = os.Getenv("HW_SECMASTER_INDICATOR_TYPE_ID")
 	HW_SECMASTER_INDICATOR_TYPE_ID_UPDATE = os.Getenv("HW_SECMASTER_INDICATOR_TYPE_ID_UPDATE")
+	HW_SECMASTER_UNAUDITED_VERSION_ID     = os.Getenv("HW_SECMASTER_UNAUDITED_VERSION_ID")
 
 	// The SecMaster workspace ID
 	HW_SECMASTER_PIPELINE_ID = os.Getenv("HW_SECMASTER_PIPELINE_ID")
@@ -340,7 +341,6 @@ var (
 	HW_DATAARTS_WORKSPACE_ID                               = os.Getenv("HW_DATAARTS_WORKSPACE_ID")
 	HW_DATAARTS_CDM_NAME                                   = os.Getenv("HW_DATAARTS_CDM_NAME")
 	HW_DATAARTS_MANAGER_ID                                 = os.Getenv("HW_DATAARTS_MANAGER_ID")
-	HW_DATAARTS_MANAGER_NAME                               = os.Getenv("HW_DATAARTS_MANAGER_NAME")
 	HW_DATAARTS_BIZ_CATALOG_ID                             = os.Getenv("HW_DATAARTS_BIZ_CATALOG_ID")
 	HW_DATAARTS_SECRECY_LEVEL_ID                           = os.Getenv("HW_DATAARTS_SECRECY_LEVEL_ID")
 	HW_DATAARTS_SECRECY_LEVEL_ID_UPDATE                    = os.Getenv("HW_DATAARTS_SECRECY_LEVEL_ID_UPDATE")
@@ -359,7 +359,7 @@ var (
 	HW_DATAARTS_CONNECTION_NAME = os.Getenv("HW_DATAARTS_CONNECTION_NAME")
 	// Data Service
 	HW_DATAARTS_REVIEWER_NAME  = os.Getenv("HW_DATAARTS_REVIEWER_NAME")
-	HW_DATAARTS_LTS_QUEUE_NAME = os.Getenv("HW_DATAARTS_LTS_QUEUE_NAME")
+	HW_DATAARTS_DLI_QUEUE_NAME = os.Getenv("HW_DATAARTS_DLI_QUEUE_NAME")
 
 	HW_EVS_AVAILABILITY_ZONE_GPSSD2 = os.Getenv("HW_EVS_AVAILABILITY_ZONE_GPSSD2")
 	HW_EVS_AVAILABILITY_ZONE_ESSD2  = os.Getenv("HW_EVS_AVAILABILITY_ZONE_ESSD2")
@@ -1430,6 +1430,13 @@ func TestAccPreCheckSecMaster(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckSecMasterPlaybookApproval(t *testing.T) {
+	if HW_SECMASTER_WORKSPACE_ID == "" || HW_SECMASTER_UNAUDITED_VERSION_ID == "" {
+		t.Skip("HW_SECMASTER_WORKSPACE_ID and HW_SECMASTER_UNAUDITED_VERSION_ID must be set for SecMaster acceptance tests")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckCcePartitionAz(t *testing.T) {
 	if HW_CCE_PARTITION_AZ == "" {
 		t.Skip("Skip the interface acceptance test because of the cce partition az is missing.")
@@ -1781,9 +1788,9 @@ func TestAccPreCheckDataArtsReviewerName(t *testing.T) {
 }
 
 // lintignore:AT003
-func TestAccPreCheckDataArtsRelatedLtsQueueName(t *testing.T) {
-	if HW_DATAARTS_LTS_QUEUE_NAME == "" {
-		t.Skip("HW_DATAARTS_LTS_QUEUE_NAME must be set for the DataService tests")
+func TestAccPreCheckDataArtsRelatedDliQueueName(t *testing.T) {
+	if HW_DATAARTS_DLI_QUEUE_NAME == "" {
+		t.Skip("HW_DATAARTS_DLI_QUEUE_NAME must be set for the DataService tests")
 	}
 }
 
@@ -1791,13 +1798,6 @@ func TestAccPreCheckDataArtsRelatedLtsQueueName(t *testing.T) {
 func TestAccPreCheckDataArtsManagerID(t *testing.T) {
 	if HW_DATAARTS_MANAGER_ID == "" {
 		t.Skip("This environment does not support DataArts Studio permission set tests")
-	}
-}
-
-// lintignore:AT003
-func TestAccPreCheckDataArtsManagerName(t *testing.T) {
-	if HW_DATAARTS_MANAGER_NAME == "" {
-		t.Skip("HW_DATAARTS_MANAGER_NAME must be set for DataArts Studio DataService API acceptance tests")
 	}
 }
 
