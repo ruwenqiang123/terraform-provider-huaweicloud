@@ -492,6 +492,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_cce_cluster":             cce.DataSourceCCEClusterV3(),
 			"huaweicloud_cce_clusters":            cce.DataSourceCCEClusters(),
 			"huaweicloud_cce_cluster_certificate": cce.DataSourceCCEClusterCertificate(),
+			"huaweicloud_cce_cluster_openid_jwks": cce.DataSourceCCEClusterOpenIDJWKS(),
 			"huaweicloud_cce_node":                cce.DataSourceNode(),
 			"huaweicloud_cce_nodes":               cce.DataSourceNodes(),
 			"huaweicloud_cce_node_pool":           cce.DataSourceCCENodePoolV3(),
@@ -575,7 +576,8 @@ func Provider() *schema.Provider {
 			// DataArts DataService
 			"huaweicloud_dataarts_dataservice_apis":      dataarts.DataSourceDataServiceApis(),
 			"huaweicloud_dataarts_dataservice_instances": dataarts.DataSourceDataServiceInstances(),
-
+			// DataArts Quality
+			"huaweicloud_dataarts_quality_tasks": dataarts.DataSourceQualityTasks(),
 			// DataArts Factory
 			"huaweicloud_dataarts_factory_jobs": dataarts.DataSourceFactoryJobs(),
 
@@ -750,11 +752,13 @@ func Provider() *schema.Provider {
 			"huaweicloud_images_image":  ims.DataSourceImagesImageV2(),
 			"huaweicloud_images_images": ims.DataSourceImagesImages(),
 
-			"huaweicloud_kms_data_key": dew.DataSourceKmsDataKeyV1(),
-			"huaweicloud_kms_grants":   dew.DataSourceKmsGrants(),
-			"huaweicloud_kms_key":      dew.DataSourceKmsKey(),
-			"huaweicloud_kms_keys":     dew.DataSourceKmsKeys(),
-			"huaweicloud_kps_keypairs": dew.DataSourceKeypairs(),
+			"huaweicloud_kms_data_key":      dew.DataSourceKmsDataKeyV1(),
+			"huaweicloud_kms_grants":        dew.DataSourceKmsGrants(),
+			"huaweicloud_kms_key":           dew.DataSourceKmsKey(),
+			"huaweicloud_kms_keys":          dew.DataSourceKmsKeys(),
+			"huaweicloud_kps_failed_tasks":  dew.DataSourceDewKpsFailedTasks(),
+			"huaweicloud_kps_running_tasks": dew.DataSourceDewKpsRunningTasks(),
+			"huaweicloud_kps_keypairs":      dew.DataSourceKeypairs(),
 
 			"huaweicloud_iotda_device_certificates":  iotda.DataSourceDeviceCertificates(),
 			"huaweicloud_iotda_amqps":                iotda.DataSourceAMQPQueues(),
@@ -1181,6 +1185,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_cci_pvc":          cci.ResourcePersistentVolumeClaimV1(),
 
 			"huaweicloud_ccm_certificate":         ccm.ResourceCCMCertificate(),
+			"huaweicloud_ccm_certificate_apply":   ccm.ResourceCertificateApply(),
 			"huaweicloud_ccm_certificate_push":    ccm.ResourceCcmCertificatePush(),
 			"huaweicloud_ccm_private_ca":          ccm.ResourcePrivateCertificateAuthority(),
 			"huaweicloud_ccm_private_certificate": ccm.ResourceCcmPrivateCertificate(),
@@ -1595,10 +1600,13 @@ func Provider() *schema.Provider {
 			"huaweicloud_dataarts_security_permission_set_member":    dataarts.ResourceSecurityPermissionSetMember(),
 			"huaweicloud_dataarts_security_permission_set_privilege": dataarts.ResourceSecurityPermissionSetPrivilege(),
 			// DataArts DataService
-			"huaweicloud_dataarts_dataservice_api":       dataarts.ResourceDataServiceApi(),
-			"huaweicloud_dataarts_dataservice_api_debug": dataarts.ResourceDataServiceApiDebug(),
-			"huaweicloud_dataarts_dataservice_app":       dataarts.ResourceDataServiceApp(),
-			"huaweicloud_dataarts_dataservice_catalog":   dataarts.ResourceDatatServiceCatalog(),
+			"huaweicloud_dataarts_dataservice_api":             dataarts.ResourceDataServiceApi(),
+			"huaweicloud_dataarts_dataservice_api_action":      dataarts.ResourceDataServiceApiAction(),
+			"huaweicloud_dataarts_dataservice_api_debug":       dataarts.ResourceDataServiceApiDebug(),
+			"huaweicloud_dataarts_dataservice_api_publish":     dataarts.ResourceDataServiceApiPublish(),
+			"huaweicloud_dataarts_dataservice_api_publishment": dataarts.ResourceDataServiceApiPublishment(),
+			"huaweicloud_dataarts_dataservice_app":             dataarts.ResourceDataServiceApp(),
+			"huaweicloud_dataarts_dataservice_catalog":         dataarts.ResourceDatatServiceCatalog(),
 
 			"huaweicloud_mpc_transcoding_template":       mpc.ResourceTranscodingTemplate(),
 			"huaweicloud_mpc_transcoding_template_group": mpc.ResourceTranscodingTemplateGroup(),

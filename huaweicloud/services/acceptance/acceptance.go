@@ -82,6 +82,8 @@ var (
 
 	HW_WAF_ENABLE_FLAG = os.Getenv("HW_WAF_ENABLE_FLAG")
 
+	HW_DEW_ENABLE_FLAG = os.Getenv("HW_DEW_ENABLE_FLAG")
+
 	HW_DEST_REGION          = os.Getenv("HW_DEST_REGION")
 	HW_DEST_PROJECT_ID      = os.Getenv("HW_DEST_PROJECT_ID")
 	HW_DEST_PROJECT_ID_TEST = os.Getenv("HW_DEST_PROJECT_ID_TEST")
@@ -119,6 +121,7 @@ var (
 	HW_CCM_CERTIFICATE_PROJECT_UPDATED = os.Getenv("HW_CCM_CERTIFICATE_PROJECT_UPDATED")
 	HW_CCM_CERTIFICATE_NAME            = os.Getenv("HW_CCM_CERTIFICATE_NAME")
 	HW_CCM_SSL_CERTIFICATE_ID          = os.Getenv("HW_CCM_SSL_CERTIFICATE_ID")
+	HW_CCM_ENABLE_FLAG                 = os.Getenv("HW_CCM_ENABLE_FLAG")
 
 	HW_DMS_ENVIRONMENT   = os.Getenv("HW_DMS_ENVIRONMENT")
 	HW_SMS_SOURCE_SERVER = os.Getenv("HW_SMS_SOURCE_SERVER")
@@ -358,8 +361,9 @@ var (
 	HW_DATAARTS_CONNECTION_ID   = os.Getenv("HW_DATAARTS_CONNECTION_ID")
 	HW_DATAARTS_CONNECTION_NAME = os.Getenv("HW_DATAARTS_CONNECTION_NAME")
 	// Data Service
-	HW_DATAARTS_REVIEWER_NAME  = os.Getenv("HW_DATAARTS_REVIEWER_NAME")
-	HW_DATAARTS_DLI_QUEUE_NAME = os.Getenv("HW_DATAARTS_DLI_QUEUE_NAME")
+	HW_DATAARTS_REVIEWER_NAME       = os.Getenv("HW_DATAARTS_REVIEWER_NAME")
+	HW_DATAARTS_DLI_QUEUE_NAME      = os.Getenv("HW_DATAARTS_DLI_QUEUE_NAME")
+	HW_DATAARTS_INSTANCE_ID_IN_APIG = os.Getenv("HW_DATAARTS_INSTANCE_ID_IN_APIG")
 
 	HW_EVS_AVAILABILITY_ZONE_GPSSD2 = os.Getenv("HW_EVS_AVAILABILITY_ZONE_GPSSD2")
 	HW_EVS_AVAILABILITY_ZONE_ESSD2  = os.Getenv("HW_EVS_AVAILABILITY_ZONE_ESSD2")
@@ -1151,6 +1155,13 @@ func TestAccPreCheckCCMSSLCertificateId(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckCCMEnableFlag(t *testing.T) {
+	if HW_CCM_ENABLE_FLAG == "" {
+		t.Skip("Skip the CCM acceptance tests.")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckKms(t *testing.T) {
 	if HW_KMS_ENVIRONMENT == "" {
 		t.Skip("This environment does not support KMS tests")
@@ -1351,7 +1362,7 @@ func TestAccPreCheckWorkloadName(t *testing.T) {
 // lintignore:AT003
 func TestAccPreCheckCceClusterId(t *testing.T) {
 	if HW_CCE_CLUSTER_ID == "" {
-		t.Skip("HW_CCE_CLUSTER_ID must be set for SWR image trigger acceptance tests")
+		t.Skip("HW_CCE_CLUSTER_ID must be set for this acceptance test")
 	}
 }
 
@@ -1795,6 +1806,13 @@ func TestAccPreCheckDataArtsRelatedDliQueueName(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckDataArtsDataServiceApigInstanceId(t *testing.T) {
+	if HW_DATAARTS_INSTANCE_ID_IN_APIG == "" {
+		t.Skip("HW_DATAARTS_INSTANCE_ID_IN_APIG must be set for the DataService tests")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckDataArtsManagerID(t *testing.T) {
 	if HW_DATAARTS_MANAGER_ID == "" {
 		t.Skip("This environment does not support DataArts Studio permission set tests")
@@ -2125,5 +2143,14 @@ func TestAccPrecheckSFSTurboBackupId(t *testing.T) {
 func TestAccPrecheckEVSTransferAccepter(t *testing.T) {
 	if HW_EVS_TRANSFER_ID == "" || HW_EVS_TRANSFER_AUTH_KEY == "" {
 		t.Skip("HW_EVS_TRANSFER_ID and HW_EVS_TRANSFER_AUTH_KEY must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
+func TestAccPrecheckDewFlag(t *testing.T) {
+	// The key pair operation task, such as key pair bind or unbind task
+	// Query the task execution status(running or failed)
+	if HW_DEW_ENABLE_FLAG == "" {
+		t.Skip("HW_DEW_ENABLE_FLAG must be set for the acceptance test")
 	}
 }

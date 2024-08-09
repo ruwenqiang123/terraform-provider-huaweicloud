@@ -60,7 +60,7 @@ func ResourceImsImage() *schema.Resource {
 				Optional:     true,
 				Computed:     true,
 				ForceNew:     true,
-				ExactlyOneOf: []string{"image_url", "backup_id"},
+				ExactlyOneOf: []string{"image_url", "backup_id", "volume_id"},
 			},
 			"vault_id": {
 				Type:         schema.TypeString,
@@ -81,6 +81,14 @@ func ResourceImsImage() *schema.Resource {
 				Optional:     true,
 				ForceNew:     true,
 				RequiredWith: []string{"min_disk"},
+			},
+			// This filed is required when creating a data image from data disk of ECS,
+			// and this data disk must be bound to the ECS instance.
+			"volume_id": {
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+				Computed: true,
 			},
 			"min_disk": {
 				Type:          schema.TypeInt,
@@ -175,58 +183,92 @@ func resourceContainerImageTags(d *schema.ResourceData) []cloudimages.ImageTag {
 }
 
 func resourceImsImageCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	cfg := meta.(*config.Config)
-	region := cfg.GetRegion(d)
+	var (
+		cfg        = meta.(*config.Config)
+		region     = cfg.GetRegion(d)
+		createResp *cloudimages.JobResponse
+	)
 
 	imsClient, err := cfg.ImageV2Client(region)
 	if err != nil {
-		return diag.Errorf("error creating IMS client: %s", err)
+		return diag.Errorf("error creating IMS v2 client: %s", err)
 	}
 
-	var v *cloudimages.JobResponse
 	imageTags := resourceContainerImageTags(d)
-	if val, ok := d.GetOk("instance_id"); ok {
-		v, err = createByInstanceId(d, cfg, imsClient, val.(string), imageTags)
-	} else if val, ok = d.GetOk("image_url"); ok {
-		v, err = createByImageUrl(d, cfg, imsClient, val.(string), imageTags)
-	} else {
-		v, err = createByBackupId(d, cfg, imageTags)
+	instanceId, instanceIdOk := d.GetOk("instance_id")
+	imageUrl, imageUrlOk := d.GetOk("image_url")
+	volumeId, volumeIdOk := d.GetOk("volume_id")
+
+	switch {
+	case instanceIdOk:
+		createResp, err = createByInstanceId(d, cfg, imsClient, instanceId.(string), imageTags)
+	case imageUrlOk:
+		createResp, err = createByImageUrl(d, cfg, imsClient, imageUrl.(string), imageTags)
+	case volumeIdOk:
+		createResp, err = createDataImageByVolumeId(d, imsClient, volumeId.(string), imageTags)
+	default:
+		createResp, err = createByBackupId(d, cfg, imageTags)
 	}
 
 	if err != nil {
 		return diag.Errorf("error creating IMS image: %s", err)
 	}
-	log.Printf("[INFO] IMS Job ID: %s", v.JobID)
 
 	// Wait for the image to become available.
-	log.Printf("[DEBUG] Waiting for IMS image to become available")
-	err = cloudimages.WaitForJobSuccess(imsClient, int(d.Timeout(schema.TimeoutCreate)/time.Second), v.JobID)
+	err = cloudimages.WaitForJobSuccess(imsClient, int(d.Timeout(schema.TimeoutCreate)/time.Second), createResp.JobID)
 	if err != nil {
-		return diag.FromErr(err)
+		return diag.Errorf("error waiting for IMS image to become available: %s", err)
 	}
 
-	entity, err := cloudimages.GetJobEntity(imsClient, v.JobID, "image_id")
+	entity, err := cloudimages.GetJobEntity(imsClient, createResp.JobID, "image_id")
 	if err != nil {
 		return diag.FromErr(err)
 	}
 
 	if id, ok := entity.(string); ok {
-		log.Printf("[INFO] IMS ID: %s", id)
 		// Store the ID now
 		d.SetId(id)
 		return resourceImsImageRead(ctx, d, meta)
 	}
+
 	return diag.Errorf("unexpected conversion error in resourceImsImageCreate.")
+}
+
+func createDataImageByVolumeId(d *schema.ResourceData, client *golangsdk.ServiceClient, volumeId string,
+	imageTags []cloudimages.ImageTag) (*cloudimages.JobResponse, error) {
+	var tagStrings []string
+	for _, tag := range imageTags {
+		tagStrings = append(tagStrings, fmt.Sprintf("%s.%s", tag.Key, tag.Value))
+	}
+
+	dataImageOpts := []cloudimages.DataImage{
+		{
+			Name:        d.Get("name").(string),
+			VolumeId:    volumeId,
+			Description: d.Get("description").(string),
+			Tags:        tagStrings,
+		},
+	}
+
+	createOpts := &cloudimages.CreateDataImageByServerOpts{
+		DataImages: dataImageOpts,
+	}
+	log.Printf("[DEBUG] Create data image by server options: %#v", createOpts)
+	return cloudimages.CreateDataImageByServer(client, createOpts).ExtractJobResponse()
 }
 
 func createByInstanceId(d *schema.ResourceData, cfg *config.Config, client *golangsdk.ServiceClient,
 	instanceId string, imageTags []cloudimages.ImageTag) (*cloudimages.JobResponse, error) {
 	region := cfg.GetRegion(d)
+
 	// if vault_id is not empty, then a whole image wil be created
-	if vaultId, ok := d.GetOk("vault_id"); ok {
+	vaultId, vaultIdOk := d.GetOk("vault_id")
+
+	switch {
+	case vaultIdOk:
 		imsClient, err := cfg.ImageV1Client(region)
 		if err != nil {
-			return nil, fmt.Errorf("error creating IMS client: %s", err)
+			return nil, fmt.Errorf("error creating IMS v1 client: %s", err)
 		}
 		createOpts := &cloudimages.CreateWholeImageOpts{
 			Name:                d.Get("name").(string),
@@ -238,20 +280,21 @@ func createByInstanceId(d *schema.ResourceData, cfg *config.Config, client *gola
 			EnterpriseProjectID: common.GetEnterpriseProjectID(d, cfg),
 			VaultId:             vaultId.(string),
 		}
-		log.Printf("[DEBUG] Create Options: %#v", createOpts)
+		log.Printf("[DEBUG] Create whole image options: %#v", createOpts)
 		return cloudimages.CreateWholeImageByServer(imsClient, createOpts).ExtractJobResponse()
+	default:
+		createOpts := &cloudimages.CreateByServerOpts{
+			Name:                d.Get("name").(string),
+			Description:         d.Get("description").(string),
+			MaxRam:              d.Get("max_ram").(int),
+			MinRam:              d.Get("min_ram").(int),
+			InstanceId:          instanceId,
+			ImageTags:           imageTags,
+			EnterpriseProjectID: common.GetEnterpriseProjectID(d, cfg),
+		}
+		log.Printf("[DEBUG] Create by server options: %#v", createOpts)
+		return cloudimages.CreateImageByServer(client, createOpts).ExtractJobResponse()
 	}
-	createOpts := &cloudimages.CreateByServerOpts{
-		Name:                d.Get("name").(string),
-		Description:         d.Get("description").(string),
-		MaxRam:              d.Get("max_ram").(int),
-		MinRam:              d.Get("min_ram").(int),
-		InstanceId:          instanceId,
-		ImageTags:           imageTags,
-		EnterpriseProjectID: common.GetEnterpriseProjectID(d, cfg),
-	}
-	log.Printf("[DEBUG] Create Options: %#v", createOpts)
-	return cloudimages.CreateImageByServer(client, createOpts).ExtractJobResponse()
 }
 
 func createByImageUrl(d *schema.ResourceData, cfg *config.Config, client *golangsdk.ServiceClient,
@@ -270,7 +313,7 @@ func createByImageUrl(d *schema.ResourceData, cfg *config.Config, client *golang
 		ImageTags:           imageTags,
 		EnterpriseProjectID: common.GetEnterpriseProjectID(d, cfg),
 	}
-	log.Printf("[DEBUG] Create Options: %#v", createOpts)
+	log.Printf("[DEBUG] Create by OBS options: %#v", createOpts)
 	return cloudimages.CreateImageByOBS(client, createOpts).ExtractJobResponse()
 }
 
@@ -278,7 +321,7 @@ func createByBackupId(d *schema.ResourceData, cfg *config.Config,
 	imageTags []cloudimages.ImageTag) (*cloudimages.JobResponse, error) {
 	imsClient, err := cfg.ImageV1Client(cfg.GetRegion(d))
 	if err != nil {
-		return nil, fmt.Errorf("error creating IMS client: %s", err)
+		return nil, fmt.Errorf("error creating IMS v1 client: %s", err)
 	}
 	createOpts := &cloudimages.CreateWholeImageOpts{
 		Name:                d.Get("name").(string),
@@ -290,7 +333,7 @@ func createByBackupId(d *schema.ResourceData, cfg *config.Config,
 		EnterpriseProjectID: common.GetEnterpriseProjectID(d, cfg),
 		WholeImageType:      "CBR",
 	}
-	log.Printf("[DEBUG] Create Options: %#v", createOpts)
+	log.Printf("[DEBUG] Create whole image options: %#v", createOpts)
 	return cloudimages.CreateWholeImageByServer(imsClient, createOpts).ExtractJobResponse()
 }
 
@@ -331,21 +374,23 @@ func getInstanceID(data string) string {
 }
 
 func resourceImsImageRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	cfg := meta.(*config.Config)
-	region := cfg.GetRegion(d)
+	var (
+		cfg    = meta.(*config.Config)
+		region = cfg.GetRegion(d)
+		mErr   *multierror.Error
+	)
 
 	imsClient, err := cfg.ImageV2Client(region)
 	if err != nil {
-		return diag.Errorf("error creating IMS client: %s", err)
+		return diag.Errorf("error creating IMS v2 client: %s", err)
 	}
 
 	img, err := GetCloudImage(imsClient, d.Id())
 	if err != nil {
 		return common.CheckDeletedDiag(d, err, "error retrieving image")
 	}
-	log.Printf("[DEBUG] Retrieved Image %s: %#v", d.Id(), img)
 
-	mErr := multierror.Append(
+	mErr = multierror.Append(
 		d.Set("name", img.Name),
 		d.Set("description", img.Description),
 		d.Set("min_ram", img.MinRam),
@@ -398,6 +443,22 @@ func resourceImsImageRead(_ context.Context, d *schema.ResourceData, meta interf
 			d.Set("instance_id", getInstanceID(img.DataOrigin)),
 			d.Set("data_origin", img.DataOrigin),
 		)
+
+		results := strings.Split(img.DataOrigin, ",")
+		if len(results) == 2 {
+			switch results[0] {
+			case "instance":
+				mErr = multierror.Append(
+					mErr,
+					d.Set("instance_id", results[1]),
+				)
+			case "volume":
+				mErr = multierror.Append(
+					mErr,
+					d.Set("volume_id", results[1]),
+				)
+			}
+		}
 	}
 
 	// Set image tags
@@ -415,15 +476,17 @@ func resourceImsImageRead(_ context.Context, d *schema.ResourceData, meta interf
 }
 
 func setTagForImage(d *schema.ResourceData, meta interface{}, imageID string, tagMap map[string]interface{}) error {
-	cfg := meta.(*config.Config)
-	region := cfg.GetRegion(d)
+	var (
+		cfg     = meta.(*config.Config)
+		region  = cfg.GetRegion(d)
+		tagList []tags.Tag
+	)
 
 	client, err := cfg.ImageV2Client(region)
 	if err != nil {
-		return fmt.Errorf("error creating IMS client: %s", err)
+		return fmt.Errorf("error creating IMS v2 client: %s", err)
 	}
 
-	var tagList []tags.Tag
 	for k, v := range tagMap {
 		tag := tags.Tag{
 			Key:   k,
@@ -442,38 +505,68 @@ func setTagForImage(d *schema.ResourceData, meta interface{}, imageID string, ta
 }
 
 func resourceImsImageUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	cfg := meta.(*config.Config)
-	region := cfg.GetRegion(d)
+	var (
+		cfg    = meta.(*config.Config)
+		region = cfg.GetRegion(d)
+	)
 
 	imsClient, err := cfg.ImageV2Client(region)
 	if err != nil {
-		return diag.Errorf("error creating IMS client: %s", err)
+		return diag.Errorf("error creating IMS v2 client: %s", err)
 	}
 
-	if d.HasChanges("name", "min_ram", "max_ram") {
+	if d.HasChange("name") {
 		updateOpts := make(cloudimages.UpdateOpts, 0)
 		name := cloudimages.UpdateImageProperty{
 			Op:    cloudimages.ReplaceOp,
 			Name:  "name",
 			Value: d.Get("name").(string),
 		}
+		updateOpts = append(updateOpts, name)
+
+		log.Printf("[DEBUG] Update name options: %#v", updateOpts)
+		_, err = cloudimages.Update(imsClient, d.Id(), updateOpts).Extract()
+
+		if err != nil {
+			return diag.Errorf("error updating image name: %s", err)
+		}
+	}
+
+	if d.HasChange("min_ram") {
+		updateOpts := make(cloudimages.UpdateOpts, 0)
 		minRAM := cloudimages.UpdateImageProperty{
 			Op:    cloudimages.ReplaceOp,
 			Name:  "min_ram",
 			Value: d.Get("min_ram").(int),
 		}
+		updateOpts = append(updateOpts, minRAM)
+
+		log.Printf("[DEBUG] Update min_ram options: %#v", updateOpts)
+		_, err = cloudimages.Update(imsClient, d.Id(), updateOpts).Extract()
+
+		if err != nil {
+			return diag.Errorf("error updating image min_ram: %s", err)
+		}
+	}
+
+	if d.HasChange("max_ram") {
+		updateOpts := make(cloudimages.UpdateOpts, 0)
 		maxRAM := cloudimages.UpdateImageProperty{
 			Op:    cloudimages.ReplaceOp,
 			Name:  "max_ram",
 			Value: strconv.Itoa(d.Get("max_ram").(int)),
 		}
-		updateOpts = append(updateOpts, name, minRAM, maxRAM)
+		updateOpts = append(updateOpts, maxRAM)
 
-		log.Printf("[DEBUG] Update Options: %#v", updateOpts)
+		log.Printf("[DEBUG] Update max_ram options: %#v", updateOpts)
 		_, err = cloudimages.Update(imsClient, d.Id(), updateOpts).Extract()
-
 		if err != nil {
-			return diag.Errorf("error updating image: %s", err)
+			// when create a new data image from the data disk bound to the ECS instance, the `max_ram` attribute does
+			// not exist. So we need to deal with the errors caused by directly changing it.
+			err = dealModifyMaxRAMErr(d, imsClient, err)
+			if err != nil {
+				return diag.FromErr(err)
+			}
 		}
 	}
 
@@ -486,7 +579,7 @@ func resourceImsImageUpdate(ctx context.Context, d *schema.ResourceData, meta in
 		}
 		updateOpts = append(updateOpts, description)
 
-		log.Printf("[DEBUG] Update description Options: %#v", updateOpts)
+		log.Printf("[DEBUG] Update description options: %#v", updateOpts)
 		_, err = cloudimages.Update(imsClient, d.Id(), updateOpts).Extract()
 		if err != nil {
 			err = dealModifyDescriptionErr(d, imsClient, err)
@@ -556,16 +649,54 @@ func dealModifyDescriptionErr(d *schema.ResourceData, client *golangsdk.ServiceC
 	return fmt.Errorf("error updating image description: %s", err)
 }
 
+// if the argument of `max_ram` is not set when creating the image or has been removed, it will cause error if you
+// change it directly, and it is needed to add it first
+func dealModifyMaxRAMErr(d *schema.ResourceData, client *golangsdk.ServiceClient, err error) error {
+	if errCode, ok := err.(golangsdk.ErrDefault400); ok {
+		var apiError interface{}
+		if jsonErr := json.Unmarshal(errCode.Body, &apiError); jsonErr != nil {
+			return jsonErr
+		}
+
+		errorCode, errorCodeErr := jmespath.Search("error.code", apiError)
+		if errorCodeErr != nil {
+			return fmt.Errorf("error parse errorCode from response body: %s", errorCodeErr)
+		}
+
+		if errorCode != "IMG.0035" {
+			return err
+		}
+
+		updateOpts := make(cloudimages.UpdateOpts, 0)
+		description := cloudimages.UpdateImageProperty{
+			Op:    cloudimages.AddOp,
+			Name:  "max_ram",
+			Value: d.Get("max_ram").(int),
+		}
+		updateOpts = append(updateOpts, description)
+
+		_, err = cloudimages.Update(client, d.Id(), updateOpts).Extract()
+		if err != nil {
+			return fmt.Errorf("error updating image max_ram: %s", err)
+		}
+
+		return nil
+	}
+
+	return fmt.Errorf("error updating image max_ram field: %s", err)
+}
+
 func resourceImsImageDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	cfg := meta.(*config.Config)
-	region := cfg.GetRegion(d)
+	var (
+		cfg    = meta.(*config.Config)
+		region = cfg.GetRegion(d)
+	)
 
 	imageClient, err := cfg.ImageV2Client(region)
 	if err != nil {
-		return diag.Errorf("error creating IMS client: %s", err)
+		return diag.Errorf("error creating IMS v2 client: %s", err)
 	}
 
-	log.Printf("[DEBUG] Deleting Image %s", d.Id())
 	if err = images.Delete(imageClient, d.Id()).Err; err != nil {
 		return common.CheckDeletedDiag(d, err, "error deleting Image")
 	}
@@ -584,7 +715,6 @@ func resourceImsImageDelete(ctx context.Context, d *schema.ResourceData, meta in
 		return diag.Errorf("error deleting image: %s", err)
 	}
 
-	d.SetId("")
 	return nil
 }
 
@@ -593,7 +723,6 @@ func waitForImageDelete(imageClient *golangsdk.ServiceClient, imageID string) re
 		r, err := images.Get(imageClient, imageID).Extract()
 		if err != nil {
 			if _, ok := err.(golangsdk.ErrDefault404); ok {
-				log.Printf("[INFO] Successfully deleted image %s", imageID)
 				return r, "DELETED", nil
 			}
 			return r, "ACTIVE", err
@@ -604,19 +733,21 @@ func waitForImageDelete(imageClient *golangsdk.ServiceClient, imageID string) re
 }
 
 func resourceImsImageImport(_ context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
-	cfg := meta.(*config.Config)
-	region := cfg.GetRegion(d)
+	var (
+		cfg    = meta.(*config.Config)
+		region = cfg.GetRegion(d)
+		mErr   *multierror.Error
+	)
+
 	imsClient, err := cfg.ImageV2Client(region)
 	if err != nil {
-		return []*schema.ResourceData{d}, fmt.Errorf("error creating IMS client: %s", err)
+		return []*schema.ResourceData{d}, fmt.Errorf("error creating IMS v2 client: %s", err)
 	}
 
 	img, err := GetCloudImage(imsClient, d.Id())
 	if err != nil {
 		return []*schema.ResourceData{d}, err
 	}
-
-	var mErr *multierror.Error
 
 	if img.WholeImage == "true" {
 		cbrClient, err := cfg.CbrV3Client(region)
