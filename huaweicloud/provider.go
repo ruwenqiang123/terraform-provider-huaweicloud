@@ -514,9 +514,10 @@ func Provider() *schema.Provider {
 			"huaweicloud_cdn_logs":                cdn.DataSourceCdnLogs(),
 			"huaweicloud_cdn_analytics":           cdn.DataSourceCdnAnalytics(),
 
-			"huaweicloud_ces_agent_dimensions": ces.DataSourceCesAgentDimensions(),
-			"huaweicloud_ces_metrics":          ces.DataSourceCesMetrics(),
-			"huaweicloud_ces_resource_groups":  ces.DataSourceCesGroups(),
+			"huaweicloud_ces_agent_dimensions":                 ces.DataSourceCesAgentDimensions(),
+			"huaweicloud_ces_metrics":                          ces.DataSourceCesMetrics(),
+			"huaweicloud_ces_resource_groups":                  ces.DataSourceCesGroups(),
+			"huaweicloud_ces_resource_group_service_resources": ces.DataSourceCesGroupServiceResources(),
 
 			"huaweicloud_cfw_firewalls":             cfw.DataSourceFirewalls(),
 			"huaweicloud_cfw_address_groups":        cfw.DataSourceCfwAddressGroups(),
@@ -974,6 +975,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_waf_rules_precise_protection":             waf.DataSourceWafRulesPreciseProtection(),
 			"huaweicloud_waf_rules_web_tamper_protection":          waf.DataSourceWafRulesWebTamperProtection(),
 
+			"huaweicloud_dws_alarm_subscriptions":     dws.DataSourceAlarmSubscriptions(),
 			"huaweicloud_dws_availability_zones":      dws.DataSourceDwsAvailabilityZones(),
 			"huaweicloud_dws_clusters":                dws.DataSourceDwsClusters(),
 			"huaweicloud_dws_disaster_recovery_tasks": dws.DataSourceDisasterRecoveryTasks(),
@@ -982,6 +984,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_dws_logical_cluster_rings":   dws.DataSourceLogicalClusterRings(),
 			"huaweicloud_dws_logical_clusters":        dws.DataSourceDwsLogicalClusters(),
 			"huaweicloud_dws_quotas":                  dws.DataSourceDwsQuotas(),
+			"huaweicloud_dws_snapshot_policies":       dws.DataSourceDwsSnapshotPolicies(),
 			"huaweicloud_dws_snapshots":               dws.DataSourceDwsSnapshots(),
 			"huaweicloud_dws_workload_queues":         dws.DataSourceWorkloadQueues(),
 
@@ -1580,7 +1583,9 @@ func Provider() *schema.Provider {
 			"huaweicloud_dataarts_architecture_model":                  dataarts.ResourceArchitectureModel(),
 			"huaweicloud_dataarts_architecture_subject":                dataarts.ResourceArchitectureSubject(),
 			"huaweicloud_dataarts_architecture_table_model":            dataarts.ResourceArchitectureTableModel(),
+			"huaweicloud_dataarts_architecture_batch_publish":          dataarts.ResourceArchitectureBatchPublish(),
 			"huaweicloud_dataarts_architecture_batch_publishment":      dataarts.ResourceArchitectureBatchPublishment(),
+			"huaweicloud_dataarts_architecture_batch_unpublish":        dataarts.ResourceArchitectureBatchUnpublish(),
 			"huaweicloud_dataarts_architecture_business_metric":        dataarts.ResourceBusinessMetric(),
 			"huaweicloud_dataarts_architecture_process":                dataarts.ResourceArchitectureProcess(),
 			"huaweicloud_dataarts_architecture_code_table":             dataarts.ResourceArchitectureCodeTable(),
