@@ -415,6 +415,9 @@ func Provider() *schema.Provider {
 			"huaweicloud_aom_alarm_action_rules":              aom.DataSourceAomAlarmActionRules(),
 			"huaweicloud_aom_prom_instances":                  aom.DataSourceAomPromInstances(),
 			"huaweicloud_aom_multi_account_aggregation_rules": aom.DataSourceMultiAccountAggregationRules(),
+			"huaweicloud_aom_aggregation_metrics":             aom.DataSourceAggregationMetrics(),
+			"huaweicloud_aom_organization_accounts":           aom.DataSourceOrganizationAccounts(),
+			"huaweicloud_aom_dashboards_folders":              aom.DataSourceDashboardsFolders(),
 
 			"huaweicloud_apig_acl_policies":                       apig.DataSourceAclPolicies(),
 			"huaweicloud_apig_api_associated_acl_policies":        apig.DataSourceApiAssociatedAclPolicies(),
@@ -893,6 +896,8 @@ func Provider() *schema.Provider {
 
 			"huaweicloud_sdrs_domain": sdrs.DataSourceSDRSDomain(),
 
+			"huaweicloud_secmaster_workflows": secmaster.DataSourceSecmasterWorkflows(),
+
 			"huaweicloud_servicestage_component_runtimes": servicestage.DataSourceComponentRuntimes(),
 
 			"huaweicloud_smn_topics":            smn.DataSourceTopics(),
@@ -1081,6 +1086,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_access_analyzer_archive_rule": accessanalyzer.ResourceArchiveRule(),
 
 			"huaweicloud_aom_alarm_rule":                     aom.ResourceAlarmRule(),
+			"huaweicloud_aomv4_alarm_rule":                   aom.ResourceAlarmRuleV4(),
 			"huaweicloud_aom_event_alarm_rule":               aom.ResourceEventAlarmRule(),
 			"huaweicloud_aom_service_discovery_rule":         aom.ResourceServiceDiscoveryRule(),
 			"huaweicloud_aom_alarm_action_rule":              aom.ResourceAlarmActionRule(),
@@ -1090,6 +1096,8 @@ func Provider() *schema.Provider {
 			"huaweicloud_aom_cmdb_environment":               aom.ResourceCmdbEnvironment(),
 			"huaweicloud_aom_prom_instance":                  aom.ResourcePromInstance(),
 			"huaweicloud_aom_multi_account_aggregation_rule": aom.ResourceMultiAccountAggregationRule(),
+			"huaweicloud_aom_dashboards_folder":              aom.ResourceDashboardsFolder(),
+			"huaweicloud_aom_cloud_service_access":           aom.ResourceCloudServiceAccess(),
 
 			"huaweicloud_rfs_stack": rfs.ResourceStack(),
 
@@ -1476,6 +1484,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_identity_login_policy":          iam.ResourceIdentityLoginPolicy(),
 			"huaweicloud_identity_virtual_mfa_device":    iam.ResourceIdentityVirtualMFADevice(),
 			"huaweicloud_identity_user_token":            iam.ResourceIdentityUserToken(),
+			"huaweicloud_identity_policy":                iam.ResourceIdentityPolicy(),
 
 			"huaweicloud_identitycenter_user":                     identitycenter.ResourceIdentityCenterUser(),
 			"huaweicloud_identitycenter_group":                    identitycenter.ResourceIdentityCenterGroup(),
