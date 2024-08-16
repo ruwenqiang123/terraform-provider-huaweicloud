@@ -557,9 +557,10 @@ func Provider() *schema.Provider {
 			"huaweicloud_cph_phone_flavors":  cph.DataSourcePhoneFlavors(),
 			"huaweicloud_cph_phone_images":   cph.DataSourcePhoneImages(),
 
+			"huaweicloud_csms_events":                   dew.DataSourceDewCsmsEvents(),
 			"huaweicloud_csms_secrets":                  dew.DataSourceDewCsmsSecrets(),
 			"huaweicloud_csms_secret_version":           dew.DataSourceDewCsmsSecret(),
-			"huaweicloud_csms_events":                   dew.DataSourceDewCsmsEvents(),
+			"huaweicloud_csms_secret_versions":          dew.DataSourceDewCsmsSecretVersions(),
 			"huaweicloud_css_flavors":                   css.DataSourceCssFlavors(),
 			"huaweicloud_css_clusters":                  css.DataSourceCssClusters(),
 			"huaweicloud_css_logstash_pipelines":        css.DataSourceCssLogstashPipelines(),
@@ -577,6 +578,7 @@ func Provider() *schema.Provider {
 			// DataArts Architecture
 			"huaweicloud_dataarts_architecture_ds_template_optionals": dataarts.DataSourceTemplateOptionalFields(),
 			"huaweicloud_dataarts_architecture_model_statistic":       dataarts.DataSourceArchitectureModelStatistic(),
+			"huaweicloud_dataarts_architecture_table_models":          dataarts.DataSourceArchitectureTableModels(),
 			// DataArts DataService
 			"huaweicloud_dataarts_dataservice_apis":      dataarts.DataSourceDataServiceApis(),
 			"huaweicloud_dataarts_dataservice_instances": dataarts.DataSourceDataServiceInstances(),
@@ -896,7 +898,8 @@ func Provider() *schema.Provider {
 
 			"huaweicloud_sdrs_domain": sdrs.DataSourceSDRSDomain(),
 
-			"huaweicloud_secmaster_workflows": secmaster.DataSourceSecmasterWorkflows(),
+			"huaweicloud_secmaster_workflows":  secmaster.DataSourceSecmasterWorkflows(),
+			"huaweicloud_secmaster_workspaces": secmaster.DataSourceSecmasterWorkspaces(),
 
 			"huaweicloud_servicestage_component_runtimes": servicestage.DataSourceComponentRuntimes(),
 
@@ -982,6 +985,7 @@ func Provider() *schema.Provider {
 
 			"huaweicloud_dws_alarm_subscriptions":     dws.DataSourceAlarmSubscriptions(),
 			"huaweicloud_dws_availability_zones":      dws.DataSourceDwsAvailabilityZones(),
+			"huaweicloud_dws_cluster_logs":            dws.DataSourceDwsClusterLogs(),
 			"huaweicloud_dws_clusters":                dws.DataSourceDwsClusters(),
 			"huaweicloud_dws_disaster_recovery_tasks": dws.DataSourceDisasterRecoveryTasks(),
 			"huaweicloud_dws_event_subscriptions":     dws.DataSourceEventSubscriptions(),
@@ -991,6 +995,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_dws_quotas":                  dws.DataSourceDwsQuotas(),
 			"huaweicloud_dws_snapshot_policies":       dws.DataSourceDwsSnapshotPolicies(),
 			"huaweicloud_dws_snapshots":               dws.DataSourceDwsSnapshots(),
+			"huaweicloud_dws_workload_plans":          dws.DataSourceDwsWorkloadPlans(),
 			"huaweicloud_dws_workload_queues":         dws.DataSourceWorkloadQueues(),
 
 			"huaweicloud_workspace_desktops": workspace.DataSourceDesktops(),
@@ -1616,6 +1621,8 @@ func Provider() *schema.Provider {
 			// DataArts DataService
 			"huaweicloud_dataarts_dataservice_api":             dataarts.ResourceDataServiceApi(),
 			"huaweicloud_dataarts_dataservice_api_action":      dataarts.ResourceDataServiceApiAction(),
+			"huaweicloud_dataarts_dataservice_api_auth":        dataarts.ResourceDataServiceApiAuth(),
+			"huaweicloud_dataarts_dataservice_api_auth_action": dataarts.ResourceDataServiceApiAuthAction(),
 			"huaweicloud_dataarts_dataservice_api_debug":       dataarts.ResourceDataServiceApiDebug(),
 			"huaweicloud_dataarts_dataservice_api_publish":     dataarts.ResourceDataServiceApiPublish(),
 			"huaweicloud_dataarts_dataservice_api_publishment": dataarts.ResourceDataServiceApiPublishment(),
