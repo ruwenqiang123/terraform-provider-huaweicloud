@@ -518,6 +518,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_cdn_analytics":           cdn.DataSourceCdnAnalytics(),
 
 			"huaweicloud_ces_agent_dimensions":                 ces.DataSourceCesAgentDimensions(),
+			"huaweicloud_ces_dashboards":                       ces.DataSourceCesDashboards(),
 			"huaweicloud_ces_metrics":                          ces.DataSourceCesMetrics(),
 			"huaweicloud_ces_resource_groups":                  ces.DataSourceCesGroups(),
 			"huaweicloud_ces_resource_group_service_resources": ces.DataSourceCesGroupServiceResources(),
@@ -580,8 +581,10 @@ func Provider() *schema.Provider {
 			"huaweicloud_dataarts_architecture_model_statistic":       dataarts.DataSourceArchitectureModelStatistic(),
 			"huaweicloud_dataarts_architecture_table_models":          dataarts.DataSourceArchitectureTableModels(),
 			// DataArts DataService
-			"huaweicloud_dataarts_dataservice_apis":      dataarts.DataSourceDataServiceApis(),
-			"huaweicloud_dataarts_dataservice_instances": dataarts.DataSourceDataServiceInstances(),
+			"huaweicloud_dataarts_dataservice_apis":            dataarts.DataSourceDataServiceApis(),
+			"huaweicloud_dataarts_dataservice_apps":            dataarts.DataSourceDataServiceApps(),
+			"huaweicloud_dataarts_dataservice_authorized_apps": dataarts.DataSourceDataServiceAuthorizedApps(),
+			"huaweicloud_dataarts_dataservice_instances":       dataarts.DataSourceDataServiceInstances(),
 			// DataArts Quality
 			"huaweicloud_dataarts_quality_tasks": dataarts.DataSourceQualityTasks(),
 			// DataArts Factory
@@ -667,6 +670,7 @@ func Provider() *schema.Provider {
 
 			"huaweicloud_eg_custom_event_channels": eg.DataSourceCustomEventChannels(),
 			"huaweicloud_eg_custom_event_sources":  eg.DataSourceCustomEventSources(),
+			"huaweicloud_eg_event_channels":        eg.DataSourceEventChannels(),
 
 			"huaweicloud_enterprise_project":  eps.DataSourceEnterpriseProject(),
 			"huaweicloud_enterprise_projects": eps.DataSourceEnterpriseProjects(),
@@ -898,8 +902,10 @@ func Provider() *schema.Provider {
 
 			"huaweicloud_sdrs_domain": sdrs.DataSourceSDRSDomain(),
 
-			"huaweicloud_secmaster_workflows":  secmaster.DataSourceSecmasterWorkflows(),
-			"huaweicloud_secmaster_workspaces": secmaster.DataSourceSecmasterWorkspaces(),
+			"huaweicloud_secmaster_workflows":              secmaster.DataSourceSecmasterWorkflows(),
+			"huaweicloud_secmaster_workspaces":             secmaster.DataSourceSecmasterWorkspaces(),
+			"huaweicloud_secmaster_incidents":              secmaster.DataSourceIncidents(),
+			"huaweicloud_secmaster_baseline_check_results": secmaster.DataSourceSecmasterBaselineCheckResults(),
 
 			"huaweicloud_servicestage_component_runtimes": servicestage.DataSourceComponentRuntimes(),
 
@@ -1218,8 +1224,9 @@ func Provider() *schema.Provider {
 			"huaweicloud_cdn_cache_refresh":  cdn.ResourceCacheRefresh(),
 
 			"huaweicloud_ces_alarmrule":      ces.ResourceAlarmRule(),
-			"huaweicloud_ces_resource_group": ces.ResourceResourceGroup(),
 			"huaweicloud_ces_alarm_template": ces.ResourceCesAlarmTemplate(),
+			"huaweicloud_ces_dashboard":      ces.ResourceDashboard(),
+			"huaweicloud_ces_resource_group": ces.ResourceResourceGroup(),
 
 			"huaweicloud_cfw_acl_rule":             cfw.ResourceAclRule(),
 			"huaweicloud_cfw_address_group":        cfw.ResourceAddressGroup(),
@@ -1260,7 +1267,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_cse_microservice_instance": cse.ResourceMicroserviceInstance(),
 
 			"huaweicloud_csms_event":  dew.ResourceCsmsEvent(),
-			"huaweicloud_csms_secret": dew.ResourceCsmsSecret(),
+			"huaweicloud_csms_secret": dew.ResourceSecret(),
 
 			"huaweicloud_css_cluster":                     css.ResourceCssCluster(),
 			"huaweicloud_css_cluster_restart":             css.ResourceCssClusterRestart(),
@@ -1394,18 +1401,19 @@ func Provider() *schema.Provider {
 			"huaweicloud_eg_event_stream":         eg.ResourceEventStream(),
 			"huaweicloud_eg_event_subscription":   eg.ResourceEventSubscription(),
 
-			"huaweicloud_elb_certificate":         elb.ResourceCertificateV3(),
-			"huaweicloud_elb_l7policy":            elb.ResourceL7PolicyV3(),
-			"huaweicloud_elb_l7rule":              elb.ResourceL7RuleV3(),
-			"huaweicloud_elb_listener":            elb.ResourceListenerV3(),
-			"huaweicloud_elb_loadbalancer":        elb.ResourceLoadBalancerV3(),
-			"huaweicloud_elb_monitor":             elb.ResourceMonitorV3(),
-			"huaweicloud_elb_ipgroup":             elb.ResourceIpGroupV3(),
-			"huaweicloud_elb_pool":                elb.ResourcePoolV3(),
-			"huaweicloud_elb_active_standby_pool": elb.ResourceActiveStandbyPool(),
-			"huaweicloud_elb_member":              elb.ResourceMemberV3(),
-			"huaweicloud_elb_logtank":             elb.ResourceLogTank(),
-			"huaweicloud_elb_security_policy":     elb.ResourceSecurityPolicy(),
+			"huaweicloud_elb_certificate":                  elb.ResourceCertificateV3(),
+			"huaweicloud_elb_certificate_private_key_echo": elb.ResourceCertificatePrivateKeyEcho(),
+			"huaweicloud_elb_l7policy":                     elb.ResourceL7PolicyV3(),
+			"huaweicloud_elb_l7rule":                       elb.ResourceL7RuleV3(),
+			"huaweicloud_elb_listener":                     elb.ResourceListenerV3(),
+			"huaweicloud_elb_loadbalancer":                 elb.ResourceLoadBalancerV3(),
+			"huaweicloud_elb_monitor":                      elb.ResourceMonitorV3(),
+			"huaweicloud_elb_ipgroup":                      elb.ResourceIpGroupV3(),
+			"huaweicloud_elb_pool":                         elb.ResourcePoolV3(),
+			"huaweicloud_elb_active_standby_pool":          elb.ResourceActiveStandbyPool(),
+			"huaweicloud_elb_member":                       elb.ResourceMemberV3(),
+			"huaweicloud_elb_logtank":                      elb.ResourceLogTank(),
+			"huaweicloud_elb_security_policy":              elb.ResourceSecurityPolicy(),
 
 			"huaweicloud_enterprise_project":           eps.ResourceEnterpriseProject(),
 			"huaweicloud_enterprise_project_authority": eps.ResourceAuthority(),
