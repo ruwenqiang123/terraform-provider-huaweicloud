@@ -899,12 +899,14 @@ func Provider() *schema.Provider {
 			"huaweicloud_rms_resource_aggregation_pending_requests": rms.DataSourceRmsAggregationPendingRequests(),
 			"huaweicloud_rms_resource_aggregator_source_statuses":   rms.DataSourceRmsAggregatorSourceStatuses(),
 			"huaweicloud_rms_policy_states":                         rms.DataSourcePolicyStates(),
+			"huaweicloud_rms_assignment_package_scores":             rms.DataSourceRmsAssignmentPackageScores(),
 
 			"huaweicloud_sdrs_domain": sdrs.DataSourceSDRSDomain(),
 
 			"huaweicloud_secmaster_workflows":              secmaster.DataSourceSecmasterWorkflows(),
 			"huaweicloud_secmaster_workspaces":             secmaster.DataSourceSecmasterWorkspaces(),
 			"huaweicloud_secmaster_incidents":              secmaster.DataSourceIncidents(),
+			"huaweicloud_secmaster_metric_results":         secmaster.DataSourceMetricResults(),
 			"huaweicloud_secmaster_baseline_check_results": secmaster.DataSourceSecmasterBaselineCheckResults(),
 
 			"huaweicloud_servicestage_component_runtimes": servicestage.DataSourceComponentRuntimes(),
@@ -1519,6 +1521,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_iec_vpc":                 iec.ResourceVpc(),
 			"huaweicloud_iec_vpc_subnet":          iec.ResourceSubnet(),
 
+			"huaweicloud_ims_ecs_system_image":        ims.ResourceEcsSystemImage(),
 			"huaweicloud_images_image":                ims.ResourceImsImage(),
 			"huaweicloud_images_image_copy":           ims.ResourceImsImageCopy(),
 			"huaweicloud_images_image_share":          ims.ResourceImsImageShare(),
