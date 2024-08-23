@@ -418,6 +418,8 @@ func Provider() *schema.Provider {
 			"huaweicloud_aom_aggregation_metrics":             aom.DataSourceAggregationMetrics(),
 			"huaweicloud_aom_organization_accounts":           aom.DataSourceOrganizationAccounts(),
 			"huaweicloud_aom_dashboards_folders":              aom.DataSourceDashboardsFolders(),
+			"huaweicloud_aom_alarm_rules":                     aom.DataSourceAlarmRules(),
+			"huaweicloud_aom_dashboards":                      aom.DataSourceDashboards(),
 
 			"huaweicloud_apig_acl_policies":                       apig.DataSourceAclPolicies(),
 			"huaweicloud_apig_api_associated_acl_policies":        apig.DataSourceApiAssociatedAclPolicies(),
@@ -506,7 +508,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_ccm_private_cas":                ccm.DataSourcePrivateCas(),
 			"huaweicloud_ccm_private_ca_export":          ccm.DataSourcePrivateCaExport(),
 			"huaweicloud_ccm_private_certificates":       ccm.DataSourcePrivateCertificates(),
-			"huaweicloud_ccm_private_certificate_export": ccm.DataSourceCcmPrivateCertificateExport(),
+			"huaweicloud_ccm_private_certificate_export": ccm.DataSourcePrivateCertificateExport(),
 
 			"huaweicloud_cdn_domain_statistics":   cdn.DataSourceStatistics(),
 			"huaweicloud_cdn_domains":             cdn.DataSourceCdnDomains(),
@@ -900,14 +902,18 @@ func Provider() *schema.Provider {
 			"huaweicloud_rms_resource_aggregator_source_statuses":   rms.DataSourceRmsAggregatorSourceStatuses(),
 			"huaweicloud_rms_policy_states":                         rms.DataSourcePolicyStates(),
 			"huaweicloud_rms_assignment_package_scores":             rms.DataSourceRmsAssignmentPackageScores(),
+			"huaweicloud_rms_assignment_package_results":            rms.DataSourceRmsAssignmentPackageResults(),
 
 			"huaweicloud_sdrs_domain": sdrs.DataSourceSDRSDomain(),
 
 			"huaweicloud_secmaster_workflows":              secmaster.DataSourceSecmasterWorkflows(),
 			"huaweicloud_secmaster_workspaces":             secmaster.DataSourceSecmasterWorkspaces(),
 			"huaweicloud_secmaster_incidents":              secmaster.DataSourceIncidents(),
+			"huaweicloud_secmaster_alerts":                 secmaster.DataSourceAlerts(),
+			"huaweicloud_secmaster_indicators":             secmaster.DataSourceIndicators(),
 			"huaweicloud_secmaster_metric_results":         secmaster.DataSourceMetricResults(),
 			"huaweicloud_secmaster_baseline_check_results": secmaster.DataSourceSecmasterBaselineCheckResults(),
+			"huaweicloud_secmaster_playbooks":              secmaster.DataSourceSecmasterPlaybooks(),
 
 			"huaweicloud_servicestage_component_runtimes": servicestage.DataSourceComponentRuntimes(),
 
@@ -1111,6 +1117,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_aom_multi_account_aggregation_rule": aom.ResourceMultiAccountAggregationRule(),
 			"huaweicloud_aom_dashboards_folder":              aom.ResourceDashboardsFolder(),
 			"huaweicloud_aom_cloud_service_access":           aom.ResourceCloudServiceAccess(),
+			"huaweicloud_aom_dashboard":                      aom.ResourceDashboard(),
 
 			"huaweicloud_rfs_stack": rfs.ResourceStack(),
 
@@ -1452,6 +1459,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_gaussdb_cassandra_instance": gaussdb.ResourceGeminiDBInstanceV3(),
 
 			"huaweicloud_gaussdb_mysql_instance":           gaussdb.ResourceGaussDBInstance(),
+			"huaweicloud_gaussdb_mysql_instance_restart":   gaussdb.ResourceGaussDBMysqlRestart(),
 			"huaweicloud_gaussdb_mysql_proxy":              gaussdb.ResourceGaussDBProxy(),
 			"huaweicloud_gaussdb_mysql_proxy_restart":      gaussdb.ResourceGaussDBProxyRestart(),
 			"huaweicloud_gaussdb_mysql_database":           gaussdb.ResourceGaussDBDatabase(),
