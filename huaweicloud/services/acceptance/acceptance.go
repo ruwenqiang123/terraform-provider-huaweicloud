@@ -253,6 +253,8 @@ var (
 	// The repository of SWR image tag
 	HW_SWR_REPOSITORY = os.Getenv("HW_SWR_REPOSITORY")
 
+	// The ID of the CBR vault
+	HW_IMS_VAULT_ID = os.Getenv("HW_IMS_VAULT_ID")
 	// The ID of the CBR backup
 	HW_IMS_BACKUP_ID = os.Getenv("HW_IMS_BACKUP_ID")
 	// The shared backup ID wants to accept.
@@ -266,7 +268,7 @@ var (
 	HW_SECMASTER_UNAUDITED_VERSION_ID     = os.Getenv("HW_SECMASTER_UNAUDITED_VERSION_ID")
 	HW_SECMASTER_METRIC_ID                = os.Getenv("HW_SECMASTER_METRIC_ID")
 
-	// The SecMaster workspace ID
+	// The SecMaster pipeline ID
 	HW_SECMASTER_PIPELINE_ID = os.Getenv("HW_SECMASTER_PIPELINE_ID")
 
 	HW_MODELARTS_HAS_SUBSCRIBE_MODEL = os.Getenv("HW_MODELARTS_HAS_SUBSCRIBE_MODEL")
@@ -1412,6 +1414,13 @@ func TestAccPreCheckSwrRepository(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckImsVaultId(t *testing.T) {
+	if HW_IMS_VAULT_ID == "" {
+		t.Skip("HW_IMS_VAULT_ID must be set for IMS whole image tests")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckImsBackupId(t *testing.T) {
 	if HW_IMS_BACKUP_ID == "" {
 		t.Skip("HW_IMS_BACKUP_ID must be set for IMS whole image with CBR backup id")
@@ -1443,6 +1452,13 @@ func TestAccPreCheckSecMasterWorkspaceID(t *testing.T) {
 func TestAccPreCheckSecMasterMetricID(t *testing.T) {
 	if HW_SECMASTER_METRIC_ID == "" {
 		t.Skip("HW_SECMASTER_METRIC_ID must be set for SecMaster acceptance tests")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckSecMasterPipelineID(t *testing.T) {
+	if HW_SECMASTER_PIPELINE_ID == "" {
+		t.Skip("HW_SECMASTER_PIPELINE_ID must be set for SecMaster acceptance tests")
 	}
 }
 
