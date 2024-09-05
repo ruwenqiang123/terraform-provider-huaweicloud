@@ -420,6 +420,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_aom_dashboards_folders":              aom.DataSourceDashboardsFolders(),
 			"huaweicloud_aom_alarm_rules":                     aom.DataSourceAlarmRules(),
 			"huaweicloud_aom_dashboards":                      aom.DataSourceDashboards(),
+			"huaweicloud_aom_alarm_rules_templates":           aom.DataSourceAlarmRulesTemplates(),
 
 			"huaweicloud_apig_acl_policies":                       apig.DataSourceAclPolicies(),
 			"huaweicloud_apig_api_associated_acl_policies":        apig.DataSourceApiAssociatedAclPolicies(),
@@ -523,6 +524,8 @@ func Provider() *schema.Provider {
 			"huaweicloud_ces_alarm_templates":                  ces.DataSourceCesAlarmTemplates(),
 			"huaweicloud_ces_dashboards":                       ces.DataSourceCesDashboards(),
 			"huaweicloud_ces_dashboard_widgets":                ces.DataSourceCesDashboardWidgets(),
+			"huaweicloud_ces_events":                           ces.DataSourceCesEvents(),
+			"huaweicloud_ces_event_details":                    ces.DataSourceCesEventDetails(),
 			"huaweicloud_ces_metrics":                          ces.DataSourceCesMetrics(),
 			"huaweicloud_ces_resource_groups":                  ces.DataSourceCesGroups(),
 			"huaweicloud_ces_resource_group_service_resources": ces.DataSourceCesGroupServiceResources(),
@@ -589,6 +592,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_dataarts_dataservice_apps":            dataarts.DataSourceDataServiceApps(),
 			"huaweicloud_dataarts_dataservice_authorized_apps": dataarts.DataSourceDataServiceAuthorizedApps(),
 			"huaweicloud_dataarts_dataservice_instances":       dataarts.DataSourceDataServiceInstances(),
+			"huaweicloud_dataarts_dataservice_messages":        dataarts.DataSourceDataServiceMessages(),
 			// DataArts Quality
 			"huaweicloud_dataarts_quality_tasks": dataarts.DataSourceQualityTasks(),
 			// DataArts Factory
@@ -675,6 +679,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_eg_custom_event_channels": eg.DataSourceCustomEventChannels(),
 			"huaweicloud_eg_custom_event_sources":  eg.DataSourceCustomEventSources(),
 			"huaweicloud_eg_event_channels":        eg.DataSourceEventChannels(),
+			"huaweicloud_eg_event_sources":         eg.DataSourceEventSources(),
 
 			"huaweicloud_enterprise_project":  eps.DataSourceEnterpriseProject(),
 			"huaweicloud_enterprise_projects": eps.DataSourceEnterpriseProjects(),
@@ -727,6 +732,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_gaussdb_redis_instance":               gaussdb.DataSourceGaussRedisInstance(),
 			"huaweicloud_gaussdb_mysql_backups":                gaussdb.DataSourceGaussdbMysqlBackups(),
 			"huaweicloud_gaussdb_mysql_restore_time_ranges":    gaussdb.DataSourceGaussdbMysqlRestoreTimeRanges(),
+			"huaweicloud_gaussdb_mysql_database_character_set": gaussdb.DataSourceGaussdbMysqlDatabaseCharacterSet(),
 			"huaweicloud_gaussdb_mysql_databases":              gaussdb.DataSourceGaussdbMysqlDatabases(),
 			"huaweicloud_gaussdb_mysql_proxy_flavors":          gaussdb.DataSourceGaussdbMysqlProxyFlavors(),
 			"huaweicloud_gaussdb_mysql_proxies":                gaussdb.DataSourceGaussdbMysqlProxies(),
@@ -923,6 +929,9 @@ func Provider() *schema.Provider {
 			"huaweicloud_secmaster_playbooks":              secmaster.DataSourceSecmasterPlaybooks(),
 			"huaweicloud_secmaster_alert_rules":            secmaster.DataSourceSecmasterAlertRules(),
 			"huaweicloud_secmaster_alert_rule_templates":   secmaster.DataSourceSecmasterAlertRuleTemplates(),
+			"huaweicloud_secmaster_playbook_versions":      secmaster.DataSourceSecmasterPlaybookVersions(),
+			"huaweicloud_secmaster_playbook_instances":     secmaster.DataSourceSecmasterPlaybookInstances(),
+			"huaweicloud_secmaster_data_classes":           secmaster.DataSourceSecmasterDataClasses(),
 
 			"huaweicloud_servicestage_component_runtimes": servicestage.DataSourceComponentRuntimes(),
 
@@ -976,6 +985,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_vpcep_services":            vpcep.DataSourceVPCEPServices(),
 			"huaweicloud_vpcep_service_connections": vpcep.DataSourceVPCEPServiceConnections(),
 			"huaweicloud_vpcep_service_permissions": vpcep.DataSourceVPCEPServicePermissions(),
+			"huaweicloud_vpcep_service_summary":     vpcep.DataSourceVpcepServiceSummary(),
 
 			"huaweicloud_vpn_gateway_availability_zones": vpn.DataSourceVpnGatewayAZs(),
 			"huaweicloud_vpn_gateways":                   vpn.DataSourceGateways(),
@@ -1127,8 +1137,10 @@ func Provider() *schema.Provider {
 			"huaweicloud_aom_dashboards_folder":              aom.ResourceDashboardsFolder(),
 			"huaweicloud_aom_cloud_service_access":           aom.ResourceCloudServiceAccess(),
 			"huaweicloud_aom_dashboard":                      aom.ResourceDashboard(),
+			"huaweicloud_aom_alarm_rules_template":           aom.ResourceAlarmRulesTemplate(),
 
-			"huaweicloud_rfs_stack": rfs.ResourceStack(),
+			"huaweicloud_rfs_private_hook": rfs.ResourcePrivateHook(),
+			"huaweicloud_rfs_stack":        rfs.ResourceStack(),
 
 			"huaweicloud_api_gateway_api":         apigateway.ResourceAPI(),
 			"huaweicloud_api_gateway_environment": apigateway.ResourceEnvironment(),
@@ -1226,12 +1238,13 @@ func Provider() *schema.Provider {
 
 			"huaweicloud_ccm_certificate":                ccm.ResourceCCMCertificate(),
 			"huaweicloud_ccm_certificate_apply":          ccm.ResourceCertificateApply(),
+			"huaweicloud_ccm_certificate_deploy":         ccm.ResourceCertificateDeploy(),
+			"huaweicloud_ccm_certificate_import":         ccm.ResourceCertificateImport(),
 			"huaweicloud_ccm_certificate_push":           ccm.ResourceCertificatePush(),
 			"huaweicloud_ccm_private_ca":                 ccm.ResourcePrivateCertificateAuthority(),
 			"huaweicloud_ccm_private_ca_revoke":          ccm.ResourcePrivateCaRevoke(),
 			"huaweicloud_ccm_private_certificate":        ccm.ResourcePrivateCertificate(),
 			"huaweicloud_ccm_private_certificate_revoke": ccm.ResourcePrivateCertificateRevoke(),
-			"huaweicloud_ccm_certificate_import":         ccm.ResourceCertificateImport(),
 			"huaweicloud_ccm_private_ca_restore":         ccm.ResourcePrivateCaRestore(),
 
 			"huaweicloud_cdm_cluster":        cdm.ResourceCdmCluster(),
@@ -1486,6 +1499,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_gaussdb_mysql_eip_associate":      gaussdb.ResourceGaussMysqlEipAssociate(),
 
 			"huaweicloud_gaussdb_opengauss_instance": gaussdb.ResourceOpenGaussInstance(),
+			"huaweicloud_gaussdb_opengauss_database": gaussdb.ResourceOpenGaussDatabase(),
 
 			"huaweicloud_gaussdb_redis_instance":      gaussdb.ResourceGaussRedisInstanceV3(),
 			"huaweicloud_gaussdb_redis_eip_associate": gaussdb.ResourceGaussRedisEipAssociate(),
@@ -1547,6 +1561,9 @@ func Provider() *schema.Provider {
 			"huaweicloud_ims_ecs_whole_image":         ims.ResourceEcsWholeImage(),
 			"huaweicloud_ims_cbr_whole_image":         ims.ResourceCbrWholeImage(),
 			"huaweicloud_ims_evs_data_image":          ims.ResourceEvsDataImage(),
+			"huaweicloud_ims_obs_data_image":          ims.ResourceObsDataImage(),
+			"huaweicloud_ims_obs_system_image":        ims.ResourceObsSystemImage(),
+			"huaweicloud_ims_obs_iso_image":           ims.ResourceObsIsoImage(),
 			"huaweicloud_images_image":                ims.ResourceImsImage(),
 			"huaweicloud_images_image_copy":           ims.ResourceImsImageCopy(),
 			"huaweicloud_images_image_share":          ims.ResourceImsImageShare(),
@@ -1664,6 +1681,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_dataarts_dataservice_api_publishment": dataarts.ResourceDataServiceApiPublishment(),
 			"huaweicloud_dataarts_dataservice_app":             dataarts.ResourceDataServiceApp(),
 			"huaweicloud_dataarts_dataservice_catalog":         dataarts.ResourceDatatServiceCatalog(),
+			"huaweicloud_dataarts_dataservice_message_approve": dataarts.ResourceDataServiceMessageApprove(),
 
 			"huaweicloud_mpc_transcoding_template":       mpc.ResourceTranscodingTemplate(),
 			"huaweicloud_mpc_transcoding_template_group": mpc.ResourceTranscodingTemplateGroup(),

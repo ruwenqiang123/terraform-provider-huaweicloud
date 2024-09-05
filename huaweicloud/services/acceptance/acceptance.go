@@ -80,7 +80,11 @@ var (
 	HW_DEPRECATED_ENVIRONMENT = os.Getenv("HW_DEPRECATED_ENVIRONMENT")
 	HW_INTERNAL_USED          = os.Getenv("HW_INTERNAL_USED")
 
-	HW_WAF_ENABLE_FLAG = os.Getenv("HW_WAF_ENABLE_FLAG")
+	HW_WAF_ENABLE_FLAG    = os.Getenv("HW_WAF_ENABLE_FLAG")
+	HW_WAF_CERTIFICATE_ID = os.Getenv("HW_WAF_CERTIFICATE_ID")
+	HW_WAF_TYPE           = os.Getenv("HW_WAF_TYPE")
+
+	HW_ELB_CERT_ID = os.Getenv("HW_ELB_CERT_ID")
 
 	HW_DEW_ENABLE_FLAG = os.Getenv("HW_DEW_ENABLE_FLAG")
 
@@ -218,6 +222,9 @@ var (
 	HW_DC_VIRTUAL_INTERFACE_ID = os.Getenv("HW_DC_VIRTUAL_INTERFACE_ID")
 	HW_DC_ENABLE_FLAG          = os.Getenv("HW_DC_ENABLE_FLAG")
 
+	HW_CES_START_TIME = os.Getenv("HW_CES_START_TIME")
+	HW_CES_END_TIME   = os.Getenv("HW_CES_END_TIME")
+
 	// The CFW instance ID
 	HW_CFW_INSTANCE_ID               = os.Getenv("HW_CFW_INSTANCE_ID")
 	HW_CFW_EAST_WEST_FIREWALL        = os.Getenv("HW_CFW_EAST_WEST_FIREWALL")
@@ -258,6 +265,8 @@ var (
 	HW_IMS_VAULT_ID = os.Getenv("HW_IMS_VAULT_ID")
 	// The ID of the CBR backup
 	HW_IMS_BACKUP_ID = os.Getenv("HW_IMS_BACKUP_ID")
+	// The image file url in the OBS bucket
+	HW_IMS_IMAGE_URL = os.Getenv("HW_IMS_IMAGE_URL")
 	// The shared backup ID wants to accept.
 	HW_SHARED_BACKUP_ID = os.Getenv("HW_SHARED_BACKUP_ID")
 
@@ -378,8 +387,11 @@ var (
 	HW_IOTDA_ACCESS_ADDRESS      = os.Getenv("HW_IOTDA_ACCESS_ADDRESS")
 	HW_IOTDA_BATCHTASK_FILE_PATH = os.Getenv("HW_IOTDA_BATCHTASK_FILE_PATH")
 
-	HW_DWS_MUTIL_AZS            = os.Getenv("HW_DWS_MUTIL_AZS")
-	HW_DWS_CLUSTER_ID           = os.Getenv("HW_DWS_CLUSTER_ID")
+	HW_DWS_MUTIL_AZS               = os.Getenv("HW_DWS_MUTIL_AZS")
+	HW_DWS_CLUSTER_ID              = os.Getenv("HW_DWS_CLUSTER_ID")
+	HW_DWS_LOGICAL_MODE_CLUSTER_ID = os.Getenv("HW_DWS_LOGICAL_MODE_CLUSTER_ID")
+	HW_DWS_LOGICAL_CLUSTER_NAME    = os.Getenv("HW_DWS_LOGICAL_CLUSTER_NAME")
+
 	HW_DWS_SNAPSHOT_POLICY_NAME = os.Getenv("HW_DWS_SNAPSHOT_POLICY_NAME")
 
 	HW_DCS_ACCOUNT_WHITELIST = os.Getenv("HW_DCS_ACCOUNT_WHITELIST")
@@ -739,6 +751,27 @@ func RandomPassword(customChars ...string) string {
 func TestAccPrecheckWafInstance(t *testing.T) {
 	if HW_WAF_ENABLE_FLAG == "" {
 		t.Skip("Skip the WAF acceptance tests.")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckWafCertID(t *testing.T) {
+	if HW_WAF_CERTIFICATE_ID == "" {
+		t.Skip("HW_WAF_CERTIFICATE_ID must be set for this acceptance test.")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckWafType(t *testing.T) {
+	if HW_WAF_TYPE == "" {
+		t.Skip("HW_WAF_TYPE must be set for this acceptance test.")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckElbCertID(t *testing.T) {
+	if HW_ELB_CERT_ID == "" {
+		t.Skip("HW_ELB_CERT_ID must be set for this acceptance test.")
 	}
 }
 
@@ -1324,6 +1357,13 @@ func TestAccPreCheckDCVirtualInterfaceID(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckCesTimeRange(t *testing.T) {
+	if HW_CES_START_TIME == "" || HW_CES_END_TIME == "" {
+		t.Skip("HW_CES_START_TIME and HW_CES_END_TIME must be set for CES acceptance tests")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckCfw(t *testing.T) {
 	if HW_CFW_INSTANCE_ID == "" {
 		t.Skip("HW_CFW_INSTANCE_ID must be set for CFW acceptance tests")
@@ -1434,6 +1474,13 @@ func TestAccPreCheckImsVaultId(t *testing.T) {
 func TestAccPreCheckImsBackupId(t *testing.T) {
 	if HW_IMS_BACKUP_ID == "" {
 		t.Skip("HW_IMS_BACKUP_ID must be set for IMS whole image with CBR backup id")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckImsImageUrl(t *testing.T) {
+	if HW_IMS_IMAGE_URL == "" {
+		t.Skip("HW_IMS_IMAGE_URL must be set for IMS acceptance tests")
 	}
 }
 
@@ -1974,6 +2021,20 @@ func TestAccPreCheckMutilAZ(t *testing.T) {
 func TestAccPreCheckDwsClusterId(t *testing.T) {
 	if HW_DWS_CLUSTER_ID == "" {
 		t.Skip("HW_DWS_CLUSTER_ID must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckDwsLogicalModeClusterId(t *testing.T) {
+	if HW_DWS_LOGICAL_MODE_CLUSTER_ID == "" {
+		t.Skip("HW_DWS_LOGICAL_MODE_CLUSTER_ID must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckDwsLogicalClusterName(t *testing.T) {
+	if HW_DWS_LOGICAL_CLUSTER_NAME == "" {
+		t.Skip("HW_DWS_LOGICAL_CLUSTER_NAME must be set for the acceptance test")
 	}
 }
 
