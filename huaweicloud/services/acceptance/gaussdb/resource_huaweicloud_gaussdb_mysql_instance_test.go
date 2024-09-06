@@ -48,6 +48,13 @@ func TestAccGaussDBInstance_basic(t *testing.T) {
 						"huaweicloud_networking_secgroup.test.0", "id"),
 					resource.TestCheckResourceAttr(resourceName, "private_write_ip", "192.168.0.156"),
 					resource.TestCheckResourceAttr(resourceName, "port", "8888"),
+					resource.TestCheckResourceAttr(resourceName, "private_dns_name_prefix", "testprivatednsname"),
+					resource.TestCheckResourceAttr(resourceName, "private_dns_name",
+						"testprivatednsname.internal.cn-north-4.gaussdbformysql.myhuaweicloud.com"),
+					resource.TestCheckResourceAttr(resourceName, "maintain_begin", "08:00"),
+					resource.TestCheckResourceAttr(resourceName, "maintain_end", "11:00"),
+					resource.TestCheckResourceAttr(resourceName, "seconds_level_monitoring_enabled", "true"),
+					resource.TestCheckResourceAttr(resourceName, "seconds_level_monitoring_period", "1"),
 					resource.TestCheckResourceAttr(resourceName, "tags.foo", "bar"),
 					resource.TestCheckResourceAttr(resourceName, "tags.key", "value"),
 				),
@@ -72,6 +79,12 @@ func TestAccGaussDBInstance_basic(t *testing.T) {
 						"huaweicloud_networking_secgroup.test.1", "id"),
 					resource.TestCheckResourceAttr(resourceName, "private_write_ip", "192.168.0.157"),
 					resource.TestCheckResourceAttr(resourceName, "port", "9999"),
+					resource.TestCheckResourceAttr(resourceName, "private_dns_name_prefix", "testprivatednsnameupdate"),
+					resource.TestCheckResourceAttr(resourceName, "private_dns_name",
+						"testprivatednsnameupdate.internal.cn-north-4.gaussdbformysql.myhuaweicloud.com"),
+					resource.TestCheckResourceAttr(resourceName, "maintain_begin", "14:00"),
+					resource.TestCheckResourceAttr(resourceName, "maintain_end", "18:00"),
+					resource.TestCheckResourceAttr(resourceName, "seconds_level_monitoring_enabled", "false"),
 					resource.TestCheckResourceAttr(resourceName, "tags.foo_update", "bar"),
 					resource.TestCheckResourceAttr(resourceName, "tags.key", "value_update"),
 				),
@@ -213,7 +226,7 @@ func testAccCheckGaussDBInstanceExists(n string, instance *instances.TaurusDBIns
 	}
 }
 
-func testAccGaussDBInstanceConfig_basic(rName string) string {
+func testAccGaussDBInstanceConfig_base(rName string) string {
 	return fmt.Sprintf(`
 %[1]s
 
@@ -243,6 +256,12 @@ resource "huaweicloud_gaussdb_mysql_parameter_template" "test" {
     binlog_gtid_simple_recovery   = "OFF"
   }
 }
+`, common.TestVpc(rName), rName)
+}
+
+func testAccGaussDBInstanceConfig_basic(rName string) string {
+	return fmt.Sprintf(`
+%[1]s
 
 resource "huaweicloud_gaussdb_mysql_instance" "test" {
   name                     = "%[2]s"
@@ -259,6 +278,12 @@ resource "huaweicloud_gaussdb_mysql_instance" "test" {
   configuration_id         = huaweicloud_gaussdb_mysql_parameter_template.test[0].id
   private_write_ip         = "192.168.0.156"
   port                     = "8888"
+  private_dns_name_prefix  = "testprivatednsname"
+  maintain_begin           = "08:00"
+  maintain_end             = "11:00"
+
+  seconds_level_monitoring_enabled = true
+  seconds_level_monitoring_period  = 1
 
   parameters {
     name  = "default_authentication_plugin"
@@ -275,39 +300,12 @@ resource "huaweicloud_gaussdb_mysql_instance" "test" {
     key = "value"
   }
 }
-`, common.TestVpc(rName), rName)
+`, testAccGaussDBInstanceConfig_base(rName), rName)
 }
 
 func testAccGaussDBInstanceConfig_basicUpdate(rName string) string {
 	return fmt.Sprintf(`
 %[1]s
-
-data "huaweicloud_availability_zones" "test" {}
-
-resource "huaweicloud_networking_secgroup" "test" {
-  count = 2
-
-  name                 = "%[2]s_${count.index}"
-  delete_default_rules = true
-}
-
-data "huaweicloud_gaussdb_mysql_flavors" "test" {
-  engine  = "gaussdb-mysql"
-  version = "8.0"
-}
-
-resource "huaweicloud_gaussdb_mysql_parameter_template" "test" {
-  count = 2
-
-  name              = "%[2]s_${count.index}"
-  datastore_engine  = "gaussdb-mysql"
-  datastore_version = "8.0"
-
-  parameter_values = {
-    default_authentication_plugin = "sha256_password"
-    binlog_gtid_simple_recovery   = "OFF"
-  }
-}
 
 resource "huaweicloud_gaussdb_mysql_instance" "test" {
   name                     = "%[2]s"
@@ -325,6 +323,11 @@ resource "huaweicloud_gaussdb_mysql_instance" "test" {
   configuration_id         = huaweicloud_gaussdb_mysql_parameter_template.test[1].id
   private_write_ip         = "192.168.0.157"
   port                     = "9999"
+  private_dns_name_prefix  = "testprivatednsnameupdate"
+  maintain_begin           = "14:00"
+  maintain_end             = "18:00"
+
+  seconds_level_monitoring_enabled = false
 
   parameters {
     name  = "binlog_gtid_simple_recovery"
@@ -341,7 +344,7 @@ resource "huaweicloud_gaussdb_mysql_instance" "test" {
     key        = "value_update"
   }
 }
-`, common.TestVpc(rName), rName)
+`, testAccGaussDBInstanceConfig_base(rName), rName)
 }
 
 func testAccGaussDBInstanceConfig_prePaid(rName, password string, isAutoRenew bool) string {

@@ -80,6 +80,25 @@ The following arguments are supported:
 
 * `configuration_id` - (Optional, String) Specifies the configuration ID.
 
+* `private_dns_name_prefix` - (Optional, String) Specifies the prefix of the private domain name. The value contains
+  **8** to **63** characters. Only uppercase letters, lowercase letters, and digits are allowed.
+
+* `maintain_begin` - (Optional, String) Specifies the start time for a maintenance window, for example, **22:00**.
+
+* `maintain_end` - (Optional, String) Specifies the end time for a maintenance window, for example, **01:00**.
+
+-> **Note** The start time and end time of a maintenance window must be on the hour, and the interval between them at
+  most four hours.
+
+* `seconds_level_monitoring_enabled` - (Optional, Bool) Specifies whether to enable seconds level monitoring.
+
+* `seconds_level_monitoring_period` - (Optional, Int) Specifies the seconds level collection period.
+  + This parameter is valid only when `seconds_level_monitoring_enabled` is set to **true**.
+  + This parameter can not be specified when `seconds_level_monitoring_enabled` is set to **false**.
+  + Value options:
+      - **1**: The collection period is 1s.
+      - **5** (default value): The collection period is 5s.
+
 * `enterprise_project_id` - (Optional, String) Specifies the enterprise project id. Required if EPS enabled.
 
 * `table_name_case_sensitivity` - (Optional, Bool) Whether the kernel table name is case sensitive. The value can
@@ -164,18 +183,29 @@ The `parameters` block supports:
 In addition to all arguments above, the following attributes are exported:
 
 * `id` - Indicates the DB instance ID.
+
 * `status` - Indicates the DB instance status.
+
 * `mode` - Indicates the instance mode.
+
 * `db_user_name` - Indicates the default username.
+
+* `private_dns_name` - Indicates the private domain name.
+
 * `nodes` - Indicates the instance nodes information. Structure is documented below.
 
 The `nodes` block contains:
 
 * `id` - Indicates the node ID.
+
 * `name` - Indicates the node name.
+
 * `type` - Indicates the node type: master or slave.
+
 * `status` - Indicates the node status.
+
 * `private_read_ip` - Indicates the private IP address of a node.
+
 * `availability_zone` - Indicates the availability zone where the node resides.
 
 ## Timeouts

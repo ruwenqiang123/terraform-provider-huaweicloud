@@ -456,6 +456,8 @@ func Provider() *schema.Provider {
 			"huaweicloud_as_planned_tasks":       as.DataSourceAsPlannedTasks(),
 			"huaweicloud_as_policies":            as.DataSourceASPolicies(),
 			"huaweicloud_as_policy_execute_logs": as.DataSourcePolicyExecuteLogs(),
+			"huaweicloud_as_quotas":              as.DataSourceAsQuotas(),
+			"huaweicloud_as_group_quotas":        as.DataSourceAsGroupQuotas(),
 
 			"huaweicloud_account":            DataSourceAccount(),
 			"huaweicloud_availability_zones": DataSourceAvailabilityZones(),
@@ -724,7 +726,8 @@ func Provider() *schema.Provider {
 			"huaweicloud_gaussdb_cassandra_instances":          gaussdb.DataSourceGeminiDBInstances(),
 			"huaweicloud_gaussdb_opengauss_instance":           gaussdb.DataSourceOpenGaussInstance(),
 			"huaweicloud_gaussdb_opengauss_instances":          gaussdb.DataSourceOpenGaussInstances(),
-			"huaweicloud_gaussdb_mysql_configuration":          gaussdb.DataSourceGaussdbMysqlConfigurations(),
+			"huaweicloud_gaussdb_mysql_configuration":          gaussdb.DataSourceGaussdbMysqlConfiguration(),
+			"huaweicloud_gaussdb_mysql_configurations":         gaussdb.DataSourceGaussdbMysqlConfigurations(),
 			"huaweicloud_gaussdb_mysql_dedicated_resource":     gaussdb.DataSourceGaussDBMysqlDehResource(),
 			"huaweicloud_gaussdb_mysql_flavors":                gaussdb.DataSourceGaussdbMysqlFlavors(),
 			"huaweicloud_gaussdb_mysql_instance":               gaussdb.DataSourceGaussDBMysqlInstance(),
@@ -932,6 +935,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_secmaster_playbook_versions":      secmaster.DataSourceSecmasterPlaybookVersions(),
 			"huaweicloud_secmaster_playbook_instances":     secmaster.DataSourceSecmasterPlaybookInstances(),
 			"huaweicloud_secmaster_data_classes":           secmaster.DataSourceSecmasterDataClasses(),
+			"huaweicloud_secmaster_data_class_fields":      secmaster.DataSourceSecmasterDataClassFields(),
 
 			"huaweicloud_servicestage_component_runtimes": servicestage.DataSourceComponentRuntimes(),
 
@@ -1011,6 +1015,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_waf_rules_known_attack_source":            waf.DataSourceWafRulesKnownAttackSource(),
 			"huaweicloud_waf_rules_precise_protection":             waf.DataSourceWafRulesPreciseProtection(),
 			"huaweicloud_waf_rules_web_tamper_protection":          waf.DataSourceWafRulesWebTamperProtection(),
+			"huaweicloud_waf_source_ips":                           waf.DataSourceWafSourceIps(),
 
 			"huaweicloud_dws_alarm_subscriptions":     dws.DataSourceAlarmSubscriptions(),
 			"huaweicloud_dws_availability_zones":      dws.DataSourceDwsAvailabilityZones(),
@@ -1561,6 +1566,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_ims_ecs_whole_image":         ims.ResourceEcsWholeImage(),
 			"huaweicloud_ims_cbr_whole_image":         ims.ResourceCbrWholeImage(),
 			"huaweicloud_ims_evs_data_image":          ims.ResourceEvsDataImage(),
+			"huaweicloud_ims_evs_system_image":        ims.ResourceEvsSystemImage(),
 			"huaweicloud_ims_obs_data_image":          ims.ResourceObsDataImage(),
 			"huaweicloud_ims_obs_system_image":        ims.ResourceObsSystemImage(),
 			"huaweicloud_ims_obs_iso_image":           ims.ResourceObsIsoImage(),
