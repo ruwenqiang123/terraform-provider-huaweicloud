@@ -156,6 +156,9 @@ var (
 	HW_BUILD_IMAGE_URL         = os.Getenv("HW_BUILD_IMAGE_URL")         // SWR Image URL for component deployment
 	HW_BUILD_IMAGE_URL_UPDATED = os.Getenv("HW_BUILD_IMAGE_URL_UPDATED") // SWR Image URL for component deployment update
 
+	HW_GAUSSDB_MYSQL_INSTANCE_ID               = os.Getenv("HW_GAUSSDB_MYSQL_INSTANCE_ID")
+	HW_GAUSSDB_MYSQL_INSTANCE_CONFIGURATION_ID = os.Getenv("HW_GAUSSDB_MYSQL_INSTANCE_CONFIGURATION_ID")
+
 	HW_VOD_WATERMARK_FILE   = os.Getenv("HW_VOD_WATERMARK_FILE")
 	HW_VOD_MEDIA_ASSET_FILE = os.Getenv("HW_VOD_MEDIA_ASSET_FILE")
 
@@ -393,6 +396,8 @@ var (
 	HW_DWS_LOGICAL_CLUSTER_NAME    = os.Getenv("HW_DWS_LOGICAL_CLUSTER_NAME")
 
 	HW_DWS_SNAPSHOT_POLICY_NAME = os.Getenv("HW_DWS_SNAPSHOT_POLICY_NAME")
+	// The list of the user names under specified DWS cluster. Using commas (,) to separate multiple names.
+	HW_DWS_ASSOCIATE_USER_NAMES = os.Getenv("HW_DWS_ASSOCIATE_USER_NAMES")
 
 	HW_DCS_ACCOUNT_WHITELIST = os.Getenv("HW_DCS_ACCOUNT_WHITELIST")
 
@@ -1124,6 +1129,20 @@ func TestAccPreCheckComponentDeployment(t *testing.T) {
 func TestAccPreCheckImageUrlUpdated(t *testing.T) {
 	if HW_BUILD_IMAGE_URL_UPDATED == "" {
 		t.Skip("SWR image update URL configuration is not completed for acceptance test of component deployment.")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckGaussDBMysqlInstanceId(t *testing.T) {
+	if HW_GAUSSDB_MYSQL_INSTANCE_ID == "" {
+		t.Skip("HW_GAUSSDB_MYSQL_INSTANCE_ID must be set for GaussDB MySQL acceptance tests.")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckGaussDBMysqlInstanceConfigurationId(t *testing.T) {
+	if HW_GAUSSDB_MYSQL_INSTANCE_CONFIGURATION_ID == "" {
+		t.Skip("HW_GAUSSDB_MYSQL_INSTANCE_CONFIGURATION_ID must be set for GaussDB MySQL acceptance tests.")
 	}
 }
 
@@ -2042,6 +2061,15 @@ func TestAccPreCheckDwsLogicalClusterName(t *testing.T) {
 func TestAccPreCheckDwsSnapshotPolicyName(t *testing.T) {
 	if HW_DWS_SNAPSHOT_POLICY_NAME == "" {
 		t.Skip("HW_DWS_SNAPSHOT_POLICY_NAME must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckDwsClusterUserNames(t *testing.T) {
+	userNames := strings.Split(HW_DWS_ASSOCIATE_USER_NAMES, ",")
+	// One is used to associate to the queue, and the other is used to update the user associated with the queue.
+	if len(userNames) < 2 {
+		t.Skip("The length of HW_DWS_ASSOCIATE_USER_NAMES must be 2 for the acceptance test")
 	}
 }
 
