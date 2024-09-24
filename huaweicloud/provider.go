@@ -412,6 +412,8 @@ func Provider() *schema.Provider {
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
+			"huaweicloud_antiddos_config_ranges": antiddos.DataSourceConfigRanges(),
+
 			"huaweicloud_aom_alarm_action_rules":              aom.DataSourceAomAlarmActionRules(),
 			"huaweicloud_aom_alarm_group_rules":               aom.DataSourceAlarmGroupRules(),
 			"huaweicloud_aom_prom_instances":                  aom.DataSourceAomPromInstances(),
@@ -950,7 +952,10 @@ func Provider() *schema.Provider {
 			"huaweicloud_secmaster_data_class_fields":         secmaster.DataSourceSecmasterDataClassFields(),
 			"huaweicloud_secmaster_playbook_action_instances": secmaster.DataSourceSecmasterPlaybookActionInstances(),
 
+			// Querying by Ver.2 APIs
 			"huaweicloud_servicestage_component_runtimes": servicestage.DataSourceComponentRuntimes(),
+			// Querying by Ver.3 APIs
+			"huaweicloud_servicestagev3_runtime_stacks": servicestage.DataSourceV3RuntimeStacks(),
 
 			"huaweicloud_smn_topics":            smn.DataSourceTopics(),
 			"huaweicloud_smn_message_templates": smn.DataSourceSmnMessageTemplates(),
@@ -1140,7 +1145,8 @@ func Provider() *schema.Provider {
 		ResourcesMap: map[string]*schema.Resource{
 			"huaweicloud_aad_forward_rule": aad.ResourceForwardRule(),
 
-			"huaweicloud_antiddos_basic": antiddos.ResourceCloudNativeAntiDdos(),
+			"huaweicloud_antiddos_basic":                     antiddos.ResourceCloudNativeAntiDdos(),
+			"huaweicloud_antiddos_default_protection_policy": antiddos.ResourceDefaultProtectionPolicy(),
 
 			"huaweicloud_access_analyzer":              accessanalyzer.ResourceAccessAnalyzer(),
 			"huaweicloud_access_analyzer_archive_rule": accessanalyzer.ResourceArchiveRule(),
