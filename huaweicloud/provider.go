@@ -538,6 +538,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_ces_event_details":                    ces.DataSourceCesEventDetails(),
 			"huaweicloud_ces_metrics":                          ces.DataSourceCesMetrics(),
 			"huaweicloud_ces_one_click_alarms":                 ces.DataSourceCesOneClickAlarms(),
+			"huaweicloud_ces_one_click_alarm_rules":            ces.DataSourceCesOneClickAlarmRules(),
 			"huaweicloud_ces_resource_groups":                  ces.DataSourceCesGroups(),
 			"huaweicloud_ces_resource_group_service_resources": ces.DataSourceCesGroupServiceResources(),
 
@@ -575,6 +576,8 @@ func Provider() *schema.Provider {
 			"huaweicloud_cph_server_flavors": cph.DataSourceServerFlavors(),
 			"huaweicloud_cph_phone_flavors":  cph.DataSourcePhoneFlavors(),
 			"huaweicloud_cph_phone_images":   cph.DataSourcePhoneImages(),
+
+			"huaweicloud_cse_microservice_engines": cse.DataSourceMicroserviceEngines(),
 
 			"huaweicloud_csms_events":                   dew.DataSourceDewCsmsEvents(),
 			"huaweicloud_csms_secrets":                  dew.DataSourceDewCsmsSecrets(),
@@ -760,6 +763,8 @@ func Provider() *schema.Provider {
 			"huaweicloud_gaussdb_mysql_recycling_instances":     gaussdb.DataSourceGaussdbMysqlRecyclingInstances(),
 			"huaweicloud_gaussdb_mysql_auto_scaling_records":    gaussdb.DataSourceGaussdbMysqlAutoScalingRecords(),
 			"huaweicloud_gaussdb_mysql_incremental_backups":     gaussdb.DataSourceGaussdbMysqlIncrementalBackups(),
+
+			"huaweicloud_gaussdb_influx_instances": gaussdb.DataSourceGaussDBInfluxInstances(),
 
 			"huaweicloud_hss_ransomware_protection_policies": hss.DataSourceRansomwareProtectionPolicies(),
 			"huaweicloud_hss_host_groups":                    hss.DataSourceHostGroups(),
@@ -1025,6 +1030,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_vpn_customer_gateways":          vpn.DataSourceVpnCustomerGateways(),
 			"huaweicloud_vpn_connections":                vpn.DataSourceVpnConnections(),
 			"huaweicloud_vpn_connection_health_checks":   vpn.DataSourceVpnConnectionHealthChecks(),
+			"huaweicloud_vpn_p2c_gateways":               vpn.DataSourceVpnP2cGateways(),
 
 			"huaweicloud_waf_address_groups":                       waf.DataSourceWafAddressGroups(),
 			"huaweicloud_waf_certificate":                          waf.DataSourceWafCertificateV1(),

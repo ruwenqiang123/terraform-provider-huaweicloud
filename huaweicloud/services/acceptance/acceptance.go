@@ -42,6 +42,7 @@ var (
 	HW_IMAGE_NAME             = os.Getenv("HW_IMAGE_NAME")
 	HW_IMS_DATA_DISK_IMAGE_ID = os.Getenv("HW_IMS_DATA_DISK_IMAGE_ID")
 	HW_VPC_ID                 = os.Getenv("HW_VPC_ID")
+	HW_VPN_P2C_GATEWAY_ID     = os.Getenv("HW_VPN_P2C_GATEWAY_ID")
 	HW_NETWORK_ID             = os.Getenv("HW_NETWORK_ID")
 	HW_SUBNET_ID              = os.Getenv("HW_SUBNET_ID")
 	HW_SECURITY_GROUP_ID      = os.Getenv("HW_SECURITY_GROUP_ID")
@@ -343,6 +344,8 @@ var (
 	HW_CC_PEER_CONNECTION_ID = os.Getenv("HW_CC_PEER_CONNECTION_ID")
 
 	HW_CC_PERMISSION_ID = os.Getenv("HW_CC_PERMISSION_ID")
+
+	HW_CSE_MICROSERVICE_ENGINE_ID = os.Getenv("HW_CSE_MICROSERVICE_ENGINE_ID")
 
 	HW_CSS_LOCAL_DISK_FLAVOR  = os.Getenv("HW_CSS_LOCAL_DISK_FLAVOR")
 	HW_CSS_ELB_AGENCY         = os.Getenv("HW_CSS_ELB_AGENCY")
@@ -1875,6 +1878,13 @@ func TestAccPreCheckCCPermission(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckCSEMicroserviceEngineID(t *testing.T) {
+	if HW_CSE_MICROSERVICE_ENGINE_ID == "" {
+		t.Skip("HW_CSE_MICROSERVICE_ENGINE_ID must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckCSSLocalDiskFlavor(t *testing.T) {
 	if HW_CSS_LOCAL_DISK_FLAVOR == "" {
 		t.Skip("HW_CSS_LOCAL_DISK_FLAVOR must be set for the acceptance test")
@@ -2277,6 +2287,13 @@ func TestAccPreCheckAsDataDiskImageId(t *testing.T) {
 func TestAccPreCheckVpcId(t *testing.T) {
 	if HW_VPC_ID == "" {
 		t.Skip("HW_VPC_ID must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckVPNP2cGatewayId(t *testing.T) {
+	if HW_VPN_P2C_GATEWAY_ID == "" {
+		t.Skip("HW_VPN_P2C_GATEWAY_ID must be set for the acceptance test")
 	}
 }
 
