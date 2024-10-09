@@ -415,6 +415,7 @@ func Provider() *schema.Provider {
 		DataSourcesMap: map[string]*schema.Resource{
 			"huaweicloud_antiddos_config_ranges":                antiddos.DataSourceConfigRanges(),
 			"huaweicloud_antiddos_weekly_protection_statistics": antiddos.DataSourceWeeklyProtectionStatistics(),
+			"huaweicloud_antiddos_eip_defense_statuses":         antiddos.DataSourceEipDefenseStatuses(),
 
 			"huaweicloud_aom_alarm_action_rules":              aom.DataSourceAomAlarmActionRules(),
 			"huaweicloud_aom_alarm_group_rules":               aom.DataSourceAlarmGroupRules(),
@@ -428,6 +429,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_aom_dashboards":                      aom.DataSourceDashboards(),
 			"huaweicloud_aom_alarm_rules_templates":           aom.DataSourceAlarmRulesTemplates(),
 			"huaweicloud_aom_alarm_silence_rules":             aom.DataSourceAlarmSilenceRules(),
+			"huaweicloud_aom_service_discovery_rules":         aom.DataSourceServiceDiscoveryRules(),
 
 			"huaweicloud_apig_acl_policies":                       apig.DataSourceAclPolicies(),
 			"huaweicloud_apig_api_associated_acl_policies":        apig.DataSourceApiAssociatedAclPolicies(),
@@ -616,6 +618,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_dbss_audit_risk_rules":          dbss.DataSourceDbssAuditRiskRules(),
 			"huaweicloud_dbss_audit_rule_scopes":         dbss.DataSourceDbssAuditRuleScopes(),
 			"huaweicloud_dbss_audit_sql_injection_rules": dbss.DataSourceDbssAuditSqlInjectionRules(),
+			"huaweicloud_dbss_availability_zones":        dbss.DataSourceDbssAvailabilityZones(),
 			"huaweicloud_dbss_flavors":                   dbss.DataSourceDbssFlavors(),
 
 			"huaweicloud_dc_connections":        dc.DataSourceDcConnections(),
@@ -695,6 +698,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_dns_zones":               dns.DataSourceZones(),
 
 			"huaweicloud_drs_availability_zones": drs.DataSourceAvailabilityZones(),
+			"huaweicloud_drs_node_types":         drs.DataSourceNodeTypes(),
 
 			"huaweicloud_eg_custom_event_channels": eg.DataSourceCustomEventChannels(),
 			"huaweicloud_eg_custom_event_sources":  eg.DataSourceCustomEventSources(),
@@ -966,6 +970,8 @@ func Provider() *schema.Provider {
 			"huaweicloud_secmaster_data_class_fields":         secmaster.DataSourceSecmasterDataClassFields(),
 			"huaweicloud_secmaster_playbook_action_instances": secmaster.DataSourceSecmasterPlaybookActionInstances(),
 			"huaweicloud_secmaster_playbook_statistics":       secmaster.DataSourceSecmasterPlaybookStatistics(),
+			"huaweicloud_secmaster_playbook_audit_logs":       secmaster.DataSourceSecmasterPlaybookAuditLogs(),
+			"huaweicloud_secmaster_playbook_monitors":         secmaster.DataSourceSecmasterPlaybookMonitors(),
 
 			// Querying by Ver.2 APIs
 			"huaweicloud_servicestage_component_runtimes": servicestage.DataSourceComponentRuntimes(),
@@ -1025,12 +1031,14 @@ func Provider() *schema.Provider {
 			"huaweicloud_vpcep_service_permissions": vpcep.DataSourceVPCEPServicePermissions(),
 			"huaweicloud_vpcep_service_summary":     vpcep.DataSourceVpcepServiceSummary(),
 
-			"huaweicloud_vpn_gateway_availability_zones": vpn.DataSourceVpnGatewayAZs(),
-			"huaweicloud_vpn_gateways":                   vpn.DataSourceGateways(),
-			"huaweicloud_vpn_customer_gateways":          vpn.DataSourceVpnCustomerGateways(),
-			"huaweicloud_vpn_connections":                vpn.DataSourceVpnConnections(),
-			"huaweicloud_vpn_connection_health_checks":   vpn.DataSourceVpnConnectionHealthChecks(),
-			"huaweicloud_vpn_p2c_gateways":               vpn.DataSourceVpnP2cGateways(),
+			"huaweicloud_vpn_gateway_availability_zones":     vpn.DataSourceVpnGatewayAZs(),
+			"huaweicloud_vpn_gateways":                       vpn.DataSourceGateways(),
+			"huaweicloud_vpn_customer_gateways":              vpn.DataSourceVpnCustomerGateways(),
+			"huaweicloud_vpn_connections":                    vpn.DataSourceVpnConnections(),
+			"huaweicloud_vpn_connection_health_checks":       vpn.DataSourceVpnConnectionHealthChecks(),
+			"huaweicloud_vpn_p2c_gateways":                   vpn.DataSourceVpnP2cGateways(),
+			"huaweicloud_vpn_p2c_gateway_availability_zones": vpn.DataSourceVpnP2cGatewayAvailabilityZones(),
+			"huaweicloud_vpn_servers":                        vpn.DataSourceVpnServers(),
 
 			"huaweicloud_waf_address_groups":                       waf.DataSourceWafAddressGroups(),
 			"huaweicloud_waf_certificate":                          waf.DataSourceWafCertificateV1(),
@@ -1349,9 +1357,10 @@ func Provider() *schema.Provider {
 
 			"huaweicloud_cph_server": cph.ResourceCphServer(),
 
-			"huaweicloud_cse_microservice":          cse.ResourceMicroservice(),
-			"huaweicloud_cse_microservice_engine":   cse.ResourceMicroserviceEngine(),
-			"huaweicloud_cse_microservice_instance": cse.ResourceMicroserviceInstance(),
+			"huaweicloud_cse_microservice":                      cse.ResourceMicroservice(),
+			"huaweicloud_cse_microservice_engine":               cse.ResourceMicroserviceEngine(),
+			"huaweicloud_cse_microservice_engine_configuration": cse.ResourceMicroserviceEngineConfiguration(),
+			"huaweicloud_cse_microservice_instance":             cse.ResourceMicroserviceInstance(),
 
 			"huaweicloud_csms_event":                dew.ResourceCsmsEvent(),
 			"huaweicloud_csms_secret":               dew.ResourceSecret(),
@@ -1835,18 +1844,19 @@ func Provider() *schema.Provider {
 			"huaweicloud_sdrs_protected_instance": sdrs.ResourceProtectedInstance(),
 			"huaweicloud_sdrs_replication_attach": sdrs.ResourceReplicationAttach(),
 
-			"huaweicloud_secmaster_incident":                secmaster.ResourceIncident(),
-			"huaweicloud_secmaster_indicator":               secmaster.ResourceIndicator(),
-			"huaweicloud_secmaster_alert":                   secmaster.ResourceAlert(),
-			"huaweicloud_secmaster_alert_rule":              secmaster.ResourceAlertRule(),
-			"huaweicloud_secmaster_data_object_relations":   secmaster.ResourceDataObjectRelations(),
-			"huaweicloud_secmaster_playbook":                secmaster.ResourcePlaybook(),
-			"huaweicloud_secmaster_playbook_enable":         secmaster.ResourcePlaybookEnable(),
-			"huaweicloud_secmaster_playbook_version":        secmaster.ResourcePlaybookVersion(),
-			"huaweicloud_secmaster_playbook_version_action": secmaster.ResourcePlaybookVersionAction(),
-			"huaweicloud_secmaster_playbook_rule":           secmaster.ResourcePlaybookRule(),
-			"huaweicloud_secmaster_playbook_action":         secmaster.ResourcePlaybookAction(),
-			"huaweicloud_secmaster_playbook_approval":       secmaster.ResourcePlaybookApproval(),
+			"huaweicloud_secmaster_incident":                    secmaster.ResourceIncident(),
+			"huaweicloud_secmaster_indicator":                   secmaster.ResourceIndicator(),
+			"huaweicloud_secmaster_alert":                       secmaster.ResourceAlert(),
+			"huaweicloud_secmaster_alert_rule":                  secmaster.ResourceAlertRule(),
+			"huaweicloud_secmaster_data_object_relations":       secmaster.ResourceDataObjectRelations(),
+			"huaweicloud_secmaster_playbook":                    secmaster.ResourcePlaybook(),
+			"huaweicloud_secmaster_playbook_enable":             secmaster.ResourcePlaybookEnable(),
+			"huaweicloud_secmaster_playbook_version":            secmaster.ResourcePlaybookVersion(),
+			"huaweicloud_secmaster_playbook_version_action":     secmaster.ResourcePlaybookVersionAction(),
+			"huaweicloud_secmaster_playbook_rule":               secmaster.ResourcePlaybookRule(),
+			"huaweicloud_secmaster_playbook_action":             secmaster.ResourcePlaybookAction(),
+			"huaweicloud_secmaster_playbook_approval":           secmaster.ResourcePlaybookApproval(),
+			"huaweicloud_secmaster_playbook_instance_operation": secmaster.ResourcePlaybookInstanceOperation(),
 
 			"huaweicloud_servicestage_application":                 servicestage.ResourceApplication(),
 			"huaweicloud_servicestage_component_instance":          servicestage.ResourceComponentInstance(),
@@ -1855,7 +1865,9 @@ func Provider() *schema.Provider {
 			"huaweicloud_servicestage_repo_token_authorization":    servicestage.ResourceRepoTokenAuth(),
 			"huaweicloud_servicestage_repo_password_authorization": servicestage.ResourceRepoPwdAuth(),
 			// v3 managements
-			"huaweicloud_servicestagev3_environment": servicestage.ResourceV3Environment(),
+			"huaweicloud_servicestagev3_application":           servicestage.ResourceV3Application(),
+			"huaweicloud_servicestagev3_environment":           servicestage.ResourceV3Environment(),
+			"huaweicloud_servicestagev3_environment_associate": servicestage.ResourceV3EnvironmentAssociate(),
 
 			"huaweicloud_sfs_turbo":            sfsturbo.ResourceSFSTurbo(),
 			"huaweicloud_sfs_turbo_dir":        sfsturbo.ResourceSfsTurboDir(),

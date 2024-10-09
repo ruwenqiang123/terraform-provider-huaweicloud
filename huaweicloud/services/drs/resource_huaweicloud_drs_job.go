@@ -39,6 +39,7 @@ import (
 // @API DRS POST /v5/{project_id}/jobs/{resource_type}/{job_id}/tags/action
 // @API DRS POST /v5/{project_id}/jobs/{job_id}/action
 // @API DRS PUT /v5/{project_id}/jobs/{job_id}
+// @API DRS POST /v3/{project_id}/jobs/batch-sync-policy
 // @API BSS POST /v2/orders/suscriptions/resources/query
 // @API BSS POST /v2/orders/subscriptions/resources/unsubscribe
 // @API BSS POST /v2/orders/subscriptions/resources/autorenew/{instance_id}
@@ -53,6 +54,12 @@ func ResourceDrsJob() *schema.Resource {
 			StateContext: schema.ImportStatePassthroughContext,
 		},
 
+		Timeouts: &schema.ResourceTimeout{
+			Create: schema.DefaultTimeout(60 * time.Minute),
+			Update: schema.DefaultTimeout(30 * time.Minute),
+			Delete: schema.DefaultTimeout(30 * time.Minute),
+		},
+
 		Schema: map[string]*schema.Schema{
 			"region": {
 				Type:     schema.TypeString,
@@ -60,30 +67,25 @@ func ResourceDrsJob() *schema.Resource {
 				Computed: true,
 				ForceNew: true,
 			},
-
 			"name": {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-
 			"type": {
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
 			},
-
 			"engine_type": {
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
 			},
-
 			"direction": {
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
 			},
-
 			"source_db": {
 				Type:     schema.TypeList,
 				Required: true,
@@ -91,7 +93,6 @@ func ResourceDrsJob() *schema.Resource {
 				MaxItems: 1,
 				Elem:     dbInfoSchemaResource(),
 			},
-
 			"destination_db": {
 				Type:     schema.TypeList,
 				Required: true,
@@ -99,67 +100,63 @@ func ResourceDrsJob() *schema.Resource {
 				MaxItems: 1,
 				Elem:     dbInfoSchemaResource(),
 			},
-
+			"node_type": {
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+				Default:  "high",
+			},
 			"destination_db_readnoly": {
 				Type:     schema.TypeBool,
 				Optional: true,
 				ForceNew: true,
 				Default:  true,
 			},
-
 			"net_type": {
 				Type:     schema.TypeString,
 				Optional: true,
 				ForceNew: true,
 				Default:  "eip",
 			},
-
 			"migration_type": {
 				Type:     schema.TypeString,
 				Optional: true,
 				ForceNew: true,
 				Default:  "FULL_INCR_TRANS",
 			},
-
 			"description": {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
-
 			"enterprise_project_id": {
 				Type:     schema.TypeString,
 				Optional: true,
 				ForceNew: true,
 			},
-
 			"multi_write": {
 				Type:     schema.TypeBool,
 				Optional: true,
 				ForceNew: true,
 				Default:  false,
 			},
-
 			"expired_days": {
 				Type:     schema.TypeInt,
 				Optional: true,
 				ForceNew: true,
 				Default:  14,
 			},
-
 			"start_time": {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
 				ForceNew: true,
 			},
-
 			"migrate_definer": {
 				Type:     schema.TypeBool,
 				Optional: true,
 				ForceNew: true,
 				Default:  true,
 			},
-
 			"limit_speed": {
 				Type:     schema.TypeSet,
 				Optional: true,
@@ -172,13 +169,11 @@ func ResourceDrsJob() *schema.Resource {
 							Required: true,
 							ForceNew: true,
 						},
-
 						"start_time": {
 							Type:     schema.TypeString,
 							Required: true,
 							ForceNew: true,
 						},
-
 						"end_time": {
 							Type:     schema.TypeString,
 							Required: true,
@@ -187,11 +182,9 @@ func ResourceDrsJob() *schema.Resource {
 					},
 				},
 			},
-
 			"policy_config": {
 				Type:     schema.TypeList,
 				Optional: true,
-				Computed: true,
 				ForceNew: true,
 				MaxItems: 1,
 				Elem: &schema.Resource{
@@ -199,59 +192,115 @@ func ResourceDrsJob() *schema.Resource {
 						"filter_ddl_policy": {
 							Type:     schema.TypeString,
 							Optional: true,
-							Computed: true,
 							ForceNew: true,
 						},
-
 						"conflict_policy": {
 							Type:     schema.TypeString,
 							Optional: true,
-							Computed: true,
 							ForceNew: true,
 						},
-
 						"index_trans": {
 							Type:     schema.TypeBool,
 							Optional: true,
-							Computed: true,
+							ForceNew: true,
+						},
+
+						// Kafka
+						"topic_policy": {
+							Type:     schema.TypeString,
+							Optional: true,
+							ForceNew: true,
+						},
+						"topic": {
+							Type:     schema.TypeString,
+							Optional: true,
+							ForceNew: true,
+						},
+						"partition_policy": {
+							Type:     schema.TypeString,
+							Optional: true,
+							ForceNew: true,
+						},
+						"kafka_data_format": {
+							Type:     schema.TypeString,
+							Optional: true,
+							ForceNew: true,
+						},
+						"topic_name_format": {
+							Type:     schema.TypeString,
+							Optional: true,
+							ForceNew: true,
+						},
+						"partitions_num": {
+							Type:     schema.TypeString,
+							Optional: true,
+							ForceNew: true,
+						},
+						"replication_factor": {
+							Type:     schema.TypeString,
+							Optional: true,
+							ForceNew: true,
+						},
+
+						// PostgreSQL
+						"is_fill_materialized_view": {
+							Type:     schema.TypeBool,
+							Optional: true,
+							ForceNew: true,
+						},
+						"export_snapshot": {
+							Type:     schema.TypeBool,
+							Optional: true,
+							ForceNew: true,
+						},
+
+						// GaussDB Primary/Standby to Kafka primary and standby task
+						"slot_name": {
+							Type:     schema.TypeString,
+							Optional: true,
+							ForceNew: true,
+						},
+
+						// incre
+						"file_and_position": {
+							Type:     schema.TypeString,
+							Optional: true,
+							ForceNew: true,
+						},
+						"gtid_set": {
+							Type:     schema.TypeString,
+							Optional: true,
 							ForceNew: true,
 						},
 					},
 				},
 			},
-
 			"tags": common.TagsSchema(),
-
 			"force_destroy": {
 				Type:     schema.TypeBool,
 				Optional: true,
 				Default:  false,
 			},
-
 			"action": {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
-
 			"is_sync_re_edit": {
 				Type:         schema.TypeBool,
 				Optional:     true,
 				RequiredWith: []string{"action"},
 			},
-
 			"pause_mode": {
 				Type:         schema.TypeString,
 				Optional:     true,
 				RequiredWith: []string{"action"},
 			},
-
 			"databases": {
 				Type:          schema.TypeSet,
 				Optional:      true,
 				ConflictsWith: []string{"tables"},
 				Elem:          &schema.Schema{Type: schema.TypeString},
 			},
-
 			"tables": {
 				Type:          schema.TypeSet,
 				Optional:      true,
@@ -271,14 +320,12 @@ func ResourceDrsJob() *schema.Resource {
 					},
 				},
 			},
-
 			"master_az": {
 				Type:         schema.TypeString,
 				Optional:     true,
 				ForceNew:     true,
 				RequiredWith: []string{"slave_az"},
 			},
-
 			"slave_az": {
 				Type:         schema.TypeString,
 				Optional:     true,
@@ -337,21 +384,18 @@ func ResourceDrsJob() *schema.Resource {
 							Required: true,
 							ForceNew: true,
 						},
-
 						"delay_time": {
 							Type:     schema.TypeInt,
 							Optional: true,
 							Computed: true,
 							ForceNew: true,
 						},
-
 						"rpo_delay": {
 							Type:     schema.TypeInt,
 							Optional: true,
 							Computed: true,
 							ForceNew: true,
 						},
-
 						"rto_delay": {
 							Type:     schema.TypeInt,
 							Optional: true,
@@ -361,71 +405,54 @@ func ResourceDrsJob() *schema.Resource {
 					},
 				},
 			},
-
 			"order_id": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-
 			"master_job_id": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-
 			"slave_job_id": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-
 			"created_at": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-
 			"updated_at": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-
 			"status": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-
 			"progress": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-
 			"public_ip": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-
 			"private_ip": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-
 			"vpc_id": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-
 			"subnet_id": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-
 			"security_group_id": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-		},
-		Timeouts: &schema.ResourceTimeout{
-			Create: schema.DefaultTimeout(60 * time.Minute),
-			Update: schema.DefaultTimeout(30 * time.Minute),
-			Delete: schema.DefaultTimeout(30 * time.Minute),
 		},
 	}
 }
@@ -438,96 +465,88 @@ func dbInfoSchemaResource() *schema.Resource {
 				Required: true,
 				ForceNew: true,
 			},
-
 			"ip": {
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
 			},
-
 			"port": {
 				Type:     schema.TypeInt,
-				Required: true,
+				Optional: true,
 				ForceNew: true,
 			},
-
 			"user": {
 				Type:     schema.TypeString,
-				Required: true,
+				Optional: true,
 				ForceNew: true,
 			},
-
 			"password": {
 				Type:      schema.TypeString,
-				Required:  true,
+				Optional:  true,
 				ForceNew:  true,
 				Sensitive: true,
 			},
-
 			"instance_id": {
 				Type:     schema.TypeString,
 				Optional: true,
 				ForceNew: true,
 			},
-
 			"region": {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
 				ForceNew: true,
 			},
-
 			"vpc_id": {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
 				ForceNew: true,
 			},
-
 			"subnet_id": {
 				Type:     schema.TypeString,
 				Optional: true,
 				ForceNew: true,
 			},
-
 			"name": {
 				Type:     schema.TypeString,
 				Optional: true,
 				ForceNew: true,
 				Computed: true,
 			},
-
 			"ssl_enabled": {
 				Type:     schema.TypeBool,
 				Optional: true,
 				ForceNew: true,
 				Default:  false,
 			},
-
 			"ssl_cert_key": {
 				Type:     schema.TypeString,
 				Optional: true,
 				ForceNew: true,
 			},
-
 			"ssl_cert_name": {
 				Type:     schema.TypeString,
 				Optional: true,
 				ForceNew: true,
 			},
-
 			"ssl_cert_check_sum": {
 				Type:     schema.TypeString,
 				Optional: true,
 				ForceNew: true,
 			},
-
 			"ssl_cert_password": {
 				Type:     schema.TypeString,
 				Optional: true,
 				ForceNew: true,
 			},
-
+			"kafka_security_config": {
+				Type:     schema.TypeList,
+				Optional: true,
+				ForceNew: true,
+				MaxItems: 1,
+				Elem:     dbInfoKafkaSecurityConfigSchemaResource(),
+			},
 			"security_group_id": {
 				Type:     schema.TypeString,
 				Computed: true,
@@ -536,6 +555,78 @@ func dbInfoSchemaResource() *schema.Resource {
 	}
 
 	return &nodeResource
+}
+
+func dbInfoKafkaSecurityConfigSchemaResource() *schema.Resource {
+	return &schema.Resource{
+		Schema: map[string]*schema.Schema{
+			"type": {
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
+			"sasl_mechanism": {
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
+			"trust_store_key_name": {
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
+			"trust_store_key": {
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
+			"trust_store_password": {
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
+			"endpoint_algorithm": {
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
+			"delegation_tokens": {
+				Type:     schema.TypeBool,
+				Optional: true,
+				ForceNew: true,
+			},
+			"enable_key_store": {
+				Type:     schema.TypeBool,
+				Optional: true,
+				ForceNew: true,
+			},
+			"key_store_key_name": {
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
+			"key_store_key": {
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
+			"key_store_password": {
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
+			"set_private_key_password": {
+				Type:     schema.TypeBool,
+				Optional: true,
+				ForceNew: true,
+			},
+			"key_password": {
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
+		},
+	}
 }
 
 func resourceJobCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
@@ -612,7 +703,7 @@ func resourceJobCreate(ctx context.Context, d *schema.ResourceData, meta interfa
 	}
 
 	if _, ok := d.GetOk("policy_config"); ok {
-		err = updateJobConfig(clientV5, buildUpdateJobConfigBodyParams(d, "policy"), "policy", d.Id())
+		err = updateJobPolicyConfig(client, d)
 		if err != nil {
 			return diag.FromErr(err)
 		}
@@ -678,10 +769,6 @@ func buildUpdateJobConfigBodyParams(d *schema.ResourceData, updateType string) m
 				"object_info":  buildTables(d.Get("tables").(*schema.Set).List()),
 			},
 		}
-	case "policy":
-		return map[string]interface{}{
-			"policy_config": buildPolicyConfig(d.Get("policy_config").([]interface{})),
-		}
 	case "notify":
 		return map[string]interface{}{
 			"alarm_notify": buildAlarmNotify(d.Get("alarm_notify").([]interface{})),
@@ -733,19 +820,6 @@ func buildTableInfos(list []interface{}) map[string]interface{} {
 	return rst
 }
 
-func buildPolicyConfig(rawArray []interface{}) map[string]interface{} {
-	if len(rawArray) == 0 {
-		return nil
-	}
-	raw := rawArray[0].(map[string]interface{})
-	rst := map[string]interface{}{
-		"filter_ddl_policy": utils.ValueIgnoreEmpty(raw["filter_ddl_policy"]),
-		"conflict_policy":   utils.ValueIgnoreEmpty(raw["conflict_policy"]),
-		"index_trans":       utils.ValueIgnoreEmpty(raw["index_trans"]),
-	}
-	return rst
-}
-
 func buildAlarmNotify(rawArray []interface{}) map[string]interface{} {
 	if len(rawArray) == 0 {
 		return nil
@@ -779,6 +853,55 @@ func updateJobConfig(client *golangsdk.ServiceClient, jsonBody map[string]interf
 	if err != nil {
 		return fmt.Errorf("error updating job for %s: %s", updateType, err)
 	}
+	return nil
+}
+
+func buildJobPolicyConfigRequestBody(rawArray []interface{}, id string) map[string]interface{} {
+	if len(rawArray) == 0 {
+		return nil
+	}
+	raw, ok := rawArray[0].(map[string]interface{})
+	if !ok {
+		return nil
+	}
+	rst := map[string]interface{}{
+		"jobs": []map[string]interface{}{
+			{
+				"job_id":                    id,
+				"filter_ddl_policy":         utils.ValueIgnoreEmpty(raw["filter_ddl_policy"]),
+				"conflict_policy":           utils.ValueIgnoreEmpty(raw["conflict_policy"]),
+				"index_trans":               utils.ValueIgnoreEmpty(raw["index_trans"]),
+				"topic_policy":              utils.ValueIgnoreEmpty(raw["topic_policy"]),
+				"topic":                     utils.ValueIgnoreEmpty(raw["topic"]),
+				"partition_policy":          utils.ValueIgnoreEmpty(raw["partition_policy"]),
+				"kafka_data_format":         utils.ValueIgnoreEmpty(raw["kafka_data_format"]),
+				"topic_name_format":         utils.ValueIgnoreEmpty(raw["topic_name_format"]),
+				"partitions_num":            utils.ValueIgnoreEmpty(raw["partitions_num"]),
+				"replication_factor":        utils.ValueIgnoreEmpty(raw["replication_factor"]),
+				"is_fill_materialized_view": utils.ValueIgnoreEmpty(raw["is_fill_materialized_view"]),
+				"export_snapshot":           utils.ValueIgnoreEmpty(raw["export_snapshot"]),
+				"slot_name":                 utils.ValueIgnoreEmpty(raw["slot_name"]),
+				"file_and_position":         utils.ValueIgnoreEmpty(raw["file_and_position"]),
+				"gtid_set":                  utils.ValueIgnoreEmpty(raw["gtid_set"]),
+			},
+		},
+	}
+	return rst
+}
+
+func updateJobPolicyConfig(client *golangsdk.ServiceClient, d *schema.ResourceData) error {
+	updatePolicyConfigHttpUrl := "v3/{project_id}/jobs/batch-sync-policy"
+	updatePolicyConfigPath := client.Endpoint + updatePolicyConfigHttpUrl
+	updatePolicyConfigPath = strings.ReplaceAll(updatePolicyConfigPath, "{project_id}", client.ProjectID)
+	updatePolicyConfigOpt := golangsdk.RequestOpts{
+		KeepResponseBody: true,
+		JSONBody:         utils.RemoveNil(buildJobPolicyConfigRequestBody(d.Get("policy_config").([]interface{}), d.Id())),
+	}
+	_, err := client.Request("POST", updatePolicyConfigPath, &updatePolicyConfigOpt)
+	if err != nil {
+		return fmt.Errorf("error updating policy config: %s", err)
+	}
+
 	return nil
 }
 
@@ -825,15 +948,16 @@ func resourceJobRead(_ context.Context, d *schema.ResourceData, meta interface{}
 
 	createdAt, _ := strconv.ParseInt(detail.CreateTime, 10, 64)
 	updatedAt, _ := strconv.ParseInt(detail.UpdateTime, 10, 64)
+	// engine_type input mongodb will return mongodb-to-dds
 	mErr := multierror.Append(
 		d.Set("region", region),
 		d.Set("name", detail.Name),
 		d.Set("type", detail.DbUseType),
-		d.Set("engine_type", detail.InstInfo.EngineType),
 		d.Set("direction", detail.JobDirection),
 		d.Set("net_type", listResp.Jobs[0].NetType),
 		d.Set("public_ip", detail.InstInfo.PublicIp),
 		d.Set("private_ip", detail.InstInfo.Ip),
+		d.Set("node_type", detail.InstInfo.InstType),
 		d.Set("destination_db_readnoly", detail.IsTargetReadonly),
 		d.Set("migration_type", detail.TaskType),
 		d.Set("description", detail.Description),
@@ -843,7 +967,6 @@ func resourceJobRead(_ context.Context, d *schema.ResourceData, meta interface{}
 		d.Set("status", detail.Status),
 		d.Set("progress", progressResp.Results[0].Progress),
 		d.Set("tags", utils.TagsToMap(detail.Tags)),
-		d.Set("policy_config", flattenPolicyConfig(detail)),
 		d.Set("alarm_notify", flattenAlarmNotify(detail.AlarmNotify, topicUrn)),
 		d.Set("limit_speed", flattenLimitSpeed(detail.SpeedLimit)),
 		d.Set("master_az", detail.MasterAz),
@@ -927,17 +1050,6 @@ func flattenObjectName(objectInfos []jobs.ObjectInfo, isDateBase bool) []interfa
 		}
 	}
 
-	return rst
-}
-
-func flattenPolicyConfig(detail jobs.JobDetail) []interface{} {
-	rst := make([]interface{}, 0)
-	v := map[string]interface{}{
-		"filter_ddl_policy": detail.FilterDdlPolicy,
-		"conflict_policy":   detail.ConflictPolicy,
-		"index_trans":       detail.IndexTrans,
-	}
-	rst = append(rst, v)
 	return rst
 }
 
@@ -1128,6 +1240,10 @@ func updateObjectsSelection(ctx context.Context, d *schema.ResourceData, client,
 	if err != nil {
 		return err
 	}
+
+	// wait 10 seconds before getting the job, to avoid delay for getting children info
+	// lintignore:R018
+	time.Sleep(10 * time.Second)
 
 	// wait for children transfer job started
 	listResp, err := jobs.List(client, jobs.ListJobsReq{
@@ -1443,7 +1559,7 @@ func buildCreateParamter(d *schema.ResourceData, projectId, enterpriseProjectID 
 		Description:      d.Get("description").(string),
 		MultiWrite:       utils.Bool(d.Get("multi_write").(bool)),
 		ExpiredDays:      fmt.Sprint(d.Get("expired_days").(int)),
-		NodeType:         "high",
+		NodeType:         d.Get("node_type").(string),
 		SourceEndpoint:   *sourceDb,
 		TargetEndpoint:   *targetDb,
 		SubnetId:         subnetId,
@@ -1484,24 +1600,50 @@ func buildCreateParamter(d *schema.ResourceData, projectId, enterpriseProjectID 
 func buildDbConfigParamter(d *schema.ResourceData, dbType, projectId string) (*jobs.Endpoint, error) {
 	configRaw := d.Get(dbType).([]interface{})[0].(map[string]interface{})
 	configs := jobs.Endpoint{
-		DbType:          configRaw["engine_type"].(string),
-		Ip:              configRaw["ip"].(string),
-		DbName:          configRaw["name"].(string),
-		DbUser:          configRaw["user"].(string),
-		DbPassword:      configRaw["password"].(string),
-		DbPort:          golangsdk.IntToPointer(configRaw["port"].(int)),
-		InstanceId:      configRaw["instance_id"].(string),
-		Region:          configRaw["region"].(string),
-		VpcId:           configRaw["vpc_id"].(string),
-		SubnetId:        configRaw["subnet_id"].(string),
-		ProjectId:       projectId,
-		SslCertPassword: configRaw["ssl_cert_password"].(string),
-		SslCertCheckSum: configRaw["ssl_cert_check_sum"].(string),
-		SslCertKey:      configRaw["ssl_cert_key"].(string),
-		SslCertName:     configRaw["ssl_cert_name"].(string),
-		SslLink:         utils.Bool(configRaw["ssl_enabled"].(bool)),
+		DbType:              configRaw["engine_type"].(string),
+		Ip:                  configRaw["ip"].(string),
+		DbName:              configRaw["name"].(string),
+		DbUser:              configRaw["user"].(string),
+		DbPassword:          configRaw["password"].(string),
+		DbPort:              golangsdk.IntToPointer(configRaw["port"].(int)),
+		InstanceId:          configRaw["instance_id"].(string),
+		Region:              configRaw["region"].(string),
+		VpcId:               configRaw["vpc_id"].(string),
+		SubnetId:            configRaw["subnet_id"].(string),
+		ProjectId:           projectId,
+		SslCertPassword:     configRaw["ssl_cert_password"].(string),
+		SslCertCheckSum:     configRaw["ssl_cert_check_sum"].(string),
+		SslCertKey:          configRaw["ssl_cert_key"].(string),
+		SslCertName:         configRaw["ssl_cert_name"].(string),
+		SslLink:             utils.Bool(configRaw["ssl_enabled"].(bool)),
+		KafkaSecurityConfig: buildKafkaSecurityConfigParamter(configRaw["kafka_security_config"].([]interface{})),
 	}
 	return &configs, nil
+}
+
+func buildKafkaSecurityConfigParamter(kafkaSecurityConfig []interface{}) *jobs.KafkaSecurityConfig {
+	if len(kafkaSecurityConfig) == 0 {
+		return nil
+	}
+	params, ok := kafkaSecurityConfig[0].(map[string]interface{})
+	if !ok {
+		return nil
+	}
+	return &jobs.KafkaSecurityConfig{
+		Type:                  params["type"].(string),
+		SaslMechanism:         params["sasl_mechanism"].(string),
+		TrustStoreKeyName:     params["trust_store_key_name"].(string),
+		TrustStoreKey:         params["trust_store_key"].(string),
+		TrustStorePassword:    params["trust_store_password"].(string),
+		EndpointAlgorithm:     params["endpoint_algorithm"].(string),
+		DelegationTokens:      params["delegation_tokens"].(bool),
+		EnableKeyStore:        params["enable_key_store"].(bool),
+		KeyStoreKeyName:       params["key_store_key_name"].(string),
+		KeyStoreKey:           params["key_store_key"].(string),
+		KeyStorePassword:      params["key_store_password"].(string),
+		SetPrivateKeyPassword: params["set_private_key_password"].(bool),
+		KeyPassword:           params["key_password"].(string),
+	}
 }
 
 func parseDrsJobErrorToError404(respErr error) error {
@@ -1519,71 +1661,106 @@ func parseDrsJobErrorToError404(respErr error) error {
 
 func setDbInfoToState(d *schema.ResourceData, endpoint jobs.Endpoint, fieldName string) error {
 	result := make([]interface{}, 1)
+	// IP sometimes will not same as input, if input 1, will return 2
 	item := map[string]interface{}{
-		"engine_type":        endpoint.DbType,
-		"ip":                 endpoint.Ip,
-		"port":               endpoint.DbPort,
-		"password":           endpoint.DbPassword,
-		"user":               endpoint.DbUser,
-		"instance_id":        endpoint.InstanceId,
-		"name":               endpoint.InstanceName,
-		"region":             endpoint.Region,
-		"vpc_id":             endpoint.VpcId,
-		"subnet_id":          endpoint.SubnetId,
-		"ssl_cert_password":  endpoint.SslCertPassword,
-		"ssl_cert_check_sum": endpoint.SslCertCheckSum,
-		"ssl_cert_key":       endpoint.SslCertKey,
-		"ssl_cert_name":      endpoint.SslCertName,
-		"ssl_enabled":        endpoint.SslLink,
-		"security_group_id":  endpoint.SecurityGroupId,
+		"engine_type":           endpoint.DbType,
+		"ip":                    d.Get(fieldName + ".0.ip"),
+		"port":                  endpoint.DbPort,
+		"password":              endpoint.DbPassword,
+		"user":                  endpoint.DbUser,
+		"instance_id":           endpoint.InstanceId,
+		"name":                  endpoint.InstanceName,
+		"region":                endpoint.Region,
+		"vpc_id":                endpoint.VpcId,
+		"subnet_id":             endpoint.SubnetId,
+		"ssl_cert_password":     endpoint.SslCertPassword,
+		"ssl_cert_check_sum":    endpoint.SslCertCheckSum,
+		"ssl_cert_key":          endpoint.SslCertKey,
+		"ssl_cert_name":         endpoint.SslCertName,
+		"ssl_enabled":           endpoint.SslLink,
+		"security_group_id":     endpoint.SecurityGroupId,
+		"kafka_security_config": flattenKafkaSecurityConfig(endpoint.KafkaSecurityConfig),
 	}
 	result[0] = item
 	// lintignore:R001
 	return d.Set(fieldName, result)
 }
 
+func flattenKafkaSecurityConfig(kafkaSecurityConfig *jobs.KafkaSecurityConfig) interface{} {
+	if kafkaSecurityConfig == nil {
+		return nil
+	}
+	return []map[string]interface{}{
+		{
+			"type":                     kafkaSecurityConfig.Type,
+			"sasl_mechanism":           kafkaSecurityConfig.SaslMechanism,
+			"trust_store_key_name":     kafkaSecurityConfig.TrustStoreKeyName,
+			"trust_store_key":          kafkaSecurityConfig.TrustStoreKey,
+			"trust_store_password":     kafkaSecurityConfig.TrustStorePassword,
+			"endpoint_algorithm":       kafkaSecurityConfig.EndpointAlgorithm,
+			"delegation_tokens":        kafkaSecurityConfig.DelegationTokens,
+			"enable_key_store":         kafkaSecurityConfig.EnableKeyStore,
+			"key_store_key_name":       kafkaSecurityConfig.KeyStoreKeyName,
+			"key_store_key":            kafkaSecurityConfig.KeyStoreKey,
+			"key_store_password":       kafkaSecurityConfig.KeyStorePassword,
+			"set_private_key_password": kafkaSecurityConfig.SetPrivateKeyPassword,
+			"key_password":             kafkaSecurityConfig.KeyPassword,
+		},
+	}
+}
+
+// only mongodb have to set 0 for port, kafka will return error if input 0
+func processPort(dbType string, port int) *int {
+	if port == 0 && dbType != "mongodb" {
+		return nil
+	}
+	return &port
+}
+
 func testConnections(client *golangsdk.ServiceClient, jobId string, opts jobs.CreateJobReq) (valid bool) {
 	reqParams := jobs.TestConnectionsReq{
 		Jobs: []jobs.TestEndPoint{
 			{
-				JobId:           jobId,
-				NetType:         opts.NetType,
-				EndPointType:    "so",
-				ProjectId:       client.ProjectID,
-				Region:          opts.SourceEndpoint.Region,
-				VpcId:           opts.SourceEndpoint.VpcId,
-				SubnetId:        opts.SourceEndpoint.SubnetId,
-				DbType:          opts.SourceEndpoint.DbType,
-				Ip:              opts.SourceEndpoint.Ip,
-				DbUser:          opts.SourceEndpoint.DbUser,
-				DbPassword:      opts.SourceEndpoint.DbPassword,
-				DbPort:          opts.SourceEndpoint.DbPort,
-				SslLink:         opts.SourceEndpoint.SslLink,
-				SslCertKey:      opts.SourceEndpoint.SslCertKey,
-				SslCertName:     opts.SourceEndpoint.SslCertName,
-				SslCertCheckSum: opts.SourceEndpoint.SslCertCheckSum,
-				SslCertPassword: opts.SourceEndpoint.SslCertPassword,
-				InstId:          opts.SourceEndpoint.InstanceId,
+				JobId:               jobId,
+				NetType:             opts.NetType,
+				EndPointType:        "so",
+				ProjectId:           client.ProjectID,
+				Region:              opts.SourceEndpoint.Region,
+				VpcId:               opts.SourceEndpoint.VpcId,
+				SubnetId:            opts.SourceEndpoint.SubnetId,
+				DbType:              opts.SourceEndpoint.DbType,
+				Ip:                  opts.SourceEndpoint.Ip,
+				DbUser:              opts.SourceEndpoint.DbUser,
+				DbPassword:          opts.SourceEndpoint.DbPassword,
+				DbPort:              processPort(opts.SourceEndpoint.DbType, *opts.SourceEndpoint.DbPort),
+				SslLink:             opts.SourceEndpoint.SslLink,
+				SslCertKey:          opts.SourceEndpoint.SslCertKey,
+				SslCertName:         opts.SourceEndpoint.SslCertName,
+				SslCertCheckSum:     opts.SourceEndpoint.SslCertCheckSum,
+				SslCertPassword:     opts.SourceEndpoint.SslCertPassword,
+				InstId:              opts.SourceEndpoint.InstanceId,
+				KafkaSecurityConfig: opts.SourceEndpoint.KafkaSecurityConfig,
 			},
 			{
-				JobId:           jobId,
-				NetType:         opts.NetType,
-				EndPointType:    "ta",
-				ProjectId:       client.ProjectID,
-				Region:          opts.TargetEndpoint.Region,
-				VpcId:           opts.TargetEndpoint.VpcId,
-				SubnetId:        opts.TargetEndpoint.SubnetId,
-				DbType:          opts.TargetEndpoint.DbType,
-				Ip:              opts.TargetEndpoint.Ip,
-				DbUser:          opts.TargetEndpoint.DbUser,
-				DbPassword:      opts.TargetEndpoint.DbPassword,
-				DbPort:          opts.TargetEndpoint.DbPort,
-				SslLink:         opts.TargetEndpoint.SslLink,
-				SslCertKey:      opts.SourceEndpoint.SslCertKey,
-				SslCertName:     opts.SourceEndpoint.SslCertName,
-				SslCertCheckSum: opts.SourceEndpoint.SslCertCheckSum,
-				SslCertPassword: opts.SourceEndpoint.SslCertPassword,
-				InstId:          opts.TargetEndpoint.InstanceId,
+				JobId:               jobId,
+				NetType:             opts.NetType,
+				EndPointType:        "ta",
+				ProjectId:           client.ProjectID,
+				Region:              opts.TargetEndpoint.Region,
+				VpcId:               opts.TargetEndpoint.VpcId,
+				SubnetId:            opts.TargetEndpoint.SubnetId,
+				DbType:              opts.TargetEndpoint.DbType,
+				Ip:                  opts.TargetEndpoint.Ip,
+				DbUser:              opts.TargetEndpoint.DbUser,
+				DbPassword:          opts.TargetEndpoint.DbPassword,
+				DbPort:              processPort(opts.TargetEndpoint.DbType, *opts.TargetEndpoint.DbPort),
+				SslLink:             opts.TargetEndpoint.SslLink,
+				SslCertKey:          opts.TargetEndpoint.SslCertKey,
+				SslCertName:         opts.TargetEndpoint.SslCertName,
+				SslCertCheckSum:     opts.TargetEndpoint.SslCertCheckSum,
+				SslCertPassword:     opts.TargetEndpoint.SslCertPassword,
+				InstId:              opts.TargetEndpoint.InstanceId,
+				KafkaSecurityConfig: opts.TargetEndpoint.KafkaSecurityConfig,
 			},
 		},
 	}
@@ -1597,43 +1774,52 @@ func testConnections(client *golangsdk.ServiceClient, jobId string, opts jobs.Cr
 	return
 }
 
+func processIpAndPort(ip, port string) string {
+	if strings.Contains(ip, ",") || strings.Contains(ip, ":") {
+		return ip
+	}
+	return ip + ":" + port
+}
+
 func testConnectionsForDualAZ(client *golangsdk.ServiceClient, jobId string, opts jobs.CreateJobReq) (valid bool) {
 	sourceEndpoint := []jobs.PropertyParam{
 		{
-			DbType:          opts.SourceEndpoint.DbType,
-			NetType:         opts.NetType,
-			EndPointType:    "so",
-			Ip:              opts.SourceEndpoint.Ip + ":" + strconv.Itoa(*opts.SourceEndpoint.DbPort),
-			DbUser:          opts.SourceEndpoint.DbUser,
-			DbPassword:      opts.SourceEndpoint.DbPassword,
-			ProjectId:       client.ProjectID,
-			Region:          opts.SourceEndpoint.Region,
-			VpcId:           opts.SourceEndpoint.VpcId,
-			SubnetId:        opts.SourceEndpoint.SubnetId,
-			InstId:          opts.SourceEndpoint.InstanceId,
-			SslLink:         opts.SourceEndpoint.SslLink,
-			SslCertKey:      opts.SourceEndpoint.SslCertKey,
-			SslCertName:     opts.SourceEndpoint.SslCertName,
-			SslCertCheckSum: opts.SourceEndpoint.SslCertCheckSum,
+			DbType:              opts.SourceEndpoint.DbType,
+			NetType:             opts.NetType,
+			EndPointType:        "so",
+			Ip:                  processIpAndPort(opts.SourceEndpoint.Ip, strconv.Itoa(*opts.SourceEndpoint.DbPort)),
+			DbUser:              opts.SourceEndpoint.DbUser,
+			DbPassword:          opts.SourceEndpoint.DbPassword,
+			ProjectId:           client.ProjectID,
+			Region:              opts.SourceEndpoint.Region,
+			VpcId:               opts.SourceEndpoint.VpcId,
+			SubnetId:            opts.SourceEndpoint.SubnetId,
+			InstId:              opts.SourceEndpoint.InstanceId,
+			SslLink:             opts.SourceEndpoint.SslLink,
+			SslCertKey:          opts.SourceEndpoint.SslCertKey,
+			SslCertName:         opts.SourceEndpoint.SslCertName,
+			SslCertCheckSum:     opts.SourceEndpoint.SslCertCheckSum,
+			KafkaSecurityConfig: opts.SourceEndpoint.KafkaSecurityConfig,
 		},
 	}
 	targetEndpoint := []jobs.PropertyParam{
 		{
-			DbType:          opts.TargetEndpoint.DbType,
-			NetType:         opts.NetType,
-			EndPointType:    "ta",
-			Ip:              opts.TargetEndpoint.Ip + ":" + strconv.Itoa(*opts.TargetEndpoint.DbPort),
-			DbUser:          opts.TargetEndpoint.DbUser,
-			DbPassword:      opts.TargetEndpoint.DbPassword,
-			ProjectId:       client.ProjectID,
-			Region:          opts.TargetEndpoint.Region,
-			VpcId:           opts.TargetEndpoint.VpcId,
-			SubnetId:        opts.TargetEndpoint.SubnetId,
-			InstId:          opts.TargetEndpoint.InstanceId,
-			SslLink:         opts.TargetEndpoint.SslLink,
-			SslCertKey:      opts.TargetEndpoint.SslCertKey,
-			SslCertName:     opts.TargetEndpoint.SslCertName,
-			SslCertCheckSum: opts.TargetEndpoint.SslCertCheckSum,
+			DbType:              opts.TargetEndpoint.DbType,
+			NetType:             opts.NetType,
+			EndPointType:        "ta",
+			Ip:                  processIpAndPort(opts.TargetEndpoint.Ip, strconv.Itoa(*opts.TargetEndpoint.DbPort)),
+			DbUser:              opts.TargetEndpoint.DbUser,
+			DbPassword:          opts.TargetEndpoint.DbPassword,
+			ProjectId:           client.ProjectID,
+			Region:              opts.TargetEndpoint.Region,
+			VpcId:               opts.TargetEndpoint.VpcId,
+			SubnetId:            opts.TargetEndpoint.SubnetId,
+			InstId:              opts.TargetEndpoint.InstanceId,
+			SslLink:             opts.TargetEndpoint.SslLink,
+			SslCertKey:          opts.TargetEndpoint.SslCertKey,
+			SslCertName:         opts.TargetEndpoint.SslCertName,
+			SslCertCheckSum:     opts.TargetEndpoint.SslCertCheckSum,
+			KafkaSecurityConfig: opts.TargetEndpoint.KafkaSecurityConfig,
 		},
 	}
 

@@ -43,6 +43,7 @@ var (
 	HW_IMS_DATA_DISK_IMAGE_ID = os.Getenv("HW_IMS_DATA_DISK_IMAGE_ID")
 	HW_VPC_ID                 = os.Getenv("HW_VPC_ID")
 	HW_VPN_P2C_GATEWAY_ID     = os.Getenv("HW_VPN_P2C_GATEWAY_ID")
+	HW_VPN_P2C_SERVER         = os.Getenv("HW_VPN_P2C_SERVER")
 	HW_NETWORK_ID             = os.Getenv("HW_NETWORK_ID")
 	HW_SUBNET_ID              = os.Getenv("HW_SUBNET_ID")
 	HW_SECURITY_GROUP_ID      = os.Getenv("HW_SECURITY_GROUP_ID")
@@ -290,6 +291,9 @@ var (
 	// The SecMaster pipeline ID
 	HW_SECMASTER_PIPELINE_ID = os.Getenv("HW_SECMASTER_PIPELINE_ID")
 
+	// The SecMaster playbook instance ID
+	HW_SECMASTER_INSTANCE_ID = os.Getenv("HW_SECMASTER_INSTANCE_ID")
+
 	HW_MODELARTS_HAS_SUBSCRIBE_MODEL = os.Getenv("HW_MODELARTS_HAS_SUBSCRIBE_MODEL")
 	HW_MODELARTS_USER_LOGIN_PASSWORD = os.Getenv("HW_MODELARTS_USER_LOGIN_PASSWORD")
 
@@ -345,7 +349,8 @@ var (
 
 	HW_CC_PERMISSION_ID = os.Getenv("HW_CC_PERMISSION_ID")
 
-	HW_CSE_MICROSERVICE_ENGINE_ID = os.Getenv("HW_CSE_MICROSERVICE_ENGINE_ID")
+	HW_CSE_MICROSERVICE_ENGINE_ID             = os.Getenv("HW_CSE_MICROSERVICE_ENGINE_ID")
+	HW_CSE_MICROSERVICE_ENGINE_ADMIN_PASSWORD = os.Getenv("HW_CSE_MICROSERVICE_ENGINE_ADMIN_PASSWORD")
 
 	HW_CSS_LOCAL_DISK_FLAVOR  = os.Getenv("HW_CSS_LOCAL_DISK_FLAVOR")
 	HW_CSS_ELB_AGENCY         = os.Getenv("HW_CSS_ELB_AGENCY")
@@ -1581,6 +1586,13 @@ func TestAccPreCheckSecMasterPipelineID(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckSecMasterInstanceID(t *testing.T) {
+	if HW_SECMASTER_INSTANCE_ID == "" {
+		t.Skip("HW_SECMASTER_INSTANCE_ID must be set for SecMaster acceptance tests")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckSecMasterIndicatorTypeID(t *testing.T) {
 	if HW_SECMASTER_INDICATOR_TYPE_ID == "" {
 		t.Skip("HW_SECMASTER_INDICATOR_TYPE_ID must be set for SecMaster acceptance tests")
@@ -1881,6 +1893,13 @@ func TestAccPreCheckCCPermission(t *testing.T) {
 func TestAccPreCheckCSEMicroserviceEngineID(t *testing.T) {
 	if HW_CSE_MICROSERVICE_ENGINE_ID == "" {
 		t.Skip("HW_CSE_MICROSERVICE_ENGINE_ID must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckCSEMicroserviceEngineAdminPassword(t *testing.T) {
+	if HW_CSE_MICROSERVICE_ENGINE_ADMIN_PASSWORD == "" {
+		t.Skip("HW_CSE_MICROSERVICE_ENGINE_ADMIN_PASSWORD must be set for the acceptance test")
 	}
 }
 
@@ -2294,6 +2313,13 @@ func TestAccPreCheckVpcId(t *testing.T) {
 func TestAccPreCheckVPNP2cGatewayId(t *testing.T) {
 	if HW_VPN_P2C_GATEWAY_ID == "" {
 		t.Skip("HW_VPN_P2C_GATEWAY_ID must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckVPNP2cServer(t *testing.T) {
+	if HW_VPN_P2C_SERVER == "" {
+		t.Skip("HW_VPN_P2C_SERVER must be set for the acceptance test")
 	}
 }
 
