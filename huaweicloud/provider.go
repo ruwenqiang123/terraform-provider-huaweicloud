@@ -619,7 +619,10 @@ func Provider() *schema.Provider {
 			"huaweicloud_dbss_audit_rule_scopes":         dbss.DataSourceDbssAuditRuleScopes(),
 			"huaweicloud_dbss_audit_sql_injection_rules": dbss.DataSourceDbssAuditSqlInjectionRules(),
 			"huaweicloud_dbss_availability_zones":        dbss.DataSourceDbssAvailabilityZones(),
+			"huaweicloud_dbss_databases":                 dbss.DataSourceDbssDatabases(),
 			"huaweicloud_dbss_flavors":                   dbss.DataSourceDbssFlavors(),
+			"huaweicloud_dbss_instances":                 dbss.DataSourceDbssInstances(),
+			"huaweicloud_dbss_operation_logs":            dbss.DataSourceOperationLogs(),
 
 			"huaweicloud_dc_connections":        dc.DataSourceDcConnections(),
 			"huaweicloud_dc_quotas":             dc.DataSourceDcQuotas(),
@@ -767,6 +770,8 @@ func Provider() *schema.Provider {
 			"huaweicloud_gaussdb_mysql_recycling_instances":     gaussdb.DataSourceGaussdbMysqlRecyclingInstances(),
 			"huaweicloud_gaussdb_mysql_auto_scaling_records":    gaussdb.DataSourceGaussdbMysqlAutoScalingRecords(),
 			"huaweicloud_gaussdb_mysql_incremental_backups":     gaussdb.DataSourceGaussdbMysqlIncrementalBackups(),
+			"huaweicloud_gaussdb_mysql_restored_tables":         gaussdb.DataSourceGaussdbMysqlRestoredTables(),
+			"huaweicloud_gaussdb_mysql_project_quotas":          gaussdb.DataSourceGaussdbMysqlProjectQuotas(),
 
 			"huaweicloud_gaussdb_influx_instances": gaussdb.DataSourceGaussDBInfluxInstances(),
 
@@ -976,6 +981,8 @@ func Provider() *schema.Provider {
 			// Querying by Ver.2 APIs
 			"huaweicloud_servicestage_component_runtimes": servicestage.DataSourceComponentRuntimes(),
 			// Querying by Ver.3 APIs
+			"huaweicloud_servicestagev3_applications":   servicestage.DataSourceV3Applications(),
+			"huaweicloud_servicestagev3_environments":   servicestage.DataSourceV3Environments(),
 			"huaweicloud_servicestagev3_runtime_stacks": servicestage.DataSourceV3RuntimeStacks(),
 
 			"huaweicloud_smn_topics":            smn.DataSourceTopics(),
@@ -1065,12 +1072,14 @@ func Provider() *schema.Provider {
 			"huaweicloud_dws_cluster_cns":                     dws.DataSourceDwsClusterCns(),
 			"huaweicloud_dws_cluster_logs":                    dws.DataSourceDwsClusterLogs(),
 			"huaweicloud_dws_cluster_nodes":                   dws.DataSourceDwsClusterNodes(),
+			"huaweicloud_dws_cluster_snapshot_statistics":     dws.DataSourceDwsClusterSnapshotStatistics(),
 			"huaweicloud_dws_cluster_topo_rings":              dws.DataSourceDwsClusterTopoRings(),
 			"huaweicloud_dws_clusters":                        dws.DataSourceDwsClusters(),
 			"huaweicloud_dws_disaster_recovery_tasks":         dws.DataSourceDisasterRecoveryTasks(),
 			"huaweicloud_dws_event_subscriptions":             dws.DataSourceEventSubscriptions(),
 			"huaweicloud_dws_flavors":                         dws.DataSourceDwsFlavors(),
 			"huaweicloud_dws_logical_cluster_rings":           dws.DataSourceLogicalClusterRings(),
+			"huaweicloud_dws_logical_cluster_volumes":         dws.DataSourceDwsLogicalClusterVolumes(),
 			"huaweicloud_dws_logical_clusters":                dws.DataSourceDwsLogicalClusters(),
 			"huaweicloud_dws_om_account_configuration":        dws.DataSourceOmAccountConfiguration(),
 			"huaweicloud_dws_quotas":                          dws.DataSourceDwsQuotas(),
@@ -1557,6 +1566,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_gaussdb_cassandra_instance": gaussdb.ResourceGeminiDBInstanceV3(),
 
 			"huaweicloud_gaussdb_mysql_instance":                   gaussdb.ResourceGaussDBInstance(),
+			"huaweicloud_gaussdb_mysql_instance_node_config":       gaussdb.ResourceGaussDBMysqlNodeConfig(),
 			"huaweicloud_gaussdb_mysql_instance_restart":           gaussdb.ResourceGaussDBMysqlRestart(),
 			"huaweicloud_gaussdb_mysql_proxy":                      gaussdb.ResourceGaussDBProxy(),
 			"huaweicloud_gaussdb_mysql_proxy_restart":              gaussdb.ResourceGaussDBProxyRestart(),
@@ -1882,6 +1892,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_smn_message_template":           smn.ResourceSmnMessageTemplate(),
 			"huaweicloud_smn_logtank":                    smn.ResourceSmnLogtank(),
 			"huaweicloud_smn_message_detection":          smn.ResourceMessageDetection(),
+			"huaweicloud_smn_message_publish":            smn.ResourceMessagePublish(),
 			"huaweicloud_smn_subscription_filter_policy": smn.ResourceSubscriptionFilterPolicy(),
 
 			"huaweicloud_sms_server_template": sms.ResourceServerTemplate(),

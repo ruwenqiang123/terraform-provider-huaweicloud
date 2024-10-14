@@ -79,9 +79,7 @@ The following arguments are supported:
 
   Changing this parameter will create a new resource.
 
-* `security_group_id` - (Required, String, ForceNew) Specifies the ID of the security group.
-
-  Changing this parameter will create a new resource.
+* `security_group_id` - (Required, String) Specifies the ID of the security group.
 
 * `charging_mode` - (Required, String, ForceNew) Specifies the billing mode.  
   The valid value is **prePaid**, which means the yearly/monthly billing mode.
@@ -105,7 +103,8 @@ The following arguments are supported:
 
   Changing this parameter will create a new resource.
 
-* `enterprise_project_id` - (Optional, String) Specifies the Enterprise project ID. Defaults to **0**.
+* `enterprise_project_id` - (Optional, String) Specifies the Enterprise project ID.
+  For enterprise users, if omitted, default enterprise project will be used.
 
 * `ip_address` - (Optional, String, ForceNew) Specifies the IP address.
   If the value of this parameter is left blank or is set to an empty string, the IP address is automatically assigned.

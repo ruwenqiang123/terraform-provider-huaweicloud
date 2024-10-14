@@ -88,6 +88,8 @@ var (
 
 	HW_ELB_CERT_ID = os.Getenv("HW_ELB_CERT_ID")
 
+	HW_DBSS_INSATNCE_ID = os.Getenv("HW_DBSS_INSATNCE_ID")
+
 	HW_DEW_ENABLE_FLAG = os.Getenv("HW_DEW_ENABLE_FLAG")
 
 	HW_DEST_REGION          = os.Getenv("HW_DEST_REGION")
@@ -158,6 +160,8 @@ var (
 	HW_BUILD_IMAGE_URL_UPDATED = os.Getenv("HW_BUILD_IMAGE_URL_UPDATED") // SWR Image URL for component deployment update
 
 	HW_GAUSSDB_MYSQL_INSTANCE_ID               = os.Getenv("HW_GAUSSDB_MYSQL_INSTANCE_ID")
+	HW_GAUSSDB_MYSQL_DATABASE_NAME             = os.Getenv("HW_GAUSSDB_MYSQL_DATABASE_NAME")
+	HW_GAUSSDB_MYSQL_TABLE_NAME                = os.Getenv("HW_GAUSSDB_MYSQL_TABLE_NAME")
 	HW_GAUSSDB_MYSQL_INSTANCE_CONFIGURATION_ID = os.Getenv("HW_GAUSSDB_MYSQL_INSTANCE_CONFIGURATION_ID")
 	HW_GAUSSDB_MYSQL_BACKUP_BEGIN_TIME         = os.Getenv("HW_GAUSSDB_MYSQL_BACKUP_BEGIN_TIME")
 	HW_GAUSSDB_MYSQL_BACKUP_END_TIME           = os.Getenv("HW_GAUSSDB_MYSQL_BACKUP_END_TIME")
@@ -1169,6 +1173,20 @@ func TestAccPreCheckImageUrlUpdated(t *testing.T) {
 func TestAccPreCheckGaussDBMysqlInstanceId(t *testing.T) {
 	if HW_GAUSSDB_MYSQL_INSTANCE_ID == "" {
 		t.Skip("HW_GAUSSDB_MYSQL_INSTANCE_ID must be set for GaussDB MySQL acceptance tests.")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckGaussDBMysqlDatabaseName(t *testing.T) {
+	if HW_GAUSSDB_MYSQL_DATABASE_NAME == "" {
+		t.Skip("HW_GAUSSDB_MYSQL_DATABASE_NAME must be set for GaussDB MySQL acceptance tests.")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckGaussDBMysqlTableName(t *testing.T) {
+	if HW_GAUSSDB_MYSQL_TABLE_NAME == "" {
+		t.Skip("HW_GAUSSDB_MYSQL_TABLE_NAME must be set for GaussDB MySQL acceptance tests.")
 	}
 }
 
@@ -2378,5 +2396,12 @@ func TestAccPrecheckDewFlag(t *testing.T) {
 	// Query the task execution status(running or failed)
 	if HW_DEW_ENABLE_FLAG == "" {
 		t.Skip("HW_DEW_ENABLE_FLAG must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
+func TestAccPrecheckDbssInstanceId(t *testing.T) {
+	if HW_DBSS_INSATNCE_ID == "" {
+		t.Skip("HW_DBSS_INSATNCE_ID must be set for the acceptance test")
 	}
 }

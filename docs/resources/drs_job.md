@@ -302,6 +302,12 @@ resource "huaweicloud_drs_job" "test" {
   lifecycle {
     ignore_changes = [
       source_db.0.password, destination_db.0.password,
+      source_db.0.kafka_security_config.0.trust_store_password,
+      destination_db.0.kafka_security_config.0.trust_store_password,
+      source_db.0.kafka_security_config.0.key_store_password,
+      destination_db.0.kafka_security_config.0.key_store_password,
+      source_db.0.kafka_security_config.0.key_password,
+      destination_db.0.kafka_security_config.0.key_password,
     ]
   }
 }
@@ -390,9 +396,12 @@ The following arguments are supported:
 * `expired_days` - (Optional, Int, ForceNew) Specifies how many days after the task is abnormal, it will automatically
   end. The value ranges from 14 to 100. the default value is `14`. Changing this parameter will create a new resource.
 
-* `start_time` - (Optional, String, ForceNew) Specifies the time to start the job. The time format is a time stamp
+* `start_time` - (Optional, String) Specifies the time to start the job. The time format is a time stamp
   accurating to milliseconds, e.g. **1684466549755**, which indicates **2023-05-19 11:22:29.755**.
   Start immediately by default. Changing this parameter will create a new resource.
+
+  -> Set `action` to **start** if you want to start the job immediately. If you want to start the task within 5 minutes
+  of the current time, select start the job immediately.
 
 * `destination_db_readnoly` - (Optional, Bool, ForceNew) Specifies the destination DB instance as read-only helps
   ensure the migration is successful. Once the migration is complete, the DB instance automatically changes to
@@ -417,6 +426,7 @@ The following arguments are supported:
     **INCRE_TRANSFER_STARTED**.
   + **restart**: Continue the job. Available when job status is **PAUSING**.
   + **reset**: Retry the job. Available when job status is **FULL_TRANSFER_FAILED** or **INCRE_TRANSFER_FAILED**.
+  + **start**: Start the job. Available when job status is **WAITING_FOR_START**.
 
   -> It will only take effect when **updating** a job.
 
@@ -441,6 +451,11 @@ The following arguments are supported:
        **update** will take effect.
   <br/>4. It's only for synchronization from **MySQL** to **MySQL**, migration from **Redis** to **GeminiDB Redis**,
        migration from cluster **Redis** to **GeminiDB Redis**, and synchronization from **Oracle** to **GaussDB Distributed**.
+
+* `public_ip_list` - (Optional, List, ForceNew)  Specifies the public IP list.
+  It can be specified when `net_type` is **eip**, and if it's not specified, DRS job will automatically bind a public IP.
+  Changing this parameter will create a new resource.
+  The [public_ip_list](#block--public_ip_list) structure is documented below.
 
 * `master_az` - (Optional, String, ForceNew) Specifies the AZ where the primary task is located.
 
@@ -704,6 +719,22 @@ The `kafka_security_config` block supports:
   two-way SSL authentication is enabled and `set_private_key_password` is set to **true**.
   Changing this parameter will create a new resource.
 
+<a name="block--public_ip_list"></a>
+The `public_ip_list` block supports:
+
+* `id` - (Required, String, ForceNew) Specifies the ID of a specified EIP.
+  Changing this parameter will create a new resource.
+
+* `public_ip` - (Required, String, ForceNew) Specifies public IP.
+  Changing this parameter will create a new resource.
+
+* `type` - (Required, String, ForceNew) Specifies the type of a task with an EIP bound.
+  Valid values are **master** and **slave**.
+  + In a primary/standby task, **master** indicates the primary task, and **slave** indicates the standby task.
+  + In other cases, the value is fixed to **master**.
+
+  Changing this parameter will create a new resource.
+
 ## Attribute Reference
 
 In addition to all arguments above, the following attributes are exported:
@@ -765,8 +796,12 @@ $ terraform import huaweicloud_drs_job.test <id>
 
 Note that the imported state may not be identical to your resource definition, due to some attributes missing from the
 API response, security or some other reason. The missing attributes include: `enterprise_project_id`, `force_destroy`,
-`source_db.0.password`, `destination_db.0.password`, `source_db.0.ip`, `destination_db.0.ip`, `action`, `is_sync_re_edit`,
-`pause_mode`, `auto_renew`, `alarm_notify.0.topic_urn`, `policy_config`, `engine_type`.
+`source_db.0.password`, `destination_db.0.password`, `source_db.0.ip`, `destination_db.0.ip`,
+`source_db.0.kafka_security_config.0.trust_store_password`, `destination_db.0.kafka_security_config.0.trust_store_password`,
+`source_db.0.kafka_security_config.0.key_store_password`,`destination_db.0.kafka_security_config.0.key_store_password`,
+`source_db.0.kafka_security_config.0.key_password`, `destination_db.0.kafka_security_config.0.key_password`,
+`action`, `is_sync_re_edit`, `pause_mode`, `auto_renew`, `alarm_notify.0.topic_urn`, `policy_config`, `engine_type`,
+`public_ip_list`, `start_time`.
 It is generally recommended running **terraform plan** after importing a job. You can then
 decide if changes should be applied to the job, or the resource definition should be updated to align with the job. Also
 you can ignore changes as below.
