@@ -10,7 +10,6 @@ import (
 	"github.com/hashicorp/go-multierror"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/jmespath/go-jmespath"
 
 	"github.com/chnsz/golangsdk"
 
@@ -155,11 +154,11 @@ func resourceMicroserviceEngineConfigurationCreate(ctx context.Context, d *schem
 		return diag.FromErr(err)
 	}
 
-	configId, err := jmespath.Search("id", respBody)
-	if err != nil || configId == nil {
-		return diag.Errorf("failed to find the configuration ID from the API response: %s", err)
+	configId := utils.PathSearch("id", respBody, "").(string)
+	if configId == "" {
+		return diag.Errorf("enable to find the CSE microservice configuration ID from the API response")
 	}
-	d.SetId(configId.(string))
+	d.SetId(configId)
 
 	return resourceMicroserviceEngineConfigurationRead(ctx, d, meta)
 }
@@ -327,22 +326,26 @@ func resourceMicroserviceEngineConfigurationImportState(_ context.Context, d *sc
 		err                                                        error
 		mErr                                                       *multierror.Error
 
+		importedId   = d.Id()
 		addressRegex = `https://\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}:\d{1,5}`
 		re           = regexp.MustCompile(fmt.Sprintf(`^(%[1]s)?/?(%[1]s)/(.*)$`, addressRegex))
-		formatErr    = fmt.Errorf("the imported microservice ID specifies an invalid format, must be " +
-			"<auth_address>/<connect_address>/<key> or <auth_address>/<connect_address>/<key>/<admin_user>/<admin_pass>")
+		formatErr    = fmt.Errorf("the imported microservice ID specifies an invalid format, want "+
+			"'<auth_address>/<connect_address>/<key>' or '<auth_address>/<connect_address>/<key>/<admin_user>/<admin_pass>', but got '%s'",
+			importedId)
 	)
 	if !re.MatchString(d.Id()) {
-		return nil, fmt.Errorf("the imported microservice ID specifies an invalid format, must start with the " +
-			"connection address of the service registry center for the dedicated CSE engine")
+		return nil, formatErr
 	}
 
 	resp := re.FindAllStringSubmatch(d.Id(), -1)
-	if len(resp) >= 1 && len(resp[0]) == 4 {
+	// If the imported ID matches the address regular expression, the length of the response result must be greater than 1.
+	if len(resp[0]) == 4 {
 		authAddr = resp[0][1]
 		connectAddr = resp[0][2]
-		mErr = multierror.Append(mErr, d.Set("auth_address", resp[0][1]))
-		mErr = multierror.Append(mErr, d.Set("connect_address", resp[0][2]))
+		mErr = multierror.Append(mErr,
+			d.Set("auth_address", resp[0][1]),
+			d.Set("connect_address", resp[0][2]),
+		)
 
 		parts := strings.Split(resp[0][3], "/")
 		switch len(parts) {

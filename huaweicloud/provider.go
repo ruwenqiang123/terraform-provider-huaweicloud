@@ -1046,6 +1046,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_vpn_p2c_gateways":                   vpn.DataSourceVpnP2cGateways(),
 			"huaweicloud_vpn_p2c_gateway_availability_zones": vpn.DataSourceVpnP2cGatewayAvailabilityZones(),
 			"huaweicloud_vpn_servers":                        vpn.DataSourceVpnServers(),
+			"huaweicloud_vpn_users":                          vpn.DataSourceVpnUsers(),
 
 			"huaweicloud_waf_address_groups":                       waf.DataSourceWafAddressGroups(),
 			"huaweicloud_waf_certificate":                          waf.DataSourceWafCertificateV1(),
@@ -1395,7 +1396,8 @@ func Provider() *schema.Provider {
 			"huaweicloud_css_logstash_custom_certificate": css.ResourceLogstashCertificate(),
 			"huaweicloud_css_logstash_custom_template":    css.ResourceLogstashCustomTemplate(),
 
-			"huaweicloud_dbss_instance": dbss.ResourceInstance(),
+			"huaweicloud_dbss_audit_risk_rule_action": dbss.ResourceRiskRuleAction(),
+			"huaweicloud_dbss_instance":               dbss.ResourceInstance(),
 
 			"huaweicloud_dc_virtual_gateway":            dc.ResourceVirtualGateway(),
 			"huaweicloud_dc_virtual_interface":          dc.ResourceVirtualInterface(),
@@ -1499,6 +1501,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_dws_logical_cluster_restart":       dws.ResourceLogicalClusterRestart(),
 			"huaweicloud_dws_logical_cluster":               dws.ResourceLogicalCluster(),
 			"huaweicloud_dws_om_account_action":             dws.ResourceOmAccountAction(),
+			"huaweicloud_dws_parameter_configurations":      dws.ResourceParameterConfigurations(),
 			"huaweicloud_dws_public_domain_associate":       dws.ResourcePublicDomainAssociate(),
 			"huaweicloud_dws_snapshot_copy":                 dws.ResourceSnapshotCopy(),
 			"huaweicloud_dws_snapshot_policy":               dws.ResourceDwsSnapshotPolicy(),
@@ -1568,6 +1571,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_gaussdb_mysql_instance":                   gaussdb.ResourceGaussDBInstance(),
 			"huaweicloud_gaussdb_mysql_instance_node_config":       gaussdb.ResourceGaussDBMysqlNodeConfig(),
 			"huaweicloud_gaussdb_mysql_instance_restart":           gaussdb.ResourceGaussDBMysqlRestart(),
+			"huaweicloud_gaussdb_mysql_instance_upgrade":           gaussdb.ResourceGaussDBMysqlUpgrade(),
 			"huaweicloud_gaussdb_mysql_proxy":                      gaussdb.ResourceGaussDBProxy(),
 			"huaweicloud_gaussdb_mysql_proxy_restart":              gaussdb.ResourceGaussDBProxyRestart(),
 			"huaweicloud_gaussdb_mysql_database":                   gaussdb.ResourceGaussDBDatabase(),
@@ -1581,6 +1585,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_gaussdb_mysql_restore":                    gaussdb.ResourceGaussDBMysqlRestore(),
 			"huaweicloud_gaussdb_mysql_eip_associate":              gaussdb.ResourceGaussMysqlEipAssociate(),
 			"huaweicloud_gaussdb_mysql_recycling_policy":           gaussdb.ResourceGaussDBRecyclingPolicy(),
+			"huaweicloud_gaussdb_mysql_quota":                      gaussdb.ResourceGaussDBMysqlQuota(),
 
 			"huaweicloud_gaussdb_opengauss_instance": gaussdb.ResourceOpenGaussInstance(),
 			"huaweicloud_gaussdb_opengauss_database": gaussdb.ResourceOpenGaussDatabase(),
@@ -1876,6 +1881,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_servicestage_repo_password_authorization": servicestage.ResourceRepoPwdAuth(),
 			// v3 managements
 			"huaweicloud_servicestagev3_application":           servicestage.ResourceV3Application(),
+			"huaweicloud_servicestagev3_component":             servicestage.ResourceV3Component(),
 			"huaweicloud_servicestagev3_environment":           servicestage.ResourceV3Environment(),
 			"huaweicloud_servicestagev3_environment_associate": servicestage.ResourceV3EnvironmentAssociate(),
 
@@ -1953,6 +1959,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_vpn_customer_gateway":        vpn.ResourceCustomerGateway(),
 			"huaweicloud_vpn_connection":              vpn.ResourceConnection(),
 			"huaweicloud_vpn_connection_health_check": vpn.ResourceConnectionHealthCheck(),
+			"huaweicloud_vpn_user":                    vpn.ResourceUser(),
 
 			"huaweicloud_waf_address_group":                       waf.ResourceWafAddressGroup(),
 			"huaweicloud_waf_certificate":                         waf.ResourceWafCertificateV1(),

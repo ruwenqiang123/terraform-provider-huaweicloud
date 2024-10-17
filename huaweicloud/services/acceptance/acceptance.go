@@ -44,6 +44,7 @@ var (
 	HW_VPC_ID                 = os.Getenv("HW_VPC_ID")
 	HW_VPN_P2C_GATEWAY_ID     = os.Getenv("HW_VPN_P2C_GATEWAY_ID")
 	HW_VPN_P2C_SERVER         = os.Getenv("HW_VPN_P2C_SERVER")
+	HW_VPN_P2C_USER_GROUP     = os.Getenv("HW_VPN_P2C_USER_GROUP")
 	HW_NETWORK_ID             = os.Getenv("HW_NETWORK_ID")
 	HW_SUBNET_ID              = os.Getenv("HW_SUBNET_ID")
 	HW_SECURITY_GROUP_ID      = os.Getenv("HW_SECURITY_GROUP_ID")
@@ -415,6 +416,8 @@ var (
 	// The list of the user names under specified DWS cluster. Using commas (,) to separate multiple names.
 	HW_DWS_ASSOCIATE_USER_NAMES  = os.Getenv("HW_DWS_ASSOCIATE_USER_NAMES")
 	HW_DWS_AUTOMATED_SNAPSHOT_ID = os.Getenv("HW_DWS_AUTOMATED_SNAPSHOT_ID")
+	// The OBS agency name list of the DWS data source. Using commas (,) to separate multiple names.
+	HW_DWS_OBS_AGENCY_NAMES = os.Getenv("HW_DWS_OBS_AGENCY_NAMES")
 
 	HW_DCS_ACCOUNT_WHITELIST = os.Getenv("HW_DCS_ACCOUNT_WHITELIST")
 
@@ -2160,6 +2163,15 @@ func TestAccPreCheckDwsAutomatedSnapshot(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckDwsExtDataSourceAgencyNames(t *testing.T) {
+	// Control OBS type data source acceptance test, one for creating resource and the other for updating resource.
+	agencyNames := strings.Split(HW_DWS_OBS_AGENCY_NAMES, ",")
+	if len(agencyNames) < 2 {
+		t.Skip("The length of HW_DWS_OBS_AGENCY_NAMES must be 2 for the OBS data source acceptance test")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckDCSAccountWhitelist(t *testing.T) {
 	if HW_DCS_ACCOUNT_WHITELIST == "" {
 		t.Skip("HW_DCS_ACCOUNT_WHITELIST must be set for the acceptance test")
@@ -2338,6 +2350,13 @@ func TestAccPreCheckVPNP2cGatewayId(t *testing.T) {
 func TestAccPreCheckVPNP2cServer(t *testing.T) {
 	if HW_VPN_P2C_SERVER == "" {
 		t.Skip("HW_VPN_P2C_SERVER must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckVPNP2cUserGroup(t *testing.T) {
+	if HW_VPN_P2C_USER_GROUP == "" {
+		t.Skip("HW_VPN_P2C_USER_GROUP must be set for the acceptance test")
 	}
 }
 
