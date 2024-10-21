@@ -772,6 +772,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_gaussdb_mysql_incremental_backups":     gaussdb.DataSourceGaussdbMysqlIncrementalBackups(),
 			"huaweicloud_gaussdb_mysql_restored_tables":         gaussdb.DataSourceGaussdbMysqlRestoredTables(),
 			"huaweicloud_gaussdb_mysql_project_quotas":          gaussdb.DataSourceGaussdbMysqlProjectQuotas(),
+			"huaweicloud_gaussdb_mysql_scheduled_tasks":         gaussdb.DataSourceGaussDBMysqlScheduledTasks(),
 
 			"huaweicloud_gaussdb_influx_instances": gaussdb.DataSourceGaussDBInfluxInstances(),
 
@@ -1171,6 +1172,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_dcs_product_v1":                deprecated.DataSourceDcsProductV1(),
 			"huaweicloud_dms_az":                        deprecated.DataSourceDmsAZ(),
 			"huaweicloud_dms_az_v1":                     deprecated.DataSourceDmsAZ(),
+			"huaweicloud_dms_rabbitmq_users":            dms.DataSourceDmsRabbitmqUsers(),
 			"huaweicloud_sfs_file_system":               deprecated.DataSourceSFSFileSystemV2(),
 			"huaweicloud_sfs_file_system_v2":            deprecated.DataSourceSFSFileSystemV2(),
 			"huaweicloud_vbs_backup_policy":             deprecated.DataSourceVBSBackupPolicyV2(),
@@ -1474,6 +1476,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_dms_rabbitmq_queue":               dms.ResourceDmsRabbitmqQueue(),
 			"huaweicloud_dms_rabbitmq_queue_message_clear": dms.ResourceDmsRabbitmqQueueMessageClear(),
 			"huaweicloud_dms_rabbitmq_exchange_associate":  dms.ResourceDmsRabbitmqExchangeAssociate(),
+			"huaweicloud_dms_rabbitmq_user":                dms.ResourceDmsRabbitmqUser(),
 
 			"huaweicloud_dms_rocketmq_instance":       dms.ResourceDmsRocketMQInstance(),
 			"huaweicloud_dms_rocketmq_consumer_group": dms.ResourceDmsRocketMQConsumerGroup(),
@@ -1583,6 +1586,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_gaussdb_mysql_parameter_template_compare": gaussdb.ResourceGaussDBMysqlTemplateCompare(),
 			"huaweicloud_gaussdb_mysql_backup":                     gaussdb.ResourceGaussDBMysqlBackup(),
 			"huaweicloud_gaussdb_mysql_restore":                    gaussdb.ResourceGaussDBMysqlRestore(),
+			"huaweicloud_gaussdb_mysql_table_restore":              gaussdb.ResourceGaussDBMysqlTableRestore(),
 			"huaweicloud_gaussdb_mysql_eip_associate":              gaussdb.ResourceGaussMysqlEipAssociate(),
 			"huaweicloud_gaussdb_mysql_recycling_policy":           gaussdb.ResourceGaussDBRecyclingPolicy(),
 			"huaweicloud_gaussdb_mysql_quota":                      gaussdb.ResourceGaussDBMysqlQuota(),
