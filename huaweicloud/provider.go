@@ -578,6 +578,8 @@ func Provider() *schema.Provider {
 			"huaweicloud_cph_server_flavors": cph.DataSourceServerFlavors(),
 			"huaweicloud_cph_phone_flavors":  cph.DataSourcePhoneFlavors(),
 			"huaweicloud_cph_phone_images":   cph.DataSourcePhoneImages(),
+			"huaweicloud_cph_servers":        cph.DataSourceCphServers(),
+			"huaweicloud_cph_phones":         cph.DataSourceCphPhones(),
 
 			"huaweicloud_cse_microservice_engines": cse.DataSourceMicroserviceEngines(),
 
@@ -1590,6 +1592,8 @@ func Provider() *schema.Provider {
 			"huaweicloud_gaussdb_mysql_eip_associate":              gaussdb.ResourceGaussMysqlEipAssociate(),
 			"huaweicloud_gaussdb_mysql_recycling_policy":           gaussdb.ResourceGaussDBRecyclingPolicy(),
 			"huaweicloud_gaussdb_mysql_quota":                      gaussdb.ResourceGaussDBMysqlQuota(),
+			"huaweicloud_gaussdb_mysql_scheduled_task_cancel":      gaussdb.ResourceGaussDBScheduledTaskCancel(),
+			"huaweicloud_gaussdb_mysql_scheduled_task_delete":      gaussdb.ResourceGaussDBScheduledTaskDelete(),
 
 			"huaweicloud_gaussdb_opengauss_instance": gaussdb.ResourceOpenGaussInstance(),
 			"huaweicloud_gaussdb_opengauss_database": gaussdb.ResourceOpenGaussDatabase(),
