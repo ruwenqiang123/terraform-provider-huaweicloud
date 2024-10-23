@@ -895,10 +895,12 @@ func Provider() *schema.Provider {
 			"huaweicloud_obs_buckets":       obs.DataSourceObsBuckets(),
 			"huaweicloud_obs_bucket_object": obs.DataSourceObsBucketObject(),
 
-			"huaweicloud_ram_resource_permissions":       ram.DataSourceRAMPermissions(),
-			"huaweicloud_ram_resource_share_invitations": ram.DataSourceResourceShareInvitations(),
-			"huaweicloud_ram_shared_resources":           ram.DataSourceRAMSharedResources(),
-			"huaweicloud_ram_shared_principals":          ram.DataSourceRAMSharedPrincipals(),
+			"huaweicloud_ram_resource_permissions":                  ram.DataSourceRAMPermissions(),
+			"huaweicloud_ram_resource_share_invitations":            ram.DataSourceResourceShareInvitations(),
+			"huaweicloud_ram_shared_resources":                      ram.DataSourceRAMSharedResources(),
+			"huaweicloud_ram_shared_principals":                     ram.DataSourceRAMSharedPrincipals(),
+			"huaweicloud_ram_resource_share_associations":           ram.DataSourceShareAssociations(),
+			"huaweicloud_ram_resource_share_associated_permissions": ram.DataSourceAssociatedPermissions(),
 
 			"huaweicloud_rds_flavors":                         rds.DataSourceRdsFlavor(),
 			"huaweicloud_rds_engine_versions":                 rds.DataSourceRdsEngineVersionsV3(),
@@ -1369,7 +1371,8 @@ func Provider() *schema.Provider {
 			"huaweicloud_coc_script":         coc.ResourceScript(),
 			"huaweicloud_coc_script_execute": coc.ResourceScriptExecute(),
 
-			"huaweicloud_cph_server": cph.ResourceCphServer(),
+			"huaweicloud_cph_server":      cph.ResourceCphServer(),
+			"huaweicloud_cph_adb_command": cph.ResourceAdbCommand(),
 
 			"huaweicloud_cse_microservice":                      cse.ResourceMicroservice(),
 			"huaweicloud_cse_microservice_engine":               cse.ResourceMicroserviceEngine(),
@@ -1968,6 +1971,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_vpn_connection":              vpn.ResourceConnection(),
 			"huaweicloud_vpn_connection_health_check": vpn.ResourceConnectionHealthCheck(),
 			"huaweicloud_vpn_user":                    vpn.ResourceUser(),
+			"huaweicloud_vpn_user_group":              vpn.ResourceUserGroup(),
 
 			"huaweicloud_waf_address_group":                       waf.ResourceWafAddressGroup(),
 			"huaweicloud_waf_certificate":                         waf.ResourceWafCertificateV1(),
@@ -2416,17 +2420,21 @@ func configureProvider(_ context.Context, d *schema.ResourceData, terraformVersi
 	}
 
 	if conf.Cloud == defaultCloud {
-		if err := conf.SetWebsiteType(); err != nil {
-			log.Printf("[WARN] failed to get the website type: %s", err)
-		}
+		if os.Getenv("SKIP_CHECK_WEBSITE_TYPE") != "true" {
+			if err := conf.SetWebsiteType(); err != nil {
+				log.Printf("[WARN] failed to get the website type: %s", err)
+			}
 
-		if conf.GetWebsiteType() == config.InternationalSite {
-			// refer to https://developer.huaweicloud.com/intl/en-us/endpoint
-			bssIntlEndpoint := fmt.Sprintf("https://bss-intl.%s/", conf.Cloud)
-			tmsIntlEndpoint := fmt.Sprintf("https://tms.ap-southeast-1.%s/", conf.Cloud)
+			if conf.GetWebsiteType() == config.InternationalSite {
+				// refer to https://developer.huaweicloud.com/intl/en-us/endpoint
+				bssIntlEndpoint := fmt.Sprintf("https://bss-intl.%s/", conf.Cloud)
+				tmsIntlEndpoint := fmt.Sprintf("https://tms.ap-southeast-1.%s/", conf.Cloud)
 
-			conf.SetServiceEndpoint("bss", bssIntlEndpoint)
-			conf.SetServiceEndpoint("tms", tmsIntlEndpoint)
+				conf.SetServiceEndpoint("bss", bssIntlEndpoint)
+				conf.SetServiceEndpoint("tms", tmsIntlEndpoint)
+			}
+		} else {
+			log.Printf("[WARN] check website type skipped")
 		}
 	}
 
