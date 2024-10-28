@@ -105,6 +105,7 @@ var (
 	HW_RAM_SHARE_UPDATE_RESOURCE_URN = os.Getenv("HW_RAM_SHARE_UPDATE_RESOURCE_URN")
 	HW_RAM_ENABLE_FLAG               = os.Getenv("HW_RAM_ENABLE_FLAG")
 	HW_RAM_SHARE_INVITATION_ID       = os.Getenv("HW_RAM_SHARE_INVITATION_ID")
+	HW_RAM_SHARE_ID                  = os.Getenv("HW_RAM_SHARE_ID")
 
 	HW_CDN_DOMAIN_NAME = os.Getenv("HW_CDN_DOMAIN_NAME")
 	// `HW_CDN_CERT_DOMAIN_NAME` Configure the domain name environment variable of the certificate type.
@@ -469,6 +470,10 @@ var (
 	HW_RDS_BACKUP_ID                       = os.Getenv("HW_RDS_BACKUP_ID")
 	HW_RDS_START_TIME                      = os.Getenv("HW_RDS_START_TIME")
 	HW_RDS_END_TIME                        = os.Getenv("HW_RDS_END_TIME")
+
+	HW_DMS_KAFKA_INSTANCE_ID         = os.Getenv("HW_DMS_KAFKA_INSTANCE_ID")
+	HW_DMS_KAFKA_TOPIC_NAME          = os.Getenv("HW_DMS_KAFKA_TOPIC_NAME")
+	HW_DMS_KAFKA_CONSUMER_GROUP_NAME = os.Getenv("HW_DMS_KAFKA_CONSUMER_GROUP_NAME")
 
 	HW_DMS_ROCKETMQ_INSTANCE_ID = os.Getenv("HW_DMS_ROCKETMQ_INSTANCE_ID")
 	HW_DMS_ROCKETMQ_TOPIC_NAME  = os.Getenv("HW_DMS_ROCKETMQ_TOPIC_NAME")
@@ -1019,6 +1024,13 @@ func TestAccPreCheckRAMEnableFlag(t *testing.T) {
 func TestAccPreCheckRAMShareInvitationId(t *testing.T) {
 	if HW_RAM_SHARE_INVITATION_ID == "" {
 		t.Skip("HW_RAM_SHARE_INVITATION_ID must be set for the acceptance tests.")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckRAMShareId(t *testing.T) {
+	if HW_RAM_SHARE_ID == "" {
+		t.Skip("HW_RAM_SHARE_ID must be set for the acceptance tests.")
 	}
 }
 
@@ -2318,6 +2330,27 @@ func TestAccPreCheckCssReplaceAgency(t *testing.T) {
 func TestAccPreCheckCssAzMigrateAgency(t *testing.T) {
 	if HW_CSS_AZ_MIGRATE_AGENCY == "" {
 		t.Skip("HW_CSS_AZ_MIGRATE_AGENCY must be set for CSS acceptance tests")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckDMSKafkaInstanceID(t *testing.T) {
+	if HW_DMS_KAFKA_INSTANCE_ID == "" {
+		t.Skip("HW_DMS_KAFKA_INSTANCE_ID must be set for DMS acceptance tests")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckDMSKafkaTopicName(t *testing.T) {
+	if HW_DMS_KAFKA_TOPIC_NAME == "" {
+		t.Skip("HW_DMS_KAFKA_TOPIC_NAME must be set for DMS acceptance tests")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckDMSKafkaConsumerGroupName(t *testing.T) {
+	if HW_DMS_KAFKA_CONSUMER_GROUP_NAME == "" {
+		t.Skip("HW_DMS_KAFKA_CONSUMER_GROUP_NAME must be set for DMS acceptance tests")
 	}
 }
 
