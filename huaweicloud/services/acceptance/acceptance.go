@@ -163,12 +163,15 @@ var (
 	HW_BUILD_IMAGE_URL_UPDATED = os.Getenv("HW_BUILD_IMAGE_URL_UPDATED") // SWR Image URL for component deployment update
 
 	HW_GAUSSDB_MYSQL_INSTANCE_ID               = os.Getenv("HW_GAUSSDB_MYSQL_INSTANCE_ID")
+	HW_GAUSSDB_MYSQL_NODE_ID                   = os.Getenv("HW_GAUSSDB_MYSQL_NODE_ID")
 	HW_GAUSSDB_MYSQL_DATABASE_NAME             = os.Getenv("HW_GAUSSDB_MYSQL_DATABASE_NAME")
 	HW_GAUSSDB_MYSQL_TABLE_NAME                = os.Getenv("HW_GAUSSDB_MYSQL_TABLE_NAME")
 	HW_GAUSSDB_MYSQL_INSTANCE_CONFIGURATION_ID = os.Getenv("HW_GAUSSDB_MYSQL_INSTANCE_CONFIGURATION_ID")
 	HW_GAUSSDB_MYSQL_BACKUP_BEGIN_TIME         = os.Getenv("HW_GAUSSDB_MYSQL_BACKUP_BEGIN_TIME")
 	HW_GAUSSDB_MYSQL_BACKUP_END_TIME           = os.Getenv("HW_GAUSSDB_MYSQL_BACKUP_END_TIME")
 	HW_GAUSSDB_MYSQL_JOB_ID                    = os.Getenv("HW_GAUSSDB_MYSQL_JOB_ID")
+	HW_GAUSSDB_MYSQL_START_TIME                = os.Getenv("HW_GAUSSDB_MYSQL_START_TIME")
+	HW_GAUSSDB_MYSQL_END_TIME                  = os.Getenv("HW_GAUSSDB_MYSQL_END_TIME")
 
 	HW_VOD_WATERMARK_FILE   = os.Getenv("HW_VOD_WATERMARK_FILE")
 	HW_VOD_MEDIA_ASSET_FILE = os.Getenv("HW_VOD_MEDIA_ASSET_FILE")
@@ -196,6 +199,7 @@ var (
 	HW_WORKSPACE_AD_NETWORK_ID  = os.Getenv("HW_WORKSPACE_AD_NETWORK_ID")  // The network ID to which the AD server belongs.
 	// The internet access port to which the Workspace service.
 	HW_WORKSPACE_INTERNET_ACCESS_PORT = os.Getenv("HW_WORKSPACE_INTERNET_ACCESS_PORT")
+	HW_WORKSPACE_APP_SERVER_GROUP_ID  = os.Getenv("HW_WORKSPACE_APP_SERVER_GROUP_ID")
 
 	HW_FGS_AGENCY_NAME         = os.Getenv("HW_FGS_AGENCY_NAME")
 	HW_FGS_TEMPLATE_ID         = os.Getenv("HW_FGS_TEMPLATE_ID")
@@ -371,11 +375,12 @@ var (
 	HW_CERT_BATCH_PUSH_ID     = os.Getenv("HW_CERT_BATCH_PUSH_ID")
 	HW_CERT_BATCH_PUSH_WAF_ID = os.Getenv("HW_CERT_BATCH_PUSH_WAF_ID")
 
-	HW_AS_SCALING_GROUP_ID     = os.Getenv("HW_AS_SCALING_GROUP_ID")
-	HW_AS_SCALING_POLICY_ID    = os.Getenv("HW_AS_SCALING_POLICY_ID")
-	HW_AS_LIFECYCLE_ACTION_KEY = os.Getenv("HW_AS_LIFECYCLE_ACTION_KEY")
-	HW_AS_INSTANCE_ID          = os.Getenv("HW_AS_INSTANCE_ID")
-	HW_AS_LIFECYCLE_HOOK_NAME  = os.Getenv("HW_AS_LIFECYCLE_HOOK_NAME")
+	HW_AS_SCALING_GROUP_ID         = os.Getenv("HW_AS_SCALING_GROUP_ID")
+	HW_AS_SCALING_CONFIGURATION_ID = os.Getenv("HW_AS_SCALING_CONFIGURATION_ID")
+	HW_AS_SCALING_POLICY_ID        = os.Getenv("HW_AS_SCALING_POLICY_ID")
+	HW_AS_LIFECYCLE_ACTION_KEY     = os.Getenv("HW_AS_LIFECYCLE_ACTION_KEY")
+	HW_AS_INSTANCE_ID              = os.Getenv("HW_AS_INSTANCE_ID")
+	HW_AS_LIFECYCLE_HOOK_NAME      = os.Getenv("HW_AS_LIFECYCLE_HOOK_NAME")
 
 	// Common
 	HW_DATAARTS_WORKSPACE_ID                               = os.Getenv("HW_DATAARTS_WORKSPACE_ID")
@@ -464,6 +469,8 @@ var (
 
 	HW_DDS_SECOND_LEVEL_MONITORING_ENABLED = os.Getenv("HW_DDS_SECOND_LEVEL_MONITORING_ENABLED")
 	HW_DDS_INSTANCE_ID                     = os.Getenv("HW_DDS_INSTANCE_ID")
+	HW_DDS_START_TIME                      = os.Getenv("HW_DDS_START_TIME")
+	HW_DDS_END_TIME                        = os.Getenv("HW_DDS_END_TIME")
 
 	HW_RDS_CROSS_REGION_BACKUP_INSTANCE_ID = os.Getenv("HW_RDS_CROSS_REGION_BACKUP_INSTANCE_ID")
 	HW_RDS_INSTANCE_ID                     = os.Getenv("HW_RDS_INSTANCE_ID")
@@ -1202,6 +1209,13 @@ func TestAccPreCheckGaussDBMysqlInstanceId(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckGaussDBMysqlNodeId(t *testing.T) {
+	if HW_GAUSSDB_MYSQL_NODE_ID == "" {
+		t.Skip("HW_GAUSSDB_MYSQL_NODE_ID must be set for GaussDB MySQL acceptance tests.")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckGaussDBMysqlDatabaseName(t *testing.T) {
 	if HW_GAUSSDB_MYSQL_DATABASE_NAME == "" {
 		t.Skip("HW_GAUSSDB_MYSQL_DATABASE_NAME must be set for GaussDB MySQL acceptance tests.")
@@ -1240,6 +1254,13 @@ func TestAccPreCheckGaussDBMysqlBackupEndTime(t *testing.T) {
 func TestAccPreCheckGaussDBMysqlJobId(t *testing.T) {
 	if HW_GAUSSDB_MYSQL_JOB_ID == "" {
 		t.Skip("HW_GAUSSDB_MYSQL_JOB_ID must be set for GaussDB MySQL acceptance tests.")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckGaussDBMysqlTimeRange(t *testing.T) {
+	if HW_GAUSSDB_MYSQL_START_TIME == "" || HW_GAUSSDB_MYSQL_END_TIME == "" {
+		t.Skip("HW_GAUSSDB_MYSQL_START_TIME and HW_GAUSSDB_MYSQL_END_TIME must be set for GaussDB MySQL acceptance tests")
 	}
 }
 
@@ -1419,6 +1440,13 @@ func TestAccPreCheckWorkspaceAD(t *testing.T) {
 func TestAccPreCheckWorkspaceInternetAccessPort(t *testing.T) {
 	if HW_WORKSPACE_INTERNET_ACCESS_PORT == "" {
 		t.Skip("HW_WORKSPACE_INTERNET_ACCESS_PORT must be set for Workspace service acceptance tests.")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckWorkspaceAppServerGroupId(t *testing.T) {
+	if HW_WORKSPACE_APP_SERVER_GROUP_ID == "" {
+		t.Skip("HW_WORKSPACE_APP_SERVER_GROUP_ID must be set for Workspace service acceptance tests.")
 	}
 }
 
@@ -1982,6 +2010,13 @@ func TestAccPreCheckASScalingGroupID(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckASScalingConfigurationID(t *testing.T) {
+	if HW_AS_SCALING_CONFIGURATION_ID == "" {
+		t.Skip("HW_AS_SCALING_CONFIGURATION_ID must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckASScalingPolicyID(t *testing.T) {
 	if HW_AS_SCALING_POLICY_ID == "" {
 		t.Skip("HW_AS_SCALING_POLICY_ID must be set for the acceptance test")
@@ -2274,6 +2309,13 @@ func TestAccPreCheckDDSInstanceID(t *testing.T) {
 func TestAccPreCheckDDSSecondLevelMonitoringEnabled(t *testing.T) {
 	if HW_DDS_SECOND_LEVEL_MONITORING_ENABLED == "" {
 		t.Skip("HW_DDS_SECOND_LEVEL_MONITORING_ENABLED must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckDDSTimeRange(t *testing.T) {
+	if HW_DDS_START_TIME == "" || HW_DDS_END_TIME == "" {
+		t.Skip("HW_DDS_START_TIME and HW_DDS_END_TIME must be set for acceptance test")
 	}
 }
 
