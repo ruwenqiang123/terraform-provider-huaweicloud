@@ -48,6 +48,17 @@
               "urn": {
                 "type": "string",
                 "computed": true
+              },
+              "version_ids": {
+                "type": [
+                  "list",
+                  "string"
+                ],
+                "computed": true
+              },
+              "version_to_delete": {
+                "type": "string",
+                "optional": true
               }
             }
           },

@@ -642,17 +642,23 @@ func Provider() *schema.Provider {
 			"huaweicloud_dcs_accounts":        dcs.DataSourceDcsAccounts(),
 			"huaweicloud_dcs_diagnosis_tasks": dcs.DataSourceDcsDiagnosisTasks(),
 
+			"huaweicloud_dds_audit_logs":                 dds.DataSourceDdsAuditLogs(),
+			"huaweicloud_dds_audit_log_links":            dds.DataSourceDdsAuditLogLinks(),
 			"huaweicloud_dds_database_versions":          dds.DataSourceDdsDatabaseVersions(),
 			"huaweicloud_dds_flavors":                    dds.DataSourceDDSFlavorV3(),
 			"huaweicloud_dds_migrate_availability_zones": dds.DataSourceDDSMigrateAvailabilityZones(),
 			"huaweicloud_dds_instances":                  dds.DataSourceDdsInstance(),
 			"huaweicloud_dds_parameter_templates":        dds.DataSourceDdsParameterTemplates(),
+			"huaweicloud_dds_databases":                  dds.DataSourceDdsDatabases(),
 			"huaweicloud_dds_database_users":             dds.DateSourceDDSDatabaseUser(),
 			"huaweicloud_dds_storage_types":              dds.DataSourceDdsStorageTypes(),
 			"huaweicloud_dds_restore_time_ranges":        dds.DataSourceDdsRestoreTimeRanges(),
 			"huaweicloud_dds_backups":                    dds.DataSourceDDSBackups(),
 			"huaweicloud_dds_database_roles":             dds.DateSourceDDSDatabaseRoles(),
 			"huaweicloud_dds_error_logs":                 dds.DataSourceDDSErrorLogs(),
+			"huaweicloud_dds_error_log_links":            dds.DataSourceDDSErrorLogLinks(),
+			"huaweicloud_dds_slow_log_links":             dds.DataSourceDDSSlowLogLinks(),
+			"huaweicloud_dds_slow_logs":                  dds.DataSourceDDSSlowLogs(),
 
 			"huaweicloud_dli_datasource_auths":       dli.DataSourceAuths(),
 			"huaweicloud_dli_datasource_connections": dli.DataSourceConnections(),
@@ -780,6 +786,8 @@ func Provider() *schema.Provider {
 			"huaweicloud_gaussdb_mysql_project_quotas":          gaussdb.DataSourceGaussdbMysqlProjectQuotas(),
 			"huaweicloud_gaussdb_mysql_scheduled_tasks":         gaussdb.DataSourceGaussDBMysqlScheduledTasks(),
 			"huaweicloud_gaussdb_mysql_slow_logs":               gaussdb.DataSourceGaussDBMysqlSlowLogs(),
+			"huaweicloud_gaussdb_mysql_error_logs":              gaussdb.DataSourceGaussDBMysqlErrorLogs(),
+			"huaweicloud_gaussdb_mysql_diagnosis_statistics":    gaussdb.DataSourceGaussdbMysqlDiagnosisStatistics(),
 
 			"huaweicloud_gaussdb_influx_instances": gaussdb.DataSourceGaussDBInfluxInstances(),
 
@@ -1381,9 +1389,11 @@ func Provider() *schema.Provider {
 			"huaweicloud_coc_script":         coc.ResourceScript(),
 			"huaweicloud_coc_script_execute": coc.ResourceScriptExecute(),
 
-			"huaweicloud_cph_server":      cph.ResourceCphServer(),
-			"huaweicloud_cph_adb_command": cph.ResourceAdbCommand(),
-			"huaweicloud_cph_phone_stop":  cph.ResourcePhoneStop(),
+			"huaweicloud_cph_server":         cph.ResourceCphServer(),
+			"huaweicloud_cph_adb_command":    cph.ResourceAdbCommand(),
+			"huaweicloud_cph_phone_stop":     cph.ResourcePhoneStop(),
+			"huaweicloud_cph_server_restart": cph.ResourceServerRestart(),
+			"huaweicloud_cph_phone_reset":    cph.ResourcePhoneReset(),
 
 			"huaweicloud_cse_microservice":                      cse.ResourceMicroservice(),
 			"huaweicloud_cse_microservice_engine":               cse.ResourceMicroserviceEngine(),
@@ -1445,6 +1455,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_dds_instance_parameters_modify":  dds.ResourceDDSInstanceParametersModify(),
 			"huaweicloud_dds_primary_standby_switch":      dds.ResourceDDSPrimaryStandbySwitch(),
 			"huaweicloud_dds_recycle_policy":              dds.ResourceDDSRecyclePolicy(),
+			"huaweicloud_dds_parameter_template_compare":  dds.ResourceDDSParameterTemplateCompare(),
 
 			"huaweicloud_ddm_instance":               ddm.ResourceDdmInstance(),
 			"huaweicloud_ddm_instance_restart":       ddm.ResourceDdmInstanceRestart(),
@@ -1991,6 +2002,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_vpn_connection_health_check": vpn.ResourceConnectionHealthCheck(),
 			"huaweicloud_vpn_user":                    vpn.ResourceUser(),
 			"huaweicloud_vpn_user_group":              vpn.ResourceUserGroup(),
+			"huaweicloud_vpn_client_ca_certificate":   vpn.ResourceClientCACertificate(),
 
 			"huaweicloud_waf_address_group":                       waf.ResourceWafAddressGroup(),
 			"huaweicloud_waf_certificate":                         waf.ResourceWafCertificateV1(),
@@ -2014,6 +2026,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_waf_reference_table":                     waf.ResourceWafReferenceTableV1(),
 
 			"huaweicloud_workspace_app_group":         workspace.ResourceWorkspaceAppGroup(),
+			"huaweicloud_workspace_app_publishment":   workspace.ResourceAppPublishment(),
 			"huaweicloud_workspace_user_group":        workspace.ResourceUserGroup(),
 			"huaweicloud_workspace_access_policy":     workspace.ResourceAccessPolicy(),
 			"huaweicloud_workspace_desktop_name_rule": workspace.ResourceDesktopNameRule(),
