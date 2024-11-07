@@ -787,6 +787,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_gaussdb_mysql_incremental_backups":      gaussdb.DataSourceGaussdbMysqlIncrementalBackups(),
 			"huaweicloud_gaussdb_mysql_restored_tables":          gaussdb.DataSourceGaussdbMysqlRestoredTables(),
 			"huaweicloud_gaussdb_mysql_project_quotas":           gaussdb.DataSourceGaussdbMysqlProjectQuotas(),
+			"huaweicloud_gaussdb_mysql_instant_tasks":            gaussdb.DataSourceGaussDBMysqlInstantTasks(),
 			"huaweicloud_gaussdb_mysql_scheduled_tasks":          gaussdb.DataSourceGaussDBMysqlScheduledTasks(),
 			"huaweicloud_gaussdb_mysql_slow_logs":                gaussdb.DataSourceGaussDBMysqlSlowLogs(),
 			"huaweicloud_gaussdb_mysql_error_logs":               gaussdb.DataSourceGaussDBMysqlErrorLogs(),
@@ -1080,7 +1081,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_vpn_user_groups":                    vpn.DataSourceVpnUserGroups(),
 
 			"huaweicloud_waf_address_groups":                       waf.DataSourceWafAddressGroups(),
-			"huaweicloud_waf_certificate":                          waf.DataSourceWafCertificateV1(),
+			"huaweicloud_waf_certificate":                          waf.DataSourceWafCertificate(),
 			"huaweicloud_waf_dedicated_domains":                    waf.DataSourceWafDedicatedDomains(),
 			"huaweicloud_waf_dedicated_instances":                  waf.DataSourceWafDedicatedInstancesV1(),
 			"huaweicloud_waf_domains":                              waf.DataSourceWafDomains(),
@@ -1633,6 +1634,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_gaussdb_mysql_quota":                      gaussdb.ResourceGaussDBMysqlQuota(),
 			"huaweicloud_gaussdb_mysql_scheduled_task_cancel":      gaussdb.ResourceGaussDBScheduledTaskCancel(),
 			"huaweicloud_gaussdb_mysql_scheduled_task_delete":      gaussdb.ResourceGaussDBScheduledTaskDelete(),
+			"huaweicloud_gaussdb_mysql_instant_task_delete":        gaussdb.ResourceGaussDBInstantTaskDelete(),
 
 			"huaweicloud_gaussdb_opengauss_instance": gaussdb.ResourceOpenGaussInstance(),
 			"huaweicloud_gaussdb_opengauss_database": gaussdb.ResourceOpenGaussDatabase(),
@@ -2016,7 +2018,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_vpn_client_ca_certificate":   vpn.ResourceClientCACertificate(),
 
 			"huaweicloud_waf_address_group":                       waf.ResourceWafAddressGroup(),
-			"huaweicloud_waf_certificate":                         waf.ResourceWafCertificateV1(),
+			"huaweicloud_waf_certificate":                         waf.ResourceWafCertificate(),
 			"huaweicloud_waf_cloud_instance":                      waf.ResourceCloudInstance(),
 			"huaweicloud_waf_domain":                              waf.ResourceWafDomain(),
 			"huaweicloud_waf_policy":                              waf.ResourceWafPolicyV1(),
