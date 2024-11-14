@@ -1,5 +1,17 @@
 # CHANGELOG
 
+## 1.70.2 (November 8, 2024)
+
+BUG FIXES:
+
+* resource/huaweicloud_ddm_instance: fix pathSearch issue [GH-5832]
+
+## 1.70.1 (November 7, 2024)
+
+ENHANCEMENTS:
+
+* resource/huaweicloud_coc_script: handle more NotFound errors [GH-5825]
+
 ## 1.70.0 (October 30, 2024)
 
 * **New Resource:**

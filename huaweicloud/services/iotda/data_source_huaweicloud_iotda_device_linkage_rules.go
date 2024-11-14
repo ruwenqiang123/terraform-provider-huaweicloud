@@ -18,7 +18,7 @@ import (
 // @API IoTDA GET /v5/iot/{project_id}/rules
 func DataSourceDeviceLinkageRules() *schema.Resource {
 	return &schema.Resource{
-		ReadContext: dataSourceeDeviceLinkageRulesRead,
+		ReadContext: dataSourceDeviceLinkageRulesRead,
 
 		Schema: map[string]*schema.Schema{
 			"region": {
@@ -137,6 +137,11 @@ func ruleConditionSchema() *schema.Resource {
 							Type:     schema.TypeString,
 							Computed: true,
 						},
+						"in_values": {
+							Type:     schema.TypeList,
+							Computed: true,
+							Elem:     &schema.Schema{Type: schema.TypeString},
+						},
 						"trigger_strategy": {
 							Type:     schema.TypeString,
 							Computed: true,
@@ -238,6 +243,18 @@ func ruleActionSchema() *schema.Resource {
 							Type:     schema.TypeString,
 							Computed: true,
 						},
+						"buffer_timeout": {
+							Type:     schema.TypeInt,
+							Computed: true,
+						},
+						"response_timeout": {
+							Type:     schema.TypeInt,
+							Computed: true,
+						},
+						"mode": {
+							Type:     schema.TypeString,
+							Computed: true,
+						},
 						"service_id": {
 							Type:     schema.TypeString,
 							Computed: true,
@@ -274,6 +291,10 @@ func ruleActionSchema() *schema.Resource {
 							Type:     schema.TypeString,
 							Computed: true,
 						},
+						"message_template_name": {
+							Type:     schema.TypeString,
+							Computed: true,
+						},
 					},
 				},
 			},
@@ -291,6 +312,10 @@ func ruleActionSchema() *schema.Resource {
 							Computed: true,
 						},
 						"severity": {
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+						"dimension": {
 							Type:     schema.TypeString,
 							Computed: true,
 						},
@@ -326,7 +351,7 @@ func ruleTimeRangeSchema() *schema.Resource {
 	return &sc
 }
 
-func dataSourceeDeviceLinkageRulesRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func dataSourceDeviceLinkageRulesRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	cfg := meta.(*config.Config)
 	region := cfg.GetRegion(d)
 	isDerived := WithDerivedAuth(cfg, region)
@@ -374,16 +399,16 @@ func dataSourceeDeviceLinkageRulesRead(_ context.Context, d *schema.ResourceData
 
 	d.SetId(uuId)
 
-	targetRules := filterListeDeviceLinkageRules(allRules, d)
+	targetRules := filterListDeviceLinkageRules(allRules, d)
 	mErr := multierror.Append(nil,
 		d.Set("region", region),
-		d.Set("rules", flatteneDeviceLinkageRules(targetRules)),
+		d.Set("rules", flattenDeviceLinkageRules(targetRules)),
 	)
 
 	return diag.FromErr(mErr.ErrorOrNil())
 }
 
-func filterListeDeviceLinkageRules(rules []model.RuleResponse, d *schema.ResourceData) []model.RuleResponse {
+func filterListDeviceLinkageRules(rules []model.RuleResponse, d *schema.ResourceData) []model.RuleResponse {
 	if len(rules) == 0 {
 		return nil
 	}
@@ -411,13 +436,14 @@ func filterListeDeviceLinkageRules(rules []model.RuleResponse, d *schema.Resourc
 	return rst
 }
 
-func flatteneDeviceLinkageRules(rules []model.RuleResponse) []interface{} {
+func flattenDeviceLinkageRules(rules []model.RuleResponse) []interface{} {
 	if len(rules) == 0 {
 		return nil
 	}
 
 	rst := make([]interface{}, 0, len(rules))
 	for _, v := range rules {
+		actions := v.Actions
 		rst = append(rst, map[string]interface{}{
 			"id":               v.RuleId,
 			"name":             v.Name,
@@ -425,8 +451,8 @@ func flatteneDeviceLinkageRules(rules []model.RuleResponse) []interface{} {
 			"type":             v.RuleType,
 			"status":           v.Status,
 			"space_id":         v.AppId,
-			"triggers":         flattenRuleConditions(v.ConditionGroup),
-			"actions":          flattenRuleActions(v.Actions),
+			"triggers":         flattenLinkageTriggers(v.ConditionGroup),
+			"actions":          flattenLinkageActions(&actions),
 			"effective_period": flattenLinkageEffectivePeriod(v.ConditionGroup),
 			"trigger_logic":    v.ConditionGroup.Logic,
 			"updated_at":       v.LastUpdateTime,
@@ -434,31 +460,4 @@ func flatteneDeviceLinkageRules(rules []model.RuleResponse) []interface{} {
 	}
 
 	return rst
-}
-
-func flattenRuleConditions(conditionGroup *model.ConditionGroup) []interface{} {
-	rst := flattenLinkageTriggers(conditionGroup)
-	for _, v := range *conditionGroup.Conditions {
-		if v.DeviceLinkageStatusCondition == nil {
-			return rst
-		}
-
-		rst = append(rst, map[string]interface{}{
-			"type": v.Type,
-			"device_linkage_status_condition": []interface{}{
-				map[string]interface{}{
-					"device_id":   v.DeviceLinkageStatusCondition.DeviceId,
-					"product_id":  v.DeviceLinkageStatusCondition.ProductId,
-					"duration":    v.DeviceLinkageStatusCondition.Duration,
-					"status_list": v.DeviceLinkageStatusCondition.StatusList,
-				},
-			},
-		})
-	}
-
-	return rst
-}
-
-func flattenRuleActions(actions []model.RuleAction) []interface{} {
-	return flattenLinkageActions(&actions)
 }

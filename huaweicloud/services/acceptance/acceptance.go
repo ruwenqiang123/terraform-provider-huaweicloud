@@ -83,9 +83,12 @@ var (
 	HW_DEPRECATED_ENVIRONMENT = os.Getenv("HW_DEPRECATED_ENVIRONMENT")
 	HW_INTERNAL_USED          = os.Getenv("HW_INTERNAL_USED")
 
-	HW_WAF_ENABLE_FLAG    = os.Getenv("HW_WAF_ENABLE_FLAG")
-	HW_WAF_CERTIFICATE_ID = os.Getenv("HW_WAF_CERTIFICATE_ID")
-	HW_WAF_TYPE           = os.Getenv("HW_WAF_TYPE")
+	HW_WAF_ENABLE_FLAG         = os.Getenv("HW_WAF_ENABLE_FLAG")
+	HW_WAF_CERTIFICATE_ID      = os.Getenv("HW_WAF_CERTIFICATE_ID")
+	HW_WAF_TYPE                = os.Getenv("HW_WAF_TYPE")
+	HW_WAF_CLOUD_INSTANCE_FLAG = os.Getenv("HW_WAF_CLOUD_INSTANCE_FLAG")
+	HW_WAF_INTERNATIONAL_FLAG  = os.Getenv("HW_WAF_INTERNATIONAL_FLAG")
+	HW_WAF_GROUP_FLAG          = os.Getenv("HW_WAF_GROUP_FLAG")
 
 	HW_ELB_CERT_ID = os.Getenv("HW_ELB_CERT_ID")
 
@@ -134,6 +137,7 @@ var (
 	HW_CCM_ENABLE_FLAG                 = os.Getenv("HW_CCM_ENABLE_FLAG")
 
 	HW_CPH_OBS_OBJECT_PATH = os.Getenv("HW_CPH_OBS_OBJECT_PATH")
+	HW_CPH_OBS_BUCKET_NAME = os.Getenv("HW_CPH_OBS_BUCKET_NAME")
 
 	HW_DMS_ENVIRONMENT   = os.Getenv("HW_DMS_ENVIRONMENT")
 	HW_SMS_SOURCE_SERVER = os.Getenv("HW_SMS_SOURCE_SERVER")
@@ -199,8 +203,12 @@ var (
 	HW_WORKSPACE_AD_VPC_ID      = os.Getenv("HW_WORKSPACE_AD_VPC_ID")      // The VPC ID to which the AD server and desktops belongs.
 	HW_WORKSPACE_AD_NETWORK_ID  = os.Getenv("HW_WORKSPACE_AD_NETWORK_ID")  // The network ID to which the AD server belongs.
 	// The internet access port to which the Workspace service.
-	HW_WORKSPACE_INTERNET_ACCESS_PORT = os.Getenv("HW_WORKSPACE_INTERNET_ACCESS_PORT")
-	HW_WORKSPACE_APP_SERVER_GROUP_ID  = os.Getenv("HW_WORKSPACE_APP_SERVER_GROUP_ID")
+	HW_WORKSPACE_INTERNET_ACCESS_PORT              = os.Getenv("HW_WORKSPACE_INTERNET_ACCESS_PORT")
+	HW_WORKSPACE_APP_SERVER_GROUP_ID               = os.Getenv("HW_WORKSPACE_APP_SERVER_GROUP_ID")
+	HW_WORKSPACE_APP_SERVER_GROUP_FLAVOR_ID        = os.Getenv("HW_WORKSPACE_APP_SERVER_GROUP_FLAVOR_ID")
+	HW_WORKSPACE_APP_SERVER_GROUP_IMAGE_ID         = os.Getenv("HW_WORKSPACE_APP_SERVER_GROUP_IMAGE_ID")
+	HW_WORKSPACE_APP_SERVER_GROUP_IMAGE_PRODUCT_ID = os.Getenv("HW_WORKSPACE_APP_SERVER_GROUP_IMAGE_PRODUCT_ID")
+	HW_WORKSPACE_OU_NAME                           = os.Getenv("HW_WORKSPACE_OU_NAME")
 
 	HW_FGS_AGENCY_NAME         = os.Getenv("HW_FGS_AGENCY_NAME")
 	HW_FGS_TEMPLATE_ID         = os.Getenv("HW_FGS_TEMPLATE_ID")
@@ -476,6 +484,9 @@ var (
 
 	HW_RDS_CROSS_REGION_BACKUP_INSTANCE_ID = os.Getenv("HW_RDS_CROSS_REGION_BACKUP_INSTANCE_ID")
 	HW_RDS_INSTANCE_ID                     = os.Getenv("HW_RDS_INSTANCE_ID")
+	HW_RDS_INSTANCE_NAME                   = os.Getenv("HW_RDS_INSTANCE_NAME")
+	HW_RDS_DATABASE_NAME                   = os.Getenv("HW_RDS_DATABASE_NAME")
+	HW_RDS_TABLE_NAME                      = os.Getenv("HW_RDS_TABLE_NAME")
 	HW_RDS_BACKUP_ID                       = os.Getenv("HW_RDS_BACKUP_ID")
 	HW_RDS_START_TIME                      = os.Getenv("HW_RDS_START_TIME")
 	HW_RDS_END_TIME                        = os.Getenv("HW_RDS_END_TIME")
@@ -806,6 +817,30 @@ func RandomPassword(customChars ...string) string {
 func TestAccPrecheckWafInstance(t *testing.T) {
 	if HW_WAF_ENABLE_FLAG == "" {
 		t.Skip("Skip the WAF acceptance tests.")
+	}
+}
+
+// lintignore:AT003
+// Used as a switch to enable the creation of cloud mode instance test cases.
+func TestAccPreCheckWafCloudInstance(t *testing.T) {
+	if HW_WAF_CLOUD_INSTANCE_FLAG == "" {
+		t.Skip("Skip the WAF cloud acceptance tests.")
+	}
+}
+
+// lintignore:AT003
+// Used as a switch to enable international station test cases.
+func TestAccPreCheckWafInternationalInstance(t *testing.T) {
+	if HW_WAF_INTERNATIONAL_FLAG == "" {
+		t.Skip("Skip the WAF international acceptance tests.")
+	}
+}
+
+// lintignore:AT003
+// Used as a switch to enable the WAF group test cases.
+func TestAccPreCheckWafGroup(t *testing.T) {
+	if HW_WAF_GROUP_FLAG == "" {
+		t.Skip("Skip the WAF group acceptance tests.")
 	}
 }
 
@@ -1449,6 +1484,22 @@ func TestAccPreCheckWorkspaceInternetAccessPort(t *testing.T) {
 func TestAccPreCheckWorkspaceAppServerGroupId(t *testing.T) {
 	if HW_WORKSPACE_APP_SERVER_GROUP_ID == "" {
 		t.Skip("HW_WORKSPACE_APP_SERVER_GROUP_ID must be set for Workspace service acceptance tests.")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckWorkspaceAppServerGroup(t *testing.T) {
+	if HW_WORKSPACE_AD_VPC_ID == "" || HW_WORKSPACE_AD_NETWORK_ID == "" ||
+		HW_WORKSPACE_APP_SERVER_GROUP_FLAVOR_ID == "" || HW_WORKSPACE_APP_SERVER_GROUP_IMAGE_ID == "" ||
+		HW_WORKSPACE_APP_SERVER_GROUP_IMAGE_PRODUCT_ID == "" {
+		t.Skip("Workspace APP server group acceptance test missing configuration parameters.")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckWorkspaceOUName(t *testing.T) {
+	if HW_WORKSPACE_OU_NAME == "" {
+		t.Skip("HW_WORKSPACE_OU_NAME must be set for Workspace service acceptance tests.")
 	}
 }
 
@@ -2343,6 +2394,27 @@ func TestAccPreCheckRdsInstanceId(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckRdsInstanceName(t *testing.T) {
+	if HW_RDS_INSTANCE_NAME == "" {
+		t.Skip("HW_RDS_INSTANCE_NAME must be set for RDS acceptance tests")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckRdsDatabaseName(t *testing.T) {
+	if HW_RDS_DATABASE_NAME == "" {
+		t.Skip("HW_RDS_DATABASE_NAME must be set for RDS acceptance tests")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckRdsTableName(t *testing.T) {
+	if HW_RDS_TABLE_NAME == "" {
+		t.Skip("HW_RDS_TABLE_NAME must be set for RDS acceptance tests")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckRdsBackupId(t *testing.T) {
 	if HW_RDS_BACKUP_ID == "" {
 		t.Skip("HW_RDS_BACKUP_ID must be set for RDS acceptance tests")
@@ -2530,5 +2602,12 @@ func TestAccPrecheckDbssInstanceId(t *testing.T) {
 func TestAccPrecheckCphAdbObjectPath(t *testing.T) {
 	if HW_CPH_OBS_OBJECT_PATH == "" {
 		t.Skip("HW_CPH_OBS_OBJECT_PATH must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
+func TestAccPrecheckCphObsBucketName(t *testing.T) {
+	if HW_CPH_OBS_BUCKET_NAME == "" {
+		t.Skip("HW_CPH_OBS_BUCKET_NAME must be set for the acceptance test")
 	}
 }
