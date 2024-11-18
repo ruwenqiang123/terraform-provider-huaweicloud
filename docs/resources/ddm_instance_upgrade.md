@@ -10,9 +10,8 @@ description: |-
 
 Manages a DDM instance upgrade resource within HuaweiCloud.
 
--> **NOTE:** Deleting restoration record is not supported. If you destroy a resource of restoration record,
-the upgrade record is only removed from the state, but it remains in the cloud. And the instance doesn't return to
-the state before upgrade.
+-> **NOTE:** Deleting instance upgrade is not supported. If you destroy a resource of instance upgrade, the resource is
+only removed from the state, but it remains in the cloud. And the instance doesn't return to the state before upgrade.
 
 ## Example Usage
 

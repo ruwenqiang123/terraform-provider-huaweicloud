@@ -494,6 +494,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_cc_central_network_policies":                     cc.DataSourceCcCentralNetworkPolicies(),
 			"huaweicloud_cc_central_network_attachments":                  cc.DataSourceCcCentralNetworkAttachments(),
 			"huaweicloud_cc_central_network_policies_change_set":          cc.DataSourceCcCentralNetworkPoliciesChangeSet(),
+			"huaweicloud_cc_central_network_quotas":                       cc.DataSourceCcCentralNetworkQuotas(),
 			"huaweicloud_cc_connections":                                  cc.DataSourceCloudConnections(),
 			"huaweicloud_cc_connection_routes":                            cc.DataSourceCcConnectionRoutes(),
 			"huaweicloud_cc_connection_tags":                              cc.DataSourceCcConnectionTags(),
@@ -696,6 +697,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_dms_kafka_topic_partitions":        dms.DataSourceDmsKafkaTopicPartitions(),
 			"huaweicloud_dms_kafka_users":                   dms.DataSourceDmsKafkaUsers(),
 			"huaweicloud_dms_kafka_message_diagnosis_tasks": dms.DataSourceDmsKafkaMessageDiagnosisTasks(),
+			"huaweicloud_dms_kafka_messages":                dms.DataSourceDmsKafkaMessages(),
 
 			"huaweicloud_dms_rabbitmq_flavors":        dms.DataSourceRabbitMQFlavors(),
 			"huaweicloud_dms_rabbitmq_plugins":        dms.DataSourceDmsRabbitmqPlugins(),
@@ -854,18 +856,19 @@ func Provider() *schema.Provider {
 			"huaweicloud_kps_running_tasks": dew.DataSourceDewKpsRunningTasks(),
 			"huaweicloud_kps_keypairs":      dew.DataSourceKeypairs(),
 
-			"huaweicloud_iotda_device_proxies":        iotda.DataSourceDeviceProxies(),
-			"huaweicloud_iotda_device_binding_groups": iotda.DataSourceDeviceBindingGroups(),
-			"huaweicloud_iotda_amqps":                 iotda.DataSourceAMQPQueues(),
-			"huaweicloud_iotda_batchtasks":            iotda.DataSourceBatchTasks(),
-			"huaweicloud_iotda_dataforwarding_rules":  iotda.DataSourceDataForwardingRules(),
-			"huaweicloud_iotda_devices":               iotda.DataSourceDevices(),
-			"huaweicloud_iotda_device_certificates":   iotda.DataSourceDeviceCertificates(),
-			"huaweicloud_iotda_device_groups":         iotda.DataSourceDeviceGroups(),
-			"huaweicloud_iotda_device_linkage_rules":  iotda.DataSourceDeviceLinkageRules(),
-			"huaweicloud_iotda_products":              iotda.DataSourceProducts(),
-			"huaweicloud_iotda_spaces":                iotda.DataSourceSpaces(),
-			"huaweicloud_iotda_upgrade_packages":      iotda.DataSourceUpgradePackages(),
+			"huaweicloud_iotda_device_proxies":             iotda.DataSourceDeviceProxies(),
+			"huaweicloud_iotda_device_binding_groups":      iotda.DataSourceDeviceBindingGroups(),
+			"huaweicloud_iotda_amqps":                      iotda.DataSourceAMQPQueues(),
+			"huaweicloud_iotda_batchtasks":                 iotda.DataSourceBatchTasks(),
+			"huaweicloud_iotda_dataforwarding_rules":       iotda.DataSourceDataForwardingRules(),
+			"huaweicloud_iotda_data_flow_control_policies": iotda.DataSourceDataFlowControlPolicies(),
+			"huaweicloud_iotda_devices":                    iotda.DataSourceDevices(),
+			"huaweicloud_iotda_device_certificates":        iotda.DataSourceDeviceCertificates(),
+			"huaweicloud_iotda_device_groups":              iotda.DataSourceDeviceGroups(),
+			"huaweicloud_iotda_device_linkage_rules":       iotda.DataSourceDeviceLinkageRules(),
+			"huaweicloud_iotda_products":                   iotda.DataSourceProducts(),
+			"huaweicloud_iotda_spaces":                     iotda.DataSourceSpaces(),
+			"huaweicloud_iotda_upgrade_packages":           iotda.DataSourceUpgradePackages(),
 
 			"huaweicloud_koogallery_assets": koogallery.DataSourceKooGalleryAssets(),
 
@@ -1180,6 +1183,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_ddm_instance_available_versions": ddm.DataSourceDdmInstanceAvailableVersions(),
 			"huaweicloud_ddm_schemas":                     ddm.DataSourceDdmSchemas(),
 			"huaweicloud_ddm_accounts":                    ddm.DataSourceDdmAccounts(),
+			"huaweicloud_ddm_physical_sessions":           ddm.DataSourceDdmPhysicalSessions(),
 
 			"huaweicloud_organizations_organization":         organizations.DataSourceOrganization(),
 			"huaweicloud_organizations_organizational_units": organizations.DataSourceOrganizationalUnits(),
@@ -1256,8 +1260,9 @@ func Provider() *schema.Provider {
 			"huaweicloud_aom_alarm_rules_template":           aom.ResourceAlarmRulesTemplate(),
 			"huaweicloud_aom_alarm_group_rule":               aom.ResourceAlarmGroupRule(),
 
-			"huaweicloud_rfs_private_hook": rfs.ResourcePrivateHook(),
-			"huaweicloud_rfs_stack":        rfs.ResourceStack(),
+			"huaweicloud_rfs_execution_plan": rfs.ResourceExecutionPlan(),
+			"huaweicloud_rfs_private_hook":   rfs.ResourcePrivateHook(),
+			"huaweicloud_rfs_stack":          rfs.ResourceStack(),
 
 			"huaweicloud_api_gateway_api":         apigateway.ResourceAPI(),
 			"huaweicloud_api_gateway_environment": apigateway.ResourceEnvironment(),
@@ -1494,6 +1499,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_ddm_instance":               ddm.ResourceDdmInstance(),
 			"huaweicloud_ddm_instance_restart":       ddm.ResourceDdmInstanceRestart(),
 			"huaweicloud_ddm_instance_upgrade":       ddm.ResourceDdmInstanceUpgrade(),
+			"huaweicloud_ddm_instance_rollback":      ddm.ResourceDdmInstanceRollback(),
 			"huaweicloud_ddm_schema":                 ddm.ResourceDdmSchema(),
 			"huaweicloud_ddm_account":                ddm.ResourceDdmAccount(),
 			"huaweicloud_ddm_instance_read_strategy": ddm.ResourceDdmInstanceReadStrategy(),
@@ -2092,8 +2098,9 @@ func Provider() *schema.Provider {
 			"huaweicloud_codearts_inspector_website":      codearts.ResourceInspectorWebsite(),
 			"huaweicloud_codearts_inspector_website_scan": codearts.ResourceInspectorWebsiteScan(),
 
-			"huaweicloud_dsc_instance":  dsc.ResourceDscInstance(),
-			"huaweicloud_dsc_asset_obs": dsc.ResourceAssetObs(),
+			"huaweicloud_dsc_instance":           dsc.ResourceDscInstance(),
+			"huaweicloud_dsc_asset_obs":          dsc.ResourceAssetObs(),
+			"huaweicloud_dsc_alarm_notification": dsc.ResourceAlarmNotification(),
 
 			// internal only
 			"huaweicloud_apm_aksk":                apm.ResourceApmAkSk(),
