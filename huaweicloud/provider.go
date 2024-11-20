@@ -683,6 +683,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_dli_sql_jobs":               dli.DataSourceDliSqlJobs(),
 			"huaweicloud_dli_sql_templates":          dli.DataSourceDliSqlTemplates(),
 
+			"huaweicloud_dms_kafka_background_tasks":        dms.DataSourceDmsKafkaBackgroundTasks(),
 			"huaweicloud_dms_kafka_flavors":                 dms.DataSourceKafkaFlavors(),
 			"huaweicloud_dms_kafka_extend_flavors":          dms.DataSourceDmsKafkaExtendFlavors(),
 			"huaweicloud_dms_kafka_instances":               dms.DataSourceDmsKafkaInstances(),
@@ -958,6 +959,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_rds_mysql_database_privileges":       rds.DataSourceRdsMysqlDatabasePrivileges(),
 			"huaweicloud_rds_mysql_accounts":                  rds.DataSourceRdsMysqlAccounts(),
 			"huaweicloud_rds_mysql_binlog":                    rds.DataSourceRdsMysqlBinlog(),
+			"huaweicloud_rds_mysql_proxy_flavors":             rds.DataSourceRdsMysqlProxyFlavors(),
 			"huaweicloud_rds_parametergroups":                 rds.DataSourceParametergroups(),
 			"huaweicloud_rds_sql_audit_operations":            rds.DataSourceRdsSqlAuditTypes(),
 			"huaweicloud_rds_cross_region_backups":            rds.DataSourceRdsCrossRegionBackups(),
@@ -1460,6 +1462,7 @@ func Provider() *schema.Provider {
 
 			"huaweicloud_dbss_audit_risk_rule_action": dbss.ResourceRiskRuleAction(),
 			"huaweicloud_dbss_instance":               dbss.ResourceInstance(),
+			"huaweicloud_dbss_rds_database":           dbss.ResourceAddRdsDatabase(),
 
 			"huaweicloud_dc_virtual_gateway":            dc.ResourceVirtualGateway(),
 			"huaweicloud_dc_virtual_interface":          dc.ResourceVirtualInterface(),
@@ -1503,6 +1506,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_ddm_schema":                 ddm.ResourceDdmSchema(),
 			"huaweicloud_ddm_account":                ddm.ResourceDdmAccount(),
 			"huaweicloud_ddm_instance_read_strategy": ddm.ResourceDdmInstanceReadStrategy(),
+			"huaweicloud_ddm_physical_sessions_kill": ddm.ResourceDdmPhysicalSessionsKill(),
 
 			"huaweicloud_dis_stream": dis.ResourceDisStream(),
 
@@ -1527,6 +1531,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_dli_spark_template":                  dli.ResourceSparkTemplate(),
 			"huaweicloud_dli_agency":                          dli.ResourceDliAgency(),
 
+			"huaweicloud_dms_kafka_background_task_delete":    dms.ResourceDmsKafkaBackgroundTaskDelete(),
 			"huaweicloud_dms_kafka_user":                      dms.ResourceDmsKafkaUser(),
 			"huaweicloud_dms_kafka_permissions":               dms.ResourceDmsKafkaPermissions(),
 			"huaweicloud_dms_kafka_instance":                  dms.ResourceDmsKafkaInstance(),
@@ -1744,6 +1749,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_iotda_batchtask":                iotda.ResourceBatchTask(),
 			"huaweicloud_iotda_dataforwarding_rule":      iotda.ResourceDataForwardingRule(),
 			"huaweicloud_iotda_data_flow_control_policy": iotda.ResourceDataFlowControlPolicy(),
+			"huaweicloud_iotda_data_backlog_policy":      iotda.ResourceDataBacklogPolicy(),
 			"huaweicloud_iotda_device":                   iotda.ResourceDevice(),
 			"huaweicloud_iotda_device_async_command":     iotda.ResourceDeviceAsyncCommand(),
 			"huaweicloud_iotda_device_certificate":       iotda.ResourceDeviceCertificate(),
@@ -2072,6 +2078,7 @@ func Provider() *schema.Provider {
 
 			"huaweicloud_workspace_app_group_authorization": workspace.ResourceAppGroupAuthorization(),
 			"huaweicloud_workspace_app_group":               workspace.ResourceWorkspaceAppGroup(),
+			"huaweicloud_workspace_app_nas_storage":         workspace.ResourceAppNasStorage(),
 			"huaweicloud_workspace_app_policy_group":        workspace.ResourceAppPolicyGroup(),
 			"huaweicloud_workspace_app_publishment":         workspace.ResourceAppPublishment(),
 			"huaweicloud_workspace_app_server_group":        workspace.ResourceAppServerGroup(),

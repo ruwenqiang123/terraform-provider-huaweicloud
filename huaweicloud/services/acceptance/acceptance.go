@@ -479,6 +479,8 @@ var (
 	HW_HSS_HOST_PROTECTION_HOST_ID  = os.Getenv("HW_HSS_HOST_PROTECTION_HOST_ID")
 	HW_HSS_HOST_PROTECTION_QUOTA_ID = os.Getenv("HW_HSS_HOST_PROTECTION_QUOTA_ID")
 
+	HW_DDM_PROCESS_ID = os.Getenv("HW_DDM_PROCESS_ID")
+
 	HW_DDS_SECOND_LEVEL_MONITORING_ENABLED = os.Getenv("HW_DDS_SECOND_LEVEL_MONITORING_ENABLED")
 	HW_DDS_INSTANCE_ID                     = os.Getenv("HW_DDS_INSTANCE_ID")
 	HW_DDS_START_TIME                      = os.Getenv("HW_DDS_START_TIME")
@@ -501,7 +503,8 @@ var (
 	HW_DMS_ROCKETMQ_INSTANCE_ID = os.Getenv("HW_DMS_ROCKETMQ_INSTANCE_ID")
 	HW_DMS_ROCKETMQ_TOPIC_NAME  = os.Getenv("HW_DMS_ROCKETMQ_TOPIC_NAME")
 
-	HW_SFS_TURBO_BACKUP_ID = os.Getenv("HW_SFS_TURBO_BACKUP_ID")
+	HW_SFS_TURBO_BACKUP_ID  = os.Getenv("HW_SFS_TURBO_BACKUP_ID")
+	HW_SFS_FILE_SYSTEM_NAME = os.Getenv("HW_SFS_FILE_SYSTEM_NAME")
 )
 
 // TestAccProviders is a static map containing only the main provider instance.
@@ -2355,6 +2358,13 @@ func TestAccPreCheckHSSHostProtectionQuotaId(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckDDMProcessId(t *testing.T) {
+	if HW_DDM_PROCESS_ID == "" {
+		t.Skip("HW_DDM_PROCESS_ID must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckDDSInstanceID(t *testing.T) {
 	if HW_DDS_INSTANCE_ID == "" {
 		t.Skip("HW_DDS_INSTANCE_ID must be set for the acceptance test")
@@ -2589,6 +2599,13 @@ func TestAccPrecheckCDNAnalytics(t *testing.T) {
 func TestAccPrecheckSFSTurboBackupId(t *testing.T) {
 	if HW_SFS_TURBO_BACKUP_ID == "" {
 		t.Skip("HW_SFS_TURBO_BACKUP_ID must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
+func TestAccPrecheckSfsFileSystemName(t *testing.T) {
+	if HW_SFS_FILE_SYSTEM_NAME == "" {
+		t.Skip("HW_SFS_FILE_SYSTEM_NAME must be set for the acceptance test")
 	}
 }
 
