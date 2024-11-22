@@ -209,6 +209,7 @@ var (
 	HW_WORKSPACE_APP_SERVER_GROUP_IMAGE_ID         = os.Getenv("HW_WORKSPACE_APP_SERVER_GROUP_IMAGE_ID")
 	HW_WORKSPACE_APP_SERVER_GROUP_IMAGE_PRODUCT_ID = os.Getenv("HW_WORKSPACE_APP_SERVER_GROUP_IMAGE_PRODUCT_ID")
 	HW_WORKSPACE_OU_NAME                           = os.Getenv("HW_WORKSPACE_OU_NAME")
+	HW_WORKSPACE_APP_FILE_STRORE_OBS_PATH          = os.Getenv("HW_WORKSPACE_APP_FILE_STRORE_OBS_PATH")
 
 	HW_FGS_AGENCY_NAME         = os.Getenv("HW_FGS_AGENCY_NAME")
 	HW_FGS_TEMPLATE_ID         = os.Getenv("HW_FGS_TEMPLATE_ID")
@@ -479,7 +480,8 @@ var (
 	HW_HSS_HOST_PROTECTION_HOST_ID  = os.Getenv("HW_HSS_HOST_PROTECTION_HOST_ID")
 	HW_HSS_HOST_PROTECTION_QUOTA_ID = os.Getenv("HW_HSS_HOST_PROTECTION_QUOTA_ID")
 
-	HW_DDM_PROCESS_ID = os.Getenv("HW_DDM_PROCESS_ID")
+	HW_DDM_INSTANCE_ID = os.Getenv("HW_DDM_INSTANCE_ID")
+	HW_DDM_PROCESS_ID  = os.Getenv("HW_DDM_PROCESS_ID")
 
 	HW_DDS_SECOND_LEVEL_MONITORING_ENABLED = os.Getenv("HW_DDS_SECOND_LEVEL_MONITORING_ENABLED")
 	HW_DDS_INSTANCE_ID                     = os.Getenv("HW_DDS_INSTANCE_ID")
@@ -502,6 +504,7 @@ var (
 
 	HW_DMS_ROCKETMQ_INSTANCE_ID = os.Getenv("HW_DMS_ROCKETMQ_INSTANCE_ID")
 	HW_DMS_ROCKETMQ_TOPIC_NAME  = os.Getenv("HW_DMS_ROCKETMQ_TOPIC_NAME")
+	HW_DMS_ROCKETMQ_GROUP_NAME  = os.Getenv("HW_DMS_ROCKETMQ_GROUP_NAME")
 
 	HW_SFS_TURBO_BACKUP_ID  = os.Getenv("HW_SFS_TURBO_BACKUP_ID")
 	HW_SFS_FILE_SYSTEM_NAME = os.Getenv("HW_SFS_FILE_SYSTEM_NAME")
@@ -1510,6 +1513,13 @@ func TestAccPreCheckWorkspaceOUName(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckWorkspaceFileStorePath(t *testing.T) {
+	if HW_WORKSPACE_APP_FILE_STRORE_OBS_PATH == "" {
+		t.Skip("HW_WORKSPACE_APP_FILE_STRORE_OBS_PATH must be set for Workspace service acceptance tests.")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckER(t *testing.T) {
 	if HW_ER_TEST_ON == "" {
 		t.Skip("Skip all ER acceptance tests.")
@@ -2358,6 +2368,13 @@ func TestAccPreCheckHSSHostProtectionQuotaId(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckDDMInstanceID(t *testing.T) {
+	if HW_DDM_INSTANCE_ID == "" {
+		t.Skip("HW_DDM_INSTANCE_ID must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckDDMProcessId(t *testing.T) {
 	if HW_DDM_PROCESS_ID == "" {
 		t.Skip("HW_DDM_PROCESS_ID must be set for the acceptance test")
@@ -2494,6 +2511,13 @@ func TestAccPreCheckDMSKafkaConsumerGroupName(t *testing.T) {
 func TestAccPreCheckDMSRocketMQInstanceID(t *testing.T) {
 	if HW_DMS_ROCKETMQ_INSTANCE_ID == "" {
 		t.Skip("HW_DMS_ROCKETMQ_INSTANCE_ID must be set for DMS acceptance tests")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckDMSRocketMQGroupName(t *testing.T) {
+	if HW_DMS_ROCKETMQ_GROUP_NAME == "" {
+		t.Skip("HW_DMS_ROCKETMQ_GROUP_NAME must be set for DMS acceptance tests")
 	}
 }
 

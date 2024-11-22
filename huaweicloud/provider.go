@@ -583,6 +583,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_cph_servers":             cph.DataSourceCphServers(),
 			"huaweicloud_cph_phones":              cph.DataSourceCphPhones(),
 			"huaweicloud_cph_phone_custom_images": cph.DataSourceCphPhoneCustomImages(),
+			"huaweicloud_cph_server_bandwidths":   cph.DataSourceCphServerBandwidths(),
 
 			"huaweicloud_cse_microservice_engines": cse.DataSourceMicroserviceEngines(),
 
@@ -645,6 +646,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_dcs_accounts":        dcs.DataSourceDcsAccounts(),
 			"huaweicloud_dcs_diagnosis_tasks": dcs.DataSourceDcsDiagnosisTasks(),
 
+			"huaweicloud_dds_quotas":                     dds.DataSourceDdsQuotas(),
 			"huaweicloud_dds_audit_logs":                 dds.DataSourceDdsAuditLogs(),
 			"huaweicloud_dds_audit_log_links":            dds.DataSourceDdsAuditLogLinks(),
 			"huaweicloud_dds_database_versions":          dds.DataSourceDdsDatabaseVersions(),
@@ -718,6 +720,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_dms_rocketmq_migration_tasks":       dms.DataSourceDmsRocketmqMigrationTasks(),
 			"huaweicloud_dms_rocketmq_topic_consumer_groups": dms.DataSourceDmsRocketmqTopicConsumerGroups(),
 			"huaweicloud_dms_rocketmq_extend_flavors":        dms.DataSourceDmsRocketmqExtendFlavors(),
+			"huaweicloud_dms_rocketmq_messages":              dms.DataSourceDmsRocketMQMessages(),
 
 			"huaweicloud_dns_custom_lines":        dns.DataSourceDNSCustomLines(),
 			"huaweicloud_dns_floating_ptrrecords": dns.DataSourceFloatingPtrrecords(),
@@ -1004,6 +1007,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_rms_resource_aggregator_advanced_query":       rms.DataSourceAggregatorAdvancedQuery(),
 			"huaweicloud_rms_resource_aggregator_policy_states":        rms.DataSourceAggregatorPolicyStates(),
 			"huaweicloud_rms_resource_aggregator_policy_assignments":   rms.DataSourceAggregatorPolicyAssignments(),
+			"huaweicloud_rms_resource_histories":                       rms.DataSourceRmsHistories(),
 
 			"huaweicloud_sdrs_domain": sdrs.DataSourceSDRSDomain(),
 
@@ -1186,6 +1190,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_ddm_schemas":                     ddm.DataSourceDdmSchemas(),
 			"huaweicloud_ddm_accounts":                    ddm.DataSourceDdmAccounts(),
 			"huaweicloud_ddm_physical_sessions":           ddm.DataSourceDdmPhysicalSessions(),
+			"huaweicloud_ddm_logical_sessions":            ddm.DataSourceDdmLogicalSessions(),
 
 			"huaweicloud_organizations_organization":         organizations.DataSourceOrganization(),
 			"huaweicloud_organizations_organizational_units": organizations.DataSourceOrganizationalUnits(),
@@ -1507,6 +1512,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_ddm_account":                ddm.ResourceDdmAccount(),
 			"huaweicloud_ddm_instance_read_strategy": ddm.ResourceDdmInstanceReadStrategy(),
 			"huaweicloud_ddm_physical_sessions_kill": ddm.ResourceDdmPhysicalSessionsKill(),
+			"huaweicloud_ddm_logical_sessions_kill":  ddm.ResourceDdmLogicalSessionsKill(),
 
 			"huaweicloud_dis_stream": dis.ResourceDisStream(),
 
@@ -1555,11 +1561,12 @@ func Provider() *schema.Provider {
 			"huaweicloud_dms_rabbitmq_exchange_associate":  dms.ResourceDmsRabbitmqExchangeAssociate(),
 			"huaweicloud_dms_rabbitmq_user":                dms.ResourceDmsRabbitmqUser(),
 
-			"huaweicloud_dms_rocketmq_instance":       dms.ResourceDmsRocketMQInstance(),
-			"huaweicloud_dms_rocketmq_consumer_group": dms.ResourceDmsRocketMQConsumerGroup(),
-			"huaweicloud_dms_rocketmq_topic":          dms.ResourceDmsRocketMQTopic(),
-			"huaweicloud_dms_rocketmq_user":           dms.ResourceDmsRocketMQUser(),
-			"huaweicloud_dms_rocketmq_migration_task": dms.ResourceDmsRocketmqMigrationTask(),
+			"huaweicloud_dms_rocketmq_instance":             dms.ResourceDmsRocketMQInstance(),
+			"huaweicloud_dms_rocketmq_consumer_group":       dms.ResourceDmsRocketMQConsumerGroup(),
+			"huaweicloud_dms_rocketmq_message_offset_reset": dms.ResourceDmsRocketMQMessageOffsetReset(),
+			"huaweicloud_dms_rocketmq_topic":                dms.ResourceDmsRocketMQTopic(),
+			"huaweicloud_dms_rocketmq_user":                 dms.ResourceDmsRocketMQUser(),
+			"huaweicloud_dms_rocketmq_migration_task":       dms.ResourceDmsRocketmqMigrationTask(),
 
 			"huaweicloud_dns_custom_line":             dns.ResourceDNSCustomLine(),
 			"huaweicloud_dns_ptrrecord":               dns.ResourceDNSPtrRecord(),
@@ -1905,6 +1912,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_rds_mysql_database":               rds.ResourceMysqlDatabase(),
 			"huaweicloud_rds_mysql_database_privilege":     rds.ResourceMysqlDatabasePrivilege(),
 			"huaweicloud_rds_mysql_database_table_restore": rds.ResourceMysqlDatabaseTableRestore(),
+			"huaweicloud_rds_mysql_proxy":                  rds.ResourceMysqlProxy(),
 			"huaweicloud_rds_pg_account":                   rds.ResourcePgAccount(),
 			"huaweicloud_rds_pg_account_roles":             rds.ResourcePgAccountRoles(),
 			"huaweicloud_rds_pg_account_privileges":        rds.ResourcePgAccountPrivileges(),
@@ -2082,6 +2090,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_workspace_app_policy_group":        workspace.ResourceAppPolicyGroup(),
 			"huaweicloud_workspace_app_publishment":         workspace.ResourceAppPublishment(),
 			"huaweicloud_workspace_app_server_group":        workspace.ResourceAppServerGroup(),
+			"huaweicloud_workspace_app_warehouse_app":       workspace.ResourceWarehouseApplication(),
 			"huaweicloud_workspace_user_group":              workspace.ResourceUserGroup(),
 			"huaweicloud_workspace_access_policy":           workspace.ResourceAccessPolicy(),
 			"huaweicloud_workspace_desktop_name_rule":       workspace.ResourceDesktopNameRule(),
