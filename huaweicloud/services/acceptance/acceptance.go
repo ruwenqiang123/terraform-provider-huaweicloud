@@ -111,6 +111,8 @@ var (
 	HW_RAM_SHARE_INVITATION_ID       = os.Getenv("HW_RAM_SHARE_INVITATION_ID")
 	HW_RAM_SHARE_ID                  = os.Getenv("HW_RAM_SHARE_ID")
 
+	HW_RMS_TARGET_ID = os.Getenv("HW_RMS_TARGET_ID")
+
 	HW_CDN_DOMAIN_NAME = os.Getenv("HW_CDN_DOMAIN_NAME")
 	// `HW_CDN_CERT_DOMAIN_NAME` Configure the domain name environment variable of the certificate type.
 	HW_CDN_CERT_DOMAIN_NAME = os.Getenv("HW_CDN_CERT_DOMAIN_NAME")
@@ -197,19 +199,21 @@ var (
 	HW_AAD_INSTANCE_ID = os.Getenv("HW_AAD_INSTANCE_ID")
 	HW_AAD_IP_ADDRESS  = os.Getenv("HW_AAD_IP_ADDRESS")
 
-	HW_WORKSPACE_AD_DOMAIN_NAME = os.Getenv("HW_WORKSPACE_AD_DOMAIN_NAME") // Domain name, e.g. "example.com".
-	HW_WORKSPACE_AD_SERVER_PWD  = os.Getenv("HW_WORKSPACE_AD_SERVER_PWD")  // The password of AD server.
-	HW_WORKSPACE_AD_DOMAIN_IP   = os.Getenv("HW_WORKSPACE_AD_DOMAIN_IP")   // Active domain IP, e.g. "192.168.196.3".
-	HW_WORKSPACE_AD_VPC_ID      = os.Getenv("HW_WORKSPACE_AD_VPC_ID")      // The VPC ID to which the AD server and desktops belongs.
-	HW_WORKSPACE_AD_NETWORK_ID  = os.Getenv("HW_WORKSPACE_AD_NETWORK_ID")  // The network ID to which the AD server belongs.
+	HW_WORKSPACE_AD_DOMAIN_NAMES = os.Getenv("HW_WORKSPACE_AD_DOMAIN_NAMES") // Domain name, e.g. "example.com".
+	HW_WORKSPACE_AD_SERVER_PWD   = os.Getenv("HW_WORKSPACE_AD_SERVER_PWD")   // The password of AD server.
+	HW_WORKSPACE_AD_DOMAIN_IPS   = os.Getenv("HW_WORKSPACE_AD_DOMAIN_IPS")   // Active domain IP, e.g. "192.168.196.3".
+	HW_WORKSPACE_AD_VPC_ID       = os.Getenv("HW_WORKSPACE_AD_VPC_ID")       // The VPC ID to which the AD server and desktops belongs.
+	HW_WORKSPACE_AD_NETWORK_ID   = os.Getenv("HW_WORKSPACE_AD_NETWORK_ID")   // The network ID to which the AD server belongs.
 	// The internet access port to which the Workspace service.
 	HW_WORKSPACE_INTERNET_ACCESS_PORT              = os.Getenv("HW_WORKSPACE_INTERNET_ACCESS_PORT")
 	HW_WORKSPACE_APP_SERVER_GROUP_ID               = os.Getenv("HW_WORKSPACE_APP_SERVER_GROUP_ID")
 	HW_WORKSPACE_APP_SERVER_GROUP_FLAVOR_ID        = os.Getenv("HW_WORKSPACE_APP_SERVER_GROUP_FLAVOR_ID")
 	HW_WORKSPACE_APP_SERVER_GROUP_IMAGE_ID         = os.Getenv("HW_WORKSPACE_APP_SERVER_GROUP_IMAGE_ID")
 	HW_WORKSPACE_APP_SERVER_GROUP_IMAGE_PRODUCT_ID = os.Getenv("HW_WORKSPACE_APP_SERVER_GROUP_IMAGE_PRODUCT_ID")
+	HW_WORKSPACE_APP_SERVER_GROUP_IMAGE_SPEC_CODE  = os.Getenv("HW_WORKSPACE_APP_SERVER_GROUP_IMAGE_SPEC_CODE")
 	HW_WORKSPACE_OU_NAME                           = os.Getenv("HW_WORKSPACE_OU_NAME")
 	HW_WORKSPACE_APP_FILE_STRORE_OBS_PATH          = os.Getenv("HW_WORKSPACE_APP_FILE_STRORE_OBS_PATH")
+	HW_WORKSPACE_USER_NAMES                        = os.Getenv("HW_WORKSPACE_USER_NAMES")
 
 	HW_FGS_AGENCY_NAME         = os.Getenv("HW_FGS_AGENCY_NAME")
 	HW_FGS_TEMPLATE_ID         = os.Getenv("HW_FGS_TEMPLATE_ID")
@@ -482,6 +486,8 @@ var (
 
 	HW_DDM_INSTANCE_ID = os.Getenv("HW_DDM_INSTANCE_ID")
 	HW_DDM_PROCESS_ID  = os.Getenv("HW_DDM_PROCESS_ID")
+	HW_DDM_START_TIME  = os.Getenv("HW_DDM_START_TIME")
+	HW_DDM_END_TIME    = os.Getenv("HW_DDM_END_TIME")
 
 	HW_DDS_SECOND_LEVEL_MONITORING_ENABLED = os.Getenv("HW_DDS_SECOND_LEVEL_MONITORING_ENABLED")
 	HW_DDS_INSTANCE_ID                     = os.Getenv("HW_DDS_INSTANCE_ID")
@@ -1096,6 +1102,13 @@ func TestAccPreCheckRAMSharedPrincipalsQueryFields(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckRMSTargetID(t *testing.T) {
+	if HW_RMS_TARGET_ID == "" {
+		t.Skip("HW_RMS_TARGET_ID must be set for the acceptance tests.")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckDms(t *testing.T) {
 	if HW_DMS_ENVIRONMENT == "" {
 		t.Skip("This environment does not support DMS tests")
@@ -1475,10 +1488,24 @@ func TestAccPreCheckCtsTimeRange(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckWorkspaceADDomainNames(t *testing.T) {
+	if len(strings.Split(HW_WORKSPACE_AD_DOMAIN_NAMES, ",")) != 2 {
+		t.Skip(`The Workspace AD service need domain name configurations for both master and standby servers, plesse config them in the
+HW_WORKSPACE_AD_DOMAIN_NAMES environment variable, separated by a comma (,).`)
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckWorkspaceAD(t *testing.T) {
-	if HW_WORKSPACE_AD_DOMAIN_NAME == "" || HW_WORKSPACE_AD_SERVER_PWD == "" || HW_WORKSPACE_AD_DOMAIN_IP == "" ||
-		HW_WORKSPACE_AD_VPC_ID == "" || HW_WORKSPACE_AD_NETWORK_ID == "" {
-		t.Skip("The configuration of AD server is not completed for Workspace service acceptance test.")
+	TestAccPreCheckWorkspaceADDomainNames(t)
+
+	if len(strings.Split(HW_WORKSPACE_AD_DOMAIN_IPS, ",")) != 2 {
+		t.Skip(`The Workspace AD service need IP address configurations for both master and standby servers, plesse config them in the
+HW_WORKSPACE_AD_DOMAIN_IPS environment variable, separated by a comma (,).`)
+	}
+	if HW_WORKSPACE_AD_SERVER_PWD == "" || HW_WORKSPACE_AD_VPC_ID == "" || HW_WORKSPACE_AD_NETWORK_ID == "" {
+		t.Skip(`The configuration of AD server is not completed for Workspace service acceptance test, please check your inputs for
+HW_WORKSPACE_AD_SERVER_PWD, HW_WORKSPACE_AD_VPC_ID and HW_WORKSPACE_AD_NETWORK_ID.`)
 	}
 }
 
@@ -1502,6 +1529,20 @@ func TestAccPreCheckWorkspaceAppServerGroup(t *testing.T) {
 		HW_WORKSPACE_APP_SERVER_GROUP_FLAVOR_ID == "" || HW_WORKSPACE_APP_SERVER_GROUP_IMAGE_ID == "" ||
 		HW_WORKSPACE_APP_SERVER_GROUP_IMAGE_PRODUCT_ID == "" {
 		t.Skip("Workspace APP server group acceptance test missing configuration parameters.")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckWorkspaceAppImageSpecCode(t *testing.T) {
+	if HW_WORKSPACE_APP_SERVER_GROUP_IMAGE_SPEC_CODE == "" {
+		t.Skip("HW_WORKSPACE_APP_SERVER_GROUP_IMAGE_SPEC_CODE must be set for Workspace APP acceptance tests.")
+	}
+}
+
+// lintignore:AT003
+func TestAccPrecheckWorkspaceUserNames(t *testing.T) {
+	if len(strings.Split(HW_WORKSPACE_USER_NAMES, ",")) < 1 {
+		t.Skip("At least one of user must be configured in the HW_WORKSPACE_USER_NAMES, and separated by commas")
 	}
 }
 
@@ -1759,13 +1800,6 @@ func TestAccPreCheckSecMaster(t *testing.T) {
 func TestAccPreCheckCcePartitionAz(t *testing.T) {
 	if HW_CCE_PARTITION_AZ == "" {
 		t.Skip("Skip the interface acceptance test because of the cce partition az is missing.")
-	}
-}
-
-// lintignore:AT003
-func TestAccPreCheckCnEast3(t *testing.T) {
-	if HW_REGION_NAME != "cn-east-3" {
-		t.Skip("HW_REGION_NAME must be cn-east-3 for this test.")
 	}
 }
 
@@ -2368,6 +2402,13 @@ func TestAccPreCheckHSSHostProtectionQuotaId(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckHSSCCEProtection(t *testing.T) {
+	if HW_CCE_CLUSTER_ID == "" || HW_CCE_CLUSTER_NAME == "" {
+		t.Skip("HW_CCE_CLUSTER_ID and HW_CCE_CLUSTER_NAME must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckDDMInstanceID(t *testing.T) {
 	if HW_DDM_INSTANCE_ID == "" {
 		t.Skip("HW_DDM_INSTANCE_ID must be set for the acceptance test")
@@ -2378,6 +2419,13 @@ func TestAccPreCheckDDMInstanceID(t *testing.T) {
 func TestAccPreCheckDDMProcessId(t *testing.T) {
 	if HW_DDM_PROCESS_ID == "" {
 		t.Skip("HW_DDM_PROCESS_ID must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckDDMTimeRange(t *testing.T) {
+	if HW_DDM_START_TIME == "" || HW_DDM_END_TIME == "" {
+		t.Skip("HW_DDM_START_TIME and HW_DDM_END_TIME must be set for acceptance test")
 	}
 }
 
