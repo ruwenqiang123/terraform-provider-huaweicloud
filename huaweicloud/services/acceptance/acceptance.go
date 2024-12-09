@@ -494,6 +494,7 @@ var (
 	HW_DDS_START_TIME                      = os.Getenv("HW_DDS_START_TIME")
 	HW_DDS_END_TIME                        = os.Getenv("HW_DDS_END_TIME")
 	HW_DDS_RECYCLE_INSTANCES_ENABLED       = os.Getenv("HW_DDS_RECYCLE_INSTANCES_ENABLED")
+	HW_DDS_SCHEDULED_TASKS_ENABLED         = os.Getenv("HW_DDS_SCHEDULED_TASKS_ENABLED")
 
 	HW_RDS_CROSS_REGION_BACKUP_INSTANCE_ID = os.Getenv("HW_RDS_CROSS_REGION_BACKUP_INSTANCE_ID")
 	HW_RDS_INSTANCE_ID                     = os.Getenv("HW_RDS_INSTANCE_ID")
@@ -512,8 +513,8 @@ var (
 	HW_DMS_ROCKETMQ_TOPIC_NAME  = os.Getenv("HW_DMS_ROCKETMQ_TOPIC_NAME")
 	HW_DMS_ROCKETMQ_GROUP_NAME  = os.Getenv("HW_DMS_ROCKETMQ_GROUP_NAME")
 
-	HW_SFS_TURBO_BACKUP_ID  = os.Getenv("HW_SFS_TURBO_BACKUP_ID")
-	HW_SFS_FILE_SYSTEM_NAME = os.Getenv("HW_SFS_FILE_SYSTEM_NAME")
+	HW_SFS_TURBO_BACKUP_ID   = os.Getenv("HW_SFS_TURBO_BACKUP_ID")
+	HW_SFS_FILE_SYSTEM_NAMES = os.Getenv("HW_SFS_FILE_SYSTEM_NAMES")
 )
 
 // TestAccProviders is a static map containing only the main provider instance.
@@ -2444,6 +2445,13 @@ func TestAccPreCheckDDSSecondLevelMonitoringEnabled(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckDDSScheduledTasksEnabled(t *testing.T) {
+	if HW_DDS_SCHEDULED_TASKS_ENABLED == "" {
+		t.Skip("HW_DDS_SCHEDULED_TASKS_ENABLED must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckDDSTimeRange(t *testing.T) {
 	if HW_DDS_START_TIME == "" || HW_DDS_END_TIME == "" {
 		t.Skip("HW_DDS_START_TIME and HW_DDS_END_TIME must be set for acceptance test")
@@ -2675,9 +2683,10 @@ func TestAccPrecheckSFSTurboBackupId(t *testing.T) {
 }
 
 // lintignore:AT003
-func TestAccPrecheckSfsFileSystemName(t *testing.T) {
-	if HW_SFS_FILE_SYSTEM_NAME == "" {
-		t.Skip("HW_SFS_FILE_SYSTEM_NAME must be set for the acceptance test")
+func TestAccPrecheckSfsFileSystemNames(t *testing.T, min int) {
+	// For this acceptance test, you should prepare three SFS file systems.
+	if len(strings.Split(HW_SFS_FILE_SYSTEM_NAMES, ",")) < min {
+		t.Skip("At least three file system name must be supported during the HW_SFS_FILE_SYSTEM_NAMES, and separated by commas")
 	}
 }
 
