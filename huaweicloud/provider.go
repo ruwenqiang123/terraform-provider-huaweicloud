@@ -897,7 +897,9 @@ func Provider() *schema.Provider {
 			"huaweicloud_lb_certificate":  lb.DataSourceLBCertificateV2(),
 			"huaweicloud_lb_pools":        lb.DataSourcePools(),
 
-			"huaweicloud_live_domains": live.DataSourceLiveDomains(),
+			"huaweicloud_live_domains":      live.DataSourceLiveDomains(),
+			"huaweicloud_live_recordings":   live.DataSourceLiveRecordings(),
+			"huaweicloud_live_transcodings": live.DataSourceLiveTranscodings(),
 
 			"huaweicloud_lts_aom_accesses":                 lts.DataSourceAOMAccesses(),
 			"huaweicloud_lts_cce_accesses":                 lts.DataSourceCceAccesses(),
@@ -1028,6 +1030,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_rms_resource_aggregator_policy_assignments":   rms.DataSourceAggregatorPolicyAssignments(),
 			"huaweicloud_rms_resource_histories":                       rms.DataSourceRmsHistories(),
 			"huaweicloud_rms_resource_relations_details":               rms.DataSourceRmsRelationsDetails(),
+			"huaweicloud_rms_remediation_execution_statuses":           rms.DataSourceRemediationExecutionStatuses(),
 
 			"huaweicloud_sdrs_domain": sdrs.DataSourceSDRSDomain(),
 
@@ -1173,6 +1176,7 @@ func Provider() *schema.Provider {
 
 			"huaweicloud_workspace_app_groups":           workspace.DataSourceWorkspaceAppGroups(),
 			"huaweicloud_workspace_app_nas_storages":     workspace.DataSourceAppNasStorages(),
+			"huaweicloud_workspace_app_publishable_apps": workspace.DataSourceWorkspaceAppPublishableApps(),
 			"huaweicloud_workspace_app_storage_policies": workspace.DataSourceAppStoragePolicies(),
 			"huaweicloud_workspace_desktops":             workspace.DataSourceDesktops(),
 			"huaweicloud_workspace_flavors":              workspace.DataSourceWorkspaceFlavors(),
@@ -1575,6 +1579,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_dms_kafka_user":                      dms.ResourceDmsKafkaUser(),
 			"huaweicloud_dms_kafka_permissions":               dms.ResourceDmsKafkaPermissions(),
 			"huaweicloud_dms_kafka_instance":                  dms.ResourceDmsKafkaInstance(),
+			"huaweicloud_dms_kafka_instance_restart":          dms.ResourceDmsKafkaInstanceRestart(),
 			"huaweicloud_dms_kafka_topic":                     dms.ResourceDmsKafkaTopic(),
 			"huaweicloud_dms_kafka_message_produce":           dms.ResourceDmsKafkaMessageProduce(),
 			"huaweicloud_dms_kafka_partition_reassign":        dms.ResourceDmsKafkaPartitionReassign(),
@@ -1823,12 +1828,13 @@ func Provider() *schema.Provider {
 			"huaweicloud_lb_pool":         lb.ResourcePoolV2(),
 			"huaweicloud_lb_whitelist":    lb.ResourceWhitelistV2(),
 
-			"huaweicloud_live_domain":               live.ResourceDomain(),
-			"huaweicloud_live_recording":            live.ResourceRecording(),
-			"huaweicloud_live_record_callback":      live.ResourceRecordCallback(),
-			"huaweicloud_live_transcoding":          live.ResourceTranscoding(),
-			"huaweicloud_live_snapshot":             live.ResourceLiveSnapshot(),
 			"huaweicloud_live_bucket_authorization": live.ResourceLiveBucketAuthorization(),
+			"huaweicloud_live_domain":               live.ResourceDomain(),
+			"huaweicloud_live_record_callback":      live.ResourceRecordCallback(),
+			"huaweicloud_live_recording":            live.ResourceRecording(),
+			"huaweicloud_live_snapshot":             live.ResourceLiveSnapshot(),
+			"huaweicloud_live_transcoding":          live.ResourceTranscoding(),
+			"huaweicloud_live_url_validation":       live.ResourceUrlValidation(),
 
 			"huaweicloud_lts_aom_access":                       lts.ResourceAOMAccess(),
 			"huaweicloud_lts_group":                            lts.ResourceLTSGroup(),
