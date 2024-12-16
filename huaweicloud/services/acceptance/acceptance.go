@@ -187,6 +187,14 @@ var (
 	HW_LTS_STRUCT_CONFIG_TEMPLATE_ID   = os.Getenv("HW_LTS_STRUCT_CONFIG_TEMPLATE_ID")
 	HW_LTS_STRUCT_CONFIG_TEMPLATE_NAME = os.Getenv("HW_LTS_STRUCT_CONFIG_TEMPLATE_NAME")
 
+	HW_LIVE_STREAMING_DOMAIN_NAME          = os.Getenv("HW_LIVE_STREAMING_DOMAIN_NAME")
+	HW_LIVE_INGEST_RTMP_DOMAIN_NAME        = os.Getenv("HW_LIVE_INGEST_RTMP_DOMAIN_NAME")
+	HW_LIVE_INGEST_SRT_DOMAIN_NAME         = os.Getenv("HW_LIVE_INGEST_SRT_DOMAIN_NAME")
+	HW_LIVE_TRANSCODING_TEPLATE_ID         = os.Getenv("HW_LIVE_TRANSCODING_TEPLATE_ID")
+	HW_LIVE_TRANSCODING_TEPLATE_ANOTHER_ID = os.Getenv("HW_LIVE_TRANSCODING_TEPLATE_ANOTHER_ID")
+	HW_LIVE_HTTPS_TLS_CERT_BODY_PATH       = os.Getenv("HW_LIVE_HTTPS_TLS_CERT_BODY_PATH")
+	HW_LIVE_HTTPS_TLS_CERT_KEY_PATH        = os.Getenv("HW_LIVE_HTTPS_TLS_CERT_KEY_PATH")
+
 	HW_CHAIR_EMAIL              = os.Getenv("HW_CHAIR_EMAIL")
 	HW_GUEST_EMAIL              = os.Getenv("HW_GUEST_EMAIL")
 	HW_MEETING_ACCOUNT_NAME     = os.Getenv("HW_MEETING_ACCOUNT_NAME")
@@ -240,7 +248,9 @@ var (
 	HW_RGC_BLUEPRINT_PRODUCT_ID      = os.Getenv("HW_RGC_BLUEPRINT_PRODUCT_ID")
 	HW_RGC_BLUEPRINT_PRODUCT_VERSION = os.Getenv("HW_RGC_BLUEPRINT_PRODUCT_VERSION")
 
-	HW_IDENTITY_CENTER_ACCOUNT_ID = os.Getenv("HW_IDENTITY_CENTER_ACCOUNT_ID")
+	HW_IDENTITY_CENTER_ACCOUNT_ID                = os.Getenv("HW_IDENTITY_CENTER_ACCOUNT_ID")
+	HW_IDENTITY_CENTER_IDENTITY_POLICY_ID        = os.Getenv("HW_IDENTITY_CENTER_IDENTITY_POLICY_ID")
+	HW_IDENTITY_CENTER_IDENTITY_POLICY_ID_UPDATE = os.Getenv("HW_IDENTITY_CENTER_IDENTITY_POLICY_ID_UPDATE")
 
 	HW_ER_TEST_ON = os.Getenv("HW_ER_TEST_ON") // Whether to run the ER related tests.
 
@@ -380,6 +390,7 @@ var (
 
 	HW_CSE_MICROSERVICE_ENGINE_ID             = os.Getenv("HW_CSE_MICROSERVICE_ENGINE_ID")
 	HW_CSE_MICROSERVICE_ENGINE_ADMIN_PASSWORD = os.Getenv("HW_CSE_MICROSERVICE_ENGINE_ADMIN_PASSWORD")
+	HW_CSE_NACOS_MICROSERVICE_ENGINE_ID       = os.Getenv("HW_CSE_NACOS_MICROSERVICE_ENGINE_ID")
 
 	HW_CSS_LOCAL_DISK_FLAVOR  = os.Getenv("HW_CSS_LOCAL_DISK_FLAVOR")
 	HW_CSS_ELB_AGENCY         = os.Getenv("HW_CSS_ELB_AGENCY")
@@ -504,6 +515,7 @@ var (
 	HW_RDS_BACKUP_ID                       = os.Getenv("HW_RDS_BACKUP_ID")
 	HW_RDS_START_TIME                      = os.Getenv("HW_RDS_START_TIME")
 	HW_RDS_END_TIME                        = os.Getenv("HW_RDS_END_TIME")
+	HW_RDS_FIXED_IP                        = os.Getenv("HW_RDS_FIXED_IP")
 
 	HW_DMS_KAFKA_INSTANCE_ID         = os.Getenv("HW_DMS_KAFKA_INSTANCE_ID")
 	HW_DMS_KAFKA_TOPIC_NAME          = os.Getenv("HW_DMS_KAFKA_TOPIC_NAME")
@@ -515,6 +527,8 @@ var (
 
 	HW_SFS_TURBO_BACKUP_ID   = os.Getenv("HW_SFS_TURBO_BACKUP_ID")
 	HW_SFS_FILE_SYSTEM_NAMES = os.Getenv("HW_SFS_FILE_SYSTEM_NAMES")
+
+	HW_SMN_SUBSCRIBED_TOPIC_URN = os.Getenv("HW_SMN_SUBSCRIBED_TOPIC_URN")
 )
 
 // TestAccProviders is a static map containing only the main provider instance.
@@ -645,6 +659,13 @@ func TestAccPreCheckRGCBlueprint(t *testing.T) {
 func TestAccPreCheckIdentityCenterAccountId(t *testing.T) {
 	if HW_IDENTITY_CENTER_ACCOUNT_ID == "" {
 		t.Skip("HW_IDENTITY_CENTER_ACCOUNT_ID must be set for acceptance tests")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckIdentityCenterIdentiyPolicyId(t *testing.T) {
+	if HW_IDENTITY_CENTER_IDENTITY_POLICY_ID == "" || HW_IDENTITY_CENTER_IDENTITY_POLICY_ID_UPDATE == "" {
+		t.Skip("HW_IDENTITY_CENTER_IDENTITY_POLICY_ID, HW_IDENTITY_CENTER_IDENTITY_POLICY_ID_UPDATE must be set for acceptance tests")
 	}
 }
 
@@ -1924,6 +1945,48 @@ func TestAccPreCheckLtsStructConfigCustom(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckLiveStreamingDomainName(t *testing.T) {
+	if HW_LIVE_STREAMING_DOMAIN_NAME == "" {
+		t.Skip("HW_LIVE_STREAMING_DOMAIN_NAME must be set for Live acceptance tests")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckLiveIngestRTMPDomainName(t *testing.T) {
+	if HW_LIVE_INGEST_RTMP_DOMAIN_NAME == "" {
+		t.Skip("HW_LIVE_INGEST_RTMP_DOMAIN_NAME must be set for Live acceptance tests")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckLiveIngestSRTDomainName(t *testing.T) {
+	if HW_LIVE_INGEST_SRT_DOMAIN_NAME == "" {
+		t.Skip("HW_LIVE_INGEST_SRT_DOMAIN_NAME must be set for Live acceptance tests")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckLiveTranscodingTemplateID(t *testing.T) {
+	if HW_LIVE_TRANSCODING_TEPLATE_ID == "" {
+		t.Skip("HW_LIVE_TRANSCODING_TEPLATE_ID must be set for Live acceptance tests")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckLiveTranscodingTemplateAnotherID(t *testing.T) {
+	if HW_LIVE_TRANSCODING_TEPLATE_ANOTHER_ID == "" {
+		t.Skip("HW_LIVE_TRANSCODING_TEPLATE_ANOTHER_ID must be set for Live acceptance tests")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckLiveTLSCert(t *testing.T) {
+	if HW_LIVE_HTTPS_TLS_CERT_BODY_PATH == "" || HW_LIVE_HTTPS_TLS_CERT_KEY_PATH == "" {
+		t.Skip("HW_LIVE_HTTPS_TLS_CERT_BODY_PATH and HW_LIVE_HTTPS_TLS_CERT_KEY_PATH must be set for Live acceptance tests")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckLtsEnableFlag(t *testing.T) {
 	if HW_LTS_ENABLE_FLAG == "" {
 		t.Skip("Skip the LTS acceptance tests.")
@@ -2082,6 +2145,13 @@ func TestAccPreCheckCSEMicroserviceEngineID(t *testing.T) {
 func TestAccPreCheckCSEMicroserviceEngineAdminPassword(t *testing.T) {
 	if HW_CSE_MICROSERVICE_ENGINE_ADMIN_PASSWORD == "" {
 		t.Skip("HW_CSE_MICROSERVICE_ENGINE_ADMIN_PASSWORD must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckCSENacosMicroserviceEngineID(t *testing.T) {
+	if HW_CSE_NACOS_MICROSERVICE_ENGINE_ID == "" {
+		t.Skip("HW_CSE_NACOS_MICROSERVICE_ENGINE_ID must be set for the acceptance test")
 	}
 }
 
@@ -2515,6 +2585,13 @@ func TestAccPreCheckRdsTimeRange(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckRdsFixedIp(t *testing.T) {
+	if HW_RDS_FIXED_IP == "" {
+		t.Skip("HW_RDS_FIXED_IP must be set for RDS acceptance tests")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckCssLowEngineVersion(t *testing.T) {
 	if HW_CSS_LOW_ENGINE_VERSION == "" {
 		t.Skip("HW_CSS_LOW_ENGINE_VERSION must be set for CSS acceptance tests")
@@ -2724,5 +2801,12 @@ func TestAccPrecheckCphAdbObjectPath(t *testing.T) {
 func TestAccPrecheckCphObsBucketName(t *testing.T) {
 	if HW_CPH_OBS_BUCKET_NAME == "" {
 		t.Skip("HW_CPH_OBS_BUCKET_NAME must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
+func TestAccPrecheckSmnSubscribedTopicUrn(t *testing.T) {
+	if HW_SMN_SUBSCRIBED_TOPIC_URN == "" {
+		t.Skip("HW_SMN_SUBSCRIBED_TOPIC_URN must be set for the acceptance test")
 	}
 }

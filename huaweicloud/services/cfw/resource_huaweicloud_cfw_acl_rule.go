@@ -91,10 +91,16 @@ func ResourceAclRule() *schema.Resource {
 				Description:  `Whether to support persistent connections.`,
 				ValidateFunc: validation.IntInSlice([]int{0, 1}),
 			},
+			"applications": {
+				Type:        schema.TypeSet,
+				Optional:    true,
+				Elem:        &schema.Schema{Type: schema.TypeString},
+				Description: `The application list.`,
+			},
 			"custom_services": {
 				Type:          schema.TypeList,
 				Optional:      true,
-				Elem:          ProtectionRuleRuleServiceItemSchema(),
+				Elem:          ACLRuleServiceItemSchema(),
 				Description:   `The custom service configuration.`,
 				ConflictsWith: []string{"custom_service_groups", "predefined_service_groups"},
 			},
@@ -102,7 +108,7 @@ func ResourceAclRule() *schema.Resource {
 				Type:          schema.TypeList,
 				MaxItems:      1,
 				Optional:      true,
-				Elem:          AclRuleServiceGroupSchema(),
+				Elem:          ACLRuleServiceGroupSchema(),
 				Description:   `The custom service group list.`,
 				ConflictsWith: []string{"custom_services"},
 			},
@@ -110,7 +116,7 @@ func ResourceAclRule() *schema.Resource {
 				Type:          schema.TypeList,
 				MaxItems:      1,
 				Optional:      true,
-				Elem:          AclRuleServiceGroupSchema(),
+				Elem:          ACLRuleServiceGroupSchema(),
 				Description:   `The predefined service group list.`,
 				ConflictsWith: []string{"custom_services"},
 			},
@@ -126,7 +132,7 @@ func ResourceAclRule() *schema.Resource {
 				Type:          schema.TypeList,
 				MinItems:      1,
 				Optional:      true,
-				Elem:          ProtectionRuleIpRegionDtoSchema(),
+				Elem:          ACLRuleIpRegionDtoSchema(),
 				Description:   `The source region list.`,
 				ConflictsWith: []string{"source_addresses", "source_address_groups", "source_predefined_groups"},
 			},
@@ -167,7 +173,7 @@ func ResourceAclRule() *schema.Resource {
 				Type:        schema.TypeList,
 				MinItems:    1,
 				Optional:    true,
-				Elem:        ProtectionRuleIpRegionDtoSchema(),
+				Elem:        ACLRuleIpRegionDtoSchema(),
 				Description: `The destination region list.`,
 				ConflictsWith: []string{
 					"destination_addresses", "destination_domain_address_name", "destination_domain_group_id",
@@ -308,7 +314,30 @@ func ACLRuleOrderRuleAclDtoSchema() *schema.Resource {
 	return &sc
 }
 
-func AclRuleServiceGroupSchema() *schema.Resource {
+func ACLRuleServiceItemSchema() *schema.Resource {
+	sc := schema.Resource{
+		Schema: map[string]*schema.Schema{
+			"protocol": {
+				Type:        schema.TypeInt,
+				Required:    true,
+				Description: `The protocol type.`,
+			},
+			"source_port": {
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: `The source port.`,
+			},
+			"dest_port": {
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: `The destination port.`,
+			},
+		},
+	}
+	return &sc
+}
+
+func ACLRuleServiceGroupSchema() *schema.Resource {
 	sc := schema.Resource{
 		Schema: map[string]*schema.Schema{
 			"protocols": {
@@ -324,6 +353,34 @@ func AclRuleServiceGroupSchema() *schema.Resource {
 				MinItems:    1,
 				Elem:        &schema.Schema{Type: schema.TypeString},
 				Description: `The IDs of the service groups.`,
+			},
+		},
+	}
+	return &sc
+}
+
+func ACLRuleIpRegionDtoSchema() *schema.Resource {
+	sc := schema.Resource{
+		Schema: map[string]*schema.Schema{
+			"region_id": {
+				Type:        schema.TypeString,
+				Required:    true,
+				Description: `The region ID.`,
+			},
+			"region_type": {
+				Type:        schema.TypeInt,
+				Required:    true,
+				Description: "The region type.",
+			},
+			"description_cn": {
+				Type:        schema.TypeString,
+				Optional:    true,
+				Description: "The Chinese description of the region.",
+			},
+			"description_en": {
+				Type:        schema.TypeString,
+				Optional:    true,
+				Description: "The English description of the region.",
 			},
 		},
 	}
@@ -381,9 +438,11 @@ func buildCreateACLRuleBodyParams(d *schema.ResourceData) map[string]interface{}
 }
 
 func buildACLRulesOpts(d *schema.ResourceData, isUpdate bool) map[string]interface{} {
+	applicationList := utils.ExpandToStringList(d.Get("applications").(*schema.Set).List())
 	params := map[string]interface{}{
 		"action_type":              d.Get("action_type"),
 		"address_type":             d.Get("address_type"),
+		"applications":             utils.ValueIgnoreEmpty(applicationList),
 		"description":              utils.ValueIgnoreEmpty(d.Get("description")),
 		"direction":                d.Get("direction"),
 		"long_connect_enable":      d.Get("long_connect_enable"),
@@ -392,7 +451,7 @@ func buildACLRulesOpts(d *schema.ResourceData, isUpdate bool) map[string]interfa
 		"long_connect_time_second": utils.ValueIgnoreEmpty(d.Get("long_connect_time_second")),
 		"name":                     utils.ValueIgnoreEmpty(d.Get("name")),
 		"status":                   d.Get("status"),
-		"tag":                      buildProtectionRuleRequestBodyTagsVO(d.Get("tags").(map[string]interface{})),
+		"tag":                      buildACLRuleRequestBodyTagsVO(d.Get("tags").(map[string]interface{})),
 	}
 
 	if !isUpdate {
@@ -454,6 +513,15 @@ func buildACLRulesOpts(d *schema.ResourceData, isUpdate bool) map[string]interfa
 		params["destination"] = buildACLRuleRequestBodyRuleAddressGroups(destinationAddressGroups, make([]interface{}, 0), destinationAddressType)
 	}
 	return params
+}
+
+func buildACLRuleRequestBodyTagsVO(tagmap map[string]interface{}) map[string]interface{} {
+	tags := make(map[string]interface{})
+	for k, v := range tagmap {
+		tags["tag_key"] = k
+		tags["tag_value"] = v
+	}
+	return tags
 }
 
 func buildACLRuleRequestBodyOrderRuleAclDto(rawParams interface{}) map[string]interface{} {
@@ -636,7 +704,7 @@ func resourceACLRuleRead(_ context.Context, d *schema.ResourceData, meta interfa
 		return common.CheckDeletedDiag(d, parseError(err), "error retrieving ACL rule")
 	}
 
-	count, err := getRuleHitCount(getACLRuleClient, d.Id())
+	count, err := getACLRuleHitCount(getACLRuleClient, d.Id())
 	if err != nil {
 		return diag.Errorf("error retrieving ACL rule hit count: %s", err)
 	}
@@ -654,6 +722,7 @@ func resourceACLRuleRead(_ context.Context, d *schema.ResourceData, meta interfa
 		d.Set("region", region),
 		d.Set("action_type", utils.PathSearch("action_type", rule, nil)),
 		d.Set("address_type", utils.PathSearch("address_type", rule, nil)),
+		d.Set("applications", utils.PathSearch("applications", rule, nil)),
 		d.Set("description", utils.PathSearch("description", rule, nil)),
 		d.Set("direction", utils.PathSearch("direction", rule, nil)),
 		d.Set("long_connect_enable", utils.PathSearch("long_connect_enable", rule, nil)),
@@ -671,7 +740,7 @@ func resourceACLRuleRead(_ context.Context, d *schema.ResourceData, meta interfa
 		d.Set("destination_address_groups", utils.PathSearch("destination.address_group_names[?address_set_type==`0`].set_id", rule, nil)),
 		d.Set("destination_address_type", utils.PathSearch("destination.address_type", rule, nil)),
 		d.Set("status", utils.PathSearch("status", rule, nil)),
-		d.Set("tags", flattenGetProtectionRuleResponseBodyRuleTagsVO(rule)),
+		d.Set("tags", flattenGetACLRuleResponseBodyRuleTagsVO(rule)),
 		d.Set("rule_hit_count", ruleHitCount),
 	)
 
@@ -731,6 +800,61 @@ func GetACLRule(client *golangsdk.ServiceClient, id, objectID string) (interface
 			return nil, golangsdk.ErrDefault404{}
 		}
 	}
+}
+
+func getACLRuleHitCount(client *golangsdk.ServiceClient, id string) (interface{}, error) {
+	getACLRuleHitCountHttpUrl := "v1/{project_id}/acl-rule/count"
+	getACLRuleHitCountPath := client.Endpoint + getACLRuleHitCountHttpUrl
+	getACLRuleHitCountPath = strings.ReplaceAll(getACLRuleHitCountPath, "{project_id}", client.ProjectID)
+
+	getACLRuleHitCountOpt := golangsdk.RequestOpts{
+		KeepResponseBody: true,
+		JSONBody:         buildRuleHitCountBodyParams(id),
+	}
+
+	getACLRuleHitCountResp, err := client.Request("POST", getACLRuleHitCountPath, &getACLRuleHitCountOpt)
+	if err != nil {
+		return nil, err
+	}
+
+	getACLRuleHitCountRespBody, err := utils.FlattenResponse(getACLRuleHitCountResp)
+	if err != nil {
+		return nil, err
+	}
+
+	count := utils.PathSearch("data.records[0].rule_hit_count", getACLRuleHitCountRespBody, nil)
+	if count == nil {
+		return nil, fmt.Errorf("error parsing rule_hit_count from response= %#v", getACLRuleHitCountRespBody)
+	}
+	return count, nil
+}
+
+func buildRuleHitCountBodyParams(id string) map[string]interface{} {
+	return map[string]interface{}{
+		"rule_ids": []string{id},
+	}
+}
+
+func flattenGetACLRuleResponseBodyRuleTagsVO(resp interface{}) map[string]interface{} {
+	curJson := utils.PathSearch("tag", resp, nil)
+
+	if curJson == nil {
+		return nil
+	}
+
+	if tagMap, ok := curJson.(map[string]interface{}); ok {
+		key, value := "", ""
+		for k, v := range tagMap {
+			switch k {
+			case "tag_key":
+				key = v.(string)
+			case "tag_value":
+				value = v.(string)
+			}
+		}
+		return map[string]interface{}{key: value}
+	}
+	return nil
 }
 
 func flattenGetACLRuleResponseBodyRuleCustomServices(resp interface{}) []interface{} {
@@ -808,6 +932,7 @@ func resourceACLRuleUpdate(ctx context.Context, d *schema.ResourceData, meta int
 	updateACLRulehasChanges := []string{
 		"action_type",
 		"address_type",
+		"applications",
 		"description",
 		"direction",
 		"long_connect_enable",

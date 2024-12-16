@@ -51,11 +51,6 @@
                       "type": "string",
                       "computed": true
                     },
-                    "ip": {
-                      "type": "string",
-                      "optional": true,
-                      "computed": true
-                    },
                     "ip_address_id": {
                       "type": "string",
                       "computed": true
