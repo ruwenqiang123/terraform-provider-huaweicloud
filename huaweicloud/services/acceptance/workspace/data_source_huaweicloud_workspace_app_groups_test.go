@@ -10,7 +10,7 @@ import (
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/acceptance"
 )
 
-func TestAccDataSourceWorkspaceAppGroups_basic(t *testing.T) {
+func TestAccDataSourceAppGroups_basic(t *testing.T) {
 	var (
 		rName      = acceptance.RandomAccResourceName()
 		dataSource = "data.huaweicloud_workspace_app_groups.test"
@@ -130,5 +130,5 @@ locals {
 output "is_type_filter_useful" {
   value = length(local.type_result) > 0 && alltrue(local.type_result)
 }
-`, testResourceWorkspaceAppGroup_basic_step1(name))
+`, testResourceWorkspaceAppGroup_basic_step1(testResourceWorkspaceAppGroup_base(name), name))
 }

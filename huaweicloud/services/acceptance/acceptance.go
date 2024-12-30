@@ -111,7 +111,9 @@ var (
 	HW_RAM_SHARE_INVITATION_ID       = os.Getenv("HW_RAM_SHARE_INVITATION_ID")
 	HW_RAM_SHARE_ID                  = os.Getenv("HW_RAM_SHARE_ID")
 
-	HW_RMS_TARGET_ID = os.Getenv("HW_RMS_TARGET_ID")
+	HW_RMS_TARGET_ID          = os.Getenv("HW_RMS_TARGET_ID")
+	HW_RMS_EXCLUDED_ACCOUNT_1 = os.Getenv("HW_RMS_EXCLUDED_ACCOUNT_1")
+	HW_RMS_EXCLUDED_ACCOUNT_2 = os.Getenv("HW_RMS_EXCLUDED_ACCOUNT_2")
 
 	HW_CDN_DOMAIN_NAME = os.Getenv("HW_CDN_DOMAIN_NAME")
 	// `HW_CDN_CERT_DOMAIN_NAME` Configure the domain name environment variable of the certificate type.
@@ -218,7 +220,6 @@ var (
 	HW_WORKSPACE_AD_NETWORK_ID = os.Getenv("HW_WORKSPACE_AD_NETWORK_ID") // The network ID to which the AD servers belong.
 	// The internet access port to which the Workspace service.
 	HW_WORKSPACE_INTERNET_ACCESS_PORT              = os.Getenv("HW_WORKSPACE_INTERNET_ACCESS_PORT")
-	HW_WORKSPACE_APP_SERVER_GROUP_ID               = os.Getenv("HW_WORKSPACE_APP_SERVER_GROUP_ID")
 	HW_WORKSPACE_APP_SERVER_GROUP_FLAVOR_ID        = os.Getenv("HW_WORKSPACE_APP_SERVER_GROUP_FLAVOR_ID")
 	HW_WORKSPACE_APP_SERVER_GROUP_IMAGE_ID         = os.Getenv("HW_WORKSPACE_APP_SERVER_GROUP_IMAGE_ID")
 	HW_WORKSPACE_APP_SERVER_GROUP_IMAGE_PRODUCT_ID = os.Getenv("HW_WORKSPACE_APP_SERVER_GROUP_IMAGE_PRODUCT_ID")
@@ -339,6 +340,8 @@ var (
 
 	HW_MODELARTS_HAS_SUBSCRIBE_MODEL = os.Getenv("HW_MODELARTS_HAS_SUBSCRIBE_MODEL")
 	HW_MODELARTS_USER_LOGIN_PASSWORD = os.Getenv("HW_MODELARTS_USER_LOGIN_PASSWORD")
+	HW_MODELARTS_DEVSERVER_FLAVOR    = os.Getenv("HW_MODELARTS_DEVSERVER_FLAVOR")
+	HW_MODELARTS_DEVSERVER_IMAGE_ID  = os.Getenv("HW_MODELARTS_DEVSERVER_IMAGE_ID")
 
 	// The CMDB sub-application ID of AOM service
 	HW_AOM_SUB_APPLICATION_ID                    = os.Getenv("HW_AOM_SUB_APPLICATION_ID")
@@ -1136,6 +1139,13 @@ func TestAccPreCheckRMSTargetID(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckRMSExcludedAccounts(t *testing.T) {
+	if HW_RMS_EXCLUDED_ACCOUNT_1 == "" || HW_RMS_EXCLUDED_ACCOUNT_2 == "" {
+		t.Skip("HW_RMS_EXCLUDED_ACCOUNT_1 and HW_RMS_EXCLUDED_ACCOUNT_2 must be set for the acceptance tests.")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckDms(t *testing.T) {
 	if HW_DMS_ENVIRONMENT == "" {
 		t.Skip("This environment does not support DMS tests")
@@ -1544,16 +1554,8 @@ func TestAccPreCheckWorkspaceInternetAccessPort(t *testing.T) {
 }
 
 // lintignore:AT003
-func TestAccPreCheckWorkspaceAppServerGroupId(t *testing.T) {
-	if HW_WORKSPACE_APP_SERVER_GROUP_ID == "" {
-		t.Skip("HW_WORKSPACE_APP_SERVER_GROUP_ID must be set for Workspace service acceptance tests.")
-	}
-}
-
-// lintignore:AT003
 func TestAccPreCheckWorkspaceAppServerGroup(t *testing.T) {
-	if HW_WORKSPACE_AD_VPC_ID == "" || HW_WORKSPACE_AD_NETWORK_ID == "" ||
-		HW_WORKSPACE_APP_SERVER_GROUP_FLAVOR_ID == "" || HW_WORKSPACE_APP_SERVER_GROUP_IMAGE_ID == "" ||
+	if HW_WORKSPACE_APP_SERVER_GROUP_FLAVOR_ID == "" || HW_WORKSPACE_APP_SERVER_GROUP_IMAGE_ID == "" ||
 		HW_WORKSPACE_APP_SERVER_GROUP_IMAGE_PRODUCT_ID == "" {
 		t.Skip("Workspace APP server group acceptance test missing configuration parameters.")
 	}
@@ -1902,6 +1904,13 @@ func TestAccPreCheckModelArtsHasSubscribeModel(t *testing.T) {
 func TestAccPreCheckModelartsUserLoginPassword(t *testing.T) {
 	if HW_MODELARTS_USER_LOGIN_PASSWORD == "" {
 		t.Skip("HW_MODELARTS_USER_LOGIN_PASSWORD must be set for modelarts privilege resource pool acceptance test")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckModelartsDevServer(t *testing.T) {
+	if HW_MODELARTS_DEVSERVER_FLAVOR == "" || HW_MODELARTS_DEVSERVER_IMAGE_ID == "" {
+		t.Skip("HW_MODELARTS_DEVSERVER_FLAVOR and HW_MODELARTS_DEVSERVER_IMAGE_ID must be set for ModelArts DevServer acceptance test")
 	}
 }
 
@@ -2774,7 +2783,7 @@ func TestAccPrecheckSFSTurboBackupId(t *testing.T) {
 // lintignore:AT003
 func TestAccPrecheckSfsFileSystemNames(t *testing.T, min int) {
 	// For this acceptance test, you should prepare three SFS file systems.
-	if len(strings.Split(HW_SFS_FILE_SYSTEM_NAMES, ",")) < min {
+	if HW_SFS_FILE_SYSTEM_NAMES == "" || len(strings.Split(HW_SFS_FILE_SYSTEM_NAMES, ",")) < min {
 		t.Skip("At least three file system name must be supported during the HW_SFS_FILE_SYSTEM_NAMES, and separated by commas")
 	}
 }

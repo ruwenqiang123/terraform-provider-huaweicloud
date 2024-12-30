@@ -37,7 +37,7 @@ func TestAccAppPolicyGroup_basic(t *testing.T) {
 	resource.ParallelTest(t, resource.TestCase{
 		PreCheck: func() {
 			acceptance.TestAccPreCheck(t)
-			acceptance.TestAccPreCheckWorkspaceAppServerGroupId(t)
+			acceptance.TestAccPreCheckWorkspaceAppServerGroup(t)
 		},
 		ProviderFactories: acceptance.TestAccProviderFactories,
 		CheckDestroy:      rc.CheckResourceDestroy(),
@@ -110,7 +110,7 @@ resource "huaweicloud_workspace_app_policy_group" "test" {
     }
   })
 }
-`, testResourceWorkspaceAppGroup_basic_step1(name), name)
+`, testResourceWorkspaceAppGroup_basic_step1(testResourceWorkspaceAppGroup_base(name), name), name)
 }
 
 func testAccAppPolicyGroup_basic_step2(name string) string {
@@ -136,7 +136,7 @@ resource "huaweicloud_workspace_app_policy_group" "test" {
     }
   })
 }
-`, testResourceWorkspaceAppGroup_basic_step1(name), name)
+`, testResourceWorkspaceAppGroup_basic_step1(testResourceWorkspaceAppGroup_base(name), name), name)
 }
 
 func testAccAppPolicyGroup_basic_step3(name string) string {
@@ -155,5 +155,5 @@ resource "huaweicloud_workspace_app_policy_group" "test" {
     }
   })
 }
-`, testResourceWorkspaceAppGroup_basic_step1(name), name)
+`, testResourceWorkspaceAppGroup_basic_step1(testResourceWorkspaceAppGroup_base(name), name), name)
 }

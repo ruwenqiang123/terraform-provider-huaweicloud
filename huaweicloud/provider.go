@@ -578,6 +578,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_codearts_deploy_groups":             codeartsdeploy.DataSourceCodeartsDeployGroups(),
 			"huaweicloud_codearts_deploy_hosts":              codeartsdeploy.DataSourceCodeartsDeployHosts(),
 			"huaweicloud_codearts_deploy_application_groups": codeartsdeploy.DataSourceCodeartsDeployApplicationGroups(),
+			"huaweicloud_codearts_deploy_applications":       codeartsdeploy.DataSourceCodeartsDeployApplications(),
 
 			"huaweicloud_cts_notifications": cts.DataSourceNotifications(),
 			"huaweicloud_cts_traces":        cts.DataSourceCtsTraces(),
@@ -871,6 +872,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_identitycenter_access_control_attribute_configurations": identitycenter.DataSourceAccessControlAttributeConfigurations(),
 			"huaweicloud_identitycenter_permission_sets":                         identitycenter.DataSourceIdentitycenterPermissionSets(),
 			"huaweicloud_identitycenter_account_provisioning_permission_sets":    identitycenter.DataSourceAccountProvisioningPermissionSets(),
+			"huaweicloud_identitycenter_permission_set_provisioning_accounts":    identitycenter.DataSourcePermissionSetProvisioningAccounts(),
 
 			"huaweicloud_iec_bandwidths":     iec.DataSourceBandWidths(),
 			"huaweicloud_iec_eips":           iec.DataSourceEips(),
@@ -1897,6 +1899,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_live_url_authentication":         live.ResourceUrlAuthentication(),
 			"huaweicloud_live_url_validation":             live.ResourceUrlValidation(),
 			"huaweicloud_live_origin_pull_configuration":  live.ResourceOriginPullConfiguration(),
+			"huaweicloud_live_stream_delay":               live.ResourceStreamDelay(),
 
 			"huaweicloud_lts_aom_access":                       lts.ResourceAOMAccess(),
 			"huaweicloud_lts_group":                            lts.ResourceLTSGroup(),
@@ -1928,6 +1931,7 @@ func Provider() *schema.Provider {
 
 			"huaweicloud_modelarts_dataset":                modelarts.ResourceDataset(),
 			"huaweicloud_modelarts_dataset_version":        modelarts.ResourceDatasetVersion(),
+			"huaweicloud_modelarts_devserver":              modelarts.ResourceDevServer(),
 			"huaweicloud_modelarts_notebook":               modelarts.ResourceNotebook(),
 			"huaweicloud_modelarts_notebook_mount_storage": modelarts.ResourceNotebookMountStorage(),
 			"huaweicloud_modelarts_model":                  modelarts.ResourceModelartsModel(),
