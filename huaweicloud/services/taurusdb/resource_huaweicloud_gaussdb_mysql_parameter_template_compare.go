@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"strings"
-	"time"
 
 	"github.com/hashicorp/go-multierror"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -22,10 +21,6 @@ func ResourceGaussDBMysqlTemplateCompare() *schema.Resource {
 		CreateContext: resourceParameterTemplateCompareCreate,
 		ReadContext:   resourceParameterTemplateCompareRead,
 		DeleteContext: resourceParameterTemplateCompareDelete,
-
-		Timeouts: &schema.ResourceTimeout{
-			Create: schema.DefaultTimeout(60 * time.Minute),
-		},
 
 		Schema: map[string]*schema.Schema{
 			"region": {
@@ -106,7 +101,7 @@ func resourceParameterTemplateCompareCreate(_ context.Context, d *schema.Resourc
 	}
 
 	mErr := multierror.Append(
-		d.Set("differences", flattenGaussDBParameterTemplateCompareResponseBodyNodes(createRespBody)),
+		d.Set("differences", flattenGaussDBParameterTemplateCompareResponseBody(createRespBody)),
 	)
 
 	return diag.FromErr(mErr.ErrorOrNil())
@@ -120,7 +115,7 @@ func buildCreateParameterTemplateCompareBodyParams(d *schema.ResourceData) map[s
 	return bodyParams
 }
 
-func flattenGaussDBParameterTemplateCompareResponseBodyNodes(resp interface{}) []interface{} {
+func flattenGaussDBParameterTemplateCompareResponseBody(resp interface{}) []interface{} {
 	differencesJson := utils.PathSearch("differences", resp, make([]interface{}, 0))
 	differencesArray := differencesJson.([]interface{})
 	if len(differencesArray) < 1 {

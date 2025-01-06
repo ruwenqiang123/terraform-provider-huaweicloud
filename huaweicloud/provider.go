@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"runtime"
 	"strings"
 	"sync"
 
@@ -490,6 +491,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_cbh_instances":          cbh.DataSourceCbhInstances(),
 			"huaweicloud_cbh_flavors":            cbh.DataSourceCbhFlavors(),
 			"huaweicloud_cbh_availability_zones": cbh.DataSourceAvailabilityZones(),
+			"huaweicloud_cbh_instance_quota":     cbh.DataSourceInstanceQuota(),
 
 			"huaweicloud_cc_authorizations":                               cc.DataSourceCcAuthorizations(),
 			"huaweicloud_cc_bandwidth_packages":                           cc.DataSourceCcBandwidthPackages(),
@@ -564,6 +566,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_cfw_access_control_logs":   cfw.DataSourceCfwAccessControlLogs(),
 			"huaweicloud_cfw_attack_logs":           cfw.DataSourceCfwAttackLogs(),
 			"huaweicloud_cfw_flow_logs":             cfw.DataSourceCfwFlowLogs(),
+			"huaweicloud_cfw_regions":               cfw.DataSourceCfwRegions(),
 
 			"huaweicloud_cnad_advanced_instances":         cnad.DataSourceInstances(),
 			"huaweicloud_cnad_advanced_available_objects": cnad.DataSourceAvailableProtectedObjects(),
@@ -811,16 +814,18 @@ func Provider() *schema.Provider {
 			"huaweicloud_gaussdb_redis_flavors":                geminidb.DataSourceGaussDBRedisFlavors(),
 			"huaweicloud_gaussdb_influx_instances":             geminidb.DataSourceGaussDBInfluxInstances(),
 
-			"huaweicloud_gaussdb_opengauss_datastores":           gaussdb.DataSourceGaussdbOpengaussDatastores(),
-			"huaweicloud_gaussdb_opengauss_flavors":              gaussdb.DataSourceGaussdbOpengaussFlavors(),
-			"huaweicloud_gaussdb_opengauss_instance":             gaussdb.DataSourceOpenGaussInstance(),
-			"huaweicloud_gaussdb_opengauss_instances":            gaussdb.DataSourceOpenGaussInstances(),
-			"huaweicloud_gaussdb_opengauss_instance_nodes":       gaussdb.DataSourceGaussdbOpengaussInstanceNodes(),
-			"huaweicloud_gaussdb_opengauss_databases":            gaussdb.DataSourceOpenGaussDatabases(),
-			"huaweicloud_gaussdb_opengauss_parameter_templates":  gaussdb.DataSourceGaussdbOpengaussParameterTemplates(),
-			"huaweicloud_gaussdb_opengauss_restore_time_ranges":  gaussdb.DataSourceGaussdbOpengaussRestoreTimeRanges(),
-			"huaweicloud_gaussdb_opengauss_restorable_instances": gaussdb.DataSourceGaussdbOpengaussRestorableInstances(),
-			"huaweicloud_gaussdb_opengauss_backups":              gaussdb.DataSourceGaussdbOpengaussBackups(),
+			"huaweicloud_gaussdb_opengauss_storage_types":         gaussdb.DataSourceGaussdbOpengaussStorageTypes(),
+			"huaweicloud_gaussdb_opengauss_datastores":            gaussdb.DataSourceGaussdbOpengaussDatastores(),
+			"huaweicloud_gaussdb_opengauss_flavors":               gaussdb.DataSourceGaussdbOpengaussFlavors(),
+			"huaweicloud_gaussdb_opengauss_instance":              gaussdb.DataSourceOpenGaussInstance(),
+			"huaweicloud_gaussdb_opengauss_instances":             gaussdb.DataSourceOpenGaussInstances(),
+			"huaweicloud_gaussdb_opengauss_instance_nodes":        gaussdb.DataSourceGaussdbOpengaussInstanceNodes(),
+			"huaweicloud_gaussdb_opengauss_instance_coordinators": gaussdb.DataSourceGaussdbOpengaussInstanceCoordinators(),
+			"huaweicloud_gaussdb_opengauss_databases":             gaussdb.DataSourceOpenGaussDatabases(),
+			"huaweicloud_gaussdb_opengauss_parameter_templates":   gaussdb.DataSourceGaussdbOpengaussParameterTemplates(),
+			"huaweicloud_gaussdb_opengauss_restore_time_ranges":   gaussdb.DataSourceGaussdbOpengaussRestoreTimeRanges(),
+			"huaweicloud_gaussdb_opengauss_restorable_instances":  gaussdb.DataSourceGaussdbOpengaussRestorableInstances(),
+			"huaweicloud_gaussdb_opengauss_backups":               gaussdb.DataSourceGaussdbOpengaussBackups(),
 
 			"huaweicloud_gaussdb_mysql_engine_versions":          taurusdb.DataSourceGaussdbMysqlEngineVersions(),
 			"huaweicloud_gaussdb_mysql_configuration":            taurusdb.DataSourceGaussdbMysqlConfiguration(),
@@ -1398,6 +1403,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_cae_component":                cae.ResourceComponent(),
 			"huaweicloud_cae_component_configurations": cae.ResourceComponentConfigurations(),
 			"huaweicloud_cae_component_deployment":     cae.ResourceComponentDeployment(),
+			"huaweicloud_cae_notification_rule":        cae.ResourceNotificationRule(),
 
 			"huaweicloud_cbr_backup_share_accepter": cbr.ResourceBackupShareAccepter(),
 			"huaweicloud_cbr_backup_share":          cbr.ResourceBackupShare(),
@@ -1430,6 +1436,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_cce_cluster_upgrade":     cce.ResourceClusterUpgrade(),
 			"huaweicloud_cce_node":                cce.ResourceNode(),
 			"huaweicloud_cce_node_attach":         cce.ResourceNodeAttach(),
+			"huaweicloud_cce_node_sync":           cce.ResourceNodeSync(),
 			"huaweicloud_cce_addon":               cce.ResourceAddon(),
 			"huaweicloud_cce_node_pool":           cce.ResourceNodePool(),
 			"huaweicloud_cce_node_pool_nodes_add": cce.ResourcePoolNodesAdd(),
@@ -1735,6 +1742,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_fgs_function_trigger":           fgs.ResourceFunctionTrigger(),
 
 			"huaweicloud_ga_accelerator":    ga.ResourceAccelerator(),
+			"huaweicloud_ga_access_log":     ga.ResourceAccessLog(),
 			"huaweicloud_ga_address_group":  ga.ResourceIpAddressGroup(),
 			"huaweicloud_ga_listener":       ga.ResourceListener(),
 			"huaweicloud_ga_endpoint_group": ga.ResourceEndpointGroup(),
@@ -1771,15 +1779,17 @@ func Provider() *schema.Provider {
 			"huaweicloud_gaussdb_mysql_scheduled_task_delete":      taurusdb.ResourceGaussDBScheduledTaskDelete(),
 			"huaweicloud_gaussdb_mysql_instant_task_delete":        taurusdb.ResourceGaussDBInstantTaskDelete(),
 
-			"huaweicloud_gaussdb_opengauss_instance":               gaussdb.ResourceOpenGaussInstance(),
-			"huaweicloud_gaussdb_opengauss_instance_restart":       gaussdb.ResourceOpenGaussInstanceRestart(),
-			"huaweicloud_gaussdb_opengauss_database":               gaussdb.ResourceOpenGaussDatabase(),
-			"huaweicloud_gaussdb_opengauss_backup":                 gaussdb.ResourceGaussDBOpenGaussBackup(),
-			"huaweicloud_gaussdb_opengauss_backup_stop":            gaussdb.ResourceOpenGaussBackupStop(),
-			"huaweicloud_gaussdb_opengauss_restore":                gaussdb.ResourceOpenGaussRestore(),
-			"huaweicloud_gaussdb_opengauss_eip_associate":          gaussdb.ResourceOpenGaussEipAssociate(),
-			"huaweicloud_gaussdb_opengauss_primary_standby_switch": gaussdb.ResourceOpenGaussPrimaryStandbySwitch(),
-			"huaweicloud_gaussdb_opengauss_parameter_template":     gaussdb.ResourceOpenGaussParameterTemplate(),
+			"huaweicloud_gaussdb_opengauss_instance":                   gaussdb.ResourceOpenGaussInstance(),
+			"huaweicloud_gaussdb_opengauss_instance_restart":           gaussdb.ResourceOpenGaussInstanceRestart(),
+			"huaweicloud_gaussdb_opengauss_database":                   gaussdb.ResourceOpenGaussDatabase(),
+			"huaweicloud_gaussdb_opengauss_backup":                     gaussdb.ResourceGaussDBOpenGaussBackup(),
+			"huaweicloud_gaussdb_opengauss_backup_stop":                gaussdb.ResourceOpenGaussBackupStop(),
+			"huaweicloud_gaussdb_opengauss_restore":                    gaussdb.ResourceOpenGaussRestore(),
+			"huaweicloud_gaussdb_opengauss_eip_associate":              gaussdb.ResourceOpenGaussEipAssociate(),
+			"huaweicloud_gaussdb_opengauss_primary_standby_switch":     gaussdb.ResourceOpenGaussPrimaryStandbySwitch(),
+			"huaweicloud_gaussdb_opengauss_parameter_template":         gaussdb.ResourceOpenGaussParameterTemplate(),
+			"huaweicloud_gaussdb_opengauss_parameter_template_apply":   gaussdb.ResourceOpenGaussParameterTemplateApply(),
+			"huaweicloud_gaussdb_opengauss_parameter_template_compare": gaussdb.ResourceOpenGaussParameterTemplateCompare(),
 
 			"huaweicloud_ges_graph":    ges.ResourceGesGraph(),
 			"huaweicloud_ges_metadata": ges.ResourceGesMetadata(),
@@ -1882,7 +1892,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_lb_pool":         lb.ResourcePoolV2(),
 			"huaweicloud_lb_whitelist":    lb.ResourceWhitelistV2(),
 
-			"huaweicloud_live_bucket_authorization":       live.ResourceLiveBucketAuthorization(),
+			"huaweicloud_live_bucket_authorization":       live.ResourceBucketAuthorization(),
 			"huaweicloud_live_channel":                    live.ResourceChannel(),
 			"huaweicloud_live_disable_push_stream":        live.ResourceDisablePushStream(),
 			"huaweicloud_live_domain":                     live.ResourceDomain(),
@@ -1894,7 +1904,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_live_record_callback":            live.ResourceRecordCallback(),
 			"huaweicloud_live_recording":                  live.ResourceRecording(),
 			"huaweicloud_live_referer_validation":         live.ResourceRefererValidation(),
-			"huaweicloud_live_snapshot":                   live.ResourceLiveSnapshot(),
+			"huaweicloud_live_snapshot":                   live.ResourceSnapshot(),
 			"huaweicloud_live_transcoding":                live.ResourceTranscoding(),
 			"huaweicloud_live_url_authentication":         live.ResourceUrlAuthentication(),
 			"huaweicloud_live_url_validation":             live.ResourceUrlValidation(),
@@ -1931,6 +1941,7 @@ func Provider() *schema.Provider {
 
 			"huaweicloud_modelarts_dataset":                modelarts.ResourceDataset(),
 			"huaweicloud_modelarts_dataset_version":        modelarts.ResourceDatasetVersion(),
+			"huaweicloud_modelarts_devserver_action":       modelarts.ResourceDevServerAction(),
 			"huaweicloud_modelarts_devserver":              modelarts.ResourceDevServer(),
 			"huaweicloud_modelarts_notebook":               modelarts.ResourceNotebook(),
 			"huaweicloud_modelarts_notebook_mount_storage": modelarts.ResourceNotebookMountStorage(),
@@ -2231,6 +2242,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_codearts_deploy_application":            codeartsdeploy.ResourceDeployApplication(),
 			"huaweicloud_codearts_deploy_application_group":      codeartsdeploy.ResourceDeployApplicationGroup(),
 			"huaweicloud_codearts_deploy_application_group_move": codeartsdeploy.ResourceDeployApplicationGroupMove(),
+			"huaweicloud_codearts_deploy_environment":            codeartsdeploy.ResourceDeployEnvironment(),
 			"huaweicloud_codearts_deploy_group":                  codeartsdeploy.ResourceDeployGroup(),
 			"huaweicloud_codearts_deploy_group_permission":       codeartsdeploy.ResourceDeployGroupPermission(),
 			"huaweicloud_codearts_deploy_host":                   codeartsdeploy.ResourceDeployHost(),
@@ -2575,12 +2587,13 @@ func configureProvider(_ context.Context, d *schema.ResourceData, terraformVersi
 
 	conf.Region = d.Get("region").(string)
 
-	if conf.SharedConfigFile != "" {
+	if conf.SharedConfigFile != "" || conf.Profile != "" {
 		err := readConfig(&conf)
 		if err != nil {
 			return nil, diag.FromErr(err)
 		}
 	}
+
 	if conf.Region == "" {
 		return nil, diag.Errorf("region should be provided")
 	}
@@ -2724,6 +2737,13 @@ func getCloudDomain(cloud, region string) string {
 }
 
 func readConfig(c *config.Config) error {
+	if c.SharedConfigFile == "" {
+		c.SharedConfigFile = fmt.Sprintf("%s/.hcloud/config.json", os.Getenv("HOME"))
+		if runtime.GOOS == "windows" {
+			c.SharedConfigFile = fmt.Sprintf("%s/.hcloud/config.json", os.Getenv("USERPROFILE"))
+		}
+	}
+
 	profilePath, err := homedir.Expand(c.SharedConfigFile)
 	if err != nil {
 		return err
