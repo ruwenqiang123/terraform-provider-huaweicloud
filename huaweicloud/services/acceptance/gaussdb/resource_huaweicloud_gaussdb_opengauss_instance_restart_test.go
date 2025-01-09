@@ -94,18 +94,6 @@ resource "huaweicloud_gaussdb_opengauss_instance" "test" {
     size = 40
   }
 }
-
-resource "huaweicloud_vpc_eip" "test" {
-  publicip {
-    type = "5_bgp"
-  }
-  bandwidth {
-    name        = "%[2]s"
-    size        = 8
-    share_type  = "PER"
-    charge_mode = "traffic"
-  }
-}
 `, common.TestBaseNetwork(rName), rName, acceptance.HW_ENTERPRISE_PROJECT_ID_TEST)
 }
 

@@ -111,7 +111,8 @@ var (
 	HW_RAM_SHARE_INVITATION_ID       = os.Getenv("HW_RAM_SHARE_INVITATION_ID")
 	HW_RAM_SHARE_ID                  = os.Getenv("HW_RAM_SHARE_ID")
 
-	HW_RMS_TARGET_ID          = os.Getenv("HW_RMS_TARGET_ID")
+	HW_RMS_TARGET_ID_FOR_FGS  = os.Getenv("HW_RMS_TARGET_ID_FOR_FGS")
+	HW_RMS_TARGET_ID_FOR_RFS  = os.Getenv("HW_RMS_TARGET_ID_FOR_RFS")
 	HW_RMS_EXCLUDED_ACCOUNT_1 = os.Getenv("HW_RMS_EXCLUDED_ACCOUNT_1")
 	HW_RMS_EXCLUDED_ACCOUNT_2 = os.Getenv("HW_RMS_EXCLUDED_ACCOUNT_2")
 
@@ -180,6 +181,8 @@ var (
 	HW_GAUSSDB_MYSQL_JOB_ID                    = os.Getenv("HW_GAUSSDB_MYSQL_JOB_ID")
 	HW_GAUSSDB_MYSQL_START_TIME                = os.Getenv("HW_GAUSSDB_MYSQL_START_TIME")
 	HW_GAUSSDB_MYSQL_END_TIME                  = os.Getenv("HW_GAUSSDB_MYSQL_END_TIME")
+
+	HW_GAUSSDB_OPENGAUSS_PARAMETER_TEMPLATE_ID = os.Getenv("HW_GAUSSDB_OPENGAUSS_PARAMETER_TEMPLATE_ID")
 
 	HW_VOD_WATERMARK_FILE   = os.Getenv("HW_VOD_WATERMARK_FILE")
 	HW_VOD_MEDIA_ASSET_FILE = os.Getenv("HW_VOD_MEDIA_ASSET_FILE")
@@ -1132,9 +1135,16 @@ func TestAccPreCheckRAMSharedPrincipalsQueryFields(t *testing.T) {
 }
 
 // lintignore:AT003
-func TestAccPreCheckRMSTargetID(t *testing.T) {
-	if HW_RMS_TARGET_ID == "" {
-		t.Skip("HW_RMS_TARGET_ID must be set for the acceptance tests.")
+func TestAccPreCheckRMSTargetIDForFGS(t *testing.T) {
+	if HW_RMS_TARGET_ID_FOR_FGS == "" {
+		t.Skip("HW_RMS_TARGET_ID_FOR_FGS must be set for the acceptance tests.")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckRMSTargetIDForRFS(t *testing.T) {
+	if HW_RMS_TARGET_ID_FOR_RFS == "" {
+		t.Skip("HW_RMS_TARGET_ID_FOR_RFS must be set for the acceptance tests.")
 	}
 }
 
@@ -1357,6 +1367,13 @@ func TestAccPreCheckGaussDBMysqlJobId(t *testing.T) {
 func TestAccPreCheckGaussDBMysqlTimeRange(t *testing.T) {
 	if HW_GAUSSDB_MYSQL_START_TIME == "" || HW_GAUSSDB_MYSQL_END_TIME == "" {
 		t.Skip("HW_GAUSSDB_MYSQL_START_TIME and HW_GAUSSDB_MYSQL_END_TIME must be set for GaussDB MySQL acceptance tests")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckGaussDBOpenGaussParameterTemplateId(t *testing.T) {
+	if HW_GAUSSDB_OPENGAUSS_PARAMETER_TEMPLATE_ID == "" {
+		t.Skip("HW_GAUSSDB_OPENGAUSS_PARAMETER_TEMPLATE_ID must be set for GaussDB OpenGauss acceptance tests")
 	}
 }
 
