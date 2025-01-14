@@ -94,7 +94,8 @@ var (
 
 	HW_DBSS_INSATNCE_ID = os.Getenv("HW_DBSS_INSATNCE_ID")
 
-	HW_DEW_ENABLE_FLAG = os.Getenv("HW_DEW_ENABLE_FLAG")
+	HW_DEW_ENABLE_FLAG   = os.Getenv("HW_DEW_ENABLE_FLAG")
+	HW_KPS_KEY_FILE_PATH = os.Getenv("HW_KPS_KEY_FILE_PATH")
 
 	HW_DEST_REGION          = os.Getenv("HW_DEST_REGION")
 	HW_DEST_PROJECT_ID      = os.Getenv("HW_DEST_PROJECT_ID")
@@ -111,10 +112,11 @@ var (
 	HW_RAM_SHARE_INVITATION_ID       = os.Getenv("HW_RAM_SHARE_INVITATION_ID")
 	HW_RAM_SHARE_ID                  = os.Getenv("HW_RAM_SHARE_ID")
 
-	HW_RMS_TARGET_ID_FOR_FGS  = os.Getenv("HW_RMS_TARGET_ID_FOR_FGS")
-	HW_RMS_TARGET_ID_FOR_RFS  = os.Getenv("HW_RMS_TARGET_ID_FOR_RFS")
-	HW_RMS_EXCLUDED_ACCOUNT_1 = os.Getenv("HW_RMS_EXCLUDED_ACCOUNT_1")
-	HW_RMS_EXCLUDED_ACCOUNT_2 = os.Getenv("HW_RMS_EXCLUDED_ACCOUNT_2")
+	HW_RMS_TARGET_ID_FOR_FGS        = os.Getenv("HW_RMS_TARGET_ID_FOR_FGS")
+	HW_RMS_TARGET_ID_FOR_RFS        = os.Getenv("HW_RMS_TARGET_ID_FOR_RFS")
+	HW_RMS_EXCLUDED_ACCOUNT_1       = os.Getenv("HW_RMS_EXCLUDED_ACCOUNT_1")
+	HW_RMS_EXCLUDED_ACCOUNT_2       = os.Getenv("HW_RMS_EXCLUDED_ACCOUNT_2")
+	HW_RMS_RESOURCE_RECORDER_CLOSED = os.Getenv("HW_RMS_RESOURCE_RECORDER_CLOSED")
 
 	HW_CDN_DOMAIN_NAME = os.Getenv("HW_CDN_DOMAIN_NAME")
 	// `HW_CDN_CERT_DOMAIN_NAME` Configure the domain name environment variable of the certificate type.
@@ -1152,6 +1154,13 @@ func TestAccPreCheckRMSTargetIDForRFS(t *testing.T) {
 func TestAccPreCheckRMSExcludedAccounts(t *testing.T) {
 	if HW_RMS_EXCLUDED_ACCOUNT_1 == "" || HW_RMS_EXCLUDED_ACCOUNT_2 == "" {
 		t.Skip("HW_RMS_EXCLUDED_ACCOUNT_1 and HW_RMS_EXCLUDED_ACCOUNT_2 must be set for the acceptance tests.")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckRMSResourceRecorder(t *testing.T) {
+	if HW_RMS_RESOURCE_RECORDER_CLOSED == "" {
+		t.Skip("HW_RMS_RESOURCE_RECORDER_CLOSED must be set for the acceptance tests.")
 	}
 }
 
@@ -2825,6 +2834,13 @@ func TestAccPrecheckDewFlag(t *testing.T) {
 	// Query the task execution status(running or failed)
 	if HW_DEW_ENABLE_FLAG == "" {
 		t.Skip("HW_DEW_ENABLE_FLAG must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckKPSKeyFilePath(t *testing.T) {
+	if HW_KPS_KEY_FILE_PATH == "" {
+		t.Skip("HW_KPS_KEY_FILE_PATH must be set for the acceptance test")
 	}
 }
 
