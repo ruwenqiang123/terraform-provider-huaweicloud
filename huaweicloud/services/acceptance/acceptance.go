@@ -42,6 +42,7 @@ var (
 	HW_IMAGE_NAME                    = os.Getenv("HW_IMAGE_NAME")
 	HW_IMS_DATA_DISK_IMAGE_ID        = os.Getenv("HW_IMS_DATA_DISK_IMAGE_ID")
 	HW_VPC_ID                        = os.Getenv("HW_VPC_ID")
+	HW_VPC_ENHANCED_LOCAL_ROUTE      = os.Getenv("HW_VPC_ENHANCED_LOCAL_ROUTE")
 	HW_VPN_P2C_GATEWAY_ID            = os.Getenv("HW_VPN_P2C_GATEWAY_ID")
 	HW_VPN_P2C_SERVER                = os.Getenv("HW_VPN_P2C_SERVER")
 	HW_VPN_P2C_CLIENT_CA_CERTIFICATE = os.Getenv("HW_VPN_P2C_CLIENT_CA_CERTIFICATE")
@@ -185,6 +186,7 @@ var (
 	HW_GAUSSDB_MYSQL_END_TIME                  = os.Getenv("HW_GAUSSDB_MYSQL_END_TIME")
 
 	HW_GAUSSDB_OPENGAUSS_PARAMETER_TEMPLATE_ID = os.Getenv("HW_GAUSSDB_OPENGAUSS_PARAMETER_TEMPLATE_ID")
+	HW_GAUSSDB_OPENGAUSS_JOB_ID                = os.Getenv("HW_GAUSSDB_OPENGAUSS_JOB_ID")
 
 	HW_VOD_WATERMARK_FILE   = os.Getenv("HW_VOD_WATERMARK_FILE")
 	HW_VOD_MEDIA_ASSET_FILE = os.Getenv("HW_VOD_MEDIA_ASSET_FILE")
@@ -294,6 +296,7 @@ var (
 	HW_CFW_PREDEFINED_SERVICE_GROUP2 = os.Getenv("HW_CFW_PREDEFINED_SERVICE_GROUP2")
 	HW_CFW_PREDEFINED_ADDRESS_GROUP1 = os.Getenv("HW_CFW_PREDEFINED_ADDRESS_GROUP1")
 	HW_CFW_PREDEFINED_ADDRESS_GROUP2 = os.Getenv("HW_CFW_PREDEFINED_ADDRESS_GROUP2")
+	HW_CFW_IPS_CUSTOM_RULE           = os.Getenv("HW_CFW_IPS_CUSTOM_RULE")
 
 	HW_CTS_START_TIME = os.Getenv("HW_CTS_START_TIME")
 	HW_CTS_END_TIME   = os.Getenv("HW_CTS_END_TIME")
@@ -1387,6 +1390,13 @@ func TestAccPreCheckGaussDBOpenGaussParameterTemplateId(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckGaussDBOpenGaussJobId(t *testing.T) {
+	if HW_GAUSSDB_OPENGAUSS_JOB_ID == "" {
+		t.Skip("HW_GAUSSDB_OPENGAUSS_JOB_ID must be set for GaussDB OpenGauss acceptance tests")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckVODWatermark(t *testing.T) {
 	if HW_VOD_WATERMARK_FILE == "" {
 		t.Skip("HW_VOD_WATERMARK_FILE must be set for VOD watermark template acceptance tests.")
@@ -1704,6 +1714,13 @@ func TestAccPreCheckCfwPredefinedServiceGroup(t *testing.T) {
 func TestAccPreCheckCfwPredefinedAddressGroup(t *testing.T) {
 	if HW_CFW_PREDEFINED_ADDRESS_GROUP1 == "" || HW_CFW_PREDEFINED_ADDRESS_GROUP2 == "" {
 		t.Skip("HW_CFW_PREDEFINED_ADDRESS_GROUP1 and HW_CFW_PREDEFINED_ADDRESS_GROUP2 must be set for CFW ACL rule acceptance tests")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckCfwIpsCustomRule(t *testing.T) {
+	if HW_CFW_IPS_CUSTOM_RULE == "" {
+		t.Skip("HW_CFW_IPS_CUSTOM_RULE must be set for CFW IPS acceptance tests")
 	}
 }
 
@@ -2726,6 +2743,13 @@ func TestAccPreCheckAsDataDiskImageId(t *testing.T) {
 func TestAccPreCheckVpcId(t *testing.T) {
 	if HW_VPC_ID == "" {
 		t.Skip("HW_VPC_ID must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckVpcEnhancedLocalRoute(t *testing.T) {
+	if HW_VPC_ENHANCED_LOCAL_ROUTE == "" {
+		t.Skip("HW_VPC_ENHANCED_LOCAL_ROUTE must be set for the acceptance test")
 	}
 }
 

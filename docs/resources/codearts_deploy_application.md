@@ -187,6 +187,13 @@ The `permission_matrix` block supports:
 
 * `can_disable` - Indicates whether the role has the permission to disable the application.
 
+## Timeouts
+
+This resource provides the following timeouts configuration options:
+
+* `create` - Default is 10 minutes.
+* `update` - Default is 10 minutes.
+
 ## Import
 
 The CodeArts deploy application resource can be imported using the `id`, e.g.
