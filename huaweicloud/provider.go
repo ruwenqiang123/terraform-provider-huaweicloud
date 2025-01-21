@@ -590,11 +590,12 @@ func Provider() *schema.Provider {
 			"huaweicloud_compute_servergroups":            ecs.DataSourceComputeServerGroups(),
 			"huaweicloud_compute_instance_remote_console": ecs.DataSourceComputeInstanceRemoteConsole(),
 
-			"huaweicloud_codearts_deploy_groups":             codeartsdeploy.DataSourceCodeartsDeployGroups(),
-			"huaweicloud_codearts_deploy_hosts":              codeartsdeploy.DataSourceCodeartsDeployHosts(),
-			"huaweicloud_codearts_deploy_application_groups": codeartsdeploy.DataSourceCodeartsDeployApplicationGroups(),
-			"huaweicloud_codearts_deploy_applications":       codeartsdeploy.DataSourceCodeartsDeployApplications(),
-			"huaweicloud_codearts_deploy_environments":       codeartsdeploy.DataSourceCodeartsDeployEnvironments(),
+			"huaweicloud_codearts_deploy_groups":                         codeartsdeploy.DataSourceCodeartsDeployGroups(),
+			"huaweicloud_codearts_deploy_hosts":                          codeartsdeploy.DataSourceCodeartsDeployHosts(),
+			"huaweicloud_codearts_deploy_application_groups":             codeartsdeploy.DataSourceCodeartsDeployApplicationGroups(),
+			"huaweicloud_codearts_deploy_applications":                   codeartsdeploy.DataSourceCodeartsDeployApplications(),
+			"huaweicloud_codearts_deploy_application_deployment_records": codeartsdeploy.DataSourceCodeartsDeployApplicationDeploymentRecords(),
+			"huaweicloud_codearts_deploy_environments":                   codeartsdeploy.DataSourceCodeartsDeployEnvironments(),
 
 			"huaweicloud_cts_notifications": cts.DataSourceNotifications(),
 			"huaweicloud_cts_traces":        cts.DataSourceCtsTraces(),
@@ -853,6 +854,9 @@ func Provider() *schema.Provider {
 			"huaweicloud_gaussdb_opengauss_project_quotas":            gaussdb.DataSourceGaussdbOpengaussProjectQuotas(),
 			"huaweicloud_gaussdb_opengauss_tasks":                     gaussdb.DataSourceOpenGaussTasks(),
 			"huaweicloud_gaussdb_opengauss_quotas":                    gaussdb.DataSourceGaussdbOpengaussQuotas(),
+			"huaweicloud_gaussdb_opengauss_upgrade_versions":          gaussdb.DataSourceGaussdbOpengaussUpgradeVersions(),
+			"huaweicloud_gaussdb_opengauss_tags":                      gaussdb.DataSourceOpenGaussTags(),
+			"huaweicloud_gaussdb_opengauss_predefined_tags":           gaussdb.DataSourceOpenGaussPredefinedTags(),
 
 			"huaweicloud_gaussdb_mysql_engine_versions":          taurusdb.DataSourceGaussdbMysqlEngineVersions(),
 			"huaweicloud_gaussdb_mysql_configuration":            taurusdb.DataSourceGaussdbMysqlConfiguration(),
@@ -1155,6 +1159,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_swr_image_retention_histories": swr.DataSourceSwrImageRetentionHistories(),
 			"huaweicloud_swr_quotas":                    swr.DataSourceSwrQuotas(),
 			"huaweicloud_swr_feature_gates":             swr.DataSourceSwrFeatureGates(),
+			"huaweicloud_swr_domain_overviews":          swr.DataSourceSwrDomainOverviews(),
 
 			"huaweicloud_tms_resource_types": tms.DataSourceResourceTypes(),
 
@@ -1435,11 +1440,14 @@ func Provider() *schema.Provider {
 			"huaweicloud_bcs_instance": bcs.ResourceInstance(),
 
 			"huaweicloud_cae_application":              cae.ResourceApplication(),
+			"huaweicloud_cae_certificate":              cae.ResourceCertificate(),
 			"huaweicloud_cae_component":                cae.ResourceComponent(),
 			"huaweicloud_cae_component_configurations": cae.ResourceComponentConfigurations(),
 			"huaweicloud_cae_component_deployment":     cae.ResourceComponentDeployment(),
+			"huaweicloud_cae_domain":                   cae.ResourceDomain(),
 			"huaweicloud_cae_environment":              cae.ResourceEnvironment(),
 			"huaweicloud_cae_notification_rule":        cae.ResourceNotificationRule(),
+			"huaweicloud_cae_timer_rule":               cae.ResourceTimerRule(),
 			"huaweicloud_cae_vpc_egress":               cae.ResourceVpcEgress(),
 
 			"huaweicloud_cbr_backup_share_accepter": cbr.ResourceBackupShareAccepter(),
@@ -2142,6 +2150,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_secmaster_playbook_action":             secmaster.ResourcePlaybookAction(),
 			"huaweicloud_secmaster_playbook_approval":           secmaster.ResourcePlaybookApproval(),
 			"huaweicloud_secmaster_playbook_instance_operation": secmaster.ResourcePlaybookInstanceOperation(),
+			"huaweicloud_secmaster_alert_rule_simulation":       secmaster.ResourceAlertRuleSimulation(),
 
 			"huaweicloud_servicestage_application":                 servicestage.ResourceApplication(),
 			"huaweicloud_servicestage_component_instance":          servicestage.ResourceComponentInstance(),
@@ -2289,6 +2298,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_codearts_deploy_application":            codeartsdeploy.ResourceDeployApplication(),
 			"huaweicloud_codearts_deploy_application_copy":       codeartsdeploy.ResourceDeployApplicationCopy(),
 			"huaweicloud_codearts_deploy_application_permission": codeartsdeploy.ResourceDeployApplicationPermission(),
+			"huaweicloud_codearts_deploy_application_deploy":     codeartsdeploy.ResourceDeployApplicationDeploy(),
 			"huaweicloud_codearts_deploy_application_group":      codeartsdeploy.ResourceDeployApplicationGroup(),
 			"huaweicloud_codearts_deploy_application_group_move": codeartsdeploy.ResourceDeployApplicationGroupMove(),
 			"huaweicloud_codearts_deploy_environment":            codeartsdeploy.ResourceDeployEnvironment(),

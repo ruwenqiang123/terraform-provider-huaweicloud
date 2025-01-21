@@ -10,37 +10,30 @@ import (
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/acceptance/common"
 )
 
-func TestAccOpenGaussParameterTemplateApply_basic(t *testing.T) {
-	var obj interface{}
-	rName := acceptance.RandomAccResourceNameWithDash()
-	resourceName := "huaweicloud_gaussdb_opengauss_instance.test"
-
-	rc := acceptance.InitResourceCheck(
-		resourceName,
-		&obj,
-		getOpenGaussInstanceFunc,
-	)
+func TestAccDataSourceOpenGaussTags_basic(t *testing.T) {
+	dataSource := "data.huaweicloud_gaussdb_opengauss_tags.test"
+	rName := acceptance.RandomAccResourceName()
+	dc := acceptance.InitDataSourceCheck(dataSource)
 
 	resource.ParallelTest(t, resource.TestCase{
 		PreCheck: func() {
 			acceptance.TestAccPreCheck(t)
-			acceptance.TestAccPreCheckEpsID(t)
-			acceptance.TestAccPreCheckHighCostAllow(t)
 		},
 		ProviderFactories: acceptance.TestAccProviderFactories,
-		CheckDestroy:      nil,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccOpenGaussParameterTemplateApply_basic(rName),
+				Config: testDataSourceOpenGaussTags_basic(rName),
 				Check: resource.ComposeTestCheckFunc(
-					rc.CheckResourceExists(),
+					dc.CheckResourceExists(),
+					resource.TestCheckResourceAttrSet(dataSource, "tags.0.key"),
+					resource.TestCheckResourceAttrSet(dataSource, "tags.0.values.#"),
 				),
 			},
 		},
 	})
 }
 
-func testAccOpenGaussParameterTemplateApply_base(rName string) string {
+func testDataSourceOpenGaussTags_base(name string) string {
 	return fmt.Sprintf(`
 %[1]s
 
@@ -73,19 +66,17 @@ resource "huaweicloud_gaussdb_opengauss_instance" "test" {
     huaweicloud_networking_secgroup_rule.in_v4_tcp_opengauss_egress
   ]
 
-  vpc_id            = huaweicloud_vpc.test.id
-  subnet_id         = huaweicloud_vpc_subnet.test.id
-  security_group_id = huaweicloud_networking_secgroup.test.id
+  vpc_id                = huaweicloud_vpc.test.id
+  subnet_id             = huaweicloud_vpc_subnet.test.id
+  security_group_id     = huaweicloud_networking_secgroup.test.id
+  flavor                = data.huaweicloud_gaussdb_opengauss_flavors.test.flavors[0].spec_code
+  name                  = "%[2]s"
+  password              = "Huangwei!120521"
+  enterprise_project_id = "%[3]s"
 
-  flavor            = data.huaweicloud_gaussdb_opengauss_flavors.test.flavors[0].spec_code
-  name              = "%[2]s"
-  password          = "Huangwei!120521"
-  replica_num       = 3
   availability_zone = join(",", [data.huaweicloud_availability_zones.test.names[0], 
                       data.huaweicloud_availability_zones.test.names[1], 
                       data.huaweicloud_availability_zones.test.names[2]])
-
-  enterprise_project_id = "%[3]s"
 
   ha {
     mode             = "centralization_standard"
@@ -98,33 +89,21 @@ resource "huaweicloud_gaussdb_opengauss_instance" "test" {
     type = "ULTRAHIGH"
     size = 40
   }
-}
 
-resource "huaweicloud_gaussdb_opengauss_parameter_template" "test" {
-  name           = "%[2]s"
-  engine_version = "8.201"
-  instance_mode  = "ha"
-
-  parameters {
-    name  = "autovacuum_naptime"
-    value = "1000"
-  }
-
-  parameters {
-    name  = "dn:check_disconnect_query"
-    value = "off"
+  tags = {
+    key   = "value"
+    owner = "terraform"
   }
 }
-`, common.TestBaseNetwork(rName), rName, acceptance.HW_ENTERPRISE_PROJECT_ID_TEST)
+`, common.TestBaseNetwork(name), name, acceptance.HW_ENTERPRISE_PROJECT_ID_TEST)
 }
 
-func testAccOpenGaussParameterTemplateApply_basic(rName string) string {
+func testDataSourceOpenGaussTags_basic(name string) string {
 	return fmt.Sprintf(`
-%[1]s
+%s
 
-resource "huaweicloud_gaussdb_opengauss_parameter_template_apply" "test" {
-  config_id   = huaweicloud_gaussdb_opengauss_parameter_template.test.id
-  instance_id = huaweicloud_gaussdb_opengauss_instance.test.id
+data "huaweicloud_gaussdb_opengauss_tags" "test" {
+  depends_on = [huaweicloud_gaussdb_opengauss_instance.test]
 }
-`, testAccOpenGaussParameterTemplateApply_base(rName))
+`, testDataSourceOpenGaussTags_base(name))
 }
