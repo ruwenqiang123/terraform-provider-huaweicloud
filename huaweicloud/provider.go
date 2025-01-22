@@ -857,6 +857,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_gaussdb_opengauss_upgrade_versions":          gaussdb.DataSourceGaussdbOpengaussUpgradeVersions(),
 			"huaweicloud_gaussdb_opengauss_tags":                      gaussdb.DataSourceOpenGaussTags(),
 			"huaweicloud_gaussdb_opengauss_predefined_tags":           gaussdb.DataSourceOpenGaussPredefinedTags(),
+			"huaweicloud_gaussdb_opengauss_slow_logs":                 gaussdb.DataSourceOpenGaussSlowLogs(),
 
 			"huaweicloud_gaussdb_mysql_engine_versions":          taurusdb.DataSourceGaussdbMysqlEngineVersions(),
 			"huaweicloud_gaussdb_mysql_configuration":            taurusdb.DataSourceGaussdbMysqlConfiguration(),
@@ -1160,6 +1161,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_swr_quotas":                    swr.DataSourceSwrQuotas(),
 			"huaweicloud_swr_feature_gates":             swr.DataSourceSwrFeatureGates(),
 			"huaweicloud_swr_domain_overviews":          swr.DataSourceSwrDomainOverviews(),
+			"huaweicloud_swr_domain_resource_reports":   swr.DataSourceSwrDomainReports(),
 
 			"huaweicloud_tms_resource_types": tms.DataSourceResourceTypes(),
 
@@ -1266,6 +1268,8 @@ func Provider() *schema.Provider {
 			"huaweicloud_workspace_desktops":                 workspace.DataSourceDesktops(),
 			"huaweicloud_workspace_flavors":                  workspace.DataSourceWorkspaceFlavors(),
 			"huaweicloud_workspace_service":                  workspace.DataSourceService(),
+
+			"huaweicloud_cpts_projects": cpts.DataSourceCptsProjects(),
 
 			// Legacy
 			"huaweicloud_images_image_v2":        ims.DataSourceImagesImageV2(),
