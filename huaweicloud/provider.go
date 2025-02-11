@@ -416,9 +416,17 @@ func Provider() *schema.Provider {
 				Description: descriptions["enable_force_new"],
 				DefaultFunc: schema.EnvDefaultFunc("HW_ENABLE_FORCE_NEW", false),
 			},
+			"signing_algorithm": {
+				Type:        schema.TypeString,
+				Optional:    true,
+				Description: descriptions["signing_algorithm"],
+				DefaultFunc: schema.EnvDefaultFunc("HW_SIGNING_ALGORITHM", ""),
+			},
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
+			"huaweicloud_access_analyzers": accessanalyzer.DataSourceAccessAnalyzers(),
+
 			"huaweicloud_antiddos_config_ranges":                antiddos.DataSourceConfigRanges(),
 			"huaweicloud_antiddos_weekly_protection_statistics": antiddos.DataSourceWeeklyProtectionStatistics(),
 			"huaweicloud_antiddos_eip_defense_statuses":         antiddos.DataSourceEipDefenseStatuses(),
@@ -838,6 +846,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_gaussdb_opengauss_instances":                 gaussdb.DataSourceOpenGaussInstances(),
 			"huaweicloud_gaussdb_opengauss_instance_nodes":            gaussdb.DataSourceGaussdbOpengaussInstanceNodes(),
 			"huaweicloud_gaussdb_opengauss_instance_coordinators":     gaussdb.DataSourceGaussdbOpengaussInstanceCoordinators(),
+			"huaweicloud_gaussdb_opengauss_instance_features":         gaussdb.DataSourceGaussdbOpengaussInstanceFeatures(),
 			"huaweicloud_gaussdb_opengauss_databases":                 gaussdb.DataSourceOpenGaussDatabases(),
 			"huaweicloud_gaussdb_opengauss_schemas":                   gaussdb.DataSourceOpenGaussSchemas(),
 			"huaweicloud_gaussdb_opengauss_parameter_templates":       gaussdb.DataSourceGaussdbOpengaussParameterTemplates(),
@@ -1795,6 +1804,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_fgs_dependency_version":         fgs.ResourceDependencyVersion(),
 			"huaweicloud_fgs_function":                   fgs.ResourceFgsFunctionV2(),
 			"huaweicloud_fgs_function_event":             fgs.ResourceFunctionEvent(),
+			"huaweicloud_fgs_function_topping":           fgs.ResourceFunctionTopping(),
 			"huaweicloud_fgs_function_trigger":           fgs.ResourceFunctionTrigger(),
 
 			"huaweicloud_ga_accelerator":    ga.ResourceAccelerator(),
@@ -2602,6 +2612,8 @@ func init() {
 		"enterprise_project_id": "enterprise project id",
 
 		"enable_force_new": "Whether to enable ForceNew",
+
+		"signing_algorithm": "The signing algorithm for authentication",
 	}
 }
 
@@ -2634,6 +2646,7 @@ func configureProvider(_ context.Context, d *schema.ResourceData, terraformVersi
 		RPLock:              new(sync.Mutex),
 		SecurityKeyLock:     new(sync.Mutex),
 		EnableForceNew:      d.Get("enable_force_new").(bool),
+		SigningAlgorithm:    d.Get("signing_algorithm").(string),
 	}
 
 	// get assume role
