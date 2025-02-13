@@ -425,7 +425,8 @@ func Provider() *schema.Provider {
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
-			"huaweicloud_access_analyzers": accessanalyzer.DataSourceAccessAnalyzers(),
+			"huaweicloud_access_analyzers":              accessanalyzer.DataSourceAccessAnalyzers(),
+			"huaweicloud_access_analyzer_archive_rules": accessanalyzer.DataSourceAccessAnalyzerArchiveRules(),
 
 			"huaweicloud_antiddos_config_ranges":                antiddos.DataSourceConfigRanges(),
 			"huaweicloud_antiddos_weekly_protection_statistics": antiddos.DataSourceWeeklyProtectionStatistics(),
@@ -598,12 +599,15 @@ func Provider() *schema.Provider {
 			"huaweicloud_compute_servergroups":            ecs.DataSourceComputeServerGroups(),
 			"huaweicloud_compute_instance_remote_console": ecs.DataSourceComputeInstanceRemoteConsole(),
 
+			// CodeArts
 			"huaweicloud_codearts_deploy_groups":                         codeartsdeploy.DataSourceCodeartsDeployGroups(),
 			"huaweicloud_codearts_deploy_hosts":                          codeartsdeploy.DataSourceCodeartsDeployHosts(),
 			"huaweicloud_codearts_deploy_application_groups":             codeartsdeploy.DataSourceCodeartsDeployApplicationGroups(),
 			"huaweicloud_codearts_deploy_applications":                   codeartsdeploy.DataSourceCodeartsDeployApplications(),
 			"huaweicloud_codearts_deploy_application_deployment_records": codeartsdeploy.DataSourceCodeartsDeployApplicationDeploymentRecords(),
 			"huaweicloud_codearts_deploy_environments":                   codeartsdeploy.DataSourceCodeartsDeployEnvironments(),
+
+			"huaweicloud_codearts_inspector_host_groups": codeartsinspector.DataSourceCodeartsInspectorHostGroups(),
 
 			"huaweicloud_cts_notifications": cts.DataSourceNotifications(),
 			"huaweicloud_cts_traces":        cts.DataSourceCtsTraces(),
@@ -1531,6 +1535,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_cdm_link":           cdm.ResourceCdmLink(),
 
 			"huaweicloud_cdn_domain":         cdn.ResourceCdnDomain(),
+			"huaweicloud_cdn_domain_rule":    cdn.ResourceCdnDomainRule(),
 			"huaweicloud_cdn_billing_option": cdn.ResourceBillingOption(),
 			"huaweicloud_cdn_cache_preheat":  cdn.ResourceCachePreheat(),
 			"huaweicloud_cdn_cache_refresh":  cdn.ResourceCacheRefresh(),
@@ -1540,6 +1545,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_ces_dashboard":        ces.ResourceDashboard(),
 			"huaweicloud_ces_dashboard_widget": ces.ResourceDashboardWidget(),
 			"huaweicloud_ces_event_report":     ces.ResourceCesEventReport(),
+			"huaweicloud_ces_metric_data_add":  ces.ResourceMetricDataAdd(),
 			"huaweicloud_ces_one_click_alarm":  ces.ResourceOneClickAlarm(),
 			"huaweicloud_ces_resource_group":   ces.ResourceResourceGroup(),
 
@@ -2330,6 +2336,7 @@ func Provider() *schema.Provider {
 
 			"huaweicloud_codearts_inspector_website":      codeartsinspector.ResourceInspectorWebsite(),
 			"huaweicloud_codearts_inspector_website_scan": codeartsinspector.ResourceInspectorWebsiteScan(),
+			"huaweicloud_codearts_inspector_host_group":   codeartsinspector.ResourceInspectorHostGroup(),
 
 			"huaweicloud_dsc_instance":           dsc.ResourceDscInstance(),
 			"huaweicloud_dsc_asset_obs":          dsc.ResourceAssetObs(),
