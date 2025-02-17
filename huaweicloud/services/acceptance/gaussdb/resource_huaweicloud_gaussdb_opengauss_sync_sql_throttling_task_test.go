@@ -10,10 +10,8 @@ import (
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/acceptance/common"
 )
 
-func TestAccDataSourceGaussdbOpengaussRestoreTimeRanges_basic(t *testing.T) {
-	dataSource := "data.huaweicloud_gaussdb_opengauss_restore_time_ranges.test"
-	rName := acceptance.RandomAccResourceName()
-	dc := acceptance.InitDataSourceCheck(dataSource)
+func TestAccOpenGaussSyncSqlThrottlingTask_basic(t *testing.T) {
+	name := acceptance.RandomAccResourceName()
 
 	resource.ParallelTest(t, resource.TestCase{
 		PreCheck: func() {
@@ -22,21 +20,17 @@ func TestAccDataSourceGaussdbOpengaussRestoreTimeRanges_basic(t *testing.T) {
 			acceptance.TestAccPreCheckHighCostAllow(t)
 		},
 		ProviderFactories: acceptance.TestAccProviderFactories,
+		CheckDestroy:      nil,
 		Steps: []resource.TestStep{
 			{
-				Config: testDataSourceGaussdbOpengaussRestoreTimeRanges_basic(rName),
-				Check: resource.ComposeTestCheckFunc(
-					dc.CheckResourceExists(),
-					resource.TestCheckResourceAttrSet(dataSource, "restore_time.#"),
-					resource.TestCheckResourceAttrSet(dataSource, "restore_time.0.start_time"),
-					resource.TestCheckResourceAttrSet(dataSource, "restore_time.0.end_time"),
-				),
+				Config: testAccOpenGaussSyncSqlThrottlingTask_basic(name),
+				Check:  resource.ComposeTestCheckFunc(),
 			},
 		},
 	})
 }
 
-func testDataSourceGaussdbOpengaussRestoreTimeRanges_base(name string) string {
+func testAccOpenGaussSyncSqlThrottlingTask_base(name string) string {
 	return fmt.Sprintf(`
 %[1]s
 
@@ -69,19 +63,17 @@ resource "huaweicloud_gaussdb_opengauss_instance" "test" {
     huaweicloud_networking_secgroup_rule.in_v4_tcp_opengauss_egress
   ]
 
-  vpc_id            = huaweicloud_vpc.test.id
-  subnet_id         = huaweicloud_vpc_subnet.test.id
-  security_group_id = huaweicloud_networking_secgroup.test.id
+  vpc_id                = huaweicloud_vpc.test.id
+  subnet_id             = huaweicloud_vpc_subnet.test.id
+  security_group_id     = huaweicloud_networking_secgroup.test.id
+  flavor                = data.huaweicloud_gaussdb_opengauss_flavors.test.flavors[0].spec_code
+  name                  = "%[2]s"
+  password              = "Huangwei!120521"
+  enterprise_project_id = "%[3]s"
 
-  flavor            = data.huaweicloud_gaussdb_opengauss_flavors.test.flavors[0].spec_code
-  name              = "%[2]s"
-  password          = "Huangwei!120521"
-  replica_num       = 3
   availability_zone = join(",", [data.huaweicloud_availability_zones.test.names[0], 
                       data.huaweicloud_availability_zones.test.names[1], 
                       data.huaweicloud_availability_zones.test.names[2]])
-
-  enterprise_project_id = "%[3]s"
 
   ha {
     mode             = "centralization_standard"
@@ -95,24 +87,14 @@ resource "huaweicloud_gaussdb_opengauss_instance" "test" {
     size = 40
   }
 }
-
-resource "huaweicloud_gaussdb_opengauss_backup" "test" {
-  instance_id = huaweicloud_gaussdb_opengauss_instance.test.id
-  name        = "%[2]s"
-  description = "test description"
-}
 `, common.TestBaseNetwork(name), name, acceptance.HW_ENTERPRISE_PROJECT_ID_TEST)
 }
 
-func testDataSourceGaussdbOpengaussRestoreTimeRanges_basic(name string) string {
+func testAccOpenGaussSyncSqlThrottlingTask_basic(name string) string {
 	return fmt.Sprintf(`
-%[1]s
+%s
 
-data "huaweicloud_gaussdb_opengauss_restore_time_ranges" "test" {
-  depends_on = [huaweicloud_gaussdb_opengauss_backup.test]
-
+resource "huaweicloud_gaussdb_opengauss_sync_sql_throttling_task" "test" {
   instance_id = huaweicloud_gaussdb_opengauss_instance.test.id
-  date        = split("T", huaweicloud_gaussdb_opengauss_backup.test.end_time)[0]
-}
-`, testDataSourceGaussdbOpengaussRestoreTimeRanges_base(name))
+}`, testAccOpenGaussSyncSqlThrottlingTask_base(name))
 }

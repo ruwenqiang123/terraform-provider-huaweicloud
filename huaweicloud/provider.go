@@ -564,6 +564,8 @@ func Provider() *schema.Provider {
 			"huaweicloud_ces_events":                           ces.DataSourceCesEvents(),
 			"huaweicloud_ces_event_details":                    ces.DataSourceCesEventDetails(),
 			"huaweicloud_ces_metrics":                          ces.DataSourceCesMetrics(),
+			"huaweicloud_ces_metric_data":                      ces.DataSourceCesMetricData(),
+			"huaweicloud_ces_multiple_metrics_data":            ces.DataSourceMultipleMetricsData(),
 			"huaweicloud_ces_one_click_alarms":                 ces.DataSourceCesOneClickAlarms(),
 			"huaweicloud_ces_one_click_alarm_rules":            ces.DataSourceCesOneClickAlarmRules(),
 			"huaweicloud_ces_resource_groups":                  ces.DataSourceCesGroups(),
@@ -816,13 +818,13 @@ func Provider() *schema.Provider {
 			"huaweicloud_evs_volume_types":       evs.DataSourceEvsVolumeTypes(),
 			"huaweicloud_evs_volume_transfers":   evs.DataSourceEvsVolumeTransfers(),
 
-			"huaweicloud_fgs_applications":          fgs.DataSourceFunctionGraphApplications(),
-			"huaweicloud_fgs_application_templates": fgs.DataSourceFunctionGraphApplicationTemplates(),
+			"huaweicloud_fgs_applications":          fgs.DataSourceApplications(),
+			"huaweicloud_fgs_application_templates": fgs.DataSourceApplicationTemplates(),
 			"huaweicloud_fgs_dependencies":          fgs.DataSourceFunctionGraphDependencies(),
 			"huaweicloud_fgs_dependency_versions":   fgs.DataSourceDependencieVersions(),
 			"huaweicloud_fgs_function_events":       fgs.DataSourceFunctionEvents(),
 			"huaweicloud_fgs_function_triggers":     fgs.DataSourceFunctionTriggers(),
-			"huaweicloud_fgs_functions":             fgs.DataSourceFunctionGraphFunctions(),
+			"huaweicloud_fgs_functions":             fgs.DataSourceFunctions(),
 			"huaweicloud_fgs_quotas":                fgs.DataSourceQuotas(),
 
 			"huaweicloud_ga_accelerators":       ga.DataSourceAccelerators(),
@@ -851,6 +853,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_gaussdb_opengauss_instance_nodes":            gaussdb.DataSourceGaussdbOpengaussInstanceNodes(),
 			"huaweicloud_gaussdb_opengauss_instance_coordinators":     gaussdb.DataSourceGaussdbOpengaussInstanceCoordinators(),
 			"huaweicloud_gaussdb_opengauss_instance_features":         gaussdb.DataSourceGaussdbOpengaussInstanceFeatures(),
+			"huaweicloud_gaussdb_opengauss_instance_snapshot":         gaussdb.DataSourceGaussdbOpengaussInstanceSnapshot(),
 			"huaweicloud_gaussdb_opengauss_databases":                 gaussdb.DataSourceOpenGaussDatabases(),
 			"huaweicloud_gaussdb_opengauss_schemas":                   gaussdb.DataSourceOpenGaussSchemas(),
 			"huaweicloud_gaussdb_opengauss_parameter_templates":       gaussdb.DataSourceGaussdbOpengaussParameterTemplates(),
@@ -873,6 +876,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_gaussdb_opengauss_predefined_tags":           gaussdb.DataSourceOpenGaussPredefinedTags(),
 			"huaweicloud_gaussdb_opengauss_slow_logs":                 gaussdb.DataSourceOpenGaussSlowLogs(),
 			"huaweicloud_gaussdb_opengauss_error_logs":                gaussdb.DataSourceGaussdbOpengaussErrorLogs(),
+			"huaweicloud_gaussdb_opengauss_sql_templates":             gaussdb.DataSourceGaussdbOpengaussSqlTemplates(),
 
 			"huaweicloud_gaussdb_mysql_engine_versions":          taurusdb.DataSourceGaussdbMysqlEngineVersions(),
 			"huaweicloud_gaussdb_mysql_configuration":            taurusdb.DataSourceGaussdbMysqlConfiguration(),
@@ -1384,8 +1388,9 @@ func Provider() *schema.Provider {
 			"huaweicloud_antiddos_basic":                     antiddos.ResourceCloudNativeAntiDdos(),
 			"huaweicloud_antiddos_default_protection_policy": antiddos.ResourceDefaultProtectionPolicy(),
 
-			"huaweicloud_access_analyzer":              accessanalyzer.ResourceAccessAnalyzer(),
-			"huaweicloud_access_analyzer_archive_rule": accessanalyzer.ResourceArchiveRule(),
+			"huaweicloud_access_analyzer":                    accessanalyzer.ResourceAccessAnalyzer(),
+			"huaweicloud_access_analyzer_archive_rule":       accessanalyzer.ResourceArchiveRule(),
+			"huaweicloud_access_analyzer_archive_rule_apply": accessanalyzer.ResourceArchiveRuleApply(),
 
 			"huaweicloud_aom_alarm_rule":                     aom.ResourceAlarmRule(),
 			"huaweicloud_aomv4_alarm_rule":                   aom.ResourceAlarmRuleV4(),
@@ -1869,6 +1874,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_gaussdb_opengauss_parameter_template_reset":   gaussdb.ResourceOpenGaussParameterTemplateReset(),
 			"huaweicloud_gaussdb_opengauss_recycling_policy":           gaussdb.ResourceOpenGaussRecyclingPolicy(),
 			"huaweicloud_gaussdb_opengauss_task_delete":                gaussdb.ResourceOpenGaussTaskDelete(),
+			"huaweicloud_gaussdb_opengauss_sync_sql_throttling_task":   gaussdb.ResourceOpenGaussSyncSqlThrottlingTask(),
 			"huaweicloud_gaussdb_opengauss_quota":                      gaussdb.ResourceOpenGaussQuota(),
 
 			"huaweicloud_ges_graph":    ges.ResourceGesGraph(),

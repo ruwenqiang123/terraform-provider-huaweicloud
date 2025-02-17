@@ -10,33 +10,36 @@ import (
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/acceptance/common"
 )
 
-func TestAccDataSourceGaussdbOpengaussRestoreTimeRanges_basic(t *testing.T) {
-	dataSource := "data.huaweicloud_gaussdb_opengauss_restore_time_ranges.test"
+func TestAccDataSourceGaussdbOpengaussInstanceSnapshot_basic(t *testing.T) {
+	dataSource := "data.huaweicloud_gaussdb_opengauss_instance_snapshot.test"
 	rName := acceptance.RandomAccResourceName()
 	dc := acceptance.InitDataSourceCheck(dataSource)
 
 	resource.ParallelTest(t, resource.TestCase{
 		PreCheck: func() {
 			acceptance.TestAccPreCheck(t)
-			acceptance.TestAccPreCheckEpsID(t)
-			acceptance.TestAccPreCheckHighCostAllow(t)
 		},
 		ProviderFactories: acceptance.TestAccProviderFactories,
 		Steps: []resource.TestStep{
 			{
-				Config: testDataSourceGaussdbOpengaussRestoreTimeRanges_basic(rName),
+				Config: testDataSourceGaussdbOpengaussInstanceSnapshot_basic(rName),
 				Check: resource.ComposeTestCheckFunc(
 					dc.CheckResourceExists(),
-					resource.TestCheckResourceAttrSet(dataSource, "restore_time.#"),
-					resource.TestCheckResourceAttrSet(dataSource, "restore_time.0.start_time"),
-					resource.TestCheckResourceAttrSet(dataSource, "restore_time.0.end_time"),
+					resource.TestCheckResourceAttrSet(dataSource, "cluster_mode"),
+					resource.TestCheckResourceAttrSet(dataSource, "instance_mode"),
+					resource.TestCheckResourceAttrSet(dataSource, "data_volume_size"),
+					resource.TestCheckResourceAttrSet(dataSource, "node_num"),
+					resource.TestCheckResourceAttrSet(dataSource, "coordinator_num"),
+					resource.TestCheckResourceAttrSet(dataSource, "sharding_num"),
+					resource.TestCheckResourceAttrSet(dataSource, "replica_num"),
+					resource.TestCheckResourceAttrSet(dataSource, "engine_version"),
 				),
 			},
 		},
 	})
 }
 
-func testDataSourceGaussdbOpengaussRestoreTimeRanges_base(name string) string {
+func testDataSourceGaussdbOpengaussInstanceSnapshot_base(name string) string {
 	return fmt.Sprintf(`
 %[1]s
 
@@ -44,7 +47,7 @@ data "huaweicloud_availability_zones" "test" {}
 
 data "huaweicloud_gaussdb_opengauss_flavors" "test" {
   version = "8.201"
-  ha_mode = "centralization_standard"
+  ha_mode = "enterprise"
 }
 
 resource "huaweicloud_networking_secgroup_rule" "in_v4_tcp_opengauss" {
@@ -76,6 +79,8 @@ resource "huaweicloud_gaussdb_opengauss_instance" "test" {
   flavor            = data.huaweicloud_gaussdb_opengauss_flavors.test.flavors[0].spec_code
   name              = "%[2]s"
   password          = "Huangwei!120521"
+  sharding_num      = 1
+  coordinator_num   = 2
   replica_num       = 3
   availability_zone = join(",", [data.huaweicloud_availability_zones.test.names[0], 
                       data.huaweicloud_availability_zones.test.names[1], 
@@ -84,10 +89,10 @@ resource "huaweicloud_gaussdb_opengauss_instance" "test" {
   enterprise_project_id = "%[3]s"
 
   ha {
-    mode             = "centralization_standard"
+    mode             = "enterprise"
     replication_mode = "sync"
     consistency      = "eventual"
-    instance_mode    = "basic"
+    instance_mode    = "enterprise"
   }
 
   volume {
@@ -99,20 +104,16 @@ resource "huaweicloud_gaussdb_opengauss_instance" "test" {
 resource "huaweicloud_gaussdb_opengauss_backup" "test" {
   instance_id = huaweicloud_gaussdb_opengauss_instance.test.id
   name        = "%[2]s"
-  description = "test description"
 }
 `, common.TestBaseNetwork(name), name, acceptance.HW_ENTERPRISE_PROJECT_ID_TEST)
 }
 
-func testDataSourceGaussdbOpengaussRestoreTimeRanges_basic(name string) string {
+func testDataSourceGaussdbOpengaussInstanceSnapshot_basic(name string) string {
 	return fmt.Sprintf(`
-%[1]s
+%s
 
-data "huaweicloud_gaussdb_opengauss_restore_time_ranges" "test" {
-  depends_on = [huaweicloud_gaussdb_opengauss_backup.test]
-
-  instance_id = huaweicloud_gaussdb_opengauss_instance.test.id
-  date        = split("T", huaweicloud_gaussdb_opengauss_backup.test.end_time)[0]
+data "huaweicloud_gaussdb_opengauss_instance_snapshot" "test" {
+  backup_id = huaweicloud_gaussdb_opengauss_backup.test.id
 }
-`, testDataSourceGaussdbOpengaussRestoreTimeRanges_base(name))
+`, testDataSourceGaussdbOpengaussInstanceSnapshot_base(name))
 }
