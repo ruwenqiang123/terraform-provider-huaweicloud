@@ -364,16 +364,16 @@ func buildLogstashCssTags(tagmap map[string]interface{}) *[]model.CreateClusterT
 func resourceLogstashClusterRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	conf := meta.(*config.Config)
 	region := conf.GetRegion(d)
-	cssV1Client, err := conf.HcCssV1Client(region)
+	v1Client, err := conf.CssV1Client(region)
 	if err != nil {
 		return diag.Errorf("error creating CSS V1 client: %s", err)
 	}
 
-	clusterDetail, err := cssV1Client.ShowClusterDetail(&model.ShowClusterDetailRequest{ClusterId: d.Id()})
+	clusterDetail, err := getClusterDetails(v1Client, d.Id())
 	if err != nil {
 		// "CSS.0015": The cluster does not exist. Status code is 403.
-		err = ConvertExpectedHwSdkErrInto404Err(err, 403, "CSS.0015", "")
-		return common.CheckDeletedDiag(d, err, "error retrieving CSS logstash cluster")
+		return common.CheckDeletedDiag(d,
+			common.ConvertExpected403ErrInto404Err(err, "errCode", "CSS.0015"), "error getting CSS cluster")
 	}
 
 	getRoutesRespBody, err := getClusterRoute(conf, d)
@@ -383,35 +383,36 @@ func resourceLogstashClusterRead(_ context.Context, d *schema.ResourceData, meta
 
 	mErr := multierror.Append(
 		d.Set("region", region),
-		d.Set("name", clusterDetail.Name),
-		d.Set("engine_type", clusterDetail.Datastore.Type),
-		d.Set("engine_version", clusterDetail.Datastore.Version),
-		d.Set("enterprise_project_id", clusterDetail.EnterpriseProjectId),
-		d.Set("vpc_id", clusterDetail.VpcId),
-		d.Set("subnet_id", clusterDetail.SubnetId),
-		d.Set("security_group_id", clusterDetail.SecurityGroupId),
+		d.Set("name", utils.PathSearch("name", clusterDetail, nil)),
+		d.Set("engine_type", utils.PathSearch("datastore.type", clusterDetail, nil)),
+		d.Set("engine_version", utils.PathSearch("datastore.version", clusterDetail, nil)),
+		d.Set("enterprise_project_id", utils.PathSearch("enterpriseProjectId", clusterDetail, nil)),
+		d.Set("vpc_id", utils.PathSearch("vpcId", clusterDetail, nil)),
+		d.Set("subnet_id", utils.PathSearch("subnetId", clusterDetail, nil)),
+		d.Set("security_group_id", utils.PathSearch("securityGroupId", clusterDetail, nil)),
 		d.Set("nodes", flattenClusterNodes(utils.PathSearch("instances", clusterDetail, make([]interface{}, 0)).([]interface{}))),
-		setLogstashNodeConfigsAndAz(d, clusterDetail),
-		d.Set("tags", flattenTags(clusterDetail.Tags)),
-		d.Set("created_at", clusterDetail.Created),
-		d.Set("endpoint", clusterDetail.Endpoint),
-		d.Set("status", clusterDetail.Status),
+		setLogstashNodeConfigsAndAz(clusterDetail, d),
+		d.Set("tags", utils.FlattenTagsToMap(utils.PathSearch("tags", clusterDetail, nil))),
+		d.Set("created_at", utils.PathSearch("created", clusterDetail, nil)),
+		d.Set("endpoint", utils.PathSearch("endpoint", clusterDetail, nil)),
+		d.Set("status", utils.PathSearch("status", clusterDetail, nil)),
 		d.Set("routes", flattenGetRoute(getRoutesRespBody)),
-		d.Set("updated_at", clusterDetail.Updated),
-		d.Set("is_period", clusterDetail.Period),
+		d.Set("updated_at", utils.PathSearch("updated", clusterDetail, nil)),
+		d.Set("is_period", utils.PathSearch("period", clusterDetail, nil)),
 	)
 
 	return diag.FromErr(mErr.ErrorOrNil())
 }
 
-func setLogstashNodeConfigsAndAz(d *schema.ResourceData, detail *model.ShowClusterDetailResponse) error {
-	if detail.Instances == nil || len(*detail.Instances) == 0 {
+func setLogstashNodeConfigsAndAz(clusterDetail interface{}, d *schema.ResourceData) error {
+	instances := utils.PathSearch("instances", clusterDetail, make([]interface{}, 0)).([]interface{})
+	if len(instances) == 0 {
 		return nil
 	}
 
 	var azArray []string
-	for _, v := range *detail.Instances {
-		azArray = append(azArray, utils.StringValue(v.AzCode))
+	for _, v := range instances {
+		azArray = append(azArray, utils.PathSearch("azCode", v, "").(string))
 	}
 	azArray = utils.RemoveDuplicateElem(azArray)
 	az := strings.Join(azArray, ",")
@@ -419,11 +420,11 @@ func setLogstashNodeConfigsAndAz(d *schema.ResourceData, detail *model.ShowClust
 	mErr := multierror.Append(nil,
 		d.Set("availability_zone", az),
 		d.Set("node_config", []interface{}{map[string]interface{}{
-			"flavor":          (*detail.Instances)[0].SpecCode,
-			"instance_number": len(*detail.Instances),
+			"flavor":          utils.PathSearch("[0].specCode", instances, nil),
+			"instance_number": len(instances),
 			"volume": []interface{}{map[string]interface{}{
-				"size":        (*detail.Instances)[0].Volume.Size,
-				"volume_type": (*detail.Instances)[0].Volume.Type,
+				"size":        int(utils.PathSearch("[0].volume.size", instances, float64(0)).(float64)),
+				"volume_type": utils.PathSearch("[0].volume.type", instances, nil),
 			}},
 		}}),
 	)
@@ -467,7 +468,7 @@ func resourceLogstashClusterUpdate(ctx context.Context, d *schema.ResourceData, 
 
 	// update security group ID
 	if d.HasChange("security_group_id") {
-		err = updateSecurityGroup(ctx, d, cssV1Client, client)
+		err = updateSecurityGroup(ctx, d, client)
 		if err != nil {
 			return diag.FromErr(err)
 		}
@@ -490,7 +491,7 @@ func resourceLogstashClusterUpdate(ctx context.Context, d *schema.ResourceData, 
 			return diag.Errorf("error creating BSS V2 client: %s", err)
 		}
 
-		err = updateChangingModeOrAutoRenew(ctx, d, cssV1Client, bssClient)
+		err = updateChangingModeOrAutoRenew(ctx, d, client, bssClient)
 		if err != nil {
 			return diag.FromErr(err)
 		}
@@ -607,19 +608,31 @@ func buildLogstashClusterV1ShrinkClusterParameters(d *schema.ResourceData, nodes
 
 func resourceLogstashClusterDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	conf := meta.(*config.Config)
-	cssV1Client, err := conf.HcCssV1Client(conf.GetRegion(d))
+	region := conf.GetRegion(d)
+	clusterId := d.Id()
+	client, err := conf.CssV1Client(region)
 	if err != nil {
 		return diag.Errorf("error creating CSS V1 client: %s", err)
 	}
 
-	_, err = cssV1Client.DeleteCluster(&model.DeleteClusterRequest{ClusterId: d.Id()})
+	deleteClusterHttpUrl := "v1.0/{project_id}/clusters/{cluster_id}"
+	deleteClusterPath := client.Endpoint + deleteClusterHttpUrl
+	deleteClusterPath = strings.ReplaceAll(deleteClusterPath, "{project_id}", client.ProjectID)
+	deleteClusterPath = strings.ReplaceAll(deleteClusterPath, "{cluster_id}", clusterId)
+
+	deleteClusterOpt := golangsdk.RequestOpts{
+		KeepResponseBody: true,
+		MoreHeaders:      map[string]string{"Content-Type": "application/json"},
+	}
+
+	_, err = client.Request("DELETE", deleteClusterPath, &deleteClusterOpt)
 	if err != nil {
 		// "CSS.0015": The cluster does not exist. Status code is 403.
-		err = ConvertExpectedHwSdkErrInto404Err(err, 403, "CSS.0015", "")
+		err = common.ConvertExpected403ErrInto404Err(err, "errCode", "CSS.0015")
 		return common.CheckDeletedDiag(d, err, fmt.Sprintf("error deleting CSS logstash cluster (%s)", d.Id()))
 	}
 
-	err = checkClusterDeleteResult(ctx, cssV1Client, d.Id(), d.Timeout(schema.TimeoutDelete))
+	err = checkClusterDeleteResult(ctx, client, d.Id(), d.Timeout(schema.TimeoutDelete))
 	if err != nil {
 		return diag.Errorf("failed to check the result of deletion %s", err)
 	}
@@ -707,8 +720,7 @@ func flattenGetRoute(resp interface{}) []interface{} {
 	return rst
 }
 
-func updateChangingModeOrAutoRenew(ctx context.Context, d *schema.ResourceData,
-	cssV1Client *cssv1.CssClient, bssClient *golangsdk.ServiceClient) error {
+func updateChangingModeOrAutoRenew(ctx context.Context, d *schema.ResourceData, client, bssClient *golangsdk.ServiceClient) error {
 	clusterID := d.Id()
 	autoRenew := d.Get("auto_renew").(string)
 	if d.HasChange("charging_mode") {
@@ -717,29 +729,39 @@ func updateChangingModeOrAutoRenew(ctx context.Context, d *schema.ResourceData,
 				"only support changing the CSS cluster form post-paid to pre-paid")
 		}
 
-		changeOpts := &model.UpdateOndemandClusterToPeriodRequest{
-			ClusterId: clusterID,
-			Body: &model.PeriodReq{
-				PeriodNum: int32(d.Get("period").(int)),
-				IsAutoPay: utils.Int32(1),
-			},
+		changeOpts := map[string]interface{}{
+			"periodNum": d.Get("period"),
+			"isAutoPay": 1,
 		}
 
 		if d.Get("period_unit").(string) == "month" {
-			changeOpts.Body.PeriodType = 2
+			changeOpts["periodType"] = 2
 		} else {
-			changeOpts.Body.PeriodType = 3
+			changeOpts["periodType"] = 3
 		}
 
 		if autoRenew == "true" {
-			changeOpts.Body.IsAutoRenew = utils.Int32(1)
+			changeOpts["isAutoRenew"] = 1
 		}
-		r, err := cssV1Client.UpdateOndemandClusterToPeriod(changeOpts)
+
+		updateClusterToPeriodHttpUrl := "v1.0/{project_id}/clusters/{cluster_id}/publickibana/bandwidth"
+		updateClusterToPeriodPath := client.Endpoint + updateClusterToPeriodHttpUrl
+		updateClusterToPeriodPath = strings.ReplaceAll(updateClusterToPeriodPath, "{project_id}", client.ProjectID)
+		updateClusterToPeriodPath = strings.ReplaceAll(updateClusterToPeriodPath, "{cluster_id}", clusterID)
+
+		updateClusterToPeriodOpt := golangsdk.RequestOpts{
+			KeepResponseBody: true,
+			MoreHeaders:      map[string]string{"Content-Type": "application/json"},
+			JSONBody:         changeOpts,
+		}
+
+		resp, err := client.Request("POST", updateClusterToPeriodPath, &updateClusterToPeriodOpt)
 		if err != nil {
 			return fmt.Errorf("error updating the CSS cluster (%s) form post-paid to pre-paid: %s", clusterID, err)
 		}
 
-		_, err = common.WaitOrderResourceComplete(ctx, bssClient, *r.OrderId, d.Timeout(schema.TimeoutCreate))
+		orderId := utils.PathSearch("OrderId", resp, "").(string)
+		_, err = common.WaitOrderResourceComplete(ctx, bssClient, orderId, d.Timeout(schema.TimeoutUpdate))
 		if err != nil {
 			return err
 		}

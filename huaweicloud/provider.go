@@ -636,6 +636,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_cse_microservice_engine_configurations": cse.DataSourceMicroserviceEngineConfigurations(),
 			"huaweicloud_cse_microservice_engine_flavors":        cse.DataSourceMicroserviceEngineFlavors(),
 			"huaweicloud_cse_microservice_engines":               cse.DataSourceMicroserviceEngines(),
+			"huaweicloud_cse_microservice_instances":             cse.DataSourceMicroserviceInstances(),
 			"huaweicloud_cse_nacos_namespaces":                   cse.DataSourceNacosNamespaces(),
 
 			"huaweicloud_csms_events":                   dew.DataSourceDewCsmsEvents(),
@@ -848,6 +849,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_gaussdb_opengauss_storage_types":             gaussdb.DataSourceGaussdbOpengaussStorageTypes(),
 			"huaweicloud_gaussdb_opengauss_datastores":                gaussdb.DataSourceGaussdbOpengaussDatastores(),
 			"huaweicloud_gaussdb_opengauss_flavors":                   gaussdb.DataSourceGaussdbOpengaussFlavors(),
+			"huaweicloud_gaussdb_opengauss_available_flavors":         gaussdb.DataSourceGaussdbOpengaussAvailableFlavors(),
 			"huaweicloud_gaussdb_opengauss_instance":                  gaussdb.DataSourceOpenGaussInstance(),
 			"huaweicloud_gaussdb_opengauss_instances":                 gaussdb.DataSourceOpenGaussInstances(),
 			"huaweicloud_gaussdb_opengauss_instance_nodes":            gaussdb.DataSourceGaussdbOpengaussInstanceNodes(),
@@ -877,6 +879,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_gaussdb_opengauss_slow_logs":                 gaussdb.DataSourceOpenGaussSlowLogs(),
 			"huaweicloud_gaussdb_opengauss_error_logs":                gaussdb.DataSourceGaussdbOpengaussErrorLogs(),
 			"huaweicloud_gaussdb_opengauss_sql_templates":             gaussdb.DataSourceGaussdbOpengaussSqlTemplates(),
+			"huaweicloud_gaussdb_opengauss_sql_throttling_tasks":      gaussdb.DataSourceGaussdbOpengaussSqlThrottlingTasks(),
 
 			"huaweicloud_gaussdb_mysql_engine_versions":          taurusdb.DataSourceGaussdbMysqlEngineVersions(),
 			"huaweicloud_gaussdb_mysql_configuration":            taurusdb.DataSourceGaussdbMysqlConfiguration(),
@@ -1463,11 +1466,11 @@ func Provider() *schema.Provider {
 			"huaweicloud_bms_instance": bms.ResourceBmsInstance(),
 			"huaweicloud_bcs_instance": bcs.ResourceInstance(),
 
+			"huaweicloud_cae_component_action":         cae.ResourceComponentAction(),
 			"huaweicloud_cae_application":              cae.ResourceApplication(),
 			"huaweicloud_cae_certificate":              cae.ResourceCertificate(),
 			"huaweicloud_cae_component":                cae.ResourceComponent(),
 			"huaweicloud_cae_component_configurations": cae.ResourceComponentConfigurations(),
-			"huaweicloud_cae_component_deployment":     cae.ResourceComponentDeployment(),
 			"huaweicloud_cae_domain":                   cae.ResourceDomain(),
 			"huaweicloud_cae_environment":              cae.ResourceEnvironment(),
 			"huaweicloud_cae_notification_rule":        cae.ResourceNotificationRule(),
@@ -1876,6 +1879,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_gaussdb_opengauss_task_delete":                gaussdb.ResourceOpenGaussTaskDelete(),
 			"huaweicloud_gaussdb_opengauss_sync_sql_throttling_task":   gaussdb.ResourceOpenGaussSyncSqlThrottlingTask(),
 			"huaweicloud_gaussdb_opengauss_quota":                      gaussdb.ResourceOpenGaussQuota(),
+			"huaweicloud_gaussdb_opengauss_sql_throttling_task":        gaussdb.ResourceOpenGaussSqlThrottlingTask(),
 
 			"huaweicloud_ges_graph":    ges.ResourceGesGraph(),
 			"huaweicloud_ges_metadata": ges.ResourceGesMetadata(),
@@ -2468,6 +2472,7 @@ func Provider() *schema.Provider {
 			// Deprecated
 			"huaweicloud_apig_vpc_channel":               deprecated.ResourceApigVpcChannelV2(),
 			"huaweicloud_blockstorage_volume_v2":         deprecated.ResourceBlockStorageVolumeV2(),
+			"huaweicloud_cae_component_deployment":       cae.ResourceComponentAction(),
 			"huaweicloud_cfw_protection_rule":            deprecated.ResourceProtectionRule(),
 			"huaweicloud_csbs_backup":                    deprecated.ResourceCSBSBackupV1(),
 			"huaweicloud_csbs_backup_policy":             deprecated.ResourceCSBSBackupPolicyV1(),
