@@ -107,6 +107,8 @@ func TestAccDNSZone_private(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "router.#", "2"),
 					resource.TestCheckResourceAttr(resourceName, "tags.zone_type", "private"),
 					resource.TestCheckResourceAttr(resourceName, "tags.owner", "terraform"),
+					resource.TestCheckResourceAttr(resourceName, "status", "DISABLE"),
+					resource.TestCheckResourceAttr(resourceName, "proxy_pattern", "RECURSIVE"),
 				),
 			},
 			{
@@ -114,9 +116,16 @@ func TestAccDNSZone_private(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					rc.CheckResourceExists(),
 					resource.TestCheckResourceAttr(resourceName, "name", nameWithDotSuffix),
-					resource.TestCheckOutput("valid_route_id", "true"),
 					resource.TestCheckResourceAttr(resourceName, "router.#", "2"),
+					resource.TestCheckResourceAttrSet(resourceName, "router.0.router_id"),
+					resource.TestCheckResourceAttrSet(resourceName, "router.0.router_region"),
+					resource.TestCheckResourceAttr(resourceName, "status", "ENABLE"),
 				),
+			},
+			{
+				ResourceName:      resourceName,
+				ImportState:       true,
+				ImportStateVerify: true,
 			},
 		},
 	})
@@ -143,6 +152,11 @@ func TestAccDNSZone_readTTL(t *testing.T) {
 					rc.CheckResourceExists(),
 					resource.TestMatchResourceAttr(resourceName, "ttl", regexp.MustCompile("^[0-9]+$")),
 				),
+			},
+			{
+				ResourceName:      resourceName,
+				ImportState:       true,
+				ImportStateVerify: true,
 			},
 		},
 	})
@@ -171,7 +185,13 @@ func TestAccDNSZone_withEpsId(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "name", nameWithDotSuffix),
 					resource.TestCheckResourceAttr(resourceName, "zone_type", "private"),
 					resource.TestCheckResourceAttr(resourceName, "enterprise_project_id", acceptance.HW_ENTERPRISE_PROJECT_ID_TEST),
+					resource.TestCheckResourceAttr(resourceName, "proxy_pattern", "AUTHORITY"),
 				),
+			},
+			{
+				ResourceName:      resourceName,
+				ImportState:       true,
+				ImportStateVerify: true,
 			},
 		},
 	})
@@ -237,6 +257,7 @@ resource "huaweicloud_dns_zone" "test" {
   email       = "email@example.com"
   description = "a private zone"
   zone_type   = "private"
+  status      = "DISABLE"
 
   dynamic "router" {
     for_each = slice(huaweicloud_vpc.test[*].id, 0, 2)
@@ -245,6 +266,8 @@ resource "huaweicloud_dns_zone" "test" {
       router_id = router.value
     }
   }
+
+  proxy_pattern = "RECURSIVE"
 
   tags = {
     zone_type = "private"
@@ -263,6 +286,7 @@ resource "huaweicloud_dns_zone" "test" {
   email       = "email@example.com"
   description = "a private zone"
   zone_type   = "private"
+  status      = "ENABLE"
 
   dynamic "router" {
     for_each = slice(huaweicloud_vpc.test[*].id, 1, 3)
@@ -272,18 +296,12 @@ resource "huaweicloud_dns_zone" "test" {
     }
   }
 
+  proxy_pattern = "RECURSIVE"
+
   tags = {
     zone_type = "private"
     owner     = "terraform"
   }
-}
-
-locals {
-  router_ids = huaweicloud_dns_zone.test.router[*].router_id
-}
-
-output "valid_route_id" {
-  value = contains(local.router_ids, huaweicloud_vpc.test[1].id) && contains(local.router_ids, huaweicloud_vpc.test[2].id)
 }
 `, baseConfig, name)
 }

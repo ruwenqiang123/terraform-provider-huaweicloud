@@ -311,6 +311,8 @@ var (
 	HW_CCE_CLUSTER_NAME = os.Getenv("HW_CCE_CLUSTER_NAME")
 	// The partition az of the CCE
 	HW_CCE_PARTITION_AZ = os.Getenv("HW_CCE_PARTITION_AZ")
+	// The partition group of the CCE
+	HW_CCE_PARTITION_GROUP = os.Getenv("HW_CCE_PARTITION_GROUP")
 	// The namespace of the workload is located
 	HW_WORKLOAD_NAMESPACE = os.Getenv("HW_WORKLOAD_NAMESPACE")
 	// The workload type deployed in CCE/CCI
@@ -392,6 +394,7 @@ var (
 
 	HW_CODEARTS_ENABLE_FLAG       = os.Getenv("HW_CODEARTS_ENABLE_FLAG")
 	HW_CODEARTS_PUBLIC_IP_ADDRESS = os.Getenv("HW_CODEARTS_PUBLIC_IP_ADDRESS")
+	HW_CODEARTS_SSH_CREDENTIAL_ID = os.Getenv("HW_CODEARTS_SSH_CREDENTIAL_ID")
 
 	HW_EG_TEST_ON     = os.Getenv("HW_EG_TEST_ON") // Whether to run the EG related tests.
 	HW_EG_CHANNEL_ID  = os.Getenv("HW_EG_CHANNEL_ID")
@@ -1883,7 +1886,7 @@ func TestAccPreCheckSecMaster(t *testing.T) {
 
 // lintignore:AT003
 func TestAccPreCheckCcePartitionAz(t *testing.T) {
-	if HW_CCE_PARTITION_AZ == "" {
+	if HW_CCE_PARTITION_AZ == "" || HW_CCE_PARTITION_GROUP == "" {
 		t.Skip("Skip the interface acceptance test because of the cce partition az is missing.")
 	}
 }
@@ -1952,6 +1955,13 @@ func TestAccPreCheckCodeArtsEnableFlag(t *testing.T) {
 func TestAccPreCheckCodeArtsPublicIPAddress(t *testing.T) {
 	if HW_CODEARTS_PUBLIC_IP_ADDRESS == "" {
 		t.Skip("HW_CODEARTS_PUBLIC_IP_ADDRESS must be set for this acceptance test")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckCodeArtsSshCredentialID(t *testing.T) {
+	if HW_CODEARTS_SSH_CREDENTIAL_ID == "" {
+		t.Skip("HW_CODEARTS_SSH_CREDENTIAL_ID must be set for this acceptance test")
 	}
 }
 

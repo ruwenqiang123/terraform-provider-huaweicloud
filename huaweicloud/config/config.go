@@ -162,6 +162,11 @@ func (c *Config) LoadAndValidate() error {
 		}
 	}
 
+	if c.SigningAlgorithm != "" {
+		c.HwClient.AKSKAuthOptions.SigningAlgorithm = c.SigningAlgorithm
+		c.DomainClient.AKSKAuthOptions.SigningAlgorithm = c.SigningAlgorithm
+	}
+
 	return nil
 }
 
@@ -445,8 +450,11 @@ func (c *Config) newServiceClientByEndpoint(client *golangsdk.ProviderClient, sr
 		return nil, fmt.Errorf("service type %s is invalid or not supportted", srv)
 	}
 
+	// Copy the client to prevent interference with the original data.
+	clone := new(golangsdk.ProviderClient)
+	*clone = *client
 	sc := &golangsdk.ServiceClient{
-		ProviderClient: client,
+		ProviderClient: clone,
 		Endpoint:       endpoint,
 	}
 
@@ -1113,4 +1121,8 @@ func (c *Config) KooGalleryV1Client(region string) (*golangsdk.ServiceClient, er
 
 func (c *Config) VpnV5Client(region string) (*golangsdk.ServiceClient, error) {
 	return c.NewServiceClient("vpn", region)
+}
+
+func (c *Config) StsClient(region string) (*golangsdk.ServiceClient, error) {
+	return c.NewServiceClient("sts", region)
 }
