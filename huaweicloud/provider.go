@@ -444,6 +444,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_antiddos_weekly_protection_statistics": antiddos.DataSourceWeeklyProtectionStatistics(),
 			"huaweicloud_antiddos_eip_defense_statuses":         antiddos.DataSourceEipDefenseStatuses(),
 
+			"huaweicloud_aom_access_codes":                    aom.DataSourceAomAccessCodes(),
 			"huaweicloud_aom_alarm_action_rules":              aom.DataSourceAomAlarmActionRules(),
 			"huaweicloud_aom_alarm_group_rules":               aom.DataSourceAlarmGroupRules(),
 			"huaweicloud_aom_prom_instances":                  aom.DataSourceAomPromInstances(),
@@ -622,9 +623,10 @@ func Provider() *schema.Provider {
 			"huaweicloud_codearts_deploy_application_deployment_records": codeartsdeploy.DataSourceCodeartsDeployApplicationDeploymentRecords(),
 			"huaweicloud_codearts_deploy_environments":                   codeartsdeploy.DataSourceCodeartsDeployEnvironments(),
 
-			"huaweicloud_codearts_inspector_websites":    codeartsinspector.DataSourceCodeartsInspectorWebsites(),
-			"huaweicloud_codearts_inspector_host_groups": codeartsinspector.DataSourceCodeartsInspectorHostGroups(),
-			"huaweicloud_codearts_inspector_hosts":       codeartsinspector.DataSourceCodeartsInspectorHosts(),
+			"huaweicloud_codearts_inspector_websites":           codeartsinspector.DataSourceCodeartsInspectorWebsites(),
+			"huaweicloud_codearts_inspector_website_scan_tasks": codeartsinspector.DataSourceCodeartsInspectorWebsiteScanTasks(),
+			"huaweicloud_codearts_inspector_host_groups":        codeartsinspector.DataSourceCodeartsInspectorHostGroups(),
+			"huaweicloud_codearts_inspector_hosts":              codeartsinspector.DataSourceCodeartsInspectorHosts(),
 
 			"huaweicloud_cts_notifications": cts.DataSourceNotifications(),
 			"huaweicloud_cts_traces":        cts.DataSourceCtsTraces(),
@@ -1631,6 +1633,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_css_cluster_restart":             css.ResourceCssClusterRestart(),
 			"huaweicloud_css_cluster_node_replace":        css.ResourceCssClusterNodeReplace(),
 			"huaweicloud_css_snapshot":                    css.ResourceCssSnapshot(),
+			"huaweicloud_css_snapshot_restore":            css.ResourceSnapshotRestore(),
 			"huaweicloud_css_thesaurus":                   css.ResourceCssthesaurus(),
 			"huaweicloud_css_configuration":               css.ResourceCssConfiguration(),
 			"huaweicloud_css_scan_task":                   css.ResourceScanTask(),
