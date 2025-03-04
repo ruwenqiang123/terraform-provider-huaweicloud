@@ -10,6 +10,12 @@ description: |-
 
 Manages the function resource within HuaweiCloud.
 
+~> Since version `1.73.1`, the requests of the function resource will send these parameters:
+   <br>`enable_dynamic_memory`
+   <br>`is_stateful_function`
+   <br>`network_controller`
+   <br>For the regions that do not support this parameter, please use the lower version to deploy this resource.
+
 ## Example Usage
 
 ### With base64 func code
@@ -87,7 +93,7 @@ resource "huaweicloud_fgs_function" "by_swr_image" {
 }
 ```
 
-### Create function with an alias for latest version
+### Create function with a custom version and an alias for the latest version
 
 ```hcl
 variable "function_name" {}
@@ -107,7 +113,59 @@ resource "huaweicloud_fgs_function" "with_alias" {
     name = "latest"
 
     aliases {
-      name = "demo"
+      name        = "demo"
+      description = "This is a description of the alias demo under the version latest."
+    }
+  }
+  # The value of the parameter func_code must be modified before each custom version add.
+  versions {
+    name        = "v1.0"
+    description = "This is a description of the version v1.0."
+
+    aliases {
+      name        = "v1_0-alias"
+      description = "This is a description of the alias v1_0-alias under the version v1.0."
+    }
+  }
+  versions {
+    name        = "v2.0"
+    description = "This is a description of the version v2.0."
+
+    aliases {
+      name        = "v2_0-alias"
+      description = "This is a description of the alias v2_0-alias under the version v2.0."
+
+      additional_version_weights = jsonencode({
+        "v1.0": 15
+      })
+    }
+  }
+  versions {
+    name        = "v3.0"
+    description = "This is a description of the version v2.0."
+
+    aliases {
+      name        = "v3_0-alias"
+      description = "This is a description of the alias v2_0-alias under the version v3.0."
+      additional_version_strategy = jsonencode({
+        "v2.0": {
+          "combine_type": "or",
+          "rules": [
+            {
+              "rule_type": "Header",
+              "param": "version",
+              "op": "=",
+              "value": "v2_value"
+            },
+            {
+              "rule_type": "Header",
+              "param": "Owner",
+              "op": "in",
+              "value": "terraform,administrator"
+            }
+          ]
+        }
+      })
     }
   }
 }
@@ -179,6 +237,45 @@ resource "huaweicloud_fgs_function" "test" {
   log_stream_id   = var.log_stream_id
   log_group_name  = var.log_group_name
   log_stream_name = var.log_stream_name
+}
+```
+
+### With advanced configurations
+
+```hcl
+variable "function_name" {}
+variable "function_codes" {}
+variable "agency_name" {}
+variable "trigger_access_vpc_ids" {
+  type = list(string)
+}
+
+resource "huaweicloud_fgs_function" "test" {
+  name                  = var.function_name
+  app                   = "default"
+  agency                = var.agency_name
+  description           = "fuction test"
+  handler               = "test.handler"
+  memory_size           = 128
+  timeout               = 3
+  runtime               = "Python2.7"
+  code_type             = "inline"
+  func_code             = base64encode(var.function_codes)
+  functiongraph_version = "v2"
+  enable_dynamic_memory = true
+  is_stateful_function  = true
+
+  network_controller {
+    disable_public_network = true
+
+    dynamic "trigger_access_vpcs" {
+      for_each = var.trigger_access_vpc_ids
+
+      content {
+        vpc_id = trigger_access_vpcs.value
+      }
+    }
+  }
 }
 ```
 
@@ -326,6 +423,9 @@ The following arguments are supported:
 * `versions` - (Optional, List) Specifies the versions management of the function.  
   The [versions](#function_versions) structure is documented below.
 
+  -> The value of the parameter `func_code`, `code_url` or `func_filename` must be modified before each custom version
+     add.
+
 * `tags` - (Optional, Map) Specifies the key/value pairs to associate with the function.
 
 * `log_group_id` - (Optional, String) Specifies the LTS group ID for collecting logs.
@@ -356,6 +456,15 @@ The following arguments are supported:
   the [documentation](https://support.huaweicloud.com/intl/en-us/usermanual-ticket/topic_0065264094.html).
 
   -> If the `gpu_memory` and `gpu_type` configured, the `runtime` must be set to **Custom** or **Custom Image**.
+
+* `enable_dynamic_memory` - (Optional, Bool) Specifies whether the dynamic memory configuration is enabled.  
+  Defaults to **false**.
+
+* `is_stateful_function` - (Optional, Bool) Specifies whether the function is a stateful function.  
+  Defaults to **false**.
+
+* `network_controller` - (Optional, List) Specifies the network configuration of the function.  
+  The [network_controller](#function_network_controller) structure is documented below.
 
 <a name="function_func_mounts"></a>
 The `func_mounts` block supports:
@@ -391,19 +500,37 @@ The `custom_image` block supports:
 <a name="function_versions"></a>
 The `versions` block supports:
 
-* `name` - (Required, String) Specifies the version name.
+* `name` - (Required, String) Specifies the version name.  
+  The valid length is limited from `1` to `42` characters, only letters, digits, underscores (_), hyphens (-) and
+  periods (.) are allowed. The name must start and end with a letter or digit.
+
+* `description` - (Optional, String) Specifies the description of the version.
+
+  -> The **latest** version does not support configuration through this parameter, the root parameter `description` is
+  the correct configuration parameter.
 
 * `aliases` - (Optional, List) Specifies the aliases management for specified version.  
-  The [aliases](#function_aliases) structure is documented below.
+  The [aliases](#function_versions_aliases) structure is documented below.
 
-  -> A version can configure at most **one** alias.
+  -> 1. A version can configure at most **one** alias.
+     <br>2. A function can have a maximum of `10` aliases.
 
-<a name="function_aliases"></a>
+<a name="function_versions_aliases"></a>
 The `aliases` block supports:
 
-* `name` - (Required, String) Specifies the name of the version alias.
+* `name` - (Required, String) Specifies the name of the version alias.  
+  The valid length is limited from `1` to `63` characters, only letters, digits, underscores (_) and hyphens (-) are
+  allowed. The name must start with a letter and end with a letter or digit.
 
 * `description` - (Optional, String) Specifies the description of the version alias.
+
+* `additional_version_weights` - (Optional, String) Specifies the percentage grayscale configuration of the version
+  alias, in JSON format.
+
+* `additional_version_strategy` - (Optional, String) Specifies the rule grayscale configuration of the version
+  alias, in JSON format.
+
+~> Only one of `additional_version_weights` and `additional_version_strategy` can be configured.
 
 <a name="function_reserved_instances"></a>
 The `reserved_instances` block supports:
@@ -481,6 +608,19 @@ The `metric_configs` block supports:
 
   -> The number of reserved instances must be greater than or equal to the number of reserved instances in the basic configuration.
 
+<a name="function_network_controller"></a>
+The `network_controller` block supports:
+
+* `trigger_access_vpcs` - (Required, List) Specifies the configuration of the VPCs that can trigger the function.  
+  The [trigger_access_vpcs](#function_network_controller_trigger_access_vpcs) structure is documented below.
+
+* `disable_public_network` - (Optional, Bool) Specifies whether to disable the public network access.
+
+<a name="function_network_controller_trigger_access_vpcs"></a>
+The `trigger_access_vpcs` block supports:
+
+* `vpc_id` - (Required, String) Specifies the ID of the VPC that can trigger the function.
+
 ## Attribute Reference
 
 In addition to all arguments above, the following attributes are exported:
@@ -515,7 +655,7 @@ $ terraform import huaweicloud_fgs_function.test <id>
 ```
 
 Note that the imported state may not be identical to your resource definition, due to the attribute missing from the
-API response. The missing attributes are: `app`, `func_code`, `encrypted_user_data`, `tags`.
+API response. The missing attributes are: `func_code`, `encrypted_user_data`, `tags`.
 It is generally recommended running `terraform plan` after importing a function.
 You can then decide if changes should be applied to the function, or the resource definition should be updated to align
 with the function. Also you can ignore changes as below.
