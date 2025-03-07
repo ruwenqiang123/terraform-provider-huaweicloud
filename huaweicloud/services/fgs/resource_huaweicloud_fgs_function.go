@@ -197,7 +197,6 @@ func ResourceFgsFunction() *schema.Resource {
 			"enterprise_project_id": {
 				Type:        schema.TypeString,
 				Optional:    true,
-				ForceNew:    true,
 				Computed:    true,
 				Description: `The ID of the enterprise project to which the function belongs.`,
 			},
@@ -515,6 +514,7 @@ func ResourceFgsFunction() *schema.Resource {
 			"network_controller": {
 				Type:     schema.TypeList,
 				Optional: true,
+				// The network controller can be closed, so computed behavior cannot be supported.
 				MaxItems: 1,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
@@ -540,6 +540,13 @@ func ResourceFgsFunction() *schema.Resource {
 					},
 				},
 				Description: `The network configuration of the function.`,
+			},
+			"peering_cidr": {
+				Type:     schema.TypeString,
+				Optional: true,
+				// The perring CIDR can be canceled, so computed behavior cannot be supported.
+				Description: `The VPC CIDR blocks used in the function code to detect whether it conflicts with the VPC
+CIDR blocks used by the service.`,
 			},
 
 			// Deprecated parameters.
@@ -836,7 +843,7 @@ func buildFunctionStrategyConfig(concurrencyNum int) map[string]interface{} {
 	}
 }
 
-func buildUpdateFunctionMetadataBodyParams(d *schema.ResourceData) map[string]interface{} {
+func buildUpdateFunctionMetadataBodyParams(cfg *config.Config, d *schema.ResourceData) map[string]interface{} {
 	// Parameter app is recommended to replace parameter package.
 	pkg, ok := d.GetOk("app")
 	if !ok {
@@ -877,10 +884,12 @@ func buildUpdateFunctionMetadataBodyParams(d *schema.ResourceData) map[string]in
 		"enable_dynamic_memory": d.Get("enable_dynamic_memory"),
 		"is_stateful_function":  d.Get("is_stateful_function"),
 		"network_controller":    buildFunctionNetworkController(d.Get("network_controller").([]interface{})),
+		"enterprise_project_id": cfg.GetEnterpriseProjectID(d),
+		"peering_cidr":          d.Get("peering_cidr"),
 	}
 }
 
-func updateFunctionMetadata(client *golangsdk.ServiceClient, d *schema.ResourceData, functionUrn string) error {
+func updateFunctionMetadata(client *golangsdk.ServiceClient, cfg *config.Config, d *schema.ResourceData, functionUrn string) error {
 	httpUrl := "v2/{project_id}/fgs/functions/{function_urn}/config"
 
 	updatePath := client.Endpoint + httpUrl
@@ -891,7 +900,7 @@ func updateFunctionMetadata(client *golangsdk.ServiceClient, d *schema.ResourceD
 		MoreHeaders: map[string]string{
 			"Content-Type": "application/json",
 		},
-		JSONBody: utils.RemoveNil(buildUpdateFunctionMetadataBodyParams(d)),
+		JSONBody: utils.RemoveNil(buildUpdateFunctionMetadataBodyParams(cfg, d)),
 	}
 
 	_, err := client.Request("PUT", updatePath, &updateOpt)
@@ -1195,8 +1204,9 @@ func resourceFunctionCreate(ctx context.Context, d *schema.ResourceData, meta in
 	funcUrnWithoutVersion := parseFunctionUrnWithoutVersion(funcUrn)
 
 	// lintignore:R019
-	if d.HasChanges("vpc_id", "func_mounts", "app_agency", "initializer_handler", "initializer_timeout", "concurrency_num") {
-		err = updateFunctionMetadata(client, d, funcUrnWithoutVersion)
+	if d.HasChanges("vpc_id", "func_mounts", "app_agency", "initializer_handler", "initializer_timeout", "concurrency_num",
+		"peering_cidr") {
+		err = updateFunctionMetadata(client, cfg, d, funcUrnWithoutVersion)
 		if err != nil {
 			return diag.FromErr(err)
 		}
@@ -1620,6 +1630,7 @@ func resourceFunctionRead(_ context.Context, d *schema.ResourceData, meta interf
 		d.Set("enable_dynamic_memory", utils.PathSearch("enable_dynamic_memory", function, nil)),
 		d.Set("is_stateful_function", utils.PathSearch("is_stateful_function", function, nil)),
 		d.Set("network_controller", flattenFunctionNetworkController(utils.PathSearch("network_controller", function, nil))),
+		d.Set("peering_cidr", utils.PathSearch("peering_cidr", function, nil)),
 		// Attributes.
 		d.Set("urn", utils.PathSearch("func_urn", function, nil)),
 		d.Set("version", utils.PathSearch("version", function, nil)),
@@ -1669,8 +1680,8 @@ func resourceFunctionUpdate(ctx context.Context, d *schema.ResourceData, meta in
 		"user_data", "agency", "app_agency", "description", "initializer_handler", "initializer_timeout",
 		"vpc_id", "network_id", "dns_list", "mount_user_id", "mount_user_group_id", "func_mounts", "custom_image",
 		"log_group_id", "log_stream_id", "log_group_name", "log_stream_name", "concurrency_num", "gpu_memory", "gpu_type",
-		"enable_dynamic_memory", "is_stateful_function", "network_controller") {
-		err := updateFunctionMetadata(client, d, funcUrnWithoutVersion)
+		"enable_dynamic_memory", "is_stateful_function", "network_controller", "enterprise_project_id", "peering_cidr") {
+		err := updateFunctionMetadata(client, cfg, d, funcUrnWithoutVersion)
 		if err != nil {
 			return diag.FromErr(err)
 		}

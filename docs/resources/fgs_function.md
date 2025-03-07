@@ -381,9 +381,8 @@ The following arguments are supported:
 * `initializer_timeout` - (Optional, Int) Specifies the maximum duration the function can be initialized, in seconds.  
   The valid value is range from `1` to `300`.
 
-* `enterprise_project_id` - (Optional, String, ForceNew) Specifies the ID of the enterprise project to which the
-  function belongs.  
-  Changing this will create a new resource.
+* `enterprise_project_id` - (Optional, String) Specifies the ID of the enterprise project to which the
+  function belongs.
 
 * `vpc_id` - (Optional, String) Specifies the ID of the VPC to which the function belongs.
 
@@ -465,6 +464,10 @@ The following arguments are supported:
 
 * `network_controller` - (Optional, List) Specifies the network configuration of the function.  
   The [network_controller](#function_network_controller) structure is documented below.
+
+* `peering_cidr` - (Optional, String) Specifies the VPC cidr blocks used in the function code to detect whether it
+  conflicts with the VPC cidr blocks used by the service.  
+  The cidr blocks are separated by semicolons and cannot exceed `5`.
 
 <a name="function_func_mounts"></a>
 The `func_mounts` block supports:
