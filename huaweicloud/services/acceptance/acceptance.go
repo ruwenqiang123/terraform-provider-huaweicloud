@@ -145,6 +145,7 @@ var (
 	HW_CCM_PRIVATE_CA_ID               = os.Getenv("HW_CCM_PRIVATE_CA_ID")
 	HW_CCM_SSL_CERTIFICATE_ID          = os.Getenv("HW_CCM_SSL_CERTIFICATE_ID")
 	HW_CCM_ENABLE_FLAG                 = os.Getenv("HW_CCM_ENABLE_FLAG")
+	HW_CCM_CA_CERTIFICATE_PATH         = os.Getenv("HW_CCM_CA_CERTIFICATE_PATH")
 
 	HW_CPH_OBS_OBJECT_PATH = os.Getenv("HW_CPH_OBS_OBJECT_PATH")
 	HW_CPH_OBS_BUCKET_NAME = os.Getenv("HW_CPH_OBS_BUCKET_NAME")
@@ -292,9 +293,10 @@ var (
 	HW_DSC_INSTANCE_ID    = os.Getenv("HW_DSC_INSTANCE_ID")
 	HW_DSC_ALARM_TOPIC_ID = os.Getenv("HW_DSC_ALARM_TOPIC_ID")
 
-	HW_CES_START_TIME = os.Getenv("HW_CES_START_TIME")
-	HW_CES_END_TIME   = os.Getenv("HW_CES_END_TIME")
-	HW_CES_ALARM_RULE = os.Getenv("HW_CES_ALARM_RULE")
+	HW_CES_ALARM_TEMPLATE_ID = os.Getenv("HW_CES_ALARM_TEMPLATE_ID")
+	HW_CES_START_TIME        = os.Getenv("HW_CES_START_TIME")
+	HW_CES_END_TIME          = os.Getenv("HW_CES_END_TIME")
+	HW_CES_ALARM_RULE        = os.Getenv("HW_CES_ALARM_RULE")
 
 	// The CFW instance ID
 	HW_CFW_INSTANCE_ID               = os.Getenv("HW_CFW_INSTANCE_ID")
@@ -1503,6 +1505,13 @@ func TestAccPreCheckCCMEnableFlag(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckCCMCaCertificate(t *testing.T) {
+	if HW_CCM_CA_CERTIFICATE_PATH == "" {
+		t.Skip("HW_CCM_CA_CERTIFICATE_PATH must be set for acceptance test.")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckKms(t *testing.T) {
 	if HW_KMS_ENVIRONMENT == "" {
 		t.Skip("This environment does not support KMS tests")
@@ -1576,13 +1585,6 @@ func TestAccPreCheckCCConnectionRouteProjectID(t *testing.T) {
 func TestAccPreCheckCCConnectionRouteRegionName(t *testing.T) {
 	if HW_REGION_NAME_1 == "" || HW_REGION_NAME_2 == "" {
 		t.Skip("HW_REGION_NAME_1, HW_REGION_NAME_2 must be set for this acceptance test")
-	}
-}
-
-// lintignore:AT003
-func TestAccPreCheckCtsTimeRange(t *testing.T) {
-	if HW_CTS_START_TIME == "" || HW_CTS_END_TIME == "" {
-		t.Skip("HW_CTS_START_TIME and HW_CTS_END_TIME must be set for CTS acceptance tests")
 	}
 }
 
@@ -1726,6 +1728,13 @@ func TestAccPreCheckDCVirtualInterfaceID(t *testing.T) {
 func TestAccPreCheckCesTimeRange(t *testing.T) {
 	if HW_CES_START_TIME == "" || HW_CES_END_TIME == "" {
 		t.Skip("HW_CES_START_TIME and HW_CES_END_TIME must be set for CES acceptance tests")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckCesAlarmTemplateAssociatedWithAlarmRules(t *testing.T) {
+	if HW_CES_ALARM_TEMPLATE_ID == "" {
+		t.Skip("HW_CES_ALARM_TEMPLATE_ID must be set for CES acceptance tests")
 	}
 }
 
