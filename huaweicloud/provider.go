@@ -554,6 +554,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_cce_node_pool":              cce.DataSourceCCENodePoolV3(),
 			"huaweicloud_cce_charts":                 cce.DataSourceCCECharts(),
 			"huaweicloud_cce_cluster_configurations": cce.DataSourceClusterConfigurations(),
+			"huaweicloud_cce_addons":                 cce.DataSourceCceAddons(),
 
 			"huaweicloud_cci_namespaces": cci.DataSourceCciNamespaces(),
 
@@ -847,6 +848,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_evs_volume_types":       evs.DataSourceEvsVolumeTypes(),
 			"huaweicloud_evs_volume_transfers":   evs.DataSourceEvsVolumeTransfers(),
 			"huaweicloud_evs_tags":               evs.DataSourceEvsTags(),
+			"huaweicloud_evs_quotas":             evs.DataSourceEvsQuotas(),
 
 			"huaweicloud_fgs_applications":          fgs.DataSourceApplications(),
 			"huaweicloud_fgs_application_templates": fgs.DataSourceApplicationTemplates(),
@@ -1054,6 +1056,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_elb_loadbalancer_feature_configurations": elb.DataSourceElbLoadbalancerFeatureConfigurations(),
 			"huaweicloud_elb_quotas":                              elb.DataSourceElbQuotas(),
 			"huaweicloud_elb_quota_details":                       elb.DataSourceElbQuotaDetails(),
+			"huaweicloud_elb_asynchronous_tasks":                  elb.DataSourceElbAsynchronousTasks(),
 
 			"huaweicloud_nat_gateway":                 nat.DataSourcePublicGateway(),
 			"huaweicloud_nat_gateway_tags":            nat.DataSourceNatGatewayTags(),
@@ -2013,6 +2016,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_iotda_access_credential":        iotda.ResourceAccessCredential(),
 			"huaweicloud_iotda_amqp":                     iotda.ResourceAmqp(),
 			"huaweicloud_iotda_batchtask":                iotda.ResourceBatchTask(),
+			"huaweicloud_iotda_custom_authentication":    iotda.ResourceCustomAuthentication(),
 			"huaweicloud_iotda_dataforwarding_rule":      iotda.ResourceDataForwardingRule(),
 			"huaweicloud_iotda_data_flow_control_policy": iotda.ResourceDataFlowControlPolicy(),
 			"huaweicloud_iotda_data_backlog_policy":      iotda.ResourceDataBacklogPolicy(),
@@ -2155,6 +2159,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_nat_dnat_rule": nat.ResourcePublicDnatRule(),
 			"huaweicloud_nat_gateway":   nat.ResourcePublicGateway(),
 			"huaweicloud_nat_snat_rule": nat.ResourcePublicSnatRule(),
+			"huaweicloud_natv3_gateway": nat.ResourcePublicGatewayV3(),
 
 			"huaweicloud_nat_private_dnat_rule":  nat.ResourcePrivateDnatRule(),
 			"huaweicloud_nat_private_gateway":    nat.ResourcePrivateGateway(),
@@ -2383,6 +2388,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_workspace_access_policy":           workspace.ResourceAccessPolicy(),
 			"huaweicloud_workspace_desktop_name_rule":       workspace.ResourceDesktopNameRule(),
 			"huaweicloud_workspace_desktop":                 workspace.ResourceDesktop(),
+			"huaweicloud_workspace_desktop_pool":            workspace.ResourceDesktopPool(),
 			"huaweicloud_workspace_policy_group":            workspace.ResourcePolicyGroup(),
 			"huaweicloud_workspace_service":                 workspace.ResourceService(),
 			"huaweicloud_workspace_terminal_binding":        workspace.ResourceTerminalBinding(),
