@@ -93,7 +93,8 @@ var (
 	HW_WAF_INTERNATIONAL_FLAG  = os.Getenv("HW_WAF_INTERNATIONAL_FLAG")
 	HW_WAF_GROUP_FLAG          = os.Getenv("HW_WAF_GROUP_FLAG")
 
-	HW_ELB_CERT_ID = os.Getenv("HW_ELB_CERT_ID")
+	HW_ELB_CERT_ID         = os.Getenv("HW_ELB_CERT_ID")
+	HW_ELB_LOADBALANCER_ID = os.Getenv("HW_ELB_LOADBALANCER_ID")
 
 	HW_DBSS_INSATNCE_ID = os.Getenv("HW_DBSS_INSATNCE_ID")
 
@@ -200,6 +201,10 @@ var (
 	HW_LTS_ENABLE_FLAG                 = os.Getenv("HW_LTS_ENABLE_FLAG")
 	HW_LTS_STRUCT_CONFIG_TEMPLATE_ID   = os.Getenv("HW_LTS_STRUCT_CONFIG_TEMPLATE_ID")
 	HW_LTS_STRUCT_CONFIG_TEMPLATE_NAME = os.Getenv("HW_LTS_STRUCT_CONFIG_TEMPLATE_NAME")
+	// Two Kafka instance IDs must be set, separated by a comma (,).
+	// It consists of the Kafka instance ID connected via encrypted and the Kafka instance ID connected via plain text
+	HW_LTS_KAFKA_INSTANCE_IDS      = os.Getenv("HW_LTS_KAFKA_INSTANCE_IDS")
+	HW_LTS_KAFKA_INSTANCE_PASSWORD = os.Getenv("HW_LTS_KAFKA_INSTANCE_PASSWORD")
 
 	HW_LIVE_STREAMING_DOMAIN_NAME          = os.Getenv("HW_LIVE_STREAMING_DOMAIN_NAME")
 	HW_LIVE_INGEST_RTMP_DOMAIN_NAME        = os.Getenv("HW_LIVE_INGEST_RTMP_DOMAIN_NAME")
@@ -361,6 +366,13 @@ var (
 
 	// The SecMaster playbook instance ID
 	HW_SECMASTER_INSTANCE_ID = os.Getenv("HW_SECMASTER_INSTANCE_ID")
+
+	// The ID and product ID to create a SecMaster post paid order
+	HW_SECMASTER_ORDER_ID   = os.Getenv("HW_SECMASTER_ORDER_ID")
+	HW_SECMASTER_PRODUCT_ID = os.Getenv("HW_SECMASTER_PRODUCT_ID")
+
+	// The flag of whether to create a SecMaster workspace
+	HW_SECMASTER_WORKSPACE = os.Getenv("HW_SECMASTER_WORKSPACE")
 
 	HW_MODELARTS_HAS_SUBSCRIBE_MODEL = os.Getenv("HW_MODELARTS_HAS_SUBSCRIBE_MODEL")
 	HW_MODELARTS_USER_LOGIN_PASSWORD = os.Getenv("HW_MODELARTS_USER_LOGIN_PASSWORD")
@@ -567,6 +579,8 @@ var (
 	HW_SFS_FILE_SYSTEM_NAMES = os.Getenv("HW_SFS_FILE_SYSTEM_NAMES")
 
 	HW_SMN_SUBSCRIBED_TOPIC_URN = os.Getenv("HW_SMN_SUBSCRIBED_TOPIC_URN")
+
+	HW_SERVICESTAGE_JAR_PKG_STORAGE_URLS = os.Getenv("HW_SERVICESTAGE_JAR_PKG_STORAGE_URLS")
 )
 
 // TestAccProviders is a static map containing only the main provider instance.
@@ -938,6 +952,13 @@ func TestAccPreCheckWafType(t *testing.T) {
 func TestAccPreCheckElbCertID(t *testing.T) {
 	if HW_ELB_CERT_ID == "" {
 		t.Skip("HW_ELB_CERT_ID must be set for this acceptance test.")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckElbLoadbalancerID(t *testing.T) {
+	if HW_ELB_LOADBALANCER_ID == "" {
+		t.Skip("HW_ELB_LOADBALANCER_ID must be set for this acceptance test")
 	}
 }
 
@@ -1933,6 +1954,20 @@ func TestAccPreCheckSecMasterIndicatorTypeID(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckSecMasterPostPaidOrder(t *testing.T) {
+	if HW_SECMASTER_ORDER_ID == "" || HW_SECMASTER_PRODUCT_ID == "" {
+		t.Skip("HW_SECMASTER_ORDER_ID and HW_SECMASTER_PRODUCT_ID must be set for SecMaster acceptance tests")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckSecMasterWorkspace(t *testing.T) {
+	if HW_SECMASTER_WORKSPACE == "" {
+		t.Skip("HW_SECMASTER_WORKSPACE must be set for SecMaster acceptance tests")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckSecMaster(t *testing.T) {
 	if HW_SECMASTER_WORKSPACE_ID == "" || HW_SECMASTER_INDICATOR_TYPE_ID == "" ||
 		HW_SECMASTER_INDICATOR_TYPE_ID_UPDATE == "" {
@@ -1956,11 +1991,19 @@ func TestAccPreCheckUpdateCertificateContent(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckCertificateBase(t *testing.T) {
+	if HW_CERTIFICATE_CONTENT == "" || HW_CERTIFICATE_PRIVATE_KEY == "" {
+		t.Skip("HW_CERTIFICATE_CONTENT and HW_CERTIFICATE_PRIVATE_KEY must be set for simple acceptance tests of SSL " +
+			"certificate resource")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckCertificateWithoutRootCA(t *testing.T) {
-	if HW_CERTIFICATE_CONTENT == "" || HW_CERTIFICATE_PRIVATE_KEY == "" ||
-		HW_NEW_CERTIFICATE_CONTENT == "" || HW_NEW_CERTIFICATE_PRIVATE_KEY == "" {
-		t.Skip("HW_CERTIFICATE_CONTENT, HW_CERTIFICATE_PRIVATE_KEY, HW_NEW_CERTIFICATE_CONTENT and " +
-			"HW_NEW_CERTIFICATE_PRIVATE_KEY must be set for simple acceptance tests of SSL certificate resource")
+	TestAccPreCheckCertificateBase(t)
+	if HW_NEW_CERTIFICATE_CONTENT == "" || HW_NEW_CERTIFICATE_PRIVATE_KEY == "" {
+		t.Skip("HW_NEW_CERTIFICATE_CONTENT and HW_NEW_CERTIFICATE_PRIVATE_KEY must be set for simple acceptance " +
+			"tests of SSL certificate resource")
 	}
 }
 
@@ -2085,6 +2128,22 @@ func TestAccPreCheckLtsStructConfigCustom(t *testing.T) {
 	if HW_LTS_STRUCT_CONFIG_TEMPLATE_ID == "" || HW_LTS_STRUCT_CONFIG_TEMPLATE_NAME == "" {
 		t.Skip("HW_LTS_STRUCT_CONFIG_TEMPLATE_ID and HW_LTS_STRUCT_CONFIG_TEMPLATE_NAME must be" +
 			" set for LTS struct config custom acceptance tests")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckLtsKafkaInstanceIds(t *testing.T) {
+	if len(strings.Split(HW_LTS_KAFKA_INSTANCE_IDS, ",")) != 2 {
+		t.Skip(`The Kafka instance is registered to LTS acceptance tests must set the Kafka instance IDs, plesse config them
+in the HW_LTS_KAFKA_INSTANCE_IDS environment variable, and IDs consist of encrypted instance ID and plaintext instance ID,
+separated by a commas (,)`)
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckLtsKafkaInstancePsw(t *testing.T) {
+	if HW_LTS_KAFKA_INSTANCE_PASSWORD == "" {
+		t.Skip("HW_LTS_KAFKA_INSTANCE_PASSWORD must be set for the encrypted access Kafka instance to be registered to the LTS acceptance test")
 	}
 }
 
@@ -3022,5 +3081,12 @@ func TestAccPrecheckSmnSubscribedTopicUrn(t *testing.T) {
 func TestAccPreCheckIMSImageMetadataID(t *testing.T) {
 	if HW_IMS_IMAGE_METADATA_ID == "" {
 		t.Skip("HW_IMS_IMAGE_METADATA_ID must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckServiceStageJarPkgStorageURLs(t *testing.T, n int) {
+	if len(strings.Split(HW_SERVICESTAGE_JAR_PKG_STORAGE_URLS, ",")) < n {
+		t.Skipf("at least %d URLs for HW_SERVICESTAGE_JAR_PKG_STORAGE_URLS must be set, separated by a comma (,)", n)
 	}
 }

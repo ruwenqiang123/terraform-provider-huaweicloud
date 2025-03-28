@@ -490,6 +490,8 @@ func Provider() *schema.Provider {
 
 			"huaweicloud_as_activity_logs":       as.DataSourceActivityLogs(),
 			"huaweicloud_as_configurations":      as.DataSourceASConfigurations(),
+			"huaweicloud_as_group_quotas":        as.DataSourceAsGroupQuotas(),
+			"huaweicloud_as_group_tags":          as.DataSourceAsGroupTags(),
 			"huaweicloud_as_groups":              as.DataSourceASGroups(),
 			"huaweicloud_as_hook_instances":      as.DataSourceAsHookInstances(),
 			"huaweicloud_as_instances":           as.DataSourceASInstances(),
@@ -499,7 +501,6 @@ func Provider() *schema.Provider {
 			"huaweicloud_as_policies":            as.DataSourceASPolicies(),
 			"huaweicloud_as_policy_execute_logs": as.DataSourcePolicyExecuteLogs(),
 			"huaweicloud_as_quotas":              as.DataSourceAsQuotas(),
-			"huaweicloud_as_group_quotas":        as.DataSourceAsGroupQuotas(),
 
 			"huaweicloud_asm_meshes": asm.DataSourceAsmMeshes(),
 
@@ -1002,6 +1003,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_iotda_device_binding_groups":      iotda.DataSourceDeviceBindingGroups(),
 			"huaweicloud_iotda_amqps":                      iotda.DataSourceAMQPQueues(),
 			"huaweicloud_iotda_batchtasks":                 iotda.DataSourceBatchTasks(),
+			"huaweicloud_iotda_custom_authentications":     iotda.DataSourceCustomAuthentications(),
 			"huaweicloud_iotda_dataforwarding_rules":       iotda.DataSourceDataForwardingRules(),
 			"huaweicloud_iotda_data_flow_control_policies": iotda.DataSourceDataFlowControlPolicies(),
 			"huaweicloud_iotda_data_backlog_policies":      iotda.DataSourceDataBacklogPolicies(),
@@ -1513,6 +1515,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_apig_endpoint_whitelist":             apig.ResourceEndpointWhiteList(),
 
 			"huaweicloud_as_configuration":           as.ResourceASConfiguration(),
+			"huaweicloud_as_execute_policy":          as.ResourceExecutePolicy(),
 			"huaweicloud_as_group":                   as.ResourceASGroup(),
 			"huaweicloud_as_lifecycle_hook":          as.ResourceASLifecycleHook(),
 			"huaweicloud_as_instance_attach":         as.ResourceASInstanceAttach(),
@@ -1586,6 +1589,8 @@ func Provider() *schema.Provider {
 			"huaweicloud_cci_namespace":    cci.ResourceCciNamespace(),
 			"huaweicloud_cci_network":      cci.ResourceCciNetworkV1(),
 			"huaweicloud_cci_pvc":          cci.ResourcePersistentVolumeClaimV1(),
+			"huaweicloud_cciv2_namespace":  cci.ResourceNamespace(),
+			"huaweicloud_cciv2_network":    cci.ResourceV2Network(),
 
 			"huaweicloud_ccm_certificate":                ccm.ResourceCCMCertificate(),
 			"huaweicloud_ccm_certificate_apply":          ccm.ResourceCertificateApply(),
@@ -2080,6 +2085,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_lts_log_converge":                     lts.ResourceLogConverge(),
 			"huaweicloud_lts_log_converge_switch":              lts.ResourceLogConvergeSwitch(),
 			"huaweicloud_lts_metric_rule":                      lts.ResourceMetricRule(),
+			"huaweicloud_lts_register_kafka_instance":          lts.ResourceRegisterKafkaInstance(),
 			"huaweicloud_lts_stream":                           lts.ResourceLTSStream(),
 			"huaweicloud_lts_structing_template":               lts.ResourceStructConfig(),
 			"huaweicloud_lts_structuring_custom_configuration": lts.ResourceStructCustomConfig(),
@@ -2262,6 +2268,8 @@ func Provider() *schema.Provider {
 			"huaweicloud_secmaster_playbook_approval":           secmaster.ResourcePlaybookApproval(),
 			"huaweicloud_secmaster_playbook_instance_operation": secmaster.ResourcePlaybookInstanceOperation(),
 			"huaweicloud_secmaster_alert_rule_simulation":       secmaster.ResourceAlertRuleSimulation(),
+			"huaweicloud_secmaster_post_paid_order":             secmaster.ResourcePostPaidOrder(),
+			"huaweicloud_secmaster_workspace":                   secmaster.ResourceWorkspace(),
 
 			"huaweicloud_servicestage_application":                 servicestage.ResourceApplication(),
 			"huaweicloud_servicestage_component_instance":          servicestage.ResourceComponentInstance(),
