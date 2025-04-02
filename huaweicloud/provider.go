@@ -489,6 +489,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_apig_throttling_policies":                apig.DataSourceThrottlingPolicies(),
 
 			"huaweicloud_as_activity_logs":       as.DataSourceActivityLogs(),
+			"huaweicloud_asv2_activity_logs":     as.DataSourceAsv2ActivityLogs(),
 			"huaweicloud_as_configurations":      as.DataSourceASConfigurations(),
 			"huaweicloud_as_group_quotas":        as.DataSourceAsGroupQuotas(),
 			"huaweicloud_as_group_tags":          as.DataSourceAsGroupTags(),
@@ -557,7 +558,8 @@ func Provider() *schema.Provider {
 			"huaweicloud_cce_cluster_configurations": cce.DataSourceClusterConfigurations(),
 			"huaweicloud_cce_addons":                 cce.DataSourceCceAddons(),
 
-			"huaweicloud_cci_namespaces": cci.DataSourceCciNamespaces(),
+			"huaweicloud_cci_namespaces":   cci.DataSourceCciNamespaces(),
+			"huaweicloud_cciv2_namespaces": cci.DataSourceV2Namespaces(),
 
 			"huaweicloud_ccm_certificates":               ccm.DataSourceCertificates(),
 			"huaweicloud_ccm_certificate_export":         ccm.DataSourceCertificateExport(),
@@ -1501,6 +1503,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_apig_environment":                    apig.ResourceApigEnvironmentV2(),
 			"huaweicloud_apig_environment_variable":           apig.ResourceEnvironmentVariable(),
 			"huaweicloud_apig_group":                          apig.ResourceApigGroupV2(),
+			"huaweicloud_apig_group_domain_associate":         apig.ResourceGroupDomainAssociate(),
 			"huaweicloud_apig_instance_feature":               apig.ResourceInstanceFeature(),
 			"huaweicloud_apig_instance_routes":                apig.ResourceInstanceRoutes(),
 			"huaweicloud_apig_instance":                       apig.ResourceApigInstanceV2(),
@@ -1621,6 +1624,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_ces_dashboard_widget":       ces.ResourceDashboardWidget(),
 			"huaweicloud_ces_event_report":           ces.ResourceCesEventReport(),
 			"huaweicloud_ces_metric_data_add":        ces.ResourceMetricDataAdd(),
+			"huaweicloud_ces_notification_mask":      ces.ResourceNotificationMask(),
 			"huaweicloud_ces_one_click_alarm":        ces.ResourceOneClickAlarm(),
 			"huaweicloud_ces_resource_group":         ces.ResourceResourceGroup(),
 
@@ -1869,13 +1873,14 @@ func Provider() *schema.Provider {
 			"huaweicloud_enterprise_project":           eps.ResourceEnterpriseProject(),
 			"huaweicloud_enterprise_project_authority": eps.ResourceAuthority(),
 
-			"huaweicloud_er_association":    er.ResourceAssociation(),
-			"huaweicloud_er_instance":       er.ResourceInstance(),
-			"huaweicloud_er_propagation":    er.ResourcePropagation(),
-			"huaweicloud_er_route_table":    er.ResourceRouteTable(),
-			"huaweicloud_er_static_route":   er.ResourceStaticRoute(),
-			"huaweicloud_er_vpc_attachment": er.ResourceVpcAttachment(),
-			"huaweicloud_er_flow_log":       er.ResourceFlowLog(),
+			"huaweicloud_er_association":         er.ResourceAssociation(),
+			"huaweicloud_er_attachment_accepter": er.ResourceAttachmentAccepter(),
+			"huaweicloud_er_instance":            er.ResourceInstance(),
+			"huaweicloud_er_propagation":         er.ResourcePropagation(),
+			"huaweicloud_er_route_table":         er.ResourceRouteTable(),
+			"huaweicloud_er_static_route":        er.ResourceStaticRoute(),
+			"huaweicloud_er_vpc_attachment":      er.ResourceVpcAttachment(),
+			"huaweicloud_er_flow_log":            er.ResourceFlowLog(),
 
 			"huaweicloud_evs_snapshot":                 evs.ResourceEvsSnapshotV2(),
 			"huaweicloud_evs_volume":                   evs.ResourceEvsVolume(),

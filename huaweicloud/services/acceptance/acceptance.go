@@ -303,6 +303,8 @@ var (
 	HW_CES_START_TIME        = os.Getenv("HW_CES_START_TIME")
 	HW_CES_END_TIME          = os.Getenv("HW_CES_END_TIME")
 	HW_CES_ALARM_RULE        = os.Getenv("HW_CES_ALARM_RULE")
+	HW_CES_ALARM_POLICY_1    = os.Getenv("HW_CES_ALARM_POLICY_1")
+	HW_CES_ALARM_POLICY_2    = os.Getenv("HW_CES_ALARM_POLICY_2")
 
 	// The CFW instance ID
 	HW_CFW_INSTANCE_ID               = os.Getenv("HW_CFW_INSTANCE_ID")
@@ -479,6 +481,9 @@ var (
 	HW_DATAARTS_REVIEWER_NAME       = os.Getenv("HW_DATAARTS_REVIEWER_NAME")
 	HW_DATAARTS_DLI_QUEUE_NAME      = os.Getenv("HW_DATAARTS_DLI_QUEUE_NAME")
 	HW_DATAARTS_INSTANCE_ID_IN_APIG = os.Getenv("HW_DATAARTS_INSTANCE_ID_IN_APIG")
+
+	HW_ER_SHARED_INSTANCE_ID   = os.Getenv("HW_ER_SHARED_INSTANCE_ID")
+	HW_ER_SHARED_ATTACHMENT_ID = os.Getenv("HW_ER_SHARED_ATTACHMENT_ID")
 
 	HW_EVS_AVAILABILITY_ZONE_GPSSD2 = os.Getenv("HW_EVS_AVAILABILITY_ZONE_GPSSD2")
 	HW_EVS_AVAILABILITY_ZONE_ESSD2  = os.Getenv("HW_EVS_AVAILABILITY_ZONE_ESSD2")
@@ -1071,6 +1076,13 @@ func TestAccPreCheckOBSEndpoint(t *testing.T) {
 func TestAccPreCheckChargingMode(t *testing.T) {
 	if HW_CHARGING_MODE != "prePaid" {
 		t.Skip("This environment does not support prepaid tests")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckErSharedAttachmentAccepter(t *testing.T) {
+	if HW_ER_SHARED_INSTANCE_ID == "" || HW_ER_SHARED_ATTACHMENT_ID == "" {
+		t.Skip("HW_ER_SHARED_INSTANCE_ID and HW_ER_SHARED_ATTACHMENT_ID must be set for the acceptance test")
 	}
 }
 
@@ -1759,6 +1771,13 @@ func TestAccPreCheckDCVirtualInterfaceID(t *testing.T) {
 func TestAccPreCheckCesTimeRange(t *testing.T) {
 	if HW_CES_START_TIME == "" || HW_CES_END_TIME == "" {
 		t.Skip("HW_CES_START_TIME and HW_CES_END_TIME must be set for CES acceptance tests")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckCesAlarmPolicies(t *testing.T) {
+	if HW_CES_ALARM_POLICY_1 == "" || HW_CES_ALARM_POLICY_2 == "" {
+		t.Skip("HW_CES_ALARM_POLICY_1 and HW_CES_ALARM_POLICY_2 must be set for CES acceptance tests")
 	}
 }
 
