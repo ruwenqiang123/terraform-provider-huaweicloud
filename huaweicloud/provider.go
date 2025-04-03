@@ -502,6 +502,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_as_policies":            as.DataSourceASPolicies(),
 			"huaweicloud_as_policy_execute_logs": as.DataSourcePolicyExecuteLogs(),
 			"huaweicloud_as_quotas":              as.DataSourceAsQuotas(),
+			"huaweicloud_asv2_policies":          as.DataSourceAsv2Policies(),
 
 			"huaweicloud_asm_meshes": asm.DataSourceAsmMeshes(),
 
@@ -1245,11 +1246,13 @@ func Provider() *schema.Provider {
 			"huaweicloud_vpc_bandwidth_limits":           eip.DataSourceBandwidthLimits(),
 			"huaweicloud_vpc_bandwidth":                  eip.DataSourceBandWidth(),
 			"huaweicloud_vpc_bandwidths":                 eip.DataSourceBandWidths(),
+			"huaweicloud_vpcv3_bandwidths":               eip.DataSourceEipVpcv3Bandwidths(),
 			"huaweicloud_vpc_bandwidth_addon_packages":   eip.DataSourceBandwidthAddonPackages(),
 			"huaweicloud_vpc_eip_common_pools":           eip.DataSourceVpcEipCommonPools(),
 			"huaweicloud_vpc_eip_pools":                  eip.DataSourceVpcEipPools(),
 			"huaweicloud_vpc_eip":                        eip.DataSourceVpcEip(),
 			"huaweicloud_vpc_eips":                       eip.DataSourceVpcEips(),
+			"huaweicloud_vpcv3_eips":                     eip.DataSourceEipVpcv3Eips(),
 			"huaweicloud_vpc_eip_tags":                   eip.DataSourceVpcEipTags(),
 			"huaweicloud_vpc_internet_gateways":          eip.DataSourceVPCInternetGateways(),
 			"huaweicloud_global_eip_quotas":              eip.DataSourceGlobalEipQuotas(),
@@ -2124,6 +2127,9 @@ func Provider() *schema.Provider {
 			"huaweicloud_modelarts_authorization":          modelarts.ResourceModelArtsAuthorization(),
 			"huaweicloud_modelarts_network":                modelarts.ResourceModelartsNetwork(),
 			"huaweicloud_modelarts_resource_pool":          modelarts.ResourceModelartsResourcePool(),
+			// Resource management via V2 APIs.
+			"huaweicloud_modelartsv2_service":        modelarts.ResourceV2Service(),
+			"huaweicloud_modelartsv2_service_action": modelarts.ResourceV2ServiceAction(),
 
 			// DataArts Studio - Management Center
 			"huaweicloud_dataarts_studio_data_connection": dataarts.ResourceDataConnection(),
@@ -2275,6 +2281,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_secmaster_alert_rule_simulation":       secmaster.ResourceAlertRuleSimulation(),
 			"huaweicloud_secmaster_post_paid_order":             secmaster.ResourcePostPaidOrder(),
 			"huaweicloud_secmaster_workspace":                   secmaster.ResourceWorkspace(),
+			"huaweicloud_secmaster_workflow_action":             secmaster.ResourceWorkflowAction(),
 
 			"huaweicloud_servicestage_application":                 servicestage.ResourceApplication(),
 			"huaweicloud_servicestage_component_instance":          servicestage.ResourceComponentInstance(),
