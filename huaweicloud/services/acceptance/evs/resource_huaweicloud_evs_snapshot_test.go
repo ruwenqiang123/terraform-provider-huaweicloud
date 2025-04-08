@@ -12,17 +12,24 @@ import (
 
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/config"
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/acceptance"
+	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/evs"
 )
 
 func getSnapshotResourceFunc(conf *config.Config, state *terraform.ResourceState) (interface{}, error) {
-	c, err := conf.BlockStorageV2Client(acceptance.HW_REGION_NAME)
+	var (
+		region  = acceptance.HW_REGION_NAME
+		product = "evs"
+	)
+
+	client, err := conf.NewServiceClient(product, region)
 	if err != nil {
-		return nil, fmt.Errorf("error creating EVS storage client: %s", err)
+		return nil, fmt.Errorf("error creating EVS client: %s", err)
 	}
-	return snapshots.Get(c, state.Primary.ID).Extract()
+
+	return evs.GetSnapshotDetail(client, state.Primary.ID)
 }
 
-func TestAccEvsSnapshotV2_basic(t *testing.T) {
+func TestAccEvsSnapshot_basic(t *testing.T) {
 	var (
 		snapshot     snapshots.Snapshot
 		rName        = fmt.Sprintf("tf-acc-test-%s", acctest.RandString(5))
@@ -49,6 +56,9 @@ func TestAccEvsSnapshotV2_basic(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "status", "available"),
 					resource.TestCheckResourceAttr(resourceName, "metadata.foo", "bar"),
 					resource.TestCheckResourceAttr(resourceName, "metadata.key", "value"),
+					resource.TestCheckResourceAttrSet(resourceName, "size"),
+					resource.TestCheckResourceAttrSet(resourceName, "created_at"),
+					resource.TestCheckResourceAttrSet(resourceName, "updated_at"),
 				),
 			},
 			{
