@@ -16,9 +16,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 
 	"github.com/chnsz/golangsdk"
-	"github.com/chnsz/golangsdk/openstack/ecs/v1/block_devices"
-	ecsjobs "github.com/chnsz/golangsdk/openstack/ecs/v1/jobs"
-	"github.com/chnsz/golangsdk/openstack/evs/v2/cloudvolumes"
 
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/common"
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/config"
@@ -161,23 +158,8 @@ func ResourceEvsVolume() *schema.Resource {
 			"attachment": {
 				Type:     schema.TypeSet,
 				Computed: true,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-						"id": {
-							Type:     schema.TypeString,
-							Computed: true,
-						},
-						"instance_id": {
-							Type:     schema.TypeString,
-							Computed: true,
-						},
-						"device": {
-							Type:     schema.TypeString,
-							Computed: true,
-						},
-					},
-				},
-				Set: resourceVolumeAttachmentHash,
+				Elem:     attachmentComputeSchema(),
+				Set:      resourceVolumeAttachmentHash,
 			},
 			"wwn": {
 				Type:     schema.TypeString,
@@ -189,6 +171,139 @@ func ResourceEvsVolume() *schema.Resource {
 			},
 			"status": {
 				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"bootable": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"created_at": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"updated_at": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"iops_attribute": {
+				Type:     schema.TypeList,
+				Computed: true,
+				Elem:     iopsAttributeComputeSchema(),
+			},
+			"throughput_attribute": {
+				Type:     schema.TypeList,
+				Computed: true,
+				Elem:     throughputAttributeComputeSchema(),
+			},
+			"links": {
+				Type:     schema.TypeList,
+				Computed: true,
+				Elem:     linksComputeSchema(),
+			},
+			"all_metadata": {
+				Type:     schema.TypeMap,
+				Computed: true,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+			},
+			"serial_number": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"service_type": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"all_volume_image_metadata": {
+				Type:     schema.TypeMap,
+				Computed: true,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+			},
+		},
+	}
+}
+
+func attachmentComputeSchema() *schema.Resource {
+	return &schema.Resource{
+		Schema: map[string]*schema.Schema{
+			"id": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"instance_id": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"device": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"attached_at": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"host_name": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"attached_volume_id": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"volume_id": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+		},
+	}
+}
+
+func iopsAttributeComputeSchema() *schema.Resource {
+	return &schema.Resource{
+		Schema: map[string]*schema.Schema{
+			"frozened": {
+				Type:     schema.TypeBool,
+				Computed: true,
+			},
+			"id": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"total_val": {
+				Type:     schema.TypeInt,
+				Computed: true,
+			},
+		},
+	}
+}
+
+func linksComputeSchema() *schema.Resource {
+	return &schema.Resource{
+		Schema: map[string]*schema.Schema{
+			"href": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"rel": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+		},
+	}
+}
+
+func throughputAttributeComputeSchema() *schema.Resource {
+	return &schema.Resource{
+		Schema: map[string]*schema.Schema{
+			"frozened": {
+				Type:     schema.TypeBool,
+				Computed: true,
+			},
+			"id": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"total_val": {
+				Type:     schema.TypeInt,
 				Computed: true,
 			},
 		},
@@ -324,7 +439,7 @@ func waitingForVolumeJobSuccess(ctx context.Context, client *golangsdk.ServiceCl
 			return respBody, "PENDING", nil
 		},
 		Timeout:      timeout,
-		Delay:        10 * time.Second,
+		Delay:        5 * time.Second,
 		PollInterval: 10 * time.Second,
 	}
 
@@ -377,8 +492,8 @@ func waitingForEvsVolumeComplete(ctx context.Context, client *golangsdk.ServiceC
 			return respBody, "PENDING", nil
 		},
 		Timeout:                   timeout,
-		Delay:                     10 * time.Second,
-		PollInterval:              10 * time.Second,
+		Delay:                     5 * time.Second,
+		PollInterval:              5 * time.Second,
 		ContinuousTargetOccurence: 2,
 	}
 
@@ -467,13 +582,64 @@ func flattenVolumeAttachment(respBody interface{}) interface{} {
 	result := make([]map[string]interface{}, len(attachments))
 	for i, attachment := range attachments {
 		result[i] = map[string]interface{}{
-			"id":          utils.PathSearch("attachment_id", attachment, nil),
-			"instance_id": utils.PathSearch("server_id", attachment, nil),
-			"device":      utils.PathSearch("device", attachment, nil),
+			"attached_at":        utils.PathSearch("attached_at", attachment, nil),
+			"id":                 utils.PathSearch("attachment_id", attachment, nil),
+			"device":             utils.PathSearch("device", attachment, nil),
+			"host_name":          utils.PathSearch("host_name", attachment, nil),
+			"attached_volume_id": utils.PathSearch("id", attachment, nil),
+			"instance_id":        utils.PathSearch("server_id", attachment, nil),
+			"volume_id":          utils.PathSearch("volume_id", attachment, nil),
 		}
 	}
 
 	return result
+}
+
+func flattenIopsAttribute(respBody interface{}) interface{} {
+	iopsAttribute := utils.PathSearch("volume.iops", respBody, nil)
+	if iopsAttribute == nil {
+		return nil
+	}
+
+	return []map[string]interface{}{
+		{
+			"frozened":  utils.PathSearch("frozened", iopsAttribute, nil),
+			"id":        utils.PathSearch("id", iopsAttribute, nil),
+			"total_val": utils.PathSearch("total_val", iopsAttribute, nil),
+		},
+	}
+}
+
+func flattenLinksAttribute(respBody interface{}) interface{} {
+	linksAttribute := utils.PathSearch("volume.links", respBody, make([]interface{}, 0)).([]interface{})
+	if len(linksAttribute) == 0 {
+		return nil
+	}
+
+	rst := make([]interface{}, 0, len(linksAttribute))
+	for _, v := range linksAttribute {
+		rst = append(rst, map[string]interface{}{
+			"href": utils.PathSearch("href", v, nil),
+			"rel":  utils.PathSearch("rel", v, nil),
+		})
+	}
+
+	return rst
+}
+
+func flattenThroughputAttribute(respBody interface{}) interface{} {
+	throughputAttribute := utils.PathSearch("volume.throughput", respBody, nil)
+	if throughputAttribute == nil {
+		return nil
+	}
+
+	return []map[string]interface{}{
+		{
+			"frozened":  utils.PathSearch("frozened", throughputAttribute, nil),
+			"id":        utils.PathSearch("id", throughputAttribute, nil),
+			"total_val": utils.PathSearch("total_val", throughputAttribute, nil),
+		},
+	}
 }
 
 func resourceEvsVolumeRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
@@ -510,9 +676,21 @@ func resourceEvsVolumeRead(_ context.Context, d *schema.ResourceData, meta inter
 		d.Set("dedicated_storage_id", utils.PathSearch("volume.dedicated_storage_id", respBody, nil)),
 		d.Set("dedicated_storage_name", utils.PathSearch("volume.dedicated_storage_name", respBody, nil)),
 		d.Set("status", utils.PathSearch("volume.status", respBody, nil)),
+		d.Set("bootable", utils.PathSearch("volume.bootable", respBody, nil)),
+		d.Set("created_at", utils.PathSearch("volume.created_at", respBody, nil)),
+		d.Set("updated_at", utils.PathSearch("volume.updated_at", respBody, nil)),
+		d.Set("serial_number", utils.PathSearch("volume.serial_number", respBody, nil)),
+		d.Set("service_type", utils.PathSearch("volume.service_type", respBody, nil)),
+		d.Set("image_id", utils.PathSearch("volume.volume_image_metadata.image_id", respBody, nil)),
+		d.Set("all_metadata", utils.ExpandToStringMap(utils.PathSearch("volume.metadata", respBody,
+			make(map[string]interface{})).(map[string]interface{}))),
+		d.Set("all_volume_image_metadata", utils.ExpandToStringMap(utils.PathSearch("volume.volume_image_metadata",
+			respBody, make(map[string]interface{})).(map[string]interface{}))),
+		d.Set("links", flattenLinksAttribute(respBody)),
+		d.Set("iops_attribute", flattenIopsAttribute(respBody)),
+		d.Set("throughput_attribute", flattenThroughputAttribute(respBody)),
 		setVolumeChargingMode(d, respBody),
 		d.Set("device_type", flattenVolumeDeviceType(respBody)),
-		d.Set("image_id", utils.PathSearch("volume.volume_image_metadata.image_id", respBody, nil)),
 		d.Set("attachment", flattenVolumeAttachment(respBody)),
 	)
 
@@ -783,159 +961,206 @@ func resourceEvsVolumeUpdate(ctx context.Context, d *schema.ResourceData, meta i
 	return resourceEvsVolumeRead(ctx, d, meta)
 }
 
-func resourceEvsVolumeDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	cfg := meta.(*config.Config)
-	region := cfg.GetRegion(d)
-	evsV2Client, err := cfg.BlockStorageV2Client(region)
+func getEcsJobDetail(client *golangsdk.ServiceClient, jobID string) (interface{}, error) {
+	requestPath := client.Endpoint + "v1/{project_id}/jobs/{job_id}"
+	requestPath = strings.ReplaceAll(requestPath, "{project_id}", client.ProjectID)
+	requestPath = strings.ReplaceAll(requestPath, "{job_id}", jobID)
+	requestOpt := golangsdk.RequestOpts{
+		KeepResponseBody: true,
+	}
+
+	resp, err := client.Request("GET", requestPath, &requestOpt)
 	if err != nil {
-		return diag.Errorf("eError creating block storage v2 client: %s", err)
+		return nil, fmt.Errorf("error querying ECS job detail: %s", err)
 	}
 
-	v, err := cloudvolumes.Get(evsV2Client, d.Id()).Extract()
-	if err != nil {
-		// Before deleting a resource, check if the resource exists first,
-		// if resource does not exist, perform checkDeleted processing.
-		// When the resource does not exist, calling the query API will return a `404` status code.
-		return common.CheckDeletedDiag(d, err, "EVS volume")
-	}
+	return utils.FlattenResponse(resp)
+}
 
-	// Make sure this volume is detached from all instances before deleting.
-	if len(v.Attachments) > 0 {
-		log.Printf("[DEBUG] Start to detaching volumes.")
-		computeClient, err := cfg.ComputeV1Client(region)
-		if err != nil {
-			return diag.Errorf("error creating ECS v2 client: %s", err)
-		}
-		for _, attachment := range v.Attachments {
-			log.Printf("[DEBUG] The attachment is: %v", attachment)
-			opts := block_devices.DetachOpts{
-				ServerId: attachment.ServerID,
-			}
-			job, err := block_devices.Detach(computeClient, attachment.VolumeID, opts)
-			if err != nil {
-				return diag.FromErr(err)
-			}
-			stateConf := &resource.StateChangeConf{
-				Pending:    []string{"RUNNING"},
-				Target:     []string{"SUCCESS", "NOTFOUND"},
-				Refresh:    AttachmentJobRefreshFunc(computeClient, job.ID),
-				Timeout:    10 * time.Minute,
-				Delay:      10 * time.Second,
-				MinTimeout: 3 * time.Second,
-			}
-			if _, err = stateConf.WaitForStateContext(ctx); err != nil {
-				return diag.FromErr(err)
-			}
-		}
-	}
-
-	if d.Get("charging_mode").(string) == "prePaid" {
-		err = common.UnsubscribePrePaidResource(d, cfg, []string{d.Id()})
-		if err != nil {
-			return diag.Errorf("error unsubscribing EVS volume : %s", err)
-		}
-	} else {
-		// The snapshots associated with the disk are deleted together with the EVS disk if cascade value is true
-		deleteOpts := cloudvolumes.DeleteOpts{
-			Cascade: d.Get("cascade").(bool),
-		}
-		// It's possible that this volume was used as a boot device and is currently
-		// in a "deleting" state from when the instance was terminated.
-		// If this is true, just move on. It'll eventually delete.
-		if v.Status != "deleting" {
-			if err := cloudvolumes.Delete(evsV2Client, d.Id(), deleteOpts).ExtractErr(); err != nil {
-				return common.CheckDeletedDiag(d, err, "EVS volume")
-			}
-		}
-	}
-
-	// Wait for the volume to delete before moving on.
-	log.Printf("[DEBUG] Waiting for the EVS volume (%s) to delete", d.Id())
+func waitingForEcsJobSuccess(ctx context.Context, client *golangsdk.ServiceClient, jobID string,
+	timeout time.Duration) error {
 	stateConf := &resource.StateChangeConf{
-		Pending:      []string{"PENDING"},
-		Target:       []string{"COMPLETED"},
-		Refresh:      refreshVolumeDeleteFunc(evsV2Client, d.Id()),
-		Timeout:      d.Timeout(schema.TimeoutDelete),
-		Delay:        10 * time.Second,
-		PollInterval: 5 * time.Second,
+		Pending: []string{"PENDING"},
+		Target:  []string{"COMPLETED"},
+		Refresh: func() (interface{}, string, error) {
+			respBody, err := getEcsJobDetail(client, jobID)
+			if err != nil {
+				return nil, "ERROR", err
+			}
+
+			status := utils.PathSearch("status", respBody, "").(string)
+			if status == "" {
+				return respBody, "ERROR", fmt.Errorf("status is not found in ECS job (%s) detail API response", jobID)
+			}
+
+			if status == "SUCCESS" {
+				return respBody, "COMPLETED", nil
+			}
+
+			if status == "FAIL" {
+				return respBody, status, fmt.Errorf("the ECS job (%s) status is FAIL, the fail reason is: %s",
+					jobID, utils.PathSearch("fail_reason", respBody, "").(string))
+			}
+
+			return respBody, "PENDING", nil
+		},
+		Timeout:      timeout,
+		Delay:        5 * time.Second,
+		PollInterval: 10 * time.Second,
 	}
 
-	_, err = stateConf.WaitForStateContext(ctx)
+	_, err := stateConf.WaitForStateContext(ctx)
+	return err
+}
+
+func detachVolume(ctx context.Context, getRespBody interface{}, d *schema.ResourceData, cfg *config.Config) error {
+	attachments := utils.PathSearch("volume.attachments", getRespBody, make([]interface{}, 0)).([]interface{})
+	computeClient, err := cfg.NewServiceClient("ecs", cfg.GetRegion(d))
 	if err != nil {
-		return diag.Errorf("error waiting for the EVS volume (%s) to delete: %s", d.Id(), err)
+		return fmt.Errorf("error creating ECS client: %s", err)
 	}
 
-	d.SetId("")
+	for _, attachment := range attachments {
+		serverID := utils.PathSearch("server_id", attachment, "").(string)
+		volumeID := utils.PathSearch("volume_id", attachment, "").(string)
+		if serverID == "" || volumeID == "" {
+			log.Printf("[WARN] field `server_id` (%s) or `volume_id` (%s) is empty in API response", serverID, volumeID)
+			continue
+		}
+
+		requestPath := computeClient.Endpoint + "v1/{project_id}/cloudservers/{server_id}/detachvolume/{volume_id}"
+		requestPath = strings.ReplaceAll(requestPath, "{project_id}", computeClient.ProjectID)
+		requestPath = strings.ReplaceAll(requestPath, "{server_id}", serverID)
+		requestPath = strings.ReplaceAll(requestPath, "{volume_id}", volumeID)
+		requestOpt := golangsdk.RequestOpts{
+			KeepResponseBody: true,
+		}
+
+		resp, err := computeClient.Request("DELETE", requestPath, &requestOpt)
+		if err != nil {
+			return err
+		}
+
+		respBody, err := utils.FlattenResponse(resp)
+		if err != nil {
+			return err
+		}
+
+		jobID := utils.PathSearch("job_id", respBody, "").(string)
+		if jobID == "" {
+			return errors.New("field `job_id` is empty in ECS detach API response")
+		}
+
+		if err := waitingForEcsJobSuccess(ctx, computeClient, jobID, d.Timeout(schema.TimeoutDelete)); err != nil {
+			return fmt.Errorf("error waiting for the ECS job (%s) to succeed: %s", jobID, err)
+		}
+	}
+
 	return nil
 }
 
-func AttachmentJobRefreshFunc(c *golangsdk.ServiceClient, jobId string) resource.StateRefreshFunc {
-	return func() (interface{}, string, error) {
-		resp, err := ecsjobs.Get(c, jobId)
-		if err != nil {
-			if _, ok := err.(golangsdk.ErrDefault404); ok {
-				return resp, "NOTFOUND", nil
-			}
-			return resp, "ERROR", err
-		}
-
-		return resp, resp.Status, nil
+func buildDeletePostpaidVolumeQueryParams(d *schema.ResourceData) string {
+	if d.Get("cascade").(bool) {
+		return "?cascade=true"
 	}
+
+	return ""
 }
 
-func CloudVolumeRefreshFunc(c *golangsdk.ServiceClient, volumeId string) resource.StateRefreshFunc {
-	return func() (interface{}, string, error) {
-		response, err := cloudvolumes.Get(c, volumeId).Extract()
-		if err != nil {
-			if _, ok := err.(golangsdk.ErrDefault404); ok {
-				return response, "deleted", nil
-			}
-			return response, "ERROR", err
-		}
-		if response != nil {
-			return response, response.Status, nil
-		}
-		return response, "ERROR", nil
+func deletePostpaidVolume(ctx context.Context, client *golangsdk.ServiceClient, getRespBody interface{}, d *schema.ResourceData) error {
+	status := utils.PathSearch("status", getRespBody, "").(string)
+	if status == "deleting" {
+		return nil
 	}
+
+	requestPath := client.Endpoint + "v2/{project_id}/cloudvolumes/{volume_id}"
+	requestPath = strings.ReplaceAll(requestPath, "{project_id}", client.ProjectID)
+	requestPath = strings.ReplaceAll(requestPath, "{volume_id}", d.Id())
+	requestPath += buildDeletePostpaidVolumeQueryParams(d)
+	requestOpt := golangsdk.RequestOpts{
+		KeepResponseBody: true,
+	}
+
+	resp, err := client.Request("DELETE", requestPath, &requestOpt)
+	if err != nil {
+		return err
+	}
+
+	respBody, err := utils.FlattenResponse(resp)
+	if err != nil {
+		return err
+	}
+
+	if jobID := utils.PathSearch("job_id", respBody, "").(string); jobID != "" {
+		if err := waitingForVolumeJobSuccess(ctx, client, jobID, d.Timeout(schema.TimeoutDelete)); err != nil {
+			return fmt.Errorf("error waiting for EVS volume (%s) job success: %s", d.Id(), err)
+		}
+	}
+
+	return nil
 }
 
-func refreshVolumeDeleteFunc(c *golangsdk.ServiceClient, volumeId string) resource.StateRefreshFunc {
-	return func() (interface{}, string, error) {
-		response, err := cloudvolumes.Get(c, volumeId).Extract()
-		if err != nil {
-			var errDefault404 golangsdk.ErrDefault404
-			if errors.As(err, &errDefault404) {
-				return "deleted", "COMPLETED", nil
+func waitingForEvsVolumeDelete(ctx context.Context, client *golangsdk.ServiceClient, d *schema.ResourceData,
+	timeout time.Duration) error {
+	stateConf := &resource.StateChangeConf{
+		Pending: []string{"PENDING"},
+		Target:  []string{"COMPLETED"},
+		Refresh: func() (interface{}, string, error) {
+			respBody, err := GetVolumeDetail(client, d.Id())
+			if err != nil {
+				var errDefault404 golangsdk.ErrDefault404
+				if errors.As(err, &errDefault404) {
+					return "deleted", "COMPLETED", nil
+				}
+
+				return respBody, "ERROR", err
 			}
-			return response, "ERROR", err
-		}
-		return response, "PENDING", nil
+
+			return respBody, "PENDING", nil
+		},
+		Timeout:      timeout,
+		Delay:        5 * time.Second,
+		PollInterval: 5 * time.Second,
 	}
+
+	_, err := stateConf.WaitForStateContext(ctx)
+	return err
 }
 
-func refreshVolumeStatusFunc(c *golangsdk.ServiceClient, volumeId string) resource.StateRefreshFunc {
-	return func() (interface{}, string, error) {
-		response, err := cloudvolumes.Get(c, volumeId).Extract()
-		if err != nil {
-			var errDefault404 golangsdk.ErrDefault404
-			if errors.As(err, &errDefault404) {
-				return response, "deleted", nil
-			}
-			return response, "ERROR", err
-		}
-		if response == nil {
-			return response, "ERROR", nil
-		}
-
-		errorStatus := []string{"error", "error_restoring", "error_extending", "error_deleting", "error_rollbacking"}
-		status := response.Status
-		if utils.StrSliceContains(errorStatus, status) {
-			return response, status, fmt.Errorf("unexpect status (%s)", status)
-		}
-
-		if utils.StrSliceContains([]string{"available", "in-use"}, status) {
-			return response, "COMPLETED", nil
-		}
-		return response, "PENDING", nil
+func resourceEvsVolumeDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+	var (
+		cfg     = meta.(*config.Config)
+		region  = cfg.GetRegion(d)
+		product = "evs"
+	)
+	client, err := cfg.NewServiceClient(product, region)
+	if err != nil {
+		return diag.Errorf("error creating EVS client: %s", err)
 	}
+
+	getRespBody, err := GetVolumeDetail(client, d.Id())
+	if err != nil {
+		// When the resource does not exist, calling the query API will return a `404` status code.
+		return common.CheckDeletedDiag(d, err, "error retrieving EVS volume before deleting volume")
+	}
+
+	if err := detachVolume(ctx, getRespBody, d, cfg); err != nil {
+		return diag.Errorf("error detaching ECS volume: %s", err)
+	}
+
+	if d.Get("charging_mode").(string) == "prePaid" {
+		if err := common.UnsubscribePrePaidResource(d, cfg, []string{d.Id()}); err != nil {
+			return diag.Errorf("error unsubscribing EVS volume : %s", err)
+		}
+	} else {
+		if err := deletePostpaidVolume(ctx, client, getRespBody, d); err != nil {
+			return common.CheckDeletedDiag(d, err, "error deleting postpaid EVS volume")
+		}
+	}
+
+	if err := waitingForEvsVolumeDelete(ctx, client, d, d.Timeout(schema.TimeoutDelete)); err != nil {
+		return diag.Errorf("error waiting for the EVS volume (%s) to delete: %s", d.Id(), err)
+	}
+
+	return nil
 }

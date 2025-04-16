@@ -527,6 +527,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_cbr_backup":   cbr.DataSourceBackup(),
 			"huaweicloud_cbr_vaults":   cbr.DataSourceVaults(),
 			"huaweicloud_cbr_policies": cbr.DataSourcePolicies(),
+			"huaweicloud_cbr_tags":     cbr.DataSourceTags(),
 
 			"huaweicloud_cbh_instances":          cbh.DataSourceCbhInstances(),
 			"huaweicloud_cbh_flavors":            cbh.DataSourceCbhFlavors(),
@@ -826,7 +827,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_dms_rocketmq_extend_flavors":              rocketmq.DataSourceDmsRocketmqExtendFlavors(),
 			"huaweicloud_dms_rocketmq_messages":                    rocketmq.DataSourceDmsRocketMQMessages(),
 
-			"huaweicloud_dns_custom_lines":        dns.DataSourceDNSCustomLines(),
+			"huaweicloud_dns_custom_lines":        dns.DataSourceCustomLines(),
 			"huaweicloud_dns_floating_ptrrecords": dns.DataSourceFloatingPtrRecords(),
 			"huaweicloud_dns_line_groups":         dns.DataSourceLineGroups(),
 			"huaweicloud_dns_nameservers":         dns.DataSourceNameservers(),
@@ -848,14 +849,16 @@ func Provider() *schema.Provider {
 			"huaweicloud_er_associations":       er.DataSourceAssociations(),
 			"huaweicloud_er_attachments":        er.DataSourceAttachments(),
 			"huaweicloud_er_available_routes":   er.DataSourceErAvailableRoutes(),
+			"huaweicloud_er_availability_zones": er.DataSourceAvailabilityZones(),
 			"huaweicloud_er_flow_logs":          er.DataSourceFlowLogs(),
 			"huaweicloud_er_instances":          er.DataSourceInstances(),
 			"huaweicloud_er_propagations":       er.DataSourcePropagations(),
 			"huaweicloud_er_quotas":             er.DataSourceErQuotas(),
+			"huaweicloud_er_resource_tags":      er.DataSourceResourceTags(),
 			"huaweicloud_er_route_tables":       er.DataSourceRouteTables(),
-			"huaweicloud_er_availability_zones": er.DataSourceAvailabilityZones(),
+			"huaweicloud_er_tags":               er.DataSourceTags(),
 
-			"huaweicloud_evs_volumes":            evs.DataSourceEvsVolumesV2(),
+			"huaweicloud_evs_volumes":            evs.DataSourceEvsVolumes(),
 			"huaweicloud_evs_snapshots":          evs.DataSourceEvsSnapshots(),
 			"huaweicloud_evs_availability_zones": evs.DataSourceEvsAvailabilityZones(),
 			"huaweicloud_evs_volume_types":       evs.DataSourceEvsVolumeTypes(),
@@ -1054,6 +1057,7 @@ func Provider() *schema.Provider {
 
 			"huaweicloud_elb_availability_zones":                  elb.DataSourceAvailabilityZones(),
 			"huaweicloud_elb_certificate":                         elb.DataSourceELBCertificateV3(),
+			"huaweicloud_elb_certificates":                        elb.DataSourceElbCertificates(),
 			"huaweicloud_elb_flavors":                             elb.DataSourceElbFlavorsV3(),
 			"huaweicloud_elb_pools":                               elb.DataSourcePools(),
 			"huaweicloud_elb_active_standby_pools":                elb.DataSourceActiveStandbyPools(),
@@ -1217,10 +1221,11 @@ func Provider() *schema.Provider {
 			// Querying by Ver.2 APIs
 			"huaweicloud_servicestage_component_runtimes": servicestage.DataSourceComponentRuntimes(),
 			// Querying by Ver.3 APIs
-			"huaweicloud_servicestagev3_applications":   servicestage.DataSourceV3Applications(),
-			"huaweicloud_servicestagev3_components":     servicestage.DataSourceV3Components(),
-			"huaweicloud_servicestagev3_environments":   servicestage.DataSourceV3Environments(),
-			"huaweicloud_servicestagev3_runtime_stacks": servicestage.DataSourceV3RuntimeStacks(),
+			"huaweicloud_servicestagev3_applications":      servicestage.DataSourceV3Applications(),
+			"huaweicloud_servicestagev3_components":        servicestage.DataSourceV3Components(),
+			"huaweicloud_servicestagev3_component_records": servicestage.DataSourceV3ComponentRecords(),
+			"huaweicloud_servicestagev3_environments":      servicestage.DataSourceV3Environments(),
+			"huaweicloud_servicestagev3_runtime_stacks":    servicestage.DataSourceV3RuntimeStacks(),
 
 			"huaweicloud_smn_topics":              smn.DataSourceTopics(),
 			"huaweicloud_smn_message_templates":   smn.DataSourceSmnMessageTemplates(),
@@ -1250,6 +1255,8 @@ func Provider() *schema.Provider {
 			"huaweicloud_swr_domain_resource_reports":   swr.DataSourceSwrDomainReports(),
 
 			"huaweicloud_tms_resource_types": tms.DataSourceResourceTypes(),
+			"huaweicloud_tms_quotas":         tms.DataSourceTmsQuotas(),
+			"huaweicloud_tms_tags":           tms.DataSourceTmsTags(),
 
 			"huaweicloud_vpc_bandwidth_types":            eip.DataSourceBandwidthTypes(),
 			"huaweicloud_vpc_bandwidth_limits":           eip.DataSourceBandwidthLimits(),
@@ -1277,6 +1284,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_vpc_flow_logs":                   vpc.DataSourceVpcFlowLogs(),
 			"huaweicloud_vpc_network_acls":                vpc.DataSourceNetworkAcls(),
 			"huaweicloud_vpc_network_acl_tags":            vpc.DataSourceVpcNetworkAclTags(),
+			"huaweicloud_vpc_network_acls_by_tags":        vpc.DataSourceNetworkAclsByTags(),
 			"huaweicloud_vpc_peering_connection":          vpc.DataSourceVpcPeeringConnectionV2(),
 			"huaweicloud_vpc_route_table":                 vpc.DataSourceVPCRouteTable(),
 			"huaweicloud_vpc_routes":                      vpc.DataSourceVpcRoutes(),
@@ -2306,6 +2314,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_servicestagev3_application":           servicestage.ResourceV3Application(),
 			"huaweicloud_servicestagev3_component":             servicestage.ResourceV3Component(),
 			"huaweicloud_servicestagev3_configuration":         servicestage.ResourceV3Configuration(),
+			"huaweicloud_servicestagev3_component_action":      servicestage.ResourceV3ComponentAction(),
 			"huaweicloud_servicestagev3_configuration_group":   servicestage.ResourceV3ConfigurationGroup(),
 			"huaweicloud_servicestagev3_environment":           servicestage.ResourceV3Environment(),
 			"huaweicloud_servicestagev3_environment_associate": servicestage.ResourceV3EnvironmentAssociate(),
