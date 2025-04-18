@@ -428,7 +428,8 @@ var (
 
 	HW_KOOGALLERY_ASSET = os.Getenv("HW_KOOGALLERY_ASSET")
 
-	HW_CCI_NAMESPACE = os.Getenv("HW_CCI_NAMESPACE")
+	HW_CCI_NAMESPACE               = os.Getenv("HW_CCI_NAMESPACE")
+	HW_CCI_SECRET_DOCKERCONFIGJSON = os.Getenv("HW_CCI_SECRET_DOCKERCONFIGJSON")
 
 	HW_CC_GLOBAL_GATEWAY_ID  = os.Getenv("HW_CC_GLOBAL_GATEWAY_ID")
 	HW_CC_PEER_DOMAIN_ID     = os.Getenv("HW_CC_PEER_DOMAIN_ID")
@@ -539,10 +540,11 @@ var (
 	HW_LTS_LOG_CONVERGE_SOURCE_LOG_GROUP_ID  = os.Getenv("HW_LTS_LOG_CONVERGE_SOURCE_LOG_GROUP_ID")
 	HW_LTS_LOG_CONVERGE_SOURCE_LOG_STREAM_ID = os.Getenv("HW_LTS_LOG_CONVERGE_SOURCE_LOG_STREAM_ID")
 
-	HW_LTS_CLUSTER_ID           = os.Getenv("HW_LTS_CLUSTER_ID")
-	HW_LTS_CLUSTER_NAME         = os.Getenv("HW_LTS_CLUSTER_NAME")
-	HW_LTS_CLUSTER_ID_ANOTHER   = os.Getenv("HW_LTS_CLUSTER_ID_ANOTHER")
-	HW_LTS_CLUSTER_NAME_ANOTHER = os.Getenv("HW_LTS_CLUSTER_NAME_ANOTHER")
+	HW_LTS_CLUSTER_ID             = os.Getenv("HW_LTS_CLUSTER_ID")
+	HW_LTS_CLUSTER_NAME           = os.Getenv("HW_LTS_CLUSTER_NAME")
+	HW_LTS_CLUSTER_ID_ANOTHER     = os.Getenv("HW_LTS_CLUSTER_ID_ANOTHER")
+	HW_LTS_CLUSTER_NAME_ANOTHER   = os.Getenv("HW_LTS_CLUSTER_NAME_ANOTHER")
+	HW_LTS_ALARM_ACTION_RULE_NAME = os.Getenv("HW_LTS_ALARM_ACTION_RULE_NAME")
 
 	HW_VPCEP_SERVICE_ID = os.Getenv("HW_VPCEP_SERVICE_ID")
 
@@ -2151,6 +2153,13 @@ func TestAccPreCheckLtsStructConfigCustom(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckLtsAlarmActionRuleName(t *testing.T) {
+	if HW_LTS_ALARM_ACTION_RULE_NAME == "" {
+		t.Skip("HW_LTS_ALARM_ACTION_RULE_NAME must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckLtsKafkaInstanceIds(t *testing.T) {
 	if len(strings.Split(HW_LTS_KAFKA_INSTANCE_IDS, ",")) != 2 {
 		t.Skip(`The Kafka instance is registered to LTS acceptance tests must set the Kafka instance IDs, plesse config them
@@ -2304,6 +2313,13 @@ func TestAccPrecheckKooGallery(t *testing.T) {
 func TestAccPreCheckCCINamespace(t *testing.T) {
 	if HW_CCI_NAMESPACE == "" {
 		t.Skip("This environment does not support CCI Namespace tests")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckCCISecretDockerconfigjson(t *testing.T) {
+	if HW_CCI_SECRET_DOCKERCONFIGJSON == "" {
+		t.Skip("This environment does not support CCI Secret tests")
 	}
 }
 

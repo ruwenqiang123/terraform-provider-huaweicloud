@@ -1254,9 +1254,11 @@ func Provider() *schema.Provider {
 			"huaweicloud_swr_domain_overviews":          swr.DataSourceSwrDomainOverviews(),
 			"huaweicloud_swr_domain_resource_reports":   swr.DataSourceSwrDomainReports(),
 
-			"huaweicloud_tms_resource_types": tms.DataSourceResourceTypes(),
-			"huaweicloud_tms_quotas":         tms.DataSourceTmsQuotas(),
-			"huaweicloud_tms_tags":           tms.DataSourceTmsTags(),
+			"huaweicloud_tms_resource_types":      tms.DataSourceResourceTypes(),
+			"huaweicloud_tms_resource_tag_keys":   tms.DataSourceTmsTagKeys(),
+			"huaweicloud_tms_resource_tag_values": tms.DataSourceTmsTagValues(),
+			"huaweicloud_tms_quotas":              tms.DataSourceTmsQuotas(),
+			"huaweicloud_tms_tags":                tms.DataSourceTmsTags(),
 
 			"huaweicloud_vpc_bandwidth_types":            eip.DataSourceBandwidthTypes(),
 			"huaweicloud_vpc_bandwidth_limits":           eip.DataSourceBandwidthLimits(),
@@ -1618,6 +1620,8 @@ func Provider() *schema.Provider {
 			"huaweicloud_cci_pvc":          cci.ResourcePersistentVolumeClaimV1(),
 			"huaweicloud_cciv2_namespace":  cci.ResourceNamespace(),
 			"huaweicloud_cciv2_network":    cci.ResourceV2Network(),
+			"huaweicloud_cciv2_config_map": cci.ResourceV2ConfigMap(),
+			"huaweicloud_cciv2_secret":     cci.ResourceV2Secret(),
 
 			"huaweicloud_ccm_certificate":                ccm.ResourceCCMCertificate(),
 			"huaweicloud_ccm_certificate_apply":          ccm.ResourceCertificateApply(),
@@ -1910,6 +1914,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_evs_volume":                   evs.ResourceEvsVolume(),
 			"huaweicloud_evs_snapshot_rollback":        evs.ResourceSnapshotRollBack(),
 			"huaweicloud_evs_volume_transfer":          evs.ResourceVolumeTransfer(),
+			"huaweicloud_evsv3_volume_transfer":        evs.ResourceV3VolumeTransfer(),
 			"huaweicloud_evs_volume_transfer_accepter": evs.ResourceVolumeTransferAccepter(),
 
 			"huaweicloud_fgs_application":                fgs.ResourceApplication(),
@@ -2311,13 +2316,14 @@ func Provider() *schema.Provider {
 			"huaweicloud_servicestage_repo_token_authorization":    servicestage.ResourceRepoTokenAuth(),
 			"huaweicloud_servicestage_repo_password_authorization": servicestage.ResourceRepoPwdAuth(),
 			// v3 managements
-			"huaweicloud_servicestagev3_application":           servicestage.ResourceV3Application(),
-			"huaweicloud_servicestagev3_component":             servicestage.ResourceV3Component(),
-			"huaweicloud_servicestagev3_configuration":         servicestage.ResourceV3Configuration(),
-			"huaweicloud_servicestagev3_component_action":      servicestage.ResourceV3ComponentAction(),
-			"huaweicloud_servicestagev3_configuration_group":   servicestage.ResourceV3ConfigurationGroup(),
-			"huaweicloud_servicestagev3_environment":           servicestage.ResourceV3Environment(),
-			"huaweicloud_servicestagev3_environment_associate": servicestage.ResourceV3EnvironmentAssociate(),
+			"huaweicloud_servicestagev3_application":               servicestage.ResourceV3Application(),
+			"huaweicloud_servicestagev3_application_configuration": servicestage.ResourceV3ApplicationConfiguration(),
+			"huaweicloud_servicestagev3_component":                 servicestage.ResourceV3Component(),
+			"huaweicloud_servicestagev3_configuration":             servicestage.ResourceV3Configuration(),
+			"huaweicloud_servicestagev3_component_action":          servicestage.ResourceV3ComponentAction(),
+			"huaweicloud_servicestagev3_configuration_group":       servicestage.ResourceV3ConfigurationGroup(),
+			"huaweicloud_servicestagev3_environment":               servicestage.ResourceV3Environment(),
+			"huaweicloud_servicestagev3_environment_associate":     servicestage.ResourceV3EnvironmentAssociate(),
 
 			"huaweicloud_sfs_turbo":            sfsturbo.ResourceSFSTurbo(),
 			"huaweicloud_sfs_turbo_dir":        sfsturbo.ResourceSfsTurboDir(),
