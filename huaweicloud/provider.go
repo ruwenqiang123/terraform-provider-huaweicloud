@@ -57,6 +57,7 @@ import (
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/dcs"
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/ddm"
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/dds"
+	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/deh"
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/deprecated"
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/dew"
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/dis"
@@ -773,6 +774,8 @@ func Provider() *schema.Provider {
 			"huaweicloud_dds_instant_tasks":                           dds.DataSourceDdsInstantTasks(),
 			"huaweicloud_dds_scheduled_tasks":                         dds.DataSourceDdsScheduledTasks(),
 
+			"huaweicloud_deh_types": deh.DataSourceDehTypes(),
+
 			"huaweicloud_dli_datasource_auths":       dli.DataSourceAuths(),
 			"huaweicloud_dli_datasource_connections": dli.DataSourceConnections(),
 			"huaweicloud_dli_elastic_resource_pools": dli.DataSourceDliElasticPools(),
@@ -863,6 +866,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_evs_availability_zones": evs.DataSourceEvsAvailabilityZones(),
 			"huaweicloud_evs_volume_types":       evs.DataSourceEvsVolumeTypes(),
 			"huaweicloud_evs_volume_transfers":   evs.DataSourceEvsVolumeTransfers(),
+			"huaweicloud_evsv3_volume_transfers": evs.DataSourceEvsV3VolumeTransfers(),
 			"huaweicloud_evs_tags":               evs.DataSourceEvsTags(),
 			"huaweicloud_evs_quotas":             evs.DataSourceEvsQuotas(),
 
@@ -1221,11 +1225,13 @@ func Provider() *schema.Provider {
 			// Querying by Ver.2 APIs
 			"huaweicloud_servicestage_component_runtimes": servicestage.DataSourceComponentRuntimes(),
 			// Querying by Ver.3 APIs
-			"huaweicloud_servicestagev3_applications":      servicestage.DataSourceV3Applications(),
-			"huaweicloud_servicestagev3_components":        servicestage.DataSourceV3Components(),
-			"huaweicloud_servicestagev3_component_records": servicestage.DataSourceV3ComponentRecords(),
-			"huaweicloud_servicestagev3_environments":      servicestage.DataSourceV3Environments(),
-			"huaweicloud_servicestagev3_runtime_stacks":    servicestage.DataSourceV3RuntimeStacks(),
+			"huaweicloud_servicestagev3_applications":             servicestage.DataSourceV3Applications(),
+			"huaweicloud_servicestagev3_components":               servicestage.DataSourceV3Components(),
+			"huaweicloud_servicestagev3_component_records":        servicestage.DataSourceV3ComponentRecords(),
+			"huaweicloud_servicestagev3_component_used_resources": servicestage.DataSourceV3ComponentUsedResources(),
+			"huaweicloud_servicestagev3_environments":             servicestage.DataSourceV3Environments(),
+			"huaweicloud_servicestagev3_inner_runtime_stacks":     servicestage.DataSourceV3InnerRuntimeStacks(),
+			"huaweicloud_servicestagev3_runtime_stacks":           servicestage.DataSourceV3RuntimeStacks(),
 
 			"huaweicloud_smn_topics":              smn.DataSourceTopics(),
 			"huaweicloud_smn_message_templates":   smn.DataSourceSmnMessageTemplates(),
@@ -1255,6 +1261,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_swr_domain_resource_reports":   swr.DataSourceSwrDomainReports(),
 
 			"huaweicloud_tms_resource_types":      tms.DataSourceResourceTypes(),
+			"huaweicloud_tms_resource_instances":  tms.DataSourceResourceInstances(),
 			"huaweicloud_tms_resource_tag_keys":   tms.DataSourceTmsTagKeys(),
 			"huaweicloud_tms_resource_tag_values": tms.DataSourceTmsTagValues(),
 			"huaweicloud_tms_quotas":              tms.DataSourceTmsQuotas(),
@@ -1428,18 +1435,20 @@ func Provider() *schema.Provider {
 			"huaweicloud_ddm_logical_sessions":            ddm.DataSourceDdmLogicalSessions(),
 			"huaweicloud_ddm_killing_sessions_audit_logs": ddm.DataSourceDdmKillingSessionsAuditLogs(),
 
-			"huaweicloud_organizations_organization":         organizations.DataSourceOrganization(),
-			"huaweicloud_organizations_organizational_units": organizations.DataSourceOrganizationalUnits(),
-			"huaweicloud_organizations_accounts":             organizations.DataSourceAccounts(),
-			"huaweicloud_organizations_policies":             organizations.DataSourcePolicies(),
-			"huaweicloud_organizations_sent_invitations":     organizations.DataSourceOrganizationsSentInvitations(),
-			"huaweicloud_organizations_received_invitations": organizations.DataSourceOrganizationsReceivedInvitations(),
-			"huaweicloud_organizations_services":             organizations.DataSourceOrganizationsServices(),
-			"huaweicloud_organizations_trusted_services":     organizations.DataSourceOrganizationsTrustedServices(),
-			"huaweicloud_organizations_effective_policies":   organizations.DataSourceOrganizationsEffectivePolicies(),
-			"huaweicloud_organizations_tag_policy_services":  organizations.DataSourceOrganizationsTagPolicyServices(),
-			"huaweicloud_organizations_resource_tags":        organizations.DataSourceOrganizationsTags(),
-			"huaweicloud_organizations_resource_instances":   organizations.DataSourceOrganizationsResourceInstances(),
+			"huaweicloud_organizations_organization":             organizations.DataSourceOrganization(),
+			"huaweicloud_organizations_organizational_units":     organizations.DataSourceOrganizationalUnits(),
+			"huaweicloud_organizations_accounts":                 organizations.DataSourceAccounts(),
+			"huaweicloud_organizations_policies":                 organizations.DataSourcePolicies(),
+			"huaweicloud_organizations_policy_attached_entities": organizations.DataSourceOrganizationsPolicyAttachedEntities(),
+			"huaweicloud_organizations_sent_invitations":         organizations.DataSourceOrganizationsSentInvitations(),
+			"huaweicloud_organizations_received_invitations":     organizations.DataSourceOrganizationsReceivedInvitations(),
+			"huaweicloud_organizations_services":                 organizations.DataSourceOrganizationsServices(),
+			"huaweicloud_organizations_trusted_services":         organizations.DataSourceOrganizationsTrustedServices(),
+			"huaweicloud_organizations_effective_policies":       organizations.DataSourceOrganizationsEffectivePolicies(),
+			"huaweicloud_organizations_tag_policy_services":      organizations.DataSourceOrganizationsTagPolicyServices(),
+			"huaweicloud_organizations_resource_tags":            organizations.DataSourceOrganizationsTags(),
+			"huaweicloud_organizations_resource_instances":       organizations.DataSourceOrganizationsResourceInstances(),
+			"huaweicloud_organizations_quotas":                   organizations.DataSourceOrganizationsQuotas(),
 
 			// Deprecated ongoing (without DeprecationMessage), used by other providers
 			"huaweicloud_vpc_route":        vpc.DataSourceVpcRouteV2(),
@@ -1622,6 +1631,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_cciv2_network":    cci.ResourceV2Network(),
 			"huaweicloud_cciv2_config_map": cci.ResourceV2ConfigMap(),
 			"huaweicloud_cciv2_secret":     cci.ResourceV2Secret(),
+			"huaweicloud_cciv2_service":    cci.ResourceV2Service(),
 
 			"huaweicloud_ccm_certificate":                ccm.ResourceCCMCertificate(),
 			"huaweicloud_ccm_certificate_apply":          ccm.ResourceCertificateApply(),
@@ -1910,12 +1920,13 @@ func Provider() *schema.Provider {
 			"huaweicloud_er_vpc_attachment":      er.ResourceVpcAttachment(),
 			"huaweicloud_er_flow_log":            er.ResourceFlowLog(),
 
-			"huaweicloud_evs_snapshot":                 evs.ResourceEvsSnapshot(),
-			"huaweicloud_evs_volume":                   evs.ResourceEvsVolume(),
-			"huaweicloud_evs_snapshot_rollback":        evs.ResourceSnapshotRollBack(),
-			"huaweicloud_evs_volume_transfer":          evs.ResourceVolumeTransfer(),
-			"huaweicloud_evsv3_volume_transfer":        evs.ResourceV3VolumeTransfer(),
-			"huaweicloud_evs_volume_transfer_accepter": evs.ResourceVolumeTransferAccepter(),
+			"huaweicloud_evs_snapshot":                   evs.ResourceEvsSnapshot(),
+			"huaweicloud_evs_volume":                     evs.ResourceEvsVolume(),
+			"huaweicloud_evs_snapshot_rollback":          evs.ResourceSnapshotRollBack(),
+			"huaweicloud_evs_volume_transfer":            evs.ResourceVolumeTransfer(),
+			"huaweicloud_evsv3_volume_transfer":          evs.ResourceV3VolumeTransfer(),
+			"huaweicloud_evs_volume_transfer_accepter":   evs.ResourceVolumeTransferAccepter(),
+			"huaweicloud_evsv3_volume_transfer_accepter": evs.ResourceV3VolumeTransferAccepter(),
 
 			"huaweicloud_fgs_application":                fgs.ResourceApplication(),
 			"huaweicloud_fgs_async_invoke_configuration": fgs.ResourceAsyncInvokeConfiguration(),
@@ -2316,15 +2327,17 @@ func Provider() *schema.Provider {
 			"huaweicloud_servicestage_repo_token_authorization":    servicestage.ResourceRepoTokenAuth(),
 			"huaweicloud_servicestage_repo_password_authorization": servicestage.ResourceRepoPwdAuth(),
 			// v3 managements
-			"huaweicloud_servicestagev3_application":               servicestage.ResourceV3Application(),
-			"huaweicloud_servicestagev3_application_configuration": servicestage.ResourceV3ApplicationConfiguration(),
-			"huaweicloud_servicestagev3_component":                 servicestage.ResourceV3Component(),
-			"huaweicloud_servicestagev3_configuration":             servicestage.ResourceV3Configuration(),
-			"huaweicloud_servicestagev3_component_action":          servicestage.ResourceV3ComponentAction(),
-			"huaweicloud_servicestagev3_configuration_group":       servicestage.ResourceV3ConfigurationGroup(),
-			"huaweicloud_servicestagev3_environment":               servicestage.ResourceV3Environment(),
-			"huaweicloud_servicestagev3_environment_associate":     servicestage.ResourceV3EnvironmentAssociate(),
-			"huaweicloud_servicestagev3_runtime_stack":             servicestage.ResourceV3RuntimeStack(),
+			"huaweicloud_servicestagev3_application":                 servicestage.ResourceV3Application(),
+			"huaweicloud_servicestagev3_application_configuration":   servicestage.ResourceV3ApplicationConfiguration(),
+			"huaweicloud_servicestagev3_component":                   servicestage.ResourceV3Component(),
+			"huaweicloud_servicestagev3_configuration":               servicestage.ResourceV3Configuration(),
+			"huaweicloud_servicestagev3_component_action":            servicestage.ResourceV3ComponentAction(),
+			"huaweicloud_servicestagev3_component_refresh":           servicestage.ResourceV3ComponentRefresh(),
+			"huaweicloud_servicestagev3_configuration_group":         servicestage.ResourceV3ConfigurationGroup(),
+			"huaweicloud_servicestagev3_environment":                 servicestage.ResourceV3Environment(),
+			"huaweicloud_servicestagev3_environment_associate":       servicestage.ResourceV3EnvironmentAssociate(),
+			"huaweicloud_servicestagev3_runtime_stack":               servicestage.ResourceV3RuntimeStack(),
+			"huaweicloud_servicestagev3_runtime_stack_batch_release": servicestage.ResourceV3RuntimeStackBatchRelease(),
 
 			"huaweicloud_sfs_turbo":            sfsturbo.ResourceSFSTurbo(),
 			"huaweicloud_sfs_turbo_dir":        sfsturbo.ResourceSfsTurboDir(),
