@@ -451,6 +451,8 @@ func Provider() *schema.Provider {
 			"huaweicloud_access_analyzers":              accessanalyzer.DataSourceAccessAnalyzers(),
 			"huaweicloud_access_analyzer_archive_rules": accessanalyzer.DataSourceAccessAnalyzerArchiveRules(),
 
+			"huaweicloud_aad_instances": aad.DataSourceAADInstances(),
+
 			"huaweicloud_antiddos_config_ranges":                antiddos.DataSourceConfigRanges(),
 			"huaweicloud_antiddos_weekly_protection_statistics": antiddos.DataSourceWeeklyProtectionStatistics(),
 			"huaweicloud_antiddos_eip_defense_statuses":         antiddos.DataSourceEipDefenseStatuses(),
@@ -569,10 +571,12 @@ func Provider() *schema.Provider {
 			"huaweicloud_cce_cluster_configurations": cce.DataSourceClusterConfigurations(),
 			"huaweicloud_cce_addons":                 cce.DataSourceCceAddons(),
 
-			"huaweicloud_cci_namespaces":   cci.DataSourceCciNamespaces(),
-			"huaweicloud_cciv2_namespaces": cci.DataSourceV2Namespaces(),
-			"huaweicloud_cciv2_services":   cci.DataSourceV2Services(),
-			"huaweicloud_cciv2_secrets":    cci.DataSourceV2Secrets(),
+			"huaweicloud_cci_namespaces":    cci.DataSourceCciNamespaces(),
+			"huaweicloud_cciv2_namespaces":  cci.DataSourceV2Namespaces(),
+			"huaweicloud_cciv2_services":    cci.DataSourceV2Services(),
+			"huaweicloud_cciv2_secrets":     cci.DataSourceV2Secrets(),
+			"huaweicloud_cciv2_config_maps": cci.DataSourceV2ConfigMaps(),
+			"huaweicloud_cciv2_networks":    cci.DataSourceV2Networks(),
 
 			"huaweicloud_ccm_certificates":               ccm.DataSourceCertificates(),
 			"huaweicloud_ccm_certificate_export":         ccm.DataSourceCertificateExport(),
@@ -632,9 +636,10 @@ func Provider() *schema.Provider {
 			"huaweicloud_cfw_resource_tags":             cfw.DataSourceCfwResourceTags(),
 			"huaweicloud_cfw_tags":                      cfw.DataSourceCfwTags(),
 
-			"huaweicloud_cnad_advanced_instances":         cnad.DataSourceInstances(),
-			"huaweicloud_cnad_advanced_available_objects": cnad.DataSourceAvailableProtectedObjects(),
-			"huaweicloud_cnad_advanced_protected_objects": cnad.DataSourceProtectedObjects(),
+			"huaweicloud_cnad_advanced_instances":           cnad.DataSourceInstances(),
+			"huaweicloud_cnad_advanced_alarm_notifications": cnad.DataSourceAlarmNotifications(),
+			"huaweicloud_cnad_advanced_available_objects":   cnad.DataSourceAvailableProtectedObjects(),
+			"huaweicloud_cnad_advanced_protected_objects":   cnad.DataSourceProtectedObjects(),
 
 			"huaweicloud_compute_flavors":                 ecs.DataSourceEcsFlavors(),
 			"huaweicloud_compute_instance":                ecs.DataSourceComputeInstance(),
@@ -1705,10 +1710,11 @@ func Provider() *schema.Provider {
 
 			"huaweicloud_cloudtable_cluster": cloudtable.ResourceCloudTableCluster(),
 
-			"huaweicloud_cnad_advanced_black_white_list": cnad.ResourceBlackWhiteList(),
-			"huaweicloud_cnad_advanced_policy":           cnad.ResourceCNADAdvancedPolicy(),
-			"huaweicloud_cnad_advanced_policy_associate": cnad.ResourcePolicyAssociate(),
-			"huaweicloud_cnad_advanced_protected_object": cnad.ResourceProtectedObject(),
+			"huaweicloud_cnad_advanced_alarm_notification": cnad.ResourceAlarmNotification(),
+			"huaweicloud_cnad_advanced_black_white_list":   cnad.ResourceBlackWhiteList(),
+			"huaweicloud_cnad_advanced_policy":             cnad.ResourceCNADAdvancedPolicy(),
+			"huaweicloud_cnad_advanced_policy_associate":   cnad.ResourcePolicyAssociate(),
+			"huaweicloud_cnad_advanced_protected_object":   cnad.ResourceProtectedObject(),
 
 			"huaweicloud_compute_instance":          ecs.ResourceComputeInstance(),
 			"huaweicloud_compute_interface_attach":  ecs.ResourceComputeInterfaceAttach(),
@@ -1944,6 +1950,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_er_flow_log":            er.ResourceFlowLog(),
 
 			"huaweicloud_evs_snapshot":                   evs.ResourceEvsSnapshot(),
+			"huaweicloud_evsv3_snapshot":                 evs.ResourceV3Snapshot(),
 			"huaweicloud_evs_volume":                     evs.ResourceEvsVolume(),
 			"huaweicloud_evs_snapshot_rollback":          evs.ResourceSnapshotRollBack(),
 			"huaweicloud_evs_volume_transfer":            evs.ResourceVolumeTransfer(),
@@ -2964,6 +2971,8 @@ func configureProvider(_ context.Context, d *schema.ResourceData, terraformVersi
 	if conf.Cloud == defaultEuropeCloud {
 		cdnEndpoint := fmt.Sprintf("https://cdn.%s/", conf.Cloud)
 		conf.SetServiceEndpoint("cdn", cdnEndpoint)
+		ramEndpoint := fmt.Sprintf("https://ram.%s/", conf.Cloud)
+		conf.SetServiceEndpoint("ram", ramEndpoint)
 	}
 
 	return &conf, config.CheckUpgrade(d, Version)
