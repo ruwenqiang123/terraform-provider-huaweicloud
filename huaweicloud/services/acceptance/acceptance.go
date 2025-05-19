@@ -70,6 +70,8 @@ var (
 	HW_CAE_BUILD_BASE_IMAGE   = os.Getenv("HW_CAE_BUILD_BASE_IMAGE")
 	HW_CAE_IMAGE_URL          = os.Getenv("HW_CAE_IMAGE_URL")
 
+	HW_CBC_UNSUBSCRIBE_RESOURCE_ID = os.Getenv("HW_CBC_UNSUBSCRIBE_RESOURCE_ID")
+
 	HW_MAPREDUCE_CUSTOM           = os.Getenv("HW_MAPREDUCE_CUSTOM")
 	HW_MAPREDUCE_BOOTSTRAP_SCRIPT = os.Getenv("HW_MAPREDUCE_BOOTSTRAP_SCRIPT")
 
@@ -389,7 +391,8 @@ var (
 	HW_AOM_MULTI_ACCOUNT_AGGREGATION_RULE_ENABLE = os.Getenv("HW_AOM_MULTI_ACCOUNT_AGGREGATION_RULE_ENABLE")
 
 	// the ID of ECS instance which has installed uniagent
-	HW_COC_INSTANCE_ID = os.Getenv("HW_COC_INSTANCE_ID")
+	HW_COC_INSTANCE_ID    = os.Getenv("HW_COC_INSTANCE_ID")
+	HW_COC_APPLICATION_ID = os.Getenv("HW_COC_APPLICATION_ID")
 
 	// Deprecated
 	HW_SRC_ACCESS_KEY = os.Getenv("HW_SRC_ACCESS_KEY")
@@ -568,6 +571,11 @@ var (
 
 	HW_RDS_CROSS_REGION_BACKUP_INSTANCE_ID = os.Getenv("HW_RDS_CROSS_REGION_BACKUP_INSTANCE_ID")
 	HW_RDS_INSTANCE_ID                     = os.Getenv("HW_RDS_INSTANCE_ID")
+	HW_RDS_TARGET_INSTANCE_ID              = os.Getenv("HW_RDS_TARGET_INSTANCE_ID")
+	HW_RDS_TARGET_PROJECT_ID               = os.Getenv("HW_RDS_TARGET_PROJECT_ID")
+	HW_RDS_TARGET_REGION                   = os.Getenv("HW_RDS_TARGET_REGION")
+	HW_RDS_TARGET_IP                       = os.Getenv("HW_RDS_TARGET_IP")
+	HW_RDS_TARGET_SUBNET                   = os.Getenv("HW_RDS_TARGET_SUBNET")
 	HW_RDS_INSTANCE_NAME                   = os.Getenv("HW_RDS_INSTANCE_NAME")
 	HW_RDS_DATABASE_NAME                   = os.Getenv("HW_RDS_DATABASE_NAME")
 	HW_RDS_TABLE_NAME                      = os.Getenv("HW_RDS_TABLE_NAME")
@@ -585,6 +593,7 @@ var (
 	HW_DMS_ROCKETMQ_TOPIC_NAME  = os.Getenv("HW_DMS_ROCKETMQ_TOPIC_NAME")
 	HW_DMS_ROCKETMQ_GROUP_NAME  = os.Getenv("HW_DMS_ROCKETMQ_GROUP_NAME")
 
+	HW_SFS_TURBO_SHARE_ID    = os.Getenv("HW_SFS_TURBO_SHARE_ID")
 	HW_SFS_TURBO_BACKUP_ID   = os.Getenv("HW_SFS_TURBO_BACKUP_ID")
 	HW_SFS_FILE_SYSTEM_NAMES = os.Getenv("HW_SFS_FILE_SYSTEM_NAMES")
 
@@ -657,6 +666,13 @@ func TestAccPreCheckCaeComponent(t *testing.T) {
 	if HW_CAE_CODE_URL == "" || HW_CAE_CODE_AUTH_NAME == "" || HW_CAE_CODE_BRANCH == "" || HW_CAE_CODE_NAMESPACE == "" ||
 		HW_CAE_ARTIFACT_NAMESPACE == "" || HW_CAE_BUILD_BASE_IMAGE == "" || HW_CAE_IMAGE_URL == "" {
 		t.Skip("Skip the CAE acceptance tests.")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckCbcResourcesUnsubscribe(t *testing.T) {
+	if HW_CBC_UNSUBSCRIBE_RESOURCE_ID == "" {
+		t.Skip("HW_CBC_UNSUBSCRIBE_RESOURCE_ID must be set for the acceptance test")
 	}
 }
 
@@ -1533,6 +1549,13 @@ func TestAccPreCheckAadForwardRule(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckAadInstanceID(t *testing.T) {
+	if HW_AAD_INSTANCE_ID == "" {
+		t.Skip("HW_AAD_INSTANCE_ID must be set for this acceptance test.")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckCCMCertificateName(t *testing.T) {
 	if HW_CCM_CERTIFICATE_NAME == "" {
 		t.Skip("HW_CCM_CERTIFICATE_NAME must be set for CCM SSL acceptance tests.")
@@ -2321,6 +2344,13 @@ func TestAccPreCheckCocInstanceID(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckCocApplicationID(t *testing.T) {
+	if HW_COC_APPLICATION_ID == "" {
+		t.Skip("HW_COC_APPLICATION_ID must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
 func TestAccPrecheckKooGallery(t *testing.T) {
 	if HW_KOOGALLERY_ASSET == "" {
 		t.Skip("Skip the KooGallery acceptance tests.")
@@ -2827,6 +2857,41 @@ func TestAccPreCheckRdsInstanceId(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckRdsTargetInstanceId(t *testing.T) {
+	if HW_RDS_TARGET_INSTANCE_ID == "" {
+		t.Skip("HW_RDS_TARGET_INSTANCE_ID must be set for RDS acceptance tests")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckRdsTargetProjectId(t *testing.T) {
+	if HW_RDS_TARGET_PROJECT_ID == "" {
+		t.Skip("HW_RDS_TARGET_PROJECT_ID must be set for RDS acceptance tests")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckRdsTargetRegion(t *testing.T) {
+	if HW_RDS_TARGET_REGION == "" {
+		t.Skip("HW_RDS_TARGET_REGION must be set for RDS acceptance tests")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckRdsTargetIp(t *testing.T) {
+	if HW_RDS_TARGET_IP == "" {
+		t.Skip("HW_RDS_TARGET_IP must be set for RDS acceptance tests")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckRdsTargetSubnet(t *testing.T) {
+	if HW_RDS_TARGET_SUBNET == "" {
+		t.Skip("HW_RDS_TARGET_SUBNET must be set for RDS acceptance tests")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckRdsInstanceName(t *testing.T) {
 	if HW_RDS_INSTANCE_NAME == "" {
 		t.Skip("HW_RDS_INSTANCE_NAME must be set for RDS acceptance tests")
@@ -3054,6 +3119,13 @@ func TestAccPrecheckTimeStamp(t *testing.T) {
 func TestAccPrecheckCDNAnalytics(t *testing.T) {
 	if HW_CDN_START_TIME == "" || HW_CDN_END_TIME == "" || HW_CDN_STAT_TYPE == "" {
 		t.Skip("HW_CDN_START_TIME, HW_CDN_END_TIME, and HW_CDN_STAT_TYPE must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
+func TestAccPrecheckSFSTurboShareId(t *testing.T) {
+	if HW_SFS_TURBO_SHARE_ID == "" {
+		t.Skip("HW_SFS_TURBO_SHARE_ID must be set for the acceptance test")
 	}
 }
 

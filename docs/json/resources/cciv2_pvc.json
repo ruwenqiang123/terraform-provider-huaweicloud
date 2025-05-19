@@ -5,13 +5,21 @@
         "huaweicloud_cciv2_pvc": {
           "block": {
             "attributes": {
+              "access_modes": {
+                "type": [
+                  "list",
+                  "string"
+                ],
+                "description": "The access modes of the persistent volume claim.",
+                "optional": true
+              },
               "annotations": {
                 "type": [
                   "map",
                   "string"
                 ],
                 "description": "The annotations of the persistent volume claim.",
-                "computed": true
+                "optional": true
               },
               "api_version": {
                 "type": "string",
@@ -46,7 +54,7 @@
                   "string"
                 ],
                 "description": "The labels of the persistent volume claim.",
-                "computed": true
+                "optional": true
               },
               "name": {
                 "type": "string",
@@ -72,10 +80,85 @@
                 "description": "The status of the persistent volume claim.",
                 "computed": true
               },
+              "storage_class_name": {
+                "type": "string",
+                "optional": true
+              },
               "uid": {
                 "type": "string",
                 "description": "The uid of the persistent volume claim.",
                 "computed": true
+              },
+              "valume_name": {
+                "type": "string",
+                "optional": true
+              },
+              "volume_mode": {
+                "type": "string",
+                "optional": true
+              }
+            },
+            "block_types": {
+              "resources": {
+                "block": {
+                  "attributes": {
+                    "limits": {
+                      "type": [
+                        "map",
+                        "string"
+                      ],
+                      "optional": true
+                    },
+                    "requests": {
+                      "type": [
+                        "map",
+                        "string"
+                      ],
+                      "optional": true
+                    }
+                  }
+                },
+                "nesting_mode": "list",
+                "max_items": 1
+              },
+              "selector": {
+                "block": {
+                  "attributes": {
+                    "match_labels": {
+                      "type": [
+                        "map",
+                        "string"
+                      ],
+                      "optional": true
+                    }
+                  },
+                  "block_types": {
+                    "match_expressions": {
+                      "block": {
+                        "attributes": {
+                          "key": {
+                            "type": "string",
+                            "optional": true
+                          },
+                          "operator": {
+                            "type": "string",
+                            "optional": true
+                          },
+                          "values": {
+                            "type": [
+                              "list",
+                              "string"
+                            ],
+                            "optional": true
+                          }
+                        }
+                      },
+                      "nesting_mode": "list"
+                    }
+                  }
+                },
+                "nesting_mode": "list",
+                "max_items": 1
               }
             }
           }
