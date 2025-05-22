@@ -500,6 +500,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_apig_instance_supported_features":        apig.DataSourceInstanceSupportedFeatures(),
 			"huaweicloud_apig_instances":                          apig.DataSourceInstances(),
 			"huaweicloud_apig_orchestration_rules":                apig.DataSourceOrchestrationRules(),
+			"huaweicloud_apig_orchestration_rule_associated_apis": apig.DataSourceOrchestrationRuleAssociatedApis(),
 			"huaweicloud_apig_signatures":                         apig.DataSourceSignatures(),
 			"huaweicloud_apig_throttling_policies":                apig.DataSourceThrottlingPolicies(),
 
@@ -582,6 +583,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_cciv2_secrets":     cci.DataSourceV2Secrets(),
 			"huaweicloud_cciv2_config_maps": cci.DataSourceV2ConfigMaps(),
 			"huaweicloud_cciv2_networks":    cci.DataSourceV2Networks(),
+			"huaweicloud_cciv2_deployments": cci.DataSourceV2Deployments(),
 
 			"huaweicloud_ccm_certificates":               ccm.DataSourceCertificates(),
 			"huaweicloud_ccm_certificate_export":         ccm.DataSourceCertificateExport(),
@@ -646,8 +648,12 @@ func Provider() *schema.Provider {
 			"huaweicloud_cnad_advanced_available_objects":   cnad.DataSourceAvailableProtectedObjects(),
 			"huaweicloud_cnad_advanced_protected_objects":   cnad.DataSourceProtectedObjects(),
 
-			"huaweicloud_coc_applications": coc.DataSourceCocApplications(),
-			"huaweicloud_coc_scripts":      coc.DataSourceCocScripts(),
+			"huaweicloud_coc_applications":               coc.DataSourceCocApplications(),
+			"huaweicloud_coc_scripts":                    coc.DataSourceCocScripts(),
+			"huaweicloud_coc_script_orders":              coc.DataSourceCocScriptOrders(),
+			"huaweicloud_coc_script_order_statistics":    coc.DataSourceCocScriptOrderStatistics(),
+			"huaweicloud_coc_script_order_batches":       coc.DataSourceCocScriptOrderBatches(),
+			"huaweicloud_coc_script_order_batch_details": coc.DataSourceCocScriptOrderBatchDetails(),
 
 			"huaweicloud_compute_flavors":                 ecs.DataSourceEcsFlavors(),
 			"huaweicloud_compute_instance":                ecs.DataSourceComputeInstance(),
@@ -879,6 +885,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_er_tags":               er.DataSourceTags(),
 
 			"huaweicloud_evs_volumes":            evs.DataSourceEvsVolumes(),
+			"huaweicloud_evsv3_volumes":          evs.DataSourceV3Volumes(),
 			"huaweicloud_evs_snapshots":          evs.DataSourceEvsSnapshots(),
 			"huaweicloud_evs_availability_zones": evs.DataSourceEvsAvailabilityZones(),
 			"huaweicloud_evs_volume_types":       evs.DataSourceEvsVolumeTypes(),
@@ -1269,9 +1276,11 @@ func Provider() *schema.Provider {
 
 			"huaweicloud_sfs_turbos":            sfsturbo.DataSourceTurbos(),
 			"huaweicloud_sfs_turbo_data_tasks":  sfsturbo.DataSourceSfsTurboDataTasks(),
+			"huaweicloud_sfs_turbo_dir_usage":   sfsturbo.DataSourceDirusage(),
 			"huaweicloud_sfs_turbo_du_tasks":    sfsturbo.DataSourceSfsTurboDuTasks(),
 			"huaweicloud_sfs_turbo_obs_targets": sfsturbo.DataSourceSfsTurboObsTargets(),
 			"huaweicloud_sfs_turbo_perm_rules":  sfsturbo.DataSourceSfsTurboPermRules(),
+			"huaweicloud_sfs_turbo_tags":        sfsturbo.DataSourceSfsTurboTags(),
 
 			"huaweicloud_swr_organizations":             swr.DataSourceOrganizations(),
 			"huaweicloud_swr_repositories":              swr.DataSourceRepositories(),
@@ -1348,10 +1357,12 @@ func Provider() *schema.Provider {
 
 			"huaweicloud_vpn_access_policies":                vpn.DataSourceVpnAccessPolicies(),
 			"huaweicloud_vpn_gateway_availability_zones":     vpn.DataSourceVpnGatewayAZs(),
+			"huaweicloud_vpnv51_gateway_availability_zones":  vpn.DataSourceVpnv51GatewayAvailabilityZones(),
 			"huaweicloud_vpn_gateways":                       vpn.DataSourceGateways(),
 			"huaweicloud_vpn_customer_gateways":              vpn.DataSourceVpnCustomerGateways(),
 			"huaweicloud_vpn_connections":                    vpn.DataSourceVpnConnections(),
 			"huaweicloud_vpn_connection_health_checks":       vpn.DataSourceVpnConnectionHealthChecks(),
+			"huaweicloud_vpn_connection_logs":                vpn.DataSourceVpnConnectionLogs(),
 			"huaweicloud_vpn_p2c_gateways":                   vpn.DataSourceVpnP2cGateways(),
 			"huaweicloud_vpn_p2c_gateway_availability_zones": vpn.DataSourceVpnP2cGatewayAvailabilityZones(),
 			"huaweicloud_vpn_p2c_gateway_connections":        vpn.DataSourceVpnP2cGatewayConnections(),
@@ -1359,6 +1370,8 @@ func Provider() *schema.Provider {
 			"huaweicloud_vpn_users":                          vpn.DataSourceVpnUsers(),
 			"huaweicloud_vpn_user_groups":                    vpn.DataSourceVpnUserGroups(),
 			"huaweicloud_vpn_quotas":                         vpn.DataSourceVpnQuotas(),
+			"huaweicloud_vpn_tags":                           vpn.DataSourceVpnTags(),
+			"huaweicloud_vpn_resource_instances":             vpn.DataSourceVpnInstances(),
 
 			"huaweicloud_waf_address_groups":                       waf.DataSourceWafAddressGroups(),
 			"huaweicloud_waf_certificate":                          waf.DataSourceWafCertificate(),
@@ -1514,8 +1527,9 @@ func Provider() *schema.Provider {
 		},
 
 		ResourcesMap: map[string]*schema.Resource{
-			"huaweicloud_aad_forward_rule":     aad.ResourceForwardRule(),
-			"huaweicloud_aad_black_white_list": aad.ResourceBlackWhiteList(),
+			"huaweicloud_aad_forward_rule":         aad.ResourceForwardRule(),
+			"huaweicloud_aad_black_white_list":     aad.ResourceBlackWhiteList(),
+			"huaweicloud_aad_change_specification": aad.ResourceChangeSpecification(),
 
 			"huaweicloud_antiddos_basic":                     antiddos.ResourceCloudNativeAntiDdos(),
 			"huaweicloud_antiddos_default_protection_policy": antiddos.ResourceDefaultProtectionPolicy(),
@@ -2133,6 +2147,8 @@ func Provider() *schema.Provider {
 			"huaweicloud_kms_key":                  dew.ResourceKmsKey(),
 			"huaweicloud_kps_keypair":              dew.ResourceKeypair(),
 			"huaweicloud_kms_grant":                dew.ResourceKmsGrant(),
+			"huaweicloud_kms_alias":                dew.ResourceKmsAlias(),
+			"huaweicloud_kms_alias_associate":      dew.ResourceKmsAliasAssociate(),
 			"huaweicloud_kms_dedicated_keystore":   dew.ResourceKmsDedicatedKeystore(),
 			"huaweicloud_kms_key_material":         dew.ResourceKmsKeyMaterial(),
 
@@ -2456,14 +2472,16 @@ func Provider() *schema.Provider {
 			"huaweicloud_vpcep_endpoint": vpcep.ResourceVPCEndpoint(),
 			"huaweicloud_vpcep_service":  vpcep.ResourceVPCEndpointService(),
 
-			"huaweicloud_vpn_access_policy":           vpn.ResourceAccessPolicy(),
-			"huaweicloud_vpn_gateway":                 vpn.ResourceGateway(),
-			"huaweicloud_vpn_customer_gateway":        vpn.ResourceCustomerGateway(),
-			"huaweicloud_vpn_connection":              vpn.ResourceConnection(),
-			"huaweicloud_vpn_connection_health_check": vpn.ResourceConnectionHealthCheck(),
-			"huaweicloud_vpn_user":                    vpn.ResourceUser(),
-			"huaweicloud_vpn_user_group":              vpn.ResourceUserGroup(),
-			"huaweicloud_vpn_client_ca_certificate":   vpn.ResourceClientCACertificate(),
+			"huaweicloud_vpn_access_policy":                     vpn.ResourceAccessPolicy(),
+			"huaweicloud_vpn_gateway":                           vpn.ResourceGateway(),
+			"huaweicloud_vpn_customer_gateway":                  vpn.ResourceCustomerGateway(),
+			"huaweicloud_vpn_connection":                        vpn.ResourceConnection(),
+			"huaweicloud_vpn_connection_health_check":           vpn.ResourceConnectionHealthCheck(),
+			"huaweicloud_vpn_user":                              vpn.ResourceUser(),
+			"huaweicloud_vpn_user_group":                        vpn.ResourceUserGroup(),
+			"huaweicloud_vpn_client_ca_certificate":             vpn.ResourceClientCACertificate(),
+			"huaweicloud_vpn_server":                            vpn.ResourceServer(),
+			"huaweicloud_vpn_p2c_gateway_connection_disconnect": vpn.ResourceP2CGatewayConnectionDisconnect(),
 
 			"huaweicloud_waf_address_group":                       waf.ResourceWafAddressGroup(),
 			"huaweicloud_waf_certificate":                         waf.ResourceWafCertificate(),

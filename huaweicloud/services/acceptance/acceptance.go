@@ -45,7 +45,9 @@ var (
 	HW_VPC_ENHANCED_LOCAL_ROUTE      = os.Getenv("HW_VPC_ENHANCED_LOCAL_ROUTE")
 	HW_VPN_P2C_GATEWAY_ID            = os.Getenv("HW_VPN_P2C_GATEWAY_ID")
 	HW_VPN_P2C_SERVER                = os.Getenv("HW_VPN_P2C_SERVER")
+	HW_VPN_P2C_SERVER_CERTIFICATE_ID = os.Getenv("HW_VPN_P2C_SERVER_CERTIFICATE_ID")
 	HW_VPN_P2C_CLIENT_CA_CERTIFICATE = os.Getenv("HW_VPN_P2C_CLIENT_CA_CERTIFICATE")
+	HW_VPN_P2C_GATEWAY_CONNECTION_ID = os.Getenv("HW_VPN_P2C_GATEWAY_CONNECTION_ID")
 	HW_NETWORK_ID                    = os.Getenv("HW_NETWORK_ID")
 	HW_SUBNET_ID                     = os.Getenv("HW_SUBNET_ID")
 	HW_SECURITY_GROUP_ID             = os.Getenv("HW_SECURITY_GROUP_ID")
@@ -260,6 +262,7 @@ var (
 	HW_KMS_ENVIRONMENT     = os.Getenv("HW_KMS_ENVIRONMENT")
 	HW_KMS_HSM_CLUSTER_ID  = os.Getenv("HW_KMS_HSM_CLUSTER_ID")
 	HW_KMS_KEY_ID          = os.Getenv("HW_KMS_KEY_ID")
+	HW_KMS_ALIAS           = os.Getenv("HW_KMS_ALIAS")
 	HW_KMS_IMPORT_TOKEN    = os.Getenv("HW_KMS_IMPORT_TOKEN")
 	HW_KMS_KEY_MATERIAL    = os.Getenv("HW_KMS_KEY_MATERIAL")
 	HW_KMS_KEY_PRIVATE_KEY = os.Getenv("HW_KMS_KEY_PRIVATE_KEY")
@@ -1615,6 +1618,13 @@ func TestAccPreCheckKmsImportToken(t *testing.T) {
 func TestAccPreCheckKmsKeyID(t *testing.T) {
 	if HW_KMS_KEY_ID == "" {
 		t.Skip("HW_KMS_KEY_ID must be set for KMS key material acceptance tests.")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckKmsAlias(t *testing.T) {
+	if HW_KMS_ALIAS == "" {
+		t.Skip("HW_KMS_ALIAS must be set for the acceptance test")
 	}
 }
 
@@ -3067,9 +3077,23 @@ func TestAccPreCheckVPNP2cServer(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckVPNP2cServerCertificateID(t *testing.T) {
+	if HW_VPN_P2C_SERVER_CERTIFICATE_ID == "" {
+		t.Skip("HW_VPN_P2C_SERVER_CERTIFICATE_ID must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckVPNP2cClientCACertificate(t *testing.T) {
 	if HW_VPN_P2C_CLIENT_CA_CERTIFICATE == "" {
 		t.Skip("HW_VPN_P2C_CLIENT_CA_CERTIFICATE must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckVPNP2cGatewayConnectionId(t *testing.T) {
+	if HW_VPN_P2C_GATEWAY_CONNECTION_ID == "" {
+		t.Skip("HW_VPN_P2C_GATEWAY_CONNECTION_ID must be set for the acceptance test")
 	}
 }
 
