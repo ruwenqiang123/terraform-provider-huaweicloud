@@ -230,9 +230,11 @@ var (
 	HW_MEETING_USER_ID          = os.Getenv("HW_MEETING_USER_ID")
 	HW_MEETING_ROOM_ID          = os.Getenv("HW_MEETING_ROOM_ID")
 
+	HW_AAD_DOMAIN_NAME = os.Getenv("HW_AAD_DOMAIN_NAME")
 	HW_AAD_INSTANCE_ID = os.Getenv("HW_AAD_INSTANCE_ID")
 	HW_AAD_IP_ADDRESS  = os.Getenv("HW_AAD_IP_ADDRESS")
 	HW_AAD_ENABLE_FLAG = os.Getenv("HW_AAD_ENABLE_FLAG")
+	HW_AAD_DOMAIN_ID   = os.Getenv("HW_AAD_DOMAIN_ID")
 
 	HW_WORKSPACE_AD_DOMAIN_NAMES = os.Getenv("HW_WORKSPACE_AD_DOMAIN_NAMES") // Domain name, e.g. "example.com".
 	// Please make sure all AD servers (master and standby) have the same account configuration (with same name and password).
@@ -765,6 +767,20 @@ func TestAccPreCheck(t *testing.T) {
 func TestAccPrecheckAadEnable(t *testing.T) {
 	if HW_AAD_ENABLE_FLAG == "" {
 		t.Skip("HW_AAD_ENABLE_FLAG must be set for this acceptance test")
+	}
+}
+
+// lintignore:AT003
+func TestAccPrecheckAadDomainName(t *testing.T) {
+	if HW_AAD_DOMAIN_NAME == "" {
+		t.Skip("HW_AAD_DOMAIN_NAME must be set for this acceptance test")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckAadDomainID(t *testing.T) {
+	if HW_AAD_DOMAIN_ID == "" {
+		t.Skip("HW_AAD_DOMAIN_ID must be set for this acceptance test")
 	}
 }
 
@@ -1548,6 +1564,13 @@ func TestAccPreCheckParticipants(t *testing.T) {
 func TestAccPreCheckAadForwardRule(t *testing.T) {
 	if HW_AAD_INSTANCE_ID == "" || HW_AAD_IP_ADDRESS == "" {
 		t.Skip("The instance information is not completed for AAD rule acceptance test.")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckAADIncetance(t *testing.T) {
+	if HW_AAD_IP_ADDRESS == "" || HW_AAD_DOMAIN_NAME == "" {
+		t.Skip("HW_AAD_IP_ADDRESS and HW_AAD_DOMAIN_NAME must be set for the acceptance test.")
 	}
 }
 
