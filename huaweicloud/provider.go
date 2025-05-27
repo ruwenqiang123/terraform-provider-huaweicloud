@@ -1146,7 +1146,9 @@ func Provider() *schema.Provider {
 			"huaweicloud_modelarts_services":         modelarts.DataSourceServices(),
 			"huaweicloud_modelarts_resource_flavors": modelarts.DataSourceResourceFlavors(),
 			// Resource management via V2 APIs.
-			"huaweicloud_modelartsv2_resource_pools": modelarts.DataSourceV2ResourcePools(),
+			"huaweicloud_modelartsv2_node_pool_nodes":     modelarts.DataSourceV2NodePoolNodes(),
+			"huaweicloud_modelartsv2_resource_pool_nodes": modelarts.DataSourceV2ResourcePoolNodes(),
+			"huaweicloud_modelartsv2_resource_pools":      modelarts.DataSourceV2ResourcePools(),
 
 			"huaweicloud_mapreduce_clusters": mrs.DataSourceMrsClusters(),
 
@@ -1165,9 +1167,9 @@ func Provider() *schema.Provider {
 			"huaweicloud_rds_available_flavors":                rds.DataSourceRdsAvailableFlavors(),
 			"huaweicloud_rds_engine_versions":                  rds.DataSourceRdsEngineVersionsV3(),
 			"huaweicloud_rds_instances":                        rds.DataSourceRdsInstances(),
+			"huaweicloud_rds_instance_parameters_histories":    rds.DataSourceRdsInstanceParameterHistories(),
 			"huaweicloud_rds_backups":                          rds.DataSourceRdsBackups(),
 			"huaweicloud_rds_backup_files":                     rds.DataSourceRdsBackupFiles(),
-			"huaweicloud_rds_configuration_histories":          rds.DataSourceRdsConfigurationHistories(),
 			"huaweicloud_rds_storage_types":                    rds.DataSourceStoragetype(),
 			"huaweicloud_rds_sqlserver_collations":             rds.DataSourceSQLServerCollations(),
 			"huaweicloud_rds_sqlserver_databases":              rds.DataSourceSQLServerDatabases(),
@@ -1208,6 +1210,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_rds_ssl_cert_download_links":          rds.DataSourceRdsSslCertDownloadLinks(),
 			"huaweicloud_rds_quotas":                           rds.DataSourceRdsQuotas(),
 			"huaweicloud_rds_tags":                             rds.DataSourceRdsTags(),
+			"huaweicloud_rds_tasks":                            rds.DataSourceRdsTasks(),
 			"huaweicloud_rds_predefined_tags":                  rds.DataSourceRdsPredefinedTags(),
 
 			"huaweicloud_rms_policy_definitions":                       rms.DataSourcePolicyDefinitions(),
@@ -1279,6 +1282,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_smn_topic_subscriptions": smn.DataSourceSmnTopicSubscriptions(),
 
 			"huaweicloud_sms_source_servers": sms.DataSourceServers(),
+			"huaweicloud_sms_agent_configs":  sms.DataSourceSmsAgentConfigs(),
 
 			"huaweicloud_sfs_turbos":            sfsturbo.DataSourceTurbos(),
 			"huaweicloud_sfs_turbo_data_tasks":  sfsturbo.DataSourceSfsTurboDataTasks(),
@@ -1576,6 +1580,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_apig_acl_policy":                     apig.ResourceAclPolicy(),
 			"huaweicloud_apig_acl_policy_associate":           apig.ResourceAclPolicyAssociate(),
 			"huaweicloud_apig_api":                            apig.ResourceApigAPIV2(),
+			"huaweicloud_apig_api_check":                      apig.ResourceApiCheck(),
 			"huaweicloud_apig_api_publishment":                apig.ResourceApigApiPublishment(),
 			"huaweicloud_apig_appcode":                        apig.ResourceAppcode(),
 			"huaweicloud_apig_application":                    apig.ResourceApigApplicationV2(),
@@ -1694,6 +1699,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_cciv2_pod":                     cci.ResourceV2Pod(),
 			"huaweicloud_cciv2_persistent_volume_claim": cci.ResourceV2PersistentVolumeClaim(),
 			"huaweicloud_cci_pool_binding":              cci.ResourcePoolBinding(),
+			"huaweicloud_cciv2_hpa":                     cci.ResourceV2HPA(),
 
 			"huaweicloud_ccm_certificate":                ccm.ResourceCCMCertificate(),
 			"huaweicloud_ccm_certificate_apply":          ccm.ResourceCertificateApply(),
@@ -2236,8 +2242,9 @@ func Provider() *schema.Provider {
 			"huaweicloud_modelarts_network":                modelarts.ResourceModelartsNetwork(),
 			"huaweicloud_modelarts_resource_pool":          modelarts.ResourceModelartsResourcePool(),
 			// Resource management via V2 APIs.
-			"huaweicloud_modelartsv2_service":        modelarts.ResourceV2Service(),
-			"huaweicloud_modelartsv2_service_action": modelarts.ResourceV2ServiceAction(),
+			"huaweicloud_modelartsv2_node_batch_delete": modelarts.ResourceV2NodeBatchDelete(),
+			"huaweicloud_modelartsv2_service":           modelarts.ResourceV2Service(),
+			"huaweicloud_modelartsv2_service_action":    modelarts.ResourceV2ServiceAction(),
 
 			// DataArts Studio - Management Center
 			"huaweicloud_dataarts_studio_data_connection": dataarts.ResourceDataConnection(),
@@ -2349,6 +2356,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_rds_recycling_policy":               rds.ResourceRecyclingPolicy(),
 			"huaweicloud_rds_primary_instance_dr_capability": rds.ResourcePrimaryInstanceDrCapability(),
 			"huaweicloud_rds_dr_instance_dr_capability":      rds.ResourceDrInstanceDrCapability(),
+			"huaweicloud_rds_dr_instance_to_primary":         rds.ResourceDrInstanceToPrimary(),
 			"huaweicloud_rds_primary_standby_switch":         rds.ResourceRdsInstanceSwitch(),
 			"huaweicloud_rds_database_logs_shrinking":        rds.ResourceRdsDbLogsShrinking(),
 			"huaweicloud_rds_extend_log_link":                rds.ResourceRdsExtendLogLink(),
