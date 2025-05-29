@@ -546,6 +546,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_cbh_availability_zones": cbh.DataSourceAvailabilityZones(),
 			"huaweicloud_cbh_instance_quota":     cbh.DataSourceInstanceQuota(),
 			"huaweicloud_cbh_instance_tags":      cbh.DataSourceInstanceTags(),
+			"huaweicloud_cbh_instance_ecs_quota": cbh.DataSourceInstanceEcsQuota(),
 
 			"huaweicloud_cc_authorizations":                               cc.DataSourceCcAuthorizations(),
 			"huaweicloud_cc_bandwidth_packages":                           cc.DataSourceCcBandwidthPackages(),
@@ -587,6 +588,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_cciv2_config_maps": cci.DataSourceV2ConfigMaps(),
 			"huaweicloud_cciv2_networks":    cci.DataSourceV2Networks(),
 			"huaweicloud_cciv2_deployments": cci.DataSourceV2Deployments(),
+			"huaweicloud_cciv2_pods":        cci.DataSourceV2Pods(),
 
 			"huaweicloud_ccm_certificates":               ccm.DataSourceCertificates(),
 			"huaweicloud_ccm_certificate_export":         ccm.DataSourceCertificateExport(),
@@ -1041,6 +1043,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_kms_key":           dew.DataSourceKmsKey(),
 			"huaweicloud_kms_keys":          dew.DataSourceKmsKeys(),
 			"huaweicloud_kms_quotas":        dew.DataSourceKMSQuotas(),
+			"huaweicloud_kms_public_key":    dew.DataSourceKmsPublicKey(),
 			"huaweicloud_kps_failed_tasks":  dew.DataSourceDewKpsFailedTasks(),
 			"huaweicloud_kps_running_tasks": dew.DataSourceDewKpsRunningTasks(),
 			"huaweicloud_kps_keypairs":      dew.DataSourceKeypairs(),
@@ -1281,10 +1284,12 @@ func Provider() *schema.Provider {
 			"huaweicloud_smn_logtanks":            smn.DataSourceSmnLogtanks(),
 			"huaweicloud_smn_topic_subscriptions": smn.DataSourceSmnTopicSubscriptions(),
 
-			"huaweicloud_sms_source_servers": sms.DataSourceServers(),
-			"huaweicloud_sms_agent_configs":  sms.DataSourceSmsAgentConfigs(),
+			"huaweicloud_sms_source_servers":     sms.DataSourceServers(),
+			"huaweicloud_sms_agent_configs":      sms.DataSourceSmsAgentConfigs(),
+			"huaweicloud_sms_migration_projects": sms.DataSourceSmsMigrationProjects(),
 
 			"huaweicloud_sfs_turbos":            sfsturbo.DataSourceTurbos(),
+			"huaweicloud_sfs_turbos_by_tags":    sfsturbo.DataSourceSfsTurbosByTags(),
 			"huaweicloud_sfs_turbo_data_tasks":  sfsturbo.DataSourceSfsTurboDataTasks(),
 			"huaweicloud_sfs_turbo_dir_usage":   sfsturbo.DataSourceDirusage(),
 			"huaweicloud_sfs_turbo_du_tasks":    sfsturbo.DataSourceSfsTurboDuTasks(),
@@ -2242,9 +2247,10 @@ func Provider() *schema.Provider {
 			"huaweicloud_modelarts_network":                modelarts.ResourceModelartsNetwork(),
 			"huaweicloud_modelarts_resource_pool":          modelarts.ResourceModelartsResourcePool(),
 			// Resource management via V2 APIs.
-			"huaweicloud_modelartsv2_node_batch_delete": modelarts.ResourceV2NodeBatchDelete(),
-			"huaweicloud_modelartsv2_service":           modelarts.ResourceV2Service(),
-			"huaweicloud_modelartsv2_service_action":    modelarts.ResourceV2ServiceAction(),
+			"huaweicloud_modelartsv2_node_batch_delete":      modelarts.ResourceV2NodeBatchDelete(),
+			"huaweicloud_modelartsv2_node_batch_unsubscribe": modelarts.ResourceV2NodeBatchUnsubscribe(),
+			"huaweicloud_modelartsv2_service":                modelarts.ResourceV2Service(),
+			"huaweicloud_modelartsv2_service_action":         modelarts.ResourceV2ServiceAction(),
 
 			// DataArts Studio - Management Center
 			"huaweicloud_dataarts_studio_data_connection": dataarts.ResourceDataConnection(),
