@@ -56,7 +56,7 @@ resource "huaweicloud_rds_instance" "test" {
   flavor            = "rds.mssql.spec.se.s6.large.2"
   vpc_id            = data.huaweicloud_vpc.test.id
   subnet_id         = data.huaweicloud_vpc_subnet.test.id
-  security_group_id = huaweicloud_networking_secgroup.secgroup_test.id
+  security_group_id = data.huaweicloud_networking_secgroup.secgroup_test.id
   charging_mode     = "postPaid"
   availability_zone = [data.huaweicloud_availability_zones.test.names[0]]
 
@@ -71,7 +71,7 @@ resource "huaweicloud_rds_instance" "test" {
     size = 40
   }
 }
-`, testAccRdsInstance_base(name), name)
+`, testAccRdsInstance_base(), name)
 }
 
 func testDataSourceRdsTasks_basic(name string, startTime, endTime int64) string {
