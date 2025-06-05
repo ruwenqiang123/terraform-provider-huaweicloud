@@ -1,5 +1,17 @@
 # CHANGELOG
 
+## 1.75.2 (June 4, 2025)
+
+ENHANCEMENTS:
+
+* resource/huaweicloud_dms_kafka_instance: add kms_encrypted_password support [GH-6929]
+
+## 1.75.1 (June 4, 2025)
+
+ENHANCEMENTS:
+
+* resource/huaweicloud_as_group: add pagination support [GH-6918]
+
 ## 1.75.0 (May 29, 2025)
 
 * **New Data Source:**

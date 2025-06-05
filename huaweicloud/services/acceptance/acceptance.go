@@ -56,6 +56,16 @@ var (
 	HW_IAM_V5                        = os.Getenv("HW_IAM_V5")
 	HW_RUNNER_PUBLIC_IP              = os.Getenv("HW_RUNNER_PUBLIC_IP")
 
+	// CBR environment
+	HW_CBR_ECS_BACKUP_ID         = os.Getenv("HW_CBR_ECS_BACKUP_ID")         // The ECS backup ID.
+	HW_CBR_ECS_SERVER_ID         = os.Getenv("HW_CBR_ECS_SERVER_ID")         // The ECS ID using to create backup.
+	HW_CBR_EVS_BACKUP_ID_FOR_ECS = os.Getenv("HW_CBR_EVS_BACKUP_ID_FOR_ECS") // The EVS backup ID using for ECS.
+	HW_CBR_EVS_VOLUME_ID_FOR_ECS = os.Getenv("HW_CBR_EVS_VOLUME_ID_FOR_ECS") // The EVS volume ID using for ECS.
+	HW_CBR_EVS_BACKUP_ID         = os.Getenv("HW_CBR_EVS_BACKUP_ID")         // The EVS back ID.
+	HW_CBR_EVS_VOLUME_ID         = os.Getenv("HW_CBR_EVS_VOLUME_ID")         // The EVS volume ID using to create backup.
+	HW_CBR_WORKSPACE_BACKUP_ID   = os.Getenv("HW_CBR_WORKSPACE_BACKUP_ID")   // The Workspace backup ID.
+	HW_CBR_WORKSPACE_RESOURCE_ID = os.Getenv("HW_CBR_WORKSPACE_RESOURCE_ID") // The resource ID using to create backup.
+
 	HW_VPC_BANDWIDTH_ADDON_PACKAGE_ENABLED = os.Getenv("HW_VPC_BANDWIDTH_ADDON_PACKAGE_ENABLED")
 	HW_VPC_EIP_POOL_ENABLED                = os.Getenv("HW_VPC_EIP_POOL_ENABLED")
 
@@ -96,6 +106,8 @@ var (
 	HW_WAF_CLOUD_INSTANCE_FLAG = os.Getenv("HW_WAF_CLOUD_INSTANCE_FLAG")
 	HW_WAF_INTERNATIONAL_FLAG  = os.Getenv("HW_WAF_INTERNATIONAL_FLAG")
 	HW_WAF_GROUP_FLAG          = os.Getenv("HW_WAF_GROUP_FLAG")
+	HW_WAF_POLICY_ID           = os.Getenv("HW_WAF_POLICY_ID")
+	HW_WAF_WEB_TAMPER_RULE_ID  = os.Getenv("HW_WAF_WEB_TAMPER_RULE_ID")
 
 	HW_ELB_CERT_ID         = os.Getenv("HW_ELB_CERT_ID")
 	HW_ELB_LOADBALANCER_ID = os.Getenv("HW_ELB_LOADBALANCER_ID")
@@ -261,13 +273,17 @@ var (
 	HW_FGS_GPU_TYPE            = os.Getenv("HW_FGS_GPU_TYPE")
 	HW_FGS_DEPENDENCY_OBS_LINK = os.Getenv("HW_FGS_DEPENDENCY_OBS_LINK")
 
-	HW_KMS_ENVIRONMENT     = os.Getenv("HW_KMS_ENVIRONMENT")
-	HW_KMS_HSM_CLUSTER_ID  = os.Getenv("HW_KMS_HSM_CLUSTER_ID")
-	HW_KMS_KEY_ID          = os.Getenv("HW_KMS_KEY_ID")
-	HW_KMS_ALIAS           = os.Getenv("HW_KMS_ALIAS")
-	HW_KMS_IMPORT_TOKEN    = os.Getenv("HW_KMS_IMPORT_TOKEN")
-	HW_KMS_KEY_MATERIAL    = os.Getenv("HW_KMS_KEY_MATERIAL")
-	HW_KMS_KEY_PRIVATE_KEY = os.Getenv("HW_KMS_KEY_PRIVATE_KEY")
+	HW_KMS_ENVIRONMENT      = os.Getenv("HW_KMS_ENVIRONMENT")
+	HW_KMS_HSM_CLUSTER_ID   = os.Getenv("HW_KMS_HSM_CLUSTER_ID")
+	HW_KMS_KEY_ID           = os.Getenv("HW_KMS_KEY_ID")
+	HW_KMS_ALIAS            = os.Getenv("HW_KMS_ALIAS")
+	HW_KMS_IMPORT_TOKEN     = os.Getenv("HW_KMS_IMPORT_TOKEN")
+	HW_KMS_KEY_MATERIAL     = os.Getenv("HW_KMS_KEY_MATERIAL")
+	HW_KMS_KEY_PRIVATE_KEY  = os.Getenv("HW_KMS_KEY_PRIVATE_KEY")
+	HW_KMS_KEYPAIR_NAME_1   = os.Getenv("HW_KMS_KEYPAIR_NAME_1")
+	HW_KMS_KEYPAIR_NAME_2   = os.Getenv("HW_KMS_KEYPAIR_NAME_2")
+	HW_KMS_KEYPAIR_KEY_1    = os.Getenv("HW_KMS_KEYPAIR_KEY_1")
+	HW_KMS_KEYPAIR_SSH_PORT = os.Getenv("HW_KMS_KEYPAIR_SSH_PORT")
 
 	HW_MULTI_ACCOUNT_ENVIRONMENT            = os.Getenv("HW_MULTI_ACCOUNT_ENVIRONMENT")
 	HW_ORGANIZATIONS_OPEN                   = os.Getenv("HW_ORGANIZATIONS_OPEN")
@@ -505,6 +521,8 @@ var (
 	HW_EVS_ENABLE_FLAG              = os.Getenv("HW_EVS_ENABLE_FLAG")
 
 	HW_ECS_LAUNCH_TEMPLATE_ID = os.Getenv("HW_ECS_LAUNCH_TEMPLATE_ID")
+	HW_ECS_ID                 = os.Getenv("HW_ECS_ID")
+	HW_ECS_ROOT_PWD           = os.Getenv("HW_ECS_ROOT_PWD")
 
 	HW_IOTDA_ACCESS_ADDRESS      = os.Getenv("HW_IOTDA_ACCESS_ADDRESS")
 	HW_IOTDA_BATCHTASK_FILE_PATH = os.Getenv("HW_IOTDA_BATCHTASK_FILE_PATH")
@@ -999,6 +1017,20 @@ func TestAccPreCheckWafCertID(t *testing.T) {
 func TestAccPreCheckWafType(t *testing.T) {
 	if HW_WAF_TYPE == "" {
 		t.Skip("HW_WAF_TYPE must be set for this acceptance test.")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckWafPolicyId(t *testing.T) {
+	if HW_WAF_POLICY_ID == "" {
+		t.Skip("HW_WAF_POLICY_ID must be set for this acceptance test.")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckWafWebTamperRuleId(t *testing.T) {
+	if HW_WAF_WEB_TAMPER_RULE_ID == "" {
+		t.Skip("HW_WAF_WEB_TAMPER_RULE_ID must be set for this acceptance test.")
 	}
 }
 
@@ -1663,6 +1695,20 @@ func TestAccPreCheckKmsKeyMaterial(t *testing.T) {
 func TestAccPreCheckKmsKeyPrivateKey(t *testing.T) {
 	if HW_KMS_KEY_PRIVATE_KEY == "" {
 		t.Skip("HW_KMS_KEY_PRIVATE_KEY must be set for KMS key material acceptance tests.")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckKmsSSHPort(t *testing.T) {
+	if HW_KMS_KEYPAIR_SSH_PORT == "" {
+		t.Skip("HW_KMS_KEYPAIR_SSH_PORT must be set for acceptance tests.")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckKmsKeyPair(t *testing.T) {
+	if HW_KMS_KEYPAIR_NAME_1 == "" || HW_KMS_KEYPAIR_NAME_2 == "" || HW_KMS_KEYPAIR_KEY_1 == "" || HW_KMS_KEYPAIR_SSH_PORT == "" {
+		t.Skip("HW_KMS_KEYPAIR_NAME_1, HW_KMS_KEYPAIR_NAME_2, HW_KMS_KEYPAIR_KEY_1, HW_KMS_KEYPAIR_SSH_PORT must be set for the acceptance tests.")
 	}
 }
 
@@ -2670,6 +2716,20 @@ func TestAccPreCheckECSLaunchTemplateID(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckECSID(t *testing.T) {
+	if HW_ECS_ID == "" {
+		t.Skip("HW_ECS_ID must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckECSAccount(t *testing.T) {
+	if HW_ECS_ID == "" || HW_ECS_ROOT_PWD == "" {
+		t.Skip("HW_ECS_ID, HW_ECS_ROOT_PWD must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckHWIOTDAAccessAddress(t *testing.T) {
 	if HW_IOTDA_ACCESS_ADDRESS == "" {
 		t.Skip("HW_IOTDA_ACCESS_ADDRESS must be set for the acceptance test")
@@ -3083,6 +3143,36 @@ func TestAccPreCheckVpcEipPoolEnabled(t *testing.T) {
 func TestAccPreCheckVpcEipBandwidthAddOnPackageEnabled(t *testing.T) {
 	if HW_VPC_BANDWIDTH_ADDON_PACKAGE_ENABLED == "" {
 		t.Skip("HW_VPC_BANDWIDTH_ADDON_PACKAGE_ENABLED must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckECSBackupRestore(t *testing.T) {
+	targetEnvValues := []string{
+		HW_CBR_ECS_BACKUP_ID,
+		HW_CBR_ECS_SERVER_ID,
+		HW_CBR_EVS_BACKUP_ID_FOR_ECS,
+		HW_CBR_EVS_VOLUME_ID_FOR_ECS,
+	}
+
+	for _, v := range targetEnvValues {
+		if v == "" {
+			t.Skipf("%s must be set for the acceptance test", v)
+		}
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckEVSBackupRestore(t *testing.T) {
+	if HW_CBR_EVS_BACKUP_ID == "" || HW_CBR_EVS_VOLUME_ID == "" {
+		t.Skip("HW_CBR_EVS_BACKUP_ID and HW_CBR_EVS_VOLUME_ID must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckWorkspaceBackupRestore(t *testing.T) {
+	if HW_CBR_WORKSPACE_BACKUP_ID == "" || HW_CBR_WORKSPACE_RESOURCE_ID == "" {
+		t.Skip("HW_CBR_WORKSPACE_BACKUP_ID and HW_CBR_WORKSPACE_RESOURCE_ID must be set for the acceptance test")
 	}
 }
 
