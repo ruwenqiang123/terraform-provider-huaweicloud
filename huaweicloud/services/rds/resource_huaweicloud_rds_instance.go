@@ -42,6 +42,7 @@ type ctxType string
 // @API RDS POST /v3/{project_id}/instances/{id}/tags/action
 // @API RDS PUT /v3.1/{project_id}/configurations/{config_id}/apply
 // @API RDS PUT /v3/{project_id}/instances/{instance_id}/configurations
+// @API RDS PUT /v3.1/{project_id}/instances/{instance_id}/configurations
 // @API RDS POST /v3/{project_id}/instances/{instance_id}/action
 // @API RDS PUT /v3/{project_id}/instances/{instance_id}/disk-auto-expansion
 // @API RDS PUT /v3/{project_id}/instances/{instance_id}/backups/policy
@@ -55,6 +56,8 @@ type ctxType string
 // @API RDS GET /v3/{project_id}/instances/{instance_id}/tde-status
 // @API RDS GET /v3/{project_id}/instances/{instance_id}/second-level-monitor
 // @API RDS GET /v3/{project_id}/instances/{instance_id}/db-auto-upgrade
+// @API RDS GET /v3/{project_id}/instances/{instance_id}/storage-used-space
+// @API RDS GET /v3/{project_id}/instances/{instance_id}/replication/status
 // @API RDS PUT /v3/{project_id}/instances/{instance_id}/name
 // @API RDS POST /v3/{project_id}/instances/{instance_id}/migrateslave
 // @API RDS PUT /v3/{project_id}/instances/{instance_id}/failover/mode
@@ -103,7 +106,6 @@ func ResourceRdsInstance() *schema.Resource {
 				Computed: true,
 				ForceNew: true,
 			},
-
 			"availability_zone": {
 				Type:     schema.TypeList,
 				Required: true,
@@ -111,17 +113,14 @@ func ResourceRdsInstance() *schema.Resource {
 					Type: schema.TypeString,
 				},
 			},
-
 			"name": {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-
 			"flavor": {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-
 			"db": {
 				Type:     schema.TypeList,
 				Required: true,
@@ -157,7 +156,6 @@ func ResourceRdsInstance() *schema.Resource {
 					},
 				},
 			},
-
 			"volume": {
 				Type:     schema.TypeList,
 				Required: true,
@@ -192,7 +190,6 @@ func ResourceRdsInstance() *schema.Resource {
 					},
 				},
 			},
-
 			"restore": {
 				Type:          schema.TypeList,
 				Optional:      true,
@@ -220,7 +217,6 @@ func ResourceRdsInstance() *schema.Resource {
 					},
 				},
 			},
-
 			"vpc_id": {
 				Type:     schema.TypeString,
 				Required: true,
@@ -235,7 +231,6 @@ func ResourceRdsInstance() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-
 			"backup_strategy": {
 				Type:     schema.TypeList,
 				Optional: true,
@@ -261,32 +256,32 @@ func ResourceRdsInstance() *schema.Resource {
 					},
 				},
 			},
-
+			"lower_case_table_names": {
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"enterprise_project_id": {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
 			},
-
 			"fixed_ip": {
 				Type:         schema.TypeString,
 				Optional:     true,
 				Computed:     true,
 				ValidateFunc: utils.ValidateIP,
 			},
-
 			"private_dns_name_prefix": {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
 			},
-
 			"ha_replication_mode": {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
 			},
-
 			"power_action": {
 				Type:     schema.TypeString,
 				Optional: true,
@@ -294,35 +289,29 @@ func ResourceRdsInstance() *schema.Resource {
 					"ON", "OFF", "REBOOT",
 				}, false),
 			},
-
 			"param_group_id": {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
-
 			"collation": {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
 			},
-
 			"switch_strategy": {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
 			},
-
 			"ssl_enable": {
 				Type:     schema.TypeBool,
 				Optional: true,
 				Computed: true,
 			},
-
 			"binlog_retention_hours": {
 				Type:     schema.TypeInt,
 				Optional: true,
 			},
-
 			"msdtc_hosts": {
 				Type:     schema.TypeSet,
 				Optional: true,
@@ -344,7 +333,6 @@ func ResourceRdsInstance() *schema.Resource {
 					},
 				},
 			},
-
 			"tde_enabled": {
 				Type:     schema.TypeBool,
 				Optional: true,
@@ -401,21 +389,17 @@ func ResourceRdsInstance() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
-
 			"dss_pool_id": {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
-
 			"tags": common.TagsSchema(),
-
 			"time_zone": {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
 				ForceNew: true,
 			},
-
 			"parameters": {
 				Type: schema.TypeSet,
 				Elem: &schema.Resource{
@@ -434,7 +418,6 @@ func ResourceRdsInstance() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
-
 			"maintain_begin": {
 				Type:     schema.TypeString,
 				Optional: true,
@@ -446,7 +429,6 @@ func ResourceRdsInstance() *schema.Resource {
 				Computed:     true,
 				RequiredWith: []string{"maintain_begin"},
 			},
-
 			"nodes": {
 				Type:     schema.TypeList,
 				Computed: true,
@@ -475,7 +457,6 @@ func ResourceRdsInstance() *schema.Resource {
 					},
 				},
 			},
-
 			"private_ips": {
 				Type:     schema.TypeList,
 				Computed: true,
@@ -483,7 +464,6 @@ func ResourceRdsInstance() *schema.Resource {
 					Type: schema.TypeString,
 				},
 			},
-
 			"private_dns_names": {
 				Type:     schema.TypeList,
 				Computed: true,
@@ -491,7 +471,6 @@ func ResourceRdsInstance() *schema.Resource {
 					Type: schema.TypeString,
 				},
 			},
-
 			"public_ips": {
 				Type:     schema.TypeList,
 				Computed: true,
@@ -499,23 +478,34 @@ func ResourceRdsInstance() *schema.Resource {
 					Type: schema.TypeString,
 				},
 			},
-
+			"storage_used_space": {
+				Type:     schema.TypeList,
+				Computed: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"node_id": {
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+						"used": {
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+					},
+				},
+			},
+			"replication_status": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 			"status": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-
 			"created": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-
-			"lower_case_table_names": {
-				Type:     schema.TypeString,
-				Optional: true,
-				ForceNew: true,
-			},
-
 			// charging_mode,  period_unit and period only support changing post-paid to pre-paid billing mode.
 			"charging_mode": {
 				Type:     schema.TypeString,
@@ -923,6 +913,8 @@ func resourceRdsInstanceRead(ctx context.Context, d *schema.ResourceData, meta i
 	}
 
 	mErr = multierror.Append(mErr, setAutoUpgradeSwitchOption(d, client))
+	mErr = multierror.Append(mErr, setStorageUsedSpace(d, client))
+	mErr = multierror.Append(mErr, setReplicationStatus(d, client))
 
 	diagErr := setRdsInstanceParameters(ctx, d, client, instanceID)
 	resErr := append(diag.FromErr(mErr.ErrorOrNil()), diagErr...)
@@ -1012,6 +1004,66 @@ func setAutoUpgradeSwitchOption(d *schema.ResourceData, client *golangsdk.Servic
 		return nil
 	}
 	return d.Set("minor_version_auto_upgrade_enabled", utils.PathSearch("switch_option", getRespBody, nil))
+}
+
+func setStorageUsedSpace(d *schema.ResourceData, client *golangsdk.ServiceClient) error {
+	var (
+		httpUrl = "v3/{project_id}/instances/{instance_id}/storage-used-space"
+	)
+
+	getPath := client.Endpoint + httpUrl
+	getPath = strings.ReplaceAll(getPath, "{project_id}", client.ProjectID)
+	getPath = strings.ReplaceAll(getPath, "{instance_id}", d.Id())
+
+	getOpt := golangsdk.RequestOpts{
+		KeepResponseBody: true,
+	}
+	getResp, err := client.Request("GET", getPath, &getOpt)
+	if err != nil {
+		log.Printf("[WARN] error retrieving RDS instance(%s) storage used space: %s", d.Id(), err)
+		return nil
+	}
+	getRespBody, err := utils.FlattenResponse(getResp)
+	if err != nil {
+		log.Printf("[WARN] error flatten get RDS instance(%s) storage used space response: %s", d.Id(), err)
+		return nil
+	}
+	return d.Set("storage_used_space", flattenInstanceResponseBodyStorageUsedSpace(getRespBody))
+}
+
+func flattenInstanceResponseBodyStorageUsedSpace(resp interface{}) []interface{} {
+	rst := []interface{}{
+		map[string]interface{}{
+			"node_id": utils.PathSearch("node_id", resp, nil),
+			"used":    utils.PathSearch("used", resp, nil),
+		},
+	}
+	return rst
+}
+
+func setReplicationStatus(d *schema.ResourceData, client *golangsdk.ServiceClient) error {
+	var (
+		httpUrl = "v3/{project_id}/instances/{instance_id}/replication/status"
+	)
+
+	getPath := client.Endpoint + httpUrl
+	getPath = strings.ReplaceAll(getPath, "{project_id}", client.ProjectID)
+	getPath = strings.ReplaceAll(getPath, "{instance_id}", d.Id())
+
+	getOpt := golangsdk.RequestOpts{
+		KeepResponseBody: true,
+	}
+	getResp, err := client.Request("GET", getPath, &getOpt)
+	if err != nil {
+		log.Printf("[WARN] error retrieving RDS instance(%s) replication status: %s", d.Id(), err)
+		return nil
+	}
+	getRespBody, err := utils.FlattenResponse(getResp)
+	if err != nil {
+		log.Printf("[WARN] error flatten get RDS instance(%s) replication status response: %s", d.Id(), err)
+		return nil
+	}
+	return d.Set("replication_status", utils.PathSearch("replication_status", getRespBody, nil))
 }
 
 func resourceRdsInstanceUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
@@ -2598,7 +2650,7 @@ func checkRDSInstanceJobFinish(client *golangsdk.ServiceClient, jobID string, ti
 		Target:       []string{"Completed"},
 		Refresh:      rdsInstanceJobRefreshFunc(client, jobID),
 		Timeout:      timeout,
-		Delay:        10 * time.Second,
+		Delay:        2 * time.Second,
 		PollInterval: 10 * time.Second,
 	}
 	if _, err := stateConf.WaitForState(); err != nil {

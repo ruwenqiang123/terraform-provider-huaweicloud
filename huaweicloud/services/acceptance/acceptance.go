@@ -102,6 +102,7 @@ var (
 
 	HW_WAF_ENABLE_FLAG         = os.Getenv("HW_WAF_ENABLE_FLAG")
 	HW_WAF_CERTIFICATE_ID      = os.Getenv("HW_WAF_CERTIFICATE_ID")
+	HW_WAF_DOMAIN_ID           = os.Getenv("HW_WAF_DOMAIN_ID")
 	HW_WAF_TYPE                = os.Getenv("HW_WAF_TYPE")
 	HW_WAF_CLOUD_INSTANCE_FLAG = os.Getenv("HW_WAF_CLOUD_INSTANCE_FLAG")
 	HW_WAF_INTERNATIONAL_FLAG  = os.Getenv("HW_WAF_INTERNATIONAL_FLAG")
@@ -114,8 +115,14 @@ var (
 
 	HW_DBSS_INSATNCE_ID = os.Getenv("HW_DBSS_INSATNCE_ID")
 
-	HW_DEW_ENABLE_FLAG   = os.Getenv("HW_DEW_ENABLE_FLAG")
-	HW_KPS_KEY_FILE_PATH = os.Getenv("HW_KPS_KEY_FILE_PATH")
+	HW_DEW_ENABLE_FLAG      = os.Getenv("HW_DEW_ENABLE_FLAG")
+	HW_KPS_KEY_FILE_PATH    = os.Getenv("HW_KPS_KEY_FILE_PATH")
+	HW_KPS_KEYPAIR_NAME_1   = os.Getenv("HW_KPS_KEYPAIR_NAME_1")
+	HW_KPS_KEYPAIR_NAME_2   = os.Getenv("HW_KPS_KEYPAIR_NAME_2")
+	HW_KPS_KEYPAIR_KEY_1    = os.Getenv("HW_KPS_KEYPAIR_KEY_1")
+	HW_KPS_KEYPAIR_SSH_PORT = os.Getenv("HW_KPS_KEYPAIR_SSH_PORT")
+	HW_KPS_ENABLE_FLAG      = os.Getenv("HW_KPS_ENABLE_FLAG")
+	HW_KPS_FAILED_TASK_ID   = os.Getenv("HW_KPS_FAILED_TASK_ID")
 
 	HW_DEST_REGION          = os.Getenv("HW_DEST_REGION")
 	HW_DEST_PROJECT_ID      = os.Getenv("HW_DEST_PROJECT_ID")
@@ -273,17 +280,13 @@ var (
 	HW_FGS_GPU_TYPE            = os.Getenv("HW_FGS_GPU_TYPE")
 	HW_FGS_DEPENDENCY_OBS_LINK = os.Getenv("HW_FGS_DEPENDENCY_OBS_LINK")
 
-	HW_KMS_ENVIRONMENT      = os.Getenv("HW_KMS_ENVIRONMENT")
-	HW_KMS_HSM_CLUSTER_ID   = os.Getenv("HW_KMS_HSM_CLUSTER_ID")
-	HW_KMS_KEY_ID           = os.Getenv("HW_KMS_KEY_ID")
-	HW_KMS_ALIAS            = os.Getenv("HW_KMS_ALIAS")
-	HW_KMS_IMPORT_TOKEN     = os.Getenv("HW_KMS_IMPORT_TOKEN")
-	HW_KMS_KEY_MATERIAL     = os.Getenv("HW_KMS_KEY_MATERIAL")
-	HW_KMS_KEY_PRIVATE_KEY  = os.Getenv("HW_KMS_KEY_PRIVATE_KEY")
-	HW_KMS_KEYPAIR_NAME_1   = os.Getenv("HW_KMS_KEYPAIR_NAME_1")
-	HW_KMS_KEYPAIR_NAME_2   = os.Getenv("HW_KMS_KEYPAIR_NAME_2")
-	HW_KMS_KEYPAIR_KEY_1    = os.Getenv("HW_KMS_KEYPAIR_KEY_1")
-	HW_KMS_KEYPAIR_SSH_PORT = os.Getenv("HW_KMS_KEYPAIR_SSH_PORT")
+	HW_KMS_ENVIRONMENT     = os.Getenv("HW_KMS_ENVIRONMENT")
+	HW_KMS_HSM_CLUSTER_ID  = os.Getenv("HW_KMS_HSM_CLUSTER_ID")
+	HW_KMS_KEY_ID          = os.Getenv("HW_KMS_KEY_ID")
+	HW_KMS_ALIAS           = os.Getenv("HW_KMS_ALIAS")
+	HW_KMS_IMPORT_TOKEN    = os.Getenv("HW_KMS_IMPORT_TOKEN")
+	HW_KMS_KEY_MATERIAL    = os.Getenv("HW_KMS_KEY_MATERIAL")
+	HW_KMS_KEY_PRIVATE_KEY = os.Getenv("HW_KMS_KEY_PRIVATE_KEY")
 
 	HW_MULTI_ACCOUNT_ENVIRONMENT            = os.Getenv("HW_MULTI_ACCOUNT_ENVIRONMENT")
 	HW_ORGANIZATIONS_OPEN                   = os.Getenv("HW_ORGANIZATIONS_OPEN")
@@ -578,8 +581,10 @@ var (
 
 	HW_VPCEP_SERVICE_ID = os.Getenv("HW_VPCEP_SERVICE_ID")
 
-	HW_HSS_HOST_PROTECTION_HOST_ID  = os.Getenv("HW_HSS_HOST_PROTECTION_HOST_ID")
-	HW_HSS_HOST_PROTECTION_QUOTA_ID = os.Getenv("HW_HSS_HOST_PROTECTION_QUOTA_ID")
+	HW_HSS_HOST_PROTECTION_HOST_ID        = os.Getenv("HW_HSS_HOST_PROTECTION_HOST_ID")
+	HW_HSS_HOST_PROTECTION_QUOTA_ID       = os.Getenv("HW_HSS_HOST_PROTECTION_QUOTA_ID")
+	HW_HSS_TARGET_POLICY_GROUP_ID         = os.Getenv("HW_HSS_TARGET_POLICY_GROUP_ID")
+	HW_HSS_DEFAULT_TARGET_POLICY_GROUP_ID = os.Getenv("HW_HSS_DEFAULT_TARGET_POLICY_GROUP_ID")
 
 	HW_DDM_INSTANCE_ID = os.Getenv("HW_DDM_INSTANCE_ID")
 	HW_DDM_PROCESS_ID  = os.Getenv("HW_DDM_PROCESS_ID")
@@ -1010,6 +1015,13 @@ func TestAccPreCheckWafGroup(t *testing.T) {
 func TestAccPreCheckWafCertID(t *testing.T) {
 	if HW_WAF_CERTIFICATE_ID == "" {
 		t.Skip("HW_WAF_CERTIFICATE_ID must be set for this acceptance test.")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckWafDomainId(t *testing.T) {
+	if HW_WAF_DOMAIN_ID == "" {
+		t.Skip("HW_WAF_DOMAIN_ID must be set for this acceptance test.")
 	}
 }
 
@@ -1699,16 +1711,37 @@ func TestAccPreCheckKmsKeyPrivateKey(t *testing.T) {
 }
 
 // lintignore:AT003
-func TestAccPreCheckKmsSSHPort(t *testing.T) {
-	if HW_KMS_KEYPAIR_SSH_PORT == "" {
-		t.Skip("HW_KMS_KEYPAIR_SSH_PORT must be set for acceptance tests.")
+func TestAccPreCheckKpsSSHPort(t *testing.T) {
+	if HW_KPS_KEYPAIR_SSH_PORT == "" {
+		t.Skip("HW_KPS_KEYPAIR_SSH_PORT must be set for acceptance tests.")
 	}
 }
 
 // lintignore:AT003
-func TestAccPreCheckKmsKeyPair(t *testing.T) {
-	if HW_KMS_KEYPAIR_NAME_1 == "" || HW_KMS_KEYPAIR_NAME_2 == "" || HW_KMS_KEYPAIR_KEY_1 == "" || HW_KMS_KEYPAIR_SSH_PORT == "" {
-		t.Skip("HW_KMS_KEYPAIR_NAME_1, HW_KMS_KEYPAIR_NAME_2, HW_KMS_KEYPAIR_KEY_1, HW_KMS_KEYPAIR_SSH_PORT must be set for the acceptance tests.")
+func TestAccPreCheckKpsTaskId(t *testing.T) {
+	if HW_KPS_FAILED_TASK_ID == "" {
+		t.Skip("HW_KPS_FAILED_TASK_ID must be set for acceptance tests.")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckKpsKeypairKey(t *testing.T) {
+	if HW_KPS_KEYPAIR_KEY_1 == "" {
+		t.Skip("HW_KPS_KEYPAIR_KEY_1 must be set for acceptance tests.")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckKpsKeyPair(t *testing.T) {
+	if HW_KPS_KEYPAIR_NAME_1 == "" || HW_KPS_KEYPAIR_NAME_2 == "" || HW_KPS_KEYPAIR_KEY_1 == "" || HW_KPS_KEYPAIR_SSH_PORT == "" {
+		t.Skip("HW_KPS_KEYPAIR_NAME_1, HW_KPS_KEYPAIR_NAME_2, HW_KPS_KEYPAIR_KEY_1, HW_KPS_KEYPAIR_SSH_PORT must be set for the acceptance tests.")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckKpsEnable(t *testing.T) {
+	if HW_KPS_ENABLE_FLAG == "" {
+		t.Skip("HW_KPS_ENABLE_FLAG must be set for acceptance tests.")
 	}
 }
 
@@ -2870,6 +2903,20 @@ func TestAccPreCheckVPCEPServiceId(t *testing.T) {
 func TestAccPreCheckHSSHostProtectionHostId(t *testing.T) {
 	if HW_HSS_HOST_PROTECTION_HOST_ID == "" {
 		t.Skip("HW_HSS_HOST_PROTECTION_HOST_ID must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckHSSTargetPolicyGroupId(t *testing.T) {
+	if HW_HSS_TARGET_POLICY_GROUP_ID == "" {
+		t.Skip("HW_HSS_TARGET_POLICY_GROUP_ID must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckHSSDefaultTargetPolicyGroupId(t *testing.T) {
+	if HW_HSS_DEFAULT_TARGET_POLICY_GROUP_ID == "" {
+		t.Skip("HW_HSS_DEFAULT_TARGET_POLICY_GROUP_ID must be set for the acceptance test")
 	}
 }
 
