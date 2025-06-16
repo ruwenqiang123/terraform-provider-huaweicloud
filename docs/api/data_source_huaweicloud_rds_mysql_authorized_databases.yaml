@@ -8,6 +8,6 @@ host: huaweicloud.com
 tags:
     - name: RDS
 paths:
-    /v3/{project_id}/instances/{instance_id}/db-user/database:
+    /v3/{project_id}/instances/{instance_id}/db_user/database:
         GET:
             tag: RDS
