@@ -86,6 +86,8 @@ var (
 	HW_CAE_BUILD_BASE_IMAGE   = os.Getenv("HW_CAE_BUILD_BASE_IMAGE")
 	HW_CAE_IMAGE_URL          = os.Getenv("HW_CAE_IMAGE_URL")
 
+	HW_CBR_EXTERNAL_PROJECT_ID = os.Getenv("HW_CBR_EXTERNAL_PROJECT_ID")
+
 	HW_CBC_UNSUBSCRIBE_RESOURCE_ID = os.Getenv("HW_CBC_UNSUBSCRIBE_RESOURCE_ID")
 
 	HW_MAPREDUCE_CUSTOM           = os.Getenv("HW_MAPREDUCE_CUSTOM")
@@ -127,6 +129,7 @@ var (
 	HW_KPS_KEYPAIR_SSH_PORT = os.Getenv("HW_KPS_KEYPAIR_SSH_PORT")
 	HW_KPS_ENABLE_FLAG      = os.Getenv("HW_KPS_ENABLE_FLAG")
 	HW_KPS_FAILED_TASK_ID   = os.Getenv("HW_KPS_FAILED_TASK_ID")
+	HW_CSMS_TASK_ID         = os.Getenv("HW_CSMS_TASK_ID")
 
 	HW_DEST_REGION          = os.Getenv("HW_DEST_REGION")
 	HW_DEST_PROJECT_ID      = os.Getenv("HW_DEST_PROJECT_ID")
@@ -424,10 +427,11 @@ var (
 	HW_AOM_MULTI_ACCOUNT_AGGREGATION_RULE_ENABLE = os.Getenv("HW_AOM_MULTI_ACCOUNT_AGGREGATION_RULE_ENABLE")
 
 	// the ID of ECS instance which has installed uniagent
-	HW_COC_INSTANCE_ID    = os.Getenv("HW_COC_INSTANCE_ID")
-	HW_COC_APPLICATION_ID = os.Getenv("HW_COC_APPLICATION_ID")
-	HW_COC_ROLE_ID        = os.Getenv("HW_COC_ROLE_ID")
-	HW_COC_SCENE_ID       = os.Getenv("HW_COC_SCENE_ID")
+	HW_COC_INSTANCE_ID     = os.Getenv("HW_COC_INSTANCE_ID")
+	HW_COC_APPLICATION_ID  = os.Getenv("HW_COC_APPLICATION_ID")
+	HW_COC_ROLE_ID         = os.Getenv("HW_COC_ROLE_ID")
+	HW_COC_SCENE_ID        = os.Getenv("HW_COC_SCENE_ID")
+	HW_COC_INTEGRATION_KEY = os.Getenv("HW_COC_INTEGRATION_KEY")
 
 	// Deprecated
 	HW_SRC_ACCESS_KEY = os.Getenv("HW_SRC_ACCESS_KEY")
@@ -1074,6 +1078,20 @@ func TestAccPreCheckElbLoadbalancerID(t *testing.T) {
 func TestAccPreCheckCbhInstanceID(t *testing.T) {
 	if HW_CBH_INSTANCE_ID == "" {
 		t.Skip("HW_CBH_INSTANCE_ID must be set for this acceptance test")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckCBRRegionName(t *testing.T) {
+	if HW_REGION_NAME_1 == "" {
+		t.Skip("HW_REGION_NAME_1 must be set for this acceptance test")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckCBRExternalProjectID(t *testing.T) {
+	if HW_CBR_EXTERNAL_PROJECT_ID == "" {
+		t.Skip("HW_CBR_EXTERNAL_PROJECT_ID must be set for acceptance tests")
 	}
 }
 
@@ -2509,6 +2527,13 @@ func TestAccPreCheckCocSceneID(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckCocIntegrationKey(t *testing.T) {
+	if HW_COC_INTEGRATION_KEY == "" {
+		t.Skip("HW_COC_INTEGRATION_KEY must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
 func TestAccPrecheckKooGallery(t *testing.T) {
 	if HW_KOOGALLERY_ASSET == "" {
 		t.Skip("Skip the KooGallery acceptance tests.")
@@ -3410,6 +3435,13 @@ func TestAccPrecheckDewFlag(t *testing.T) {
 	// Query the task execution status(running or failed)
 	if HW_DEW_ENABLE_FLAG == "" {
 		t.Skip("HW_DEW_ENABLE_FLAG must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
+func TestAccPrecheckCsmsTask(t *testing.T) {
+	if HW_CSMS_TASK_ID == "" {
+		t.Skip("HW_CSMS_TASK_ID must be set for the acceptance test")
 	}
 }
 
