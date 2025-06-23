@@ -544,6 +544,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_cbr_backups":                  cbr.DataSourceBackups(),
 			"huaweicloud_cbr_vaults":                   cbr.DataSourceVaults(),
 			"huaweicloud_cbr_policies":                 cbr.DataSourcePolicies(),
+			"huaweicloud_cbr_region_projects":          cbr.DataSourceCbrRegionProjects(),
 			"huaweicloud_cbr_storage_usages":           cbr.DataSourceStorageUsages(),
 			"huaweicloud_cbr_tags":                     cbr.DataSourceTags(),
 			"huaweicloud_cbr_vaults_by_tags":           cbr.DataSourceVaultsByTags(),
@@ -558,6 +559,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_cbh_instance_tags":      cbh.DataSourceInstanceTags(),
 			"huaweicloud_cbh_instance_ecs_quota": cbh.DataSourceInstanceEcsQuota(),
 			"huaweicloud_cbh_instance_admin_url": cbh.DataSourceInstanceAdminUrl(),
+			"huaweicloud_cbh_instance_login_url": cbh.DataSourceInstanceLoginUrl(),
 
 			"huaweicloud_cc_authorizations":                               cc.DataSourceCcAuthorizations(),
 			"huaweicloud_cc_bandwidth_packages":                           cc.DataSourceCcBandwidthPackages(),
@@ -678,6 +680,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_coc_script_order_batch_details": coc.DataSourceCocScriptOrderBatchDetails(),
 			"huaweicloud_coc_war_rooms":                  coc.DataSourceCocWarRooms(),
 			"huaweicloud_coc_resources":                  coc.DataSourceCocResources(),
+			"huaweicloud_coc_patch_compliance_reports":   coc.DataSourceCocPatchComplianceReports(),
 
 			"huaweicloud_compute_flavors":                 ecs.DataSourceEcsFlavors(),
 			"huaweicloud_compute_instance":                ecs.DataSourceComputeInstance(),
@@ -1297,8 +1300,9 @@ func Provider() *schema.Provider {
 			"huaweicloud_rms_resource_tags":                            rms.DataSourceResourceTags(),
 			"huaweicloud_rms_resource_instances":                       rms.DataSourceResourceInstances(),
 
-			"huaweicloud_sdrs_domain": sdrs.DataSourceSDRSDomain(),
-			"huaweicloud_sdrs_quotas": sdrs.DataSourceSdrsQuotas(),
+			"huaweicloud_sdrs_domain":            sdrs.DataSourceSDRSDomain(),
+			"huaweicloud_sdrs_quotas":            sdrs.DataSourceSdrsQuotas(),
+			"huaweicloud_sdrs_protection_groups": sdrs.DataSourceSdrsProtectionGroups(),
 
 			"huaweicloud_secmaster_workflows":                 secmaster.DataSourceSecmasterWorkflows(),
 			"huaweicloud_secmaster_workspaces":                secmaster.DataSourceSecmasterWorkspaces(),
@@ -1503,6 +1507,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_workspace_desktops":                 workspace.DataSourceDesktops(),
 			"huaweicloud_workspace_flavors":                  workspace.DataSourceWorkspaceFlavors(),
 			"huaweicloud_workspace_service":                  workspace.DataSourceService(),
+			"huaweicloud_workspace_desktop_tags":             workspace.DataSourceDesktopTags(),
 
 			"huaweicloud_cpts_projects": cpts.DataSourceCptsProjects(),
 
