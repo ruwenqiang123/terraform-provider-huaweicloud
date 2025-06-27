@@ -87,6 +87,7 @@ var (
 	HW_CAE_IMAGE_URL          = os.Getenv("HW_CAE_IMAGE_URL")
 
 	HW_CBR_EXTERNAL_PROJECT_ID = os.Getenv("HW_CBR_EXTERNAL_PROJECT_ID")
+	HW_CBR_BACKUP_ID           = os.Getenv("HW_CBR_BACKUP_ID")
 
 	HW_CBC_UNSUBSCRIBE_RESOURCE_ID = os.Getenv("HW_CBC_UNSUBSCRIBE_RESOURCE_ID")
 
@@ -115,6 +116,7 @@ var (
 	HW_WAF_GROUP_FLAG          = os.Getenv("HW_WAF_GROUP_FLAG")
 	HW_WAF_POLICY_ID           = os.Getenv("HW_WAF_POLICY_ID")
 	HW_WAF_WEB_TAMPER_RULE_ID  = os.Getenv("HW_WAF_WEB_TAMPER_RULE_ID")
+	HW_WAF_ALERT_ID            = os.Getenv("HW_WAF_ALERT_ID")
 
 	HW_ELB_CERT_ID         = os.Getenv("HW_ELB_CERT_ID")
 	HW_ELB_LOADBALANCER_ID = os.Getenv("HW_ELB_LOADBALANCER_ID")
@@ -311,6 +313,9 @@ var (
 	HW_RGC_ORGANIZATIONAL_UNIT_NAME  = os.Getenv("HW_RGC_ORGANIZATIONAL_UNIT_NAME")
 	HW_RGC_BLUEPRINT_PRODUCT_ID      = os.Getenv("HW_RGC_BLUEPRINT_PRODUCT_ID")
 	HW_RGC_BLUEPRINT_PRODUCT_VERSION = os.Getenv("HW_RGC_BLUEPRINT_PRODUCT_VERSION")
+
+	HW_SDRS_PROTECTION_INSTANCE_ID = os.Getenv("HW_SDRS_PROTECTION_INSTANCE_ID")
+	HW_SDRS_NIC_ID                 = os.Getenv("HW_SDRS_NIC_ID")
 
 	HW_IDENTITY_CENTER_ACCOUNT_ID                = os.Getenv("HW_IDENTITY_CENTER_ACCOUNT_ID")
 	HW_IDENTITY_CENTER_IDENTITY_POLICY_ID        = os.Getenv("HW_IDENTITY_CENTER_IDENTITY_POLICY_ID")
@@ -779,6 +784,13 @@ func TestAccPreCheckRGCBlueprint(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckSDRSDeleteNic(t *testing.T) {
+	if HW_SDRS_PROTECTION_INSTANCE_ID == "" || HW_SDRS_NIC_ID == "" {
+		t.Skip("HW_SDRS_PROTECTION_INSTANCE_ID and HW_SDRS_NIC_ID must be set for acceptance tests")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckIdentityCenterAccountId(t *testing.T) {
 	if HW_IDENTITY_CENTER_ACCOUNT_ID == "" {
 		t.Skip("HW_IDENTITY_CENTER_ACCOUNT_ID must be set for acceptance tests")
@@ -1062,6 +1074,13 @@ func TestAccPreCheckWafWebTamperRuleId(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckWafAlertId(t *testing.T) {
+	if HW_WAF_ALERT_ID == "" {
+		t.Skip("HW_WAF_ALERT_ID must be set for this acceptance test.")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckElbCertID(t *testing.T) {
 	if HW_ELB_CERT_ID == "" {
 		t.Skip("HW_ELB_CERT_ID must be set for this acceptance test.")
@@ -1093,6 +1112,13 @@ func TestAccPreCheckCBRRegionName(t *testing.T) {
 func TestAccPreCheckCBRExternalProjectID(t *testing.T) {
 	if HW_CBR_EXTERNAL_PROJECT_ID == "" {
 		t.Skip("HW_CBR_EXTERNAL_PROJECT_ID must be set for acceptance tests")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckCBRBackupID(t *testing.T) {
+	if HW_CBR_BACKUP_ID == "" {
+		t.Skip("HW_CBR_BACKUP_ID must be set for acceptance tests")
 	}
 }
 
