@@ -45,6 +45,7 @@ import (
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/cnad"
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/coc"
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/codearts"
+	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/codeartsbuild"
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/codeartsdeploy"
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/codeartsinspector"
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/codeartspipeline"
@@ -504,6 +505,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_apig_instance_features":                  apig.DataSourceInstanceFeatures(),
 			"huaweicloud_apig_instance_quotas":                    apig.DataSourceInstanceQuotas(),
 			"huaweicloud_apig_instance_supported_features":        apig.DataSourceInstanceSupportedFeatures(),
+			"huaweicloud_apig_instances_filter":                   apig.DataSourceInstancesFilter(),
 			"huaweicloud_apig_instances":                          apig.DataSourceInstances(),
 			"huaweicloud_apig_orchestration_rules":                apig.DataSourceOrchestrationRules(),
 			"huaweicloud_apig_orchestration_rule_associated_apis": apig.DataSourceOrchestrationRuleAssociatedApis(),
@@ -706,6 +708,8 @@ func Provider() *schema.Provider {
 			"huaweicloud_codearts_inspector_website_scan_tasks": codeartsinspector.DataSourceCodeartsInspectorWebsiteScanTasks(),
 			"huaweicloud_codearts_inspector_host_groups":        codeartsinspector.DataSourceCodeartsInspectorHostGroups(),
 			"huaweicloud_codearts_inspector_hosts":              codeartsinspector.DataSourceCodeartsInspectorHosts(),
+
+			"huaweicloud_codearts_pipeline_run_detail": codeartspipeline.DataSourceCodeartsPipelineRunDetail(),
 
 			"huaweicloud_cts_notifications": cts.DataSourceNotifications(),
 			"huaweicloud_cts_traces":        cts.DataSourceCtsTraces(),
@@ -1137,6 +1141,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_live_channels":             live.DataSourceLiveChannels(),
 			"huaweicloud_live_cdn_ips":              live.DataSourceLiveCdnIps(),
 
+			"huaweicloud_lts_alarms":                       lts.DataSourceAlarms(),
 			"huaweicloud_lts_aom_accesses":                 lts.DataSourceAOMAccesses(),
 			"huaweicloud_lts_cce_accesses":                 lts.DataSourceCceAccesses(),
 			"huaweicloud_lts_groups":                       lts.DataSourceLtsGroups(),
@@ -1146,6 +1151,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_lts_keyword_alarm_rules":          lts.DataSourceKeywordAlarmRules(),
 			"huaweicloud_lts_notification_templates":       lts.DataSourceLtsNotificationTemplates(),
 			"huaweicloud_lts_search_criteria":              lts.DataSourceLtsSearchCriteria(),
+			"huaweicloud_lts_sql_alarm_rules":              lts.DataSourceSqlAlarmRules(),
 			"huaweicloud_lts_streams":                      lts.DataSourceLtsStreams(),
 			"huaweicloud_lts_structuring_custom_templates": lts.DataSourceCustomTemplates(),
 			"huaweicloud_lts_transfers":                    lts.DataSourceLtsTransfers(),
@@ -1281,6 +1287,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_rds_wal_log_replay_delay_status":       rds.DataSourceRdsWalLogReplayDelayStatus(),
 			"huaweicloud_rds_wal_log_recovery_time_window":      rds.DataSourceRdsWalLogRecoveryTimeWindow(),
 			"huaweicloud_rds_read_replica_restorable_databases": rds.DataSourceRdsReadReplicaRestorableDatabases(),
+			"huaweicloud_rds_backup_databases":                  rds.DataSourceRdsBackupDatabases(),
 
 			"huaweicloud_rms_policy_definitions":                       rms.DataSourcePolicyDefinitions(),
 			"huaweicloud_rms_assignment_package_templates":             rms.DataSourceTemplates(),
@@ -1334,6 +1341,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_secmaster_playbook_statistics":       secmaster.DataSourceSecmasterPlaybookStatistics(),
 			"huaweicloud_secmaster_playbook_audit_logs":       secmaster.DataSourceSecmasterPlaybookAuditLogs(),
 			"huaweicloud_secmaster_playbook_monitors":         secmaster.DataSourceSecmasterPlaybookMonitors(),
+			"huaweicloud_secmaster_playbook_approvals":        secmaster.DataSourcePlaybookApprovals(),
 			"huaweicloud_secmaster_alert_rule_metrics":        secmaster.DataSourceSecmasterAlertRuleMetrics(),
 
 			// Querying by Ver.2 APIs
@@ -1353,9 +1361,10 @@ func Provider() *schema.Provider {
 			"huaweicloud_smn_logtanks":            smn.DataSourceSmnLogtanks(),
 			"huaweicloud_smn_topic_subscriptions": smn.DataSourceSmnTopicSubscriptions(),
 
-			"huaweicloud_sms_source_servers":     sms.DataSourceServers(),
-			"huaweicloud_sms_agent_configs":      sms.DataSourceSmsAgentConfigs(),
-			"huaweicloud_sms_migration_projects": sms.DataSourceSmsMigrationProjects(),
+			"huaweicloud_sms_source_servers":         sms.DataSourceServers(),
+			"huaweicloud_sms_agent_configs":          sms.DataSourceSmsAgentConfigs(),
+			"huaweicloud_sms_migration_projects":     sms.DataSourceSmsMigrationProjects(),
+			"huaweicloud_sms_source_server_overview": sms.DataSourceSmsSourceServerOverview(),
 
 			"huaweicloud_sfs_turbos":            sfsturbo.DataSourceTurbos(),
 			"huaweicloud_sfs_turbos_by_tags":    sfsturbo.DataSourceSfsTurbosByTags(),
@@ -1737,8 +1746,10 @@ func Provider() *schema.Provider {
 			"huaweicloud_cbr_migrate":                  cbr.ResourceMigrate(),
 			"huaweicloud_cbr_vault_migrate_resources":  cbr.ResourceVaultMigrateResources(),
 			"huaweicloud_cbr_batch_update_vault":       cbr.ResourceBatchUpdateVault(),
+			"huaweicloud_cbr_replicate_backup":         cbr.ResourceReplicateBackup(),
 			"huaweicloud_cbr_vault_change_charge_mode": cbr.ResourceVaultChangeChargeMode(),
 			"huaweicloud_cbr_change_order":             cbr.ResourceChangeOrder(),
+			"huaweicloud_cbr_update_backup":            cbr.ResourceUpdateBackup(),
 
 			"huaweicloud_cbh_instance":                   cbh.ResourceCBHInstance(),
 			"huaweicloud_cbh_ha_instance":                cbh.ResourceCBHHAInstance(),
@@ -2492,6 +2503,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_rds_instance_minor_version_upgrade": rds.ResourceRdsInstanceMinorVersionUpgrade(),
 			"huaweicloud_rds_unlock_node_readonly_status":    rds.ResourceUnlockNodeReadonlyStatus(),
 			"huaweicloud_rds_wal_log_replay_switch":          rds.ResourceRdsWalLogReplaySwitch(),
+			"huaweicloud_rds_restore_read_replica_database":  rds.ResourceRdsRestoreReadReplicaDatabase(),
 
 			"huaweicloud_rgc_account": rgc.ResourceAccount(),
 
@@ -2719,6 +2731,9 @@ func Provider() *schema.Provider {
 			"huaweicloud_codearts_pipeline_by_template":      codeartspipeline.ResourceCodeArtsPipelineByTemplate(),
 			"huaweicloud_codearts_pipeline_template":         codeartspipeline.ResourceCodeArtsPipelineTemplate(),
 			"huaweicloud_codearts_pipeline_service_endpoint": codeartspipeline.ResourceCodeArtsPipelineServiceEndpoint(),
+
+			"huaweicloud_codearts_build_task":     codeartsbuild.ResourceCodeArtsBuildTask(),
+			"huaweicloud_codearts_build_template": codeartsbuild.ResourceCodeArtsBuildTemplate(),
 
 			"huaweicloud_dsc_instance":           dsc.ResourceDscInstance(),
 			"huaweicloud_dsc_asset_obs":          dsc.ResourceAssetObs(),

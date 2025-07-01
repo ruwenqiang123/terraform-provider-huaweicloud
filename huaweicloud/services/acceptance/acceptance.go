@@ -88,6 +88,7 @@ var (
 
 	HW_CBR_EXTERNAL_PROJECT_ID = os.Getenv("HW_CBR_EXTERNAL_PROJECT_ID")
 	HW_CBR_BACKUP_ID           = os.Getenv("HW_CBR_BACKUP_ID")
+	HW_CBR_BACKUP_NAME         = os.Getenv("HW_CBR_BACKUP_NAME")
 
 	HW_CBC_UNSUBSCRIBE_RESOURCE_ID = os.Getenv("HW_CBC_UNSUBSCRIBE_RESOURCE_ID")
 
@@ -421,6 +422,9 @@ var (
 	// The flag of whether to create a SecMaster workspace
 	HW_SECMASTER_WORKSPACE = os.Getenv("HW_SECMASTER_WORKSPACE")
 
+	// The SecMaster playbook version ID
+	HW_SECMASTER_VERSION_ID = os.Getenv("HW_SECMASTER_VERSION_ID")
+
 	HW_MODELARTS_HAS_SUBSCRIBE_MODEL = os.Getenv("HW_MODELARTS_HAS_SUBSCRIBE_MODEL")
 	HW_MODELARTS_USER_LOGIN_PASSWORD = os.Getenv("HW_MODELARTS_USER_LOGIN_PASSWORD")
 	HW_MODELARTS_DEVSERVER_FLAVOR    = os.Getenv("HW_MODELARTS_DEVSERVER_FLAVOR")
@@ -598,6 +602,9 @@ var (
 	HW_LTS_CLUSTER_ID_ANOTHER     = os.Getenv("HW_LTS_CLUSTER_ID_ANOTHER")
 	HW_LTS_CLUSTER_NAME_ANOTHER   = os.Getenv("HW_LTS_CLUSTER_NAME_ANOTHER")
 	HW_LTS_ALARM_ACTION_RULE_NAME = os.Getenv("HW_LTS_ALARM_ACTION_RULE_NAME")
+	// When registering Kafka using the huaweicloud_lts_register_kafka_instance resource, the interface may time out.
+	// Therefore, use HW_LTS_REGISTERED_KAFKA_INSTANCE_ID instead.
+	HW_LTS_REGISTERED_KAFKA_INSTANCE_ID = os.Getenv("HW_LTS_REGISTERED_KAFKA_INSTANCE_ID")
 
 	HW_VPCEP_SERVICE_ID = os.Getenv("HW_VPCEP_SERVICE_ID")
 
@@ -1116,9 +1123,23 @@ func TestAccPreCheckCBRExternalProjectID(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckCBRDestinationProjectID(t *testing.T) {
+	if HW_CBR_DESTINATION_PROJECT_ID == "" {
+		t.Skip("HW_CBR_DESTINATION_PROJECT_ID must be set for acceptance tests")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckCBRBackupID(t *testing.T) {
 	if HW_CBR_BACKUP_ID == "" {
 		t.Skip("HW_CBR_BACKUP_ID must be set for acceptance tests")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckCBRBackupName(t *testing.T) {
+	if HW_CBR_BACKUP_NAME == "" {
+		t.Skip("HW_CBR_BACKUP_NAME must be set for acceptance tests")
 	}
 }
 
@@ -2221,6 +2242,13 @@ func TestAccPreCheckSecMaster(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckSecMasterVersionId(t *testing.T) {
+	if HW_SECMASTER_VERSION_ID == "" {
+		t.Skip("HW_SECMASTER_VERSION_ID must be set for SecMaster acceptance tests")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckCcePartitionAz(t *testing.T) {
 	if HW_CCE_PARTITION_AZ == "" || HW_CCE_PARTITION_GROUP == "" {
 		t.Skip("Skip the interface acceptance test because of the cce partition az is missing.")
@@ -2386,6 +2414,13 @@ func TestAccPreCheckLtsStructConfigCustom(t *testing.T) {
 func TestAccPreCheckLtsAlarmActionRuleName(t *testing.T) {
 	if HW_LTS_ALARM_ACTION_RULE_NAME == "" {
 		t.Skip("HW_LTS_ALARM_ACTION_RULE_NAME must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckLtsDmsTransfer(t *testing.T) {
+	if HW_LTS_REGISTERED_KAFKA_INSTANCE_ID == "" {
+		t.Skip("HW_LTS_REGISTERED_KAFKA_INSTANCE_ID must be set for the acceptance test")
 	}
 }
 
