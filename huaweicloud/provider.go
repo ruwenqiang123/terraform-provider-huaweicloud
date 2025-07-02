@@ -1338,6 +1338,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_secmaster_data_classes":              secmaster.DataSourceSecmasterDataClasses(),
 			"huaweicloud_secmaster_data_class_fields":         secmaster.DataSourceSecmasterDataClassFields(),
 			"huaweicloud_secmaster_playbook_action_instances": secmaster.DataSourceSecmasterPlaybookActionInstances(),
+			"huaweicloud_secmaster_playbook_actions":          secmaster.DataSourceSecmasterPlaybookActions(),
 			"huaweicloud_secmaster_playbook_statistics":       secmaster.DataSourceSecmasterPlaybookStatistics(),
 			"huaweicloud_secmaster_playbook_audit_logs":       secmaster.DataSourceSecmasterPlaybookAuditLogs(),
 			"huaweicloud_secmaster_playbook_monitors":         secmaster.DataSourceSecmasterPlaybookMonitors(),
@@ -1364,6 +1365,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_sms_source_servers":         sms.DataSourceServers(),
 			"huaweicloud_sms_agent_configs":          sms.DataSourceSmsAgentConfigs(),
 			"huaweicloud_sms_migration_projects":     sms.DataSourceSmsMigrationProjects(),
+			"huaweicloud_sms_source_server_command":  sms.DataSourceSmsSourceServerCommand(),
 			"huaweicloud_sms_source_server_overview": sms.DataSourceSmsSourceServerOverview(),
 
 			"huaweicloud_sfs_turbos":            sfsturbo.DataSourceTurbos(),
@@ -2532,6 +2534,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_secmaster_indicator":                   secmaster.ResourceIndicator(),
 			"huaweicloud_secmaster_alert":                       secmaster.ResourceAlert(),
 			"huaweicloud_secmaster_alert_rule":                  secmaster.ResourceAlertRule(),
+			"huaweicloud_secmaster_clone_playbook_version":      secmaster.ResourceClonePlaybookAndVersion(),
 			"huaweicloud_secmaster_data_object_relations":       secmaster.ResourceDataObjectRelations(),
 			"huaweicloud_secmaster_dataspace":                   secmaster.ResourceDataspace(),
 			"huaweicloud_secmaster_playbook":                    secmaster.ResourcePlaybook(),
@@ -2584,10 +2587,11 @@ func Provider() *schema.Provider {
 			"huaweicloud_smn_subscription_filter_policy": smn.ResourceSubscriptionFilterPolicy(),
 			"huaweicloud_smn_topic_attributes":           smn.ResourceTopicAttributes(),
 
-			"huaweicloud_sms_server_template":           sms.ResourceServerTemplate(),
-			"huaweicloud_sms_task":                      sms.ResourceMigrateTask(),
-			"huaweicloud_sms_migration_project":         sms.ResourceMigrationProject(),
-			"huaweicloud_sms_migration_project_default": sms.ResourceMigrateProjectDefault(),
+			"huaweicloud_sms_server_template":                     sms.ResourceServerTemplate(),
+			"huaweicloud_sms_task":                                sms.ResourceMigrateTask(),
+			"huaweicloud_sms_migration_project":                   sms.ResourceMigrationProject(),
+			"huaweicloud_sms_migration_project_default":           sms.ResourceMigrateProjectDefault(),
+			"huaweicloud_sms_source_server_command_result_report": sms.ResourceSourceServerCommandResultReport(),
 
 			"huaweicloud_swr_organization":             swr.ResourceSWROrganization(),
 			"huaweicloud_swr_organization_permissions": swr.ResourceSWROrganizationPermissions(),
@@ -2732,8 +2736,9 @@ func Provider() *schema.Provider {
 			"huaweicloud_codearts_pipeline_template":         codeartspipeline.ResourceCodeArtsPipelineTemplate(),
 			"huaweicloud_codearts_pipeline_service_endpoint": codeartspipeline.ResourceCodeArtsPipelineServiceEndpoint(),
 
-			"huaweicloud_codearts_build_task":     codeartsbuild.ResourceCodeArtsBuildTask(),
-			"huaweicloud_codearts_build_template": codeartsbuild.ResourceCodeArtsBuildTemplate(),
+			"huaweicloud_codearts_build_task":        codeartsbuild.ResourceCodeArtsBuildTask(),
+			"huaweicloud_codearts_build_template":    codeartsbuild.ResourceCodeArtsBuildTemplate(),
+			"huaweicloud_codearts_build_task_action": codeartsbuild.ResourceCodeArtsBuildTaskAction(),
 
 			"huaweicloud_dsc_instance":           dsc.ResourceDscInstance(),
 			"huaweicloud_dsc_asset_obs":          dsc.ResourceAssetObs(),
