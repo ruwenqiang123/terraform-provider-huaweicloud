@@ -188,6 +188,7 @@ var (
 
 	HW_DMS_ENVIRONMENT   = os.Getenv("HW_DMS_ENVIRONMENT")
 	HW_SMS_SOURCE_SERVER = os.Getenv("HW_SMS_SOURCE_SERVER")
+	HW_SMS_TASK_ID       = os.Getenv("HW_SMS_TASK_ID")
 
 	HW_DLI_AUTHORIZED_USER_NAME         = os.Getenv("HW_DLI_AUTHORIZED_USER_NAME")
 	HW_DLI_FLINK_JAR_OBS_PATH           = os.Getenv("HW_DLI_FLINK_JAR_OBS_PATH")
@@ -424,6 +425,9 @@ var (
 
 	// The SecMaster playbook version ID
 	HW_SECMASTER_VERSION_ID = os.Getenv("HW_SECMASTER_VERSION_ID")
+
+	// The SecMaster alert ID
+	HW_SECMASTER_ALERT_ID = os.Getenv("HW_SECMASTER_ALERT_ID")
 
 	HW_MODELARTS_HAS_SUBSCRIBE_MODEL = os.Getenv("HW_MODELARTS_HAS_SUBSCRIBE_MODEL")
 	HW_MODELARTS_USER_LOGIN_PASSWORD = os.Getenv("HW_MODELARTS_USER_LOGIN_PASSWORD")
@@ -921,6 +925,13 @@ func TestAccPreCheckApigChannelRelatedInfo(t *testing.T) {
 func TestAccPreCheckSms(t *testing.T) {
 	if HW_SMS_SOURCE_SERVER == "" {
 		t.Skip("HW_SMS_SOURCE_SERVER must be set for SMS acceptance tests")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckSmsTaskID(t *testing.T) {
+	if HW_SMS_TASK_ID == "" {
+		t.Skip("HW_SMS_TASK_ID must be set for SMS acceptance tests")
 	}
 }
 
@@ -2245,6 +2256,13 @@ func TestAccPreCheckSecMaster(t *testing.T) {
 func TestAccPreCheckSecMasterVersionId(t *testing.T) {
 	if HW_SECMASTER_VERSION_ID == "" {
 		t.Skip("HW_SECMASTER_VERSION_ID must be set for SecMaster acceptance tests")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckSecMasterAlertId(t *testing.T) {
+	if HW_SECMASTER_ALERT_ID == "" {
+		t.Skip("HW_SECMASTER_ALERT_ID must be set for SecMaster acceptance tests")
 	}
 }
 

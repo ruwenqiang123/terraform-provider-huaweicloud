@@ -11,18 +11,15 @@
               },
               "instance_id": {
                 "type": "string",
-                "required": true,
-                "forcenew": true
+                "required": true
               },
               "public_ip": {
                 "type": "string",
-                "required": true,
-                "forcenew": true
+                "required": true
               },
               "public_ip_id": {
                 "type": "string",
-                "required": true,
-                "forcenew": true
+                "required": true
               },
               "region": {
                 "type": "string",
