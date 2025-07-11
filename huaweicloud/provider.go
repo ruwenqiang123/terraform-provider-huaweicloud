@@ -460,6 +460,8 @@ func Provider() *schema.Provider {
 			"huaweicloud_aad_web_protection_policies":  aad.DataSourceAadWebProtectionPolicies(),
 			"huaweicloud_aad_block_statistics":         aad.DataSourceBlockStatistics(),
 			"huaweicloud_aad_unblock_records":          aad.DataSourceUnblockRecords(),
+			"huaweicloud_aad_domains":                  aad.DataSourceAadDomains(),
+			"huaweicloud_aad_source_ips":               aad.DataSourceAadSourceIps(),
 
 			"huaweicloud_antiddos_config_ranges":                antiddos.DataSourceConfigRanges(),
 			"huaweicloud_antiddos_weekly_protection_statistics": antiddos.DataSourceWeeklyProtectionStatistics(),
@@ -710,6 +712,9 @@ func Provider() *schema.Provider {
 			"huaweicloud_codearts_inspector_hosts":              codeartsinspector.DataSourceCodeartsInspectorHosts(),
 
 			"huaweicloud_codearts_pipeline_run_detail": codeartspipeline.DataSourceCodeartsPipelineRunDetail(),
+
+			"huaweicloud_codearts_build_tasks":        codeartsbuild.DataSourceCodeArtsBuildTasks(),
+			"huaweicloud_codearts_build_task_records": codeartsbuild.DataSourceCodeArtsBuildTaskRecords(),
 
 			"huaweicloud_cts_notifications": cts.DataSourceNotifications(),
 			"huaweicloud_cts_traces":        cts.DataSourceCtsTraces(),
@@ -1052,12 +1057,14 @@ func Provider() *schema.Provider {
 			"huaweicloud_hss_resource_quotas":                hss.DataSourceResourceQuotas(),
 			"huaweicloud_hss_auto_launch_statistics":         hss.DataSourceAutoLaunchStatistics(),
 			"huaweicloud_hss_event_unblock_ips":              hss.DataSourceEventUnblockIps(),
+			"huaweicloud_hss_event_system_user_white_lists":  hss.DataSourceEventSystemUserWhiteLists(),
 			"huaweicloud_hss_asset_apps":                     hss.DataSourceAssetApps(),
 			"huaweicloud_hss_agent_install_script":           hss.DataSourceAgentInstallScript(),
 			"huaweicloud_hss_asset_port_statistics":          hss.DataSourceAssetPortStatistics(),
 			"huaweicloud_hss_asset_user_statistics":          hss.DataSourceAssetUserStatistics(),
 			"huaweicloud_hss_asset_statistics":               hss.DataSourceAssetStatistics(),
 			"huaweicloud_hss_container_nodes":                hss.DataSourceContainerNodes(),
+			"huaweicloud_hss_container_kubernetes":           hss.DataSourceContainerKubernetes(),
 			"huaweicloud_hss_vulnerability_statistics":       hss.DataSourceVulnerabilityStatistics(),
 
 			"huaweicloud_identity_permissions": iam.DataSourceIdentityPermissions(),
