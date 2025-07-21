@@ -278,9 +278,11 @@ var (
 	// The internet access port to which the Workspace service.
 	HW_WORKSPACE_INTERNET_ACCESS_PORT              = os.Getenv("HW_WORKSPACE_INTERNET_ACCESS_PORT")
 	HW_WORKSPACE_APP_SERVER_GROUP_FLAVOR_ID        = os.Getenv("HW_WORKSPACE_APP_SERVER_GROUP_FLAVOR_ID")
+	HW_WORKSPACE_APP_SERVER_GROUP_ID               = os.Getenv("HW_WORKSPACE_APP_SERVER_GROUP_ID")
 	HW_WORKSPACE_APP_SERVER_GROUP_IMAGE_ID         = os.Getenv("HW_WORKSPACE_APP_SERVER_GROUP_IMAGE_ID")
 	HW_WORKSPACE_APP_SERVER_GROUP_IMAGE_PRODUCT_ID = os.Getenv("HW_WORKSPACE_APP_SERVER_GROUP_IMAGE_PRODUCT_ID")
 	HW_WORKSPACE_APP_SERVER_GROUP_IMAGE_SPEC_CODE  = os.Getenv("HW_WORKSPACE_APP_SERVER_GROUP_IMAGE_SPEC_CODE")
+	HW_WORKSPACE_APP_SERVER_ID                     = os.Getenv("HW_WORKSPACE_APP_SERVER_ID")
 	HW_WORKSPACE_OU_NAME                           = os.Getenv("HW_WORKSPACE_OU_NAME")
 	HW_WORKSPACE_APP_FILE_NAME                     = os.Getenv("HW_WORKSPACE_APP_FILE_NAME")
 	HW_WORKSPACE_USER_NAMES                        = os.Getenv("HW_WORKSPACE_USER_NAMES")
@@ -550,6 +552,7 @@ var (
 	HW_EVS_TRANSFER_ID              = os.Getenv("HW_EVS_TRANSFER_ID")
 	HW_EVS_TRANSFER_AUTH_KEY        = os.Getenv("HW_EVS_TRANSFER_AUTH_KEY")
 	HW_EVS_ENABLE_FLAG              = os.Getenv("HW_EVS_ENABLE_FLAG")
+	HW_EVS_VOLUME_ID                = os.Getenv("HW_EVS_VOLUME_ID")
 
 	HW_ECS_LAUNCH_TEMPLATE_ID = os.Getenv("HW_ECS_LAUNCH_TEMPLATE_ID")
 	HW_ECS_ID                 = os.Getenv("HW_ECS_ID")
@@ -1276,6 +1279,13 @@ func TestAccPreCheckErSharedAttachmentAccepter(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckEVSVolumeID(t *testing.T) {
+	if HW_EVS_VOLUME_ID == "" {
+		t.Skip("HW_EVS_VOLUME_ID must be set for acceptance tests")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckAvailabilityZoneGPSSD2(t *testing.T) {
 	if HW_EVS_AVAILABILITY_ZONE_GPSSD2 == "" {
 		t.Skip("If you want to change the QoS of a GPSSD2 type cloudvolume, you must specify an availability zone that supports GPSSD2 type under the current region")
@@ -1924,6 +1934,20 @@ func TestAccPreCheckWorkspaceAppServerGroup(t *testing.T) {
 func TestAccPreCheckWorkspaceAppImageSpecCode(t *testing.T) {
 	if HW_WORKSPACE_APP_SERVER_GROUP_IMAGE_SPEC_CODE == "" {
 		t.Skip("HW_WORKSPACE_APP_SERVER_GROUP_IMAGE_SPEC_CODE must be set for Workspace APP acceptance tests.")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckWorkspaceAppServerGroupId(t *testing.T) {
+	if HW_WORKSPACE_APP_SERVER_GROUP_ID == "" {
+		t.Skip("HW_WORKSPACE_APP_SERVER_GROUP_ID must be set for Workspace APP acceptance tests.")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckWorkspaceAppServerID(t *testing.T) {
+	if HW_WORKSPACE_APP_SERVER_ID == "" {
+		t.Skip("HW_WORKSPACE_APP_SERVER_ID must be set for Workspace APP acceptance tests.")
 	}
 }
 

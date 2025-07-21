@@ -89,6 +89,10 @@ The following arguments are supported:
 * `variables` - (Optional, List) Specifies the custom variables.
   The [variables](#block--variables) structure is documented below.
 
+* `parameter_groups` - (Optional, List) Specifies the parameter groups associated with.
+
+* `tags` - (Optional, List) Specifies the tag IDs.
+
 <a name="block--sources"></a>
 The `sources` block supports:
 

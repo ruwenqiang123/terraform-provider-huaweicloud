@@ -3,6 +3,7 @@ package codeartspipeline
 import (
 	"context"
 	"fmt"
+	"log"
 	"strings"
 
 	"github.com/hashicorp/go-multierror"
@@ -18,8 +19,12 @@ import (
 )
 
 const (
-	banHttpUrl   = "v5/{project_id}/api/pipelines/{pipeline_id}/ban"
-	unbanHttpUrl = "v5/{project_id}/api/pipelines/{pipeline_id}/unban"
+	updatePipelinehttpUrl     = "v5/{project_id}/api/pipelines/{pipeline_id}"
+	banHttpUrl                = "v5/{project_id}/api/pipelines/{pipeline_id}/ban"
+	unbanHttpUrl              = "v5/{project_id}/api/pipelines/{pipeline_id}/unban"
+	bindParameterGroupHttpUrl = "v5/{project_id}/api/pipeline/variable/group/relation"
+	moveGroupHttpUrl          = "v5/{project_id}/api/pipeline-group/pipeline/move"
+	updateTagsHttpURl         = "v5/{project_id}/api/pipeline-tag/set-tags"
 )
 
 var pipelineNonUpdatableParams = []string{
@@ -32,6 +37,10 @@ var pipelineNonUpdatableParams = []string{
 // @API CodeArtsPipeline DELETE /v5/{project_id}/api/pipelines/{pipeline_id}
 // @API CodeArtsPipeline PUT /v5/{project_id}/api/pipelines/{pipeline_id}/unban
 // @API CodeArtsPipeline PUT /v5/{project_id}/api/pipelines/{pipeline_id}/ban
+// @API CodeArtsPipeline POST /v5/{project_id}/api/pipeline/variable/group/relation
+// @API CodeArtsPipeline GET /v5/{project_id}/api/pipeline/variable/group/pipeline
+// @API CodeArtsPipeline POST /v5/{project_id}/api/pipeline-group/pipeline/move
+// @API CodeArtsPipeline POST /v5/{project_id}/api/pipeline-tag/set-tags
 func ResourceCodeArtsPipeline() *schema.Resource {
 	return &schema.Resource{
 		CreateContext: resourcePipelineCreate,
@@ -136,6 +145,18 @@ func ResourceCodeArtsPipeline() *schema.Resource {
 				MaxItems:    1,
 				Description: `Specifies the pipeline concurrency control information.`,
 				Elem:        resourceSchemePipelineConcurrencyControl(),
+			},
+			"parameter_groups": {
+				Type:        schema.TypeSet,
+				Optional:    true,
+				Elem:        &schema.Schema{Type: schema.TypeString},
+				Description: `Specifies the list of parameter groups.`,
+			},
+			"tags": {
+				Type:        schema.TypeSet,
+				Optional:    true,
+				Elem:        &schema.Schema{Type: schema.TypeString},
+				Description: `Specifies the list of tag IDs.`,
 			},
 			"enable_force_new": {
 				Type:         schema.TypeString,
@@ -506,8 +527,30 @@ func resourcePipelineCreate(ctx context.Context, d *schema.ResourceData, meta in
 
 	d.SetId(id)
 
+	if _, ok := d.GetOk("parameter_groups"); ok {
+		if err := updatePipelineField(client, d, updatePipelineFieldParams{
+			bindParameterGroupHttpUrl,
+			"POST",
+			buildUpdatePipelineParameterGroups(d),
+			nil,
+		}); err != nil {
+			return diag.Errorf("error updating pipeline parameter groups: %s", err)
+		}
+	}
+
+	if _, ok := d.GetOk("tags"); ok {
+		if err := updatePipelineField(client, d, updatePipelineFieldParams{
+			updateTagsHttpURl,
+			"POST",
+			buildUpdatePipelineTagsBodyParams(d),
+			nil,
+		}); err != nil {
+			return diag.Errorf("error updating pipeline tags: %s", err)
+		}
+	}
+
 	if d.Get("banned").(bool) {
-		if err := updatePipelineBanned(client, banHttpUrl, projectId, d.Id()); err != nil {
+		if err := updatePipelineField(client, d, updatePipelineFieldParams{banHttpUrl, "PUT", nil, nil}); err != nil {
 			return diag.Errorf("error banning pipeline: %s", err)
 		}
 	}
@@ -522,7 +565,7 @@ func buildCreateOrUpdatePipelineBodyParams(d *schema.ResourceData) map[string]in
 		"definition":          d.Get("definition"),
 		"is_publish":          d.Get("is_publish"),
 		"project_name":        utils.ValueIgnoreEmpty(d.Get("project_name")),
-		"group_id":            utils.ValueIgnoreEmpty(d.Get("group_id")),
+		"group_id":            d.Get("group_id"),
 		"manifest_version":    utils.ValueIgnoreEmpty(d.Get("manifest_version")),
 		"sources":             buildPipelineSources(d),
 		"variables":           buildPipelineTemplateVariables(d),
@@ -664,26 +707,6 @@ func buildPipelineConcurrencyControlParams(d *schema.ResourceData) interface{} {
 	return nil
 }
 
-func updatePipelineBanned(client *golangsdk.ServiceClient, httpUrl, projectId, id string) error {
-	unbanPath := client.Endpoint + httpUrl
-	unbanPath = strings.ReplaceAll(unbanPath, "{project_id}", projectId)
-	unbanPath = strings.ReplaceAll(unbanPath, "{pipeline_id}", id)
-	unbanOpt := golangsdk.RequestOpts{
-		KeepResponseBody: true,
-	}
-
-	unbanResp, err := client.Request("PUT", unbanPath, &unbanOpt)
-	if err != nil {
-		return err
-	}
-	unbanRespBody, err := utils.FlattenResponse(unbanResp)
-	if err != nil {
-		return err
-	}
-
-	return checkResponseError(unbanRespBody, "")
-}
-
 func GetPipeline(client *golangsdk.ServiceClient, projectId, id string) (interface{}, error) {
 	httpUrl := "v5/{project_id}/api/pipelines/{pipeline_id}"
 	getPath := client.Endpoint + httpUrl
@@ -745,7 +768,17 @@ func resourcePipelineRead(_ context.Context, d *schema.ResourceData, meta interf
 		d.Set("concurrency_control", flattenPipelineConcurrencyControl(getRespBody)),
 		d.Set("banned", utils.PathSearch("banned", getRespBody, nil)),
 		d.Set("definition", utils.PathSearch("definition", getRespBody, nil)),
+		d.Set("tags", utils.PathSearch("tags[*].tagId", getRespBody, nil)),
 	)
+
+	ids, err := getPipelineRelatedParameterGroups(client, projectId, d.Id())
+	if err != nil {
+		log.Printf("error retrieving pipeline related parameter groups: %s", err)
+	} else {
+		mErr = multierror.Append(mErr,
+			d.Set("parameter_groups", ids),
+		)
+	}
 
 	return diag.FromErr(mErr.ErrorOrNil())
 }
@@ -904,12 +937,10 @@ func resourcePipelineUpdate(ctx context.Context, d *schema.ResourceData, meta in
 		return diag.Errorf("error creating CodeArts Pipeline client: %s", err)
 	}
 
-	projectId := d.Get("project_id").(string)
-
 	// unban first, when pipeline is banned, cannot be updated.
 	if d.HasChange("banned") {
 		if !d.Get("banned").(bool) {
-			if err := updatePipelineBanned(client, unbanHttpUrl, projectId, d.Id()); err != nil {
+			if err := updatePipelineField(client, d, updatePipelineFieldParams{unbanHttpUrl, "PUT", nil, nil}); err != nil {
 				return diag.Errorf("error unbanning pipeline: %s", err)
 			}
 		}
@@ -920,50 +951,60 @@ func resourcePipelineUpdate(ctx context.Context, d *schema.ResourceData, meta in
 		"sources", "variables", "schedules", "triggers", "concurrency_control",
 	}
 	if d.HasChanges(changes...) {
-		if err := updatePipeline(client, d); err != nil {
-			return diag.FromErr(err)
+		if err := updatePipelineField(client, d, updatePipelineFieldParams{
+			updatePipelinehttpUrl,
+			"PUT",
+			utils.RemoveNil(buildCreateOrUpdatePipelineBodyParams(d)),
+			[]string{"component_id"},
+		}); err != nil {
+			return diag.Errorf("error updating pipeline: %s", err)
+		}
+	}
+
+	// if update to un-grouped, the above api doesn't work
+	if d.HasChange("group_id") && d.Get("group_id").(string) == "" {
+		if err := updatePipelineField(client, d, updatePipelineFieldParams{
+			moveGroupHttpUrl,
+			"POST",
+			buildUpdatePipelineToUnGroupBodyParams(d),
+			nil,
+		}); err != nil {
+			return diag.Errorf("error updating pipeline group ID: %s", err)
+		}
+	}
+
+	if d.HasChange("tags") {
+		if err := updatePipelineField(client, d, updatePipelineFieldParams{
+			updateTagsHttpURl,
+			"POST",
+			buildUpdatePipelineTagsBodyParams(d),
+			nil,
+		}); err != nil {
+			return diag.Errorf("error updating pipeline tags: %s", err)
+		}
+	}
+
+	if d.HasChange("parameter_groups") {
+		if err := updatePipelineField(client, d, updatePipelineFieldParams{
+			bindParameterGroupHttpUrl,
+			"POST",
+			buildUpdatePipelineParameterGroups(d),
+			nil,
+		}); err != nil {
+			return diag.Errorf("error updating pipeline parameter groups: %s", err)
 		}
 	}
 
 	// ban at the end, when pipeline is banned, cannot be updated.
 	if d.HasChange("banned") {
 		if d.Get("banned").(bool) {
-			if err := updatePipelineBanned(client, banHttpUrl, projectId, d.Id()); err != nil {
+			if err := updatePipelineField(client, d, updatePipelineFieldParams{banHttpUrl, "PUT", nil, nil}); err != nil {
 				return diag.Errorf("error banning pipeline: %s", err)
 			}
 		}
 	}
 
 	return resourcePipelineRead(ctx, d, meta)
-}
-
-func updatePipeline(client *golangsdk.ServiceClient, d *schema.ResourceData) error {
-	httpUrl := "v5/{project_id}/api/pipelines/{pipeline_id}"
-	updatePath := client.Endpoint + httpUrl
-	updatePath = strings.ReplaceAll(updatePath, "{project_id}", d.Get("project_id").(string))
-	updatePath = strings.ReplaceAll(updatePath, "{pipeline_id}", d.Id())
-	if v, ok := d.GetOk("component_id"); ok {
-		updatePath += fmt.Sprintf("?component_id=%v", v)
-	}
-	updateOpt := golangsdk.RequestOpts{
-		KeepResponseBody: true,
-		JSONBody:         utils.RemoveNil(buildCreateOrUpdatePipelineBodyParams(d)),
-	}
-
-	updateResp, err := client.Request("PUT", updatePath, &updateOpt)
-	if err != nil {
-		return fmt.Errorf("error updating CodeArts pipeline: %s", err)
-	}
-	updateRespBody, err := utils.FlattenResponse(updateResp)
-	if err != nil {
-		return err
-	}
-
-	if err := checkResponseError(updateRespBody, ""); err != nil {
-		return fmt.Errorf("error updating CodeArts pipeline: %s", err)
-	}
-
-	return nil
 }
 
 func resourcePipelineDelete(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
@@ -997,4 +1038,102 @@ func resourcePipelineDelete(_ context.Context, d *schema.ResourceData, meta inte
 	}
 
 	return nil
+}
+
+func buildUpdatePipelineParameterGroups(d *schema.ResourceData) interface{} {
+	return map[string]interface{}{
+		"pipeline_id":        d.Id(),
+		"pipeline_group_ids": d.Get("parameter_groups").(*schema.Set).List(),
+	}
+}
+
+func buildUpdatePipelineToUnGroupBodyParams(d *schema.ResourceData) map[string]interface{} {
+	bodyParams := map[string]interface{}{
+		"group_id": d.Get("group_id"),
+		"pipelines": []map[string]interface{}{
+			{
+				"pipeline_id":   d.Id(),
+				"pipeline_name": d.Get("name"),
+			},
+		},
+	}
+
+	return bodyParams
+}
+
+func buildUpdatePipelineTagsBodyParams(d *schema.ResourceData) map[string]interface{} {
+	bodyParams := map[string]interface{}{
+		"pipelineList": []interface{}{d.Id()},
+		"tagList":      d.Get("tags").(*schema.Set).List(),
+	}
+
+	return bodyParams
+}
+
+type updatePipelineFieldParams struct {
+	httpUrl          string
+	httpMethod       string
+	updateBodyParams interface{}
+	queryParams      []string
+}
+
+func updatePipelineField(client *golangsdk.ServiceClient, d *schema.ResourceData, params updatePipelineFieldParams) error {
+	updatePath := client.Endpoint + params.httpUrl
+	updatePath = strings.ReplaceAll(updatePath, "{project_id}", d.Get("project_id").(string))
+	updatePath = strings.ReplaceAll(updatePath, "{pipeline_id}", d.Id())
+
+	temp := make([]string, 0)
+	for _, param := range params.queryParams {
+		if v, ok := d.GetOk(param); ok {
+			temp = append(temp, fmt.Sprintf("%s=%v", param, v))
+		}
+	}
+	query := strings.Join(temp, "&")
+	if query != "" {
+		updatePath += "?" + query
+	}
+
+	updateOpt := golangsdk.RequestOpts{
+		KeepResponseBody: true,
+	}
+	if params.updateBodyParams != nil {
+		updateOpt.JSONBody = params.updateBodyParams
+	}
+
+	updateResp, err := client.Request(params.httpMethod, updatePath, &updateOpt)
+	if err != nil {
+		return err
+	}
+	updateRespBody, err := utils.FlattenResponse(updateResp)
+	if err != nil {
+		return err
+	}
+
+	return checkResponseError(updateRespBody, "")
+}
+
+func getPipelineRelatedParameterGroups(client *golangsdk.ServiceClient, projectId, id string) (interface{}, error) {
+	httpUrl := "v5/{project_id}/api/pipeline/variable/group/pipeline?pipelineId={pipeline_id}"
+	getPath := client.Endpoint + httpUrl
+	getPath = strings.ReplaceAll(getPath, "{project_id}", projectId)
+	getPath = strings.ReplaceAll(getPath, "{pipeline_id}", id)
+	getOpt := golangsdk.RequestOpts{
+		KeepResponseBody: true,
+	}
+
+	getResp, err := client.Request("GET", getPath, &getOpt)
+	if err != nil {
+		return nil, err
+	}
+	getRespBody, err := utils.FlattenResponse(getResp)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := checkResponseError(getRespBody, ""); err != nil {
+		return nil, err
+	}
+
+	ids := utils.PathSearch("[*].id", getRespBody, nil)
+	return ids, nil
 }
