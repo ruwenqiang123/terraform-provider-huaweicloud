@@ -39,6 +39,8 @@ func ResourceDatasourceConnection() *schema.Resource {
 			StateContext: schema.ImportStatePassthroughContext,
 		},
 
+		CustomizeDiff: config.MergeDefaultTags(),
+
 		Schema: map[string]*schema.Schema{
 			"region": {
 				Type:     schema.TypeString,
@@ -92,13 +94,7 @@ func ResourceDatasourceConnection() *schema.Resource {
 				Computed:    true,
 				Description: `List of routes.`,
 			},
-			"tags": {
-				Type:        schema.TypeMap,
-				Elem:        &schema.Schema{Type: schema.TypeString},
-				Optional:    true,
-				ForceNew:    true,
-				Description: `The key/value pairs to associate with the datasource connection.`,
-			},
+			"tags": common.TagsForceNewSchema(),
 			"status": {
 				Type:        schema.TypeString,
 				Computed:    true,

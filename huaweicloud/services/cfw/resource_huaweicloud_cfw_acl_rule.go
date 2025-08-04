@@ -9,6 +9,7 @@ import (
 
 	"github.com/hashicorp/go-multierror"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/customdiff"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
@@ -39,7 +40,10 @@ func ResourceAclRule() *schema.Resource {
 			StateContext: resourceACLRuleImportState,
 		},
 
-		CustomizeDiff: config.FlexibleForceNew(nonUpdatableParams),
+		CustomizeDiff: customdiff.All(
+			config.FlexibleForceNew(nonUpdatableParams),
+			config.MergeDefaultTags(),
+		),
 
 		Schema: map[string]*schema.Schema{
 			"region": {
@@ -263,18 +267,7 @@ func ResourceAclRule() *schema.Resource {
 				ValidateFunc: validation.StringInSlice([]string{"0"}, true),
 				Description:  `The number of times the ACL rule is hit.`,
 			},
-			"tags": {
-				Type:     schema.TypeMap,
-				Elem:     &schema.Schema{Type: schema.TypeString},
-				Optional: true,
-				ValidateFunc: func(v interface{}, _ string) ([]string, []error) {
-					if keys, ok := v.(map[string]interface{}); ok && len(keys) > 1 {
-						return nil, []error{fmt.Errorf("tags can take at most one key-value pair")}
-					}
-					return nil, nil
-				},
-				Description: `The key/value pairs to associate with the ACL rule.`,
-			},
+			"tags": common.TagsSchema(),
 			"enable_force_new": {
 				Type:         schema.TypeString,
 				Optional:     true,

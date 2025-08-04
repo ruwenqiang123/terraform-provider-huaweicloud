@@ -237,7 +237,7 @@ The following arguments are supported:
 
 * `skip_check_website_type` - (Optional) Whether to skip website type check. The default value is `false`.
 
-* `skip_check_upgrade` - (Optional) Whether to skip upgrade check. The default value is `false`.
+* `skip_check_upgrade` - (Optional) Whether to skip upgrade check. The default value is `true`.
 
 * `endpoints` - (Optional) Configuration block in key/value pairs for customizing service endpoints.
   The [endpoints](#block--endpoints) block to support custom endpoints is documented below.
@@ -251,6 +251,10 @@ provider "huaweicloud" {
   }
 }
 ```
+
+* `default_tags` - (Optional) The default tags of resources managed by this provider.
+  The `default_tags` only works in resources that support the `tags` argument.
+  The `default_tags` can be overridden if `tags` in the resource has new values for matching keys.
 
 The `assume_role` block supports:
 

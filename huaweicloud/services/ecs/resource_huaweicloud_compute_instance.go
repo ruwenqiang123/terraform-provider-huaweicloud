@@ -77,6 +77,8 @@ func ResourceComputeInstance() *schema.Resource {
 			Delete: schema.DefaultTimeout(30 * time.Minute),
 		},
 
+		CustomizeDiff: config.MergeDefaultTags(),
+
 		Schema: map[string]*schema.Schema{
 			"region": {
 				Type:     schema.TypeString,
@@ -462,11 +464,7 @@ func ResourceComputeInstance() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
-			"tags": {
-				Type:     schema.TypeMap,
-				Optional: true,
-				Elem:     &schema.Schema{Type: schema.TypeString},
-			},
+			"tags": common.TagsSchema(),
 			"power_action": {
 				Type:     schema.TypeString,
 				Optional: true,

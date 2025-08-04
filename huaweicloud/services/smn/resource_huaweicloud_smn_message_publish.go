@@ -5,11 +5,13 @@ import (
 	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/customdiff"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 
 	"github.com/chnsz/golangsdk"
 
+	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/common"
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/config"
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/utils"
 )
@@ -33,7 +35,10 @@ func ResourceMessagePublish() *schema.Resource {
 		ReadContext:   resourceMessagePublishRead,
 		DeleteContext: resourceMessagePublishDelete,
 
-		CustomizeDiff: config.FlexibleForceNew(messagePublishNonUpdatableParams),
+		CustomizeDiff: customdiff.All(
+			config.FlexibleForceNew(messagePublishNonUpdatableParams),
+			config.MergeDefaultTags(),
+		),
 
 		Schema: map[string]*schema.Schema{
 			"region": {
@@ -71,12 +76,7 @@ func ResourceMessagePublish() *schema.Resource {
 				ExactlyOneOf: []string{"message", "message_structure", "message_template_name"},
 				Description:  `Specifies the message template name.`,
 			},
-			"tags": {
-				Type:        schema.TypeMap,
-				Optional:    true,
-				Elem:        &schema.Schema{Type: schema.TypeString},
-				Description: `Specifies a dictionary consisting of tag and parameters to replace the tag.`,
-			},
+			"tags": common.TagsSchema(),
 			"time_to_live": {
 				Type:        schema.TypeString,
 				Optional:    true,

@@ -73,6 +73,8 @@ func ResourceDliQueue() *schema.Resource {
 			StateContext: resourceQueueImportState,
 		},
 
+		CustomizeDiff: config.MergeDefaultTags(),
+
 		Schema: map[string]*schema.Schema{
 			"region": {
 				Type:     schema.TypeString,
@@ -155,14 +157,7 @@ func ResourceDliQueue() *schema.Resource {
 				ValidateFunc: validation.StringInSlice([]string{queueFeatureBasic, queueFeatureAI}, false),
 			},
 
-			"tags": {
-				Type: schema.TypeMap,
-				Elem: &schema.Schema{
-					Type: schema.TypeString,
-				},
-				Optional: true,
-				ForceNew: true,
-			},
+			"tags": common.TagsForceNewSchema(),
 
 			"scaling_policies": {
 				Type:         schema.TypeSet,
