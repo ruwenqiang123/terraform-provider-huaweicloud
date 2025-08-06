@@ -23,6 +23,7 @@ data "huaweicloud_rds_flavors" "test" {
   instance_mode     = var.instance_mode
   group_type        = var.instance_flavor_group_type
   vcpus             = var.instance_flavor_vcpus
+  memory            = var.instance_flavor_memory
   availability_zone = var.availability_zone == "" ? try(data.huaweicloud_availability_zones.test[0].names[0], null) : var.availability_zone
 }
 
@@ -76,35 +77,11 @@ resource "huaweicloud_rds_instance" "test" {
   lifecycle {
     ignore_changes = [
       flavor,
+      availability_zone
     ]
   }
-}
-
-resource "huaweicloud_vpc_eip" "test" {
-  count = var.associate_eip_address == "" ? 1 : 0
-
-  publicip {
-    type = var.eip_type
-  }
-
-  bandwidth {
-    name        = var.bandwidth_name
-    size        = var.bandwidth_size
-    share_type  = var.bandwidth_share_type
-    charge_mode = var.bandwidth_charge_mode
-  }
-}
-
-data "huaweicloud_networking_port" "test" {
-  network_id = huaweicloud_vpc_subnet.test.id
-  fixed_ip   = huaweicloud_rds_instance.test.fixed_ip
 
   depends_on = [
-    huaweicloud_rds_instance.test
+    huaweicloud_networking_secgroup_rule.test
   ]
-}
-
-resource "huaweicloud_vpc_eip_associate" "test" {
-  public_ip = var.associate_eip_address != "" ? var.associate_eip_address : huaweicloud_vpc_eip.test[0].address
-  port_id   = data.huaweicloud_networking_port.test.id
 }

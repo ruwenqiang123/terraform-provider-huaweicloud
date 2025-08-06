@@ -4,7 +4,7 @@ resource "huaweicloud_vpc" "test" {
 }
 
 data "huaweicloud_availability_zones" "test" {
-  count = var.availability_zone == "" ? 1 : 0
+  count = length(var.availability_zones) < 1 ? 1 : 0
 }
 
 resource "huaweicloud_vpc_subnet" "test" {
@@ -12,7 +12,7 @@ resource "huaweicloud_vpc_subnet" "test" {
   name              = var.subnet_name
   cidr              = var.subnet_cidr == "" ? cidrsubnet(huaweicloud_vpc.test.cidr, 8, 0) : var.subnet_cidr
   gateway_ip        = var.gateway_ip == "" ? cidrhost(cidrsubnet(huaweicloud_vpc.test.cidr, 8, 0), 1) : var.gateway_ip
-  availability_zone = var.availability_zone == "" ? try(data.huaweicloud_availability_zones.test[0].names[0], null) : var.availability_zone
+  availability_zone = length(var.availability_zones) > 0 ? element(var.availability_zones, 0) : try(data.huaweicloud_availability_zones.test[0].names[0], null)
 }
 
 data "huaweicloud_rds_flavors" "test" {
@@ -23,7 +23,8 @@ data "huaweicloud_rds_flavors" "test" {
   instance_mode     = var.instance_mode
   group_type        = var.instance_flavor_group_type
   vcpus             = var.instance_flavor_vcpus
-  availability_zone = var.availability_zone == "" ? try(data.huaweicloud_availability_zones.test[0].names[0], null) : var.availability_zone
+  memory            = var.instance_flavor_memory
+  availability_zone = length(var.availability_zones) > 0 ? element(var.availability_zones, 0) : try(data.huaweicloud_availability_zones.test[0].names[0], null)
 }
 
 resource "huaweicloud_networking_secgroup" "test" {
@@ -49,12 +50,14 @@ resource "random_password" "test" {
 }
 
 resource "huaweicloud_rds_instance" "test" {
-  name              = var.instance_name
-  flavor            = var.instance_flavor_id != "" ? var.instance_flavor_id : try(data.huaweicloud_rds_flavors.test[0].flavors[0].name, null)
-  vpc_id            = huaweicloud_vpc.test.id
-  subnet_id         = huaweicloud_vpc_subnet.test.id
-  security_group_id = huaweicloud_networking_secgroup.test.id
-  availability_zone = var.availability_zone != "" ? [var.availability_zone] : try(slice(data.huaweicloud_availability_zones.test[0].names, 0, 1), [])
+  name                = var.instance_name
+  flavor              = var.instance_flavor_id != "" ? var.instance_flavor_id : try(data.huaweicloud_rds_flavors.test[0].flavors[0].name, null)
+  vpc_id              = huaweicloud_vpc.test.id
+  subnet_id           = huaweicloud_vpc_subnet.test.id
+  security_group_id   = huaweicloud_networking_secgroup.test.id
+  availability_zone   = length(var.availability_zones) > 0 ? var.availability_zones : var.instance_mode == "ha" ? try(
+    slice(data.huaweicloud_availability_zones.test[0].names, 0, 2), []) : try(slice(data.huaweicloud_availability_zones.test[0].names, 0, 1), [])
+  ha_replication_mode = var.instance_mode == "ha" ? var.ha_replication_mode : null
 
   db {
     type     = var.instance_db_type
@@ -76,37 +79,39 @@ resource "huaweicloud_rds_instance" "test" {
   lifecycle {
     ignore_changes = [
       flavor,
+      availability_zone,
     ]
   }
 }
 
-resource "huaweicloud_rds_mysql_account" "test" {
+resource "huaweicloud_rds_pg_account" "test" {
   instance_id = huaweicloud_rds_instance.test.id
   name        = var.account_name
   password    = var.account_password != "" ? var.account_password : try(random_password.test[0].result, null)
 }
 
-resource "huaweicloud_rds_mysql_database" "test" {
-  instance_id   = huaweicloud_rds_instance.test.id
-  name          = var.database_name
-  character_set = var.character_set
+resource "huaweicloud_rds_pg_account_privileges" "test" {
+  instance_id            = huaweicloud_rds_instance.test.id
+  user_name              = huaweicloud_rds_pg_account.test.name
+  role_privileges        = ["CREATEROLE", "CREATEDB", "LOGIN", "REPLICATION"]
+  system_role_privileges = ["pg_signal_backend"]
 }
 
-resource "huaweicloud_rds_mysql_database_privilege" "test" {
+resource "huaweicloud_rds_pg_database" "test" {
   instance_id = huaweicloud_rds_instance.test.id
-  db_name     = var.database_name
+  name        = var.database_name
+}
 
-  users {
-    name     = huaweicloud_rds_mysql_account.test.name
-    readonly = true
-  }
-
-  depends_on = [huaweicloud_rds_mysql_database.test]
+resource "huaweicloud_rds_pg_schema" "test" {
+  instance_id = huaweicloud_rds_instance.test.id
+  db_name     = huaweicloud_rds_pg_database.test.name
+  owner       = huaweicloud_rds_pg_account.test.name
+  schema_name = var.schema_name
 }
 
 resource "huaweicloud_rds_backup" "test" {
   instance_id = huaweicloud_rds_instance.test.id
   name        = var.backup_name
 
-  depends_on = [huaweicloud_rds_mysql_database_privilege.test]
+  depends_on = [huaweicloud_rds_pg_schema.test]
 }
