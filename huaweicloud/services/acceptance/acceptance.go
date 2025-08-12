@@ -434,6 +434,8 @@ var (
 	// The SecMaster alert ID
 	HW_SECMASTER_ALERT_ID = os.Getenv("HW_SECMASTER_ALERT_ID")
 
+	HW_SECMASTER_COMPONENT_ID = os.Getenv("HW_SECMASTER_COMPONENT_ID")
+
 	HW_MODELARTS_HAS_SUBSCRIBE_MODEL                  = os.Getenv("HW_MODELARTS_HAS_SUBSCRIBE_MODEL")
 	HW_MODELARTS_USER_LOGIN_PASSWORD                  = os.Getenv("HW_MODELARTS_USER_LOGIN_PASSWORD")
 	HW_MODELARTS_DEVSERVER_FLAVOR                     = os.Getenv("HW_MODELARTS_DEVSERVER_FLAVOR")
@@ -558,6 +560,9 @@ var (
 	HW_EVS_ENABLE_FLAG              = os.Getenv("HW_EVS_ENABLE_FLAG")
 	HW_EVS_VOLUME_ID                = os.Getenv("HW_EVS_VOLUME_ID")
 	HW_EVS_SERVER_ID                = os.Getenv("HW_EVS_SERVER_ID")
+	HW_EVS_VOLUME_NEW_SIZE          = os.Getenv("HW_EVS_VOLUME_NEW_SIZE")
+	HW_EVS_PREPAID_VOLUME_ID        = os.Getenv("HW_EVS_PREPAID_VOLUME_ID")
+	HW_EVS_PREPAID_VOLUME_NEW_SIZE  = os.Getenv("HW_EVS_PREPAID_VOLUME_NEW_SIZE")
 
 	HW_ECS_LAUNCH_TEMPLATE_ID = os.Getenv("HW_ECS_LAUNCH_TEMPLATE_ID")
 	HW_ECS_ID                 = os.Getenv("HW_ECS_ID")
@@ -668,9 +673,10 @@ var (
 	HW_DMS_ROCKETMQ_TOPIC_NAME  = os.Getenv("HW_DMS_ROCKETMQ_TOPIC_NAME")
 	HW_DMS_ROCKETMQ_GROUP_NAME  = os.Getenv("HW_DMS_ROCKETMQ_GROUP_NAME")
 
-	HW_SFS_TURBO_SHARE_ID    = os.Getenv("HW_SFS_TURBO_SHARE_ID")
-	HW_SFS_TURBO_BACKUP_ID   = os.Getenv("HW_SFS_TURBO_BACKUP_ID")
-	HW_SFS_FILE_SYSTEM_NAMES = os.Getenv("HW_SFS_FILE_SYSTEM_NAMES")
+	HW_SFS_TURBO_SHARE_ID           = os.Getenv("HW_SFS_TURBO_SHARE_ID")
+	HW_SFS_TURBO_BACKUP_ID          = os.Getenv("HW_SFS_TURBO_BACKUP_ID")
+	HW_SFS_TURBO_ECS_MOUNT_SHARE_IP = os.Getenv("HW_SFS_TURBO_ECS_MOUNT_SHARE_IP")
+	HW_SFS_FILE_SYSTEM_NAMES        = os.Getenv("HW_SFS_FILE_SYSTEM_NAMES")
 
 	HW_SMN_SUBSCRIBED_TOPIC_URN = os.Getenv("HW_SMN_SUBSCRIBED_TOPIC_URN")
 
@@ -1327,6 +1333,27 @@ func TestAccPreCheckEVSServerID(t *testing.T) {
 func TestAccPreCheckEVSVolumeID(t *testing.T) {
 	if HW_EVS_VOLUME_ID == "" {
 		t.Skip("HW_EVS_VOLUME_ID must be set for acceptance tests")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckEVSVolumeNewSize(t *testing.T) {
+	if HW_EVS_VOLUME_NEW_SIZE == "" {
+		t.Skip("HW_EVS_VOLUME_NEW_SIZE must be set for acceptance tests")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckEVSPrepaidVolumeID(t *testing.T) {
+	if HW_EVS_PREPAID_VOLUME_ID == "" {
+		t.Skip("HW_EVS_PREPAID_VOLUME_ID must be set for acceptance tests")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckEVSPrepaidVolumeNewSize(t *testing.T) {
+	if HW_EVS_PREPAID_VOLUME_NEW_SIZE == "" {
+		t.Skip("HW_EVS_PREPAID_VOLUME_NEW_SIZE must be set for acceptance tests")
 	}
 }
 
@@ -2334,6 +2361,13 @@ func TestAccPreCheckSecMasterVersionId(t *testing.T) {
 func TestAccPreCheckSecMasterAlertId(t *testing.T) {
 	if HW_SECMASTER_ALERT_ID == "" {
 		t.Skip("HW_SECMASTER_ALERT_ID must be set for SecMaster acceptance tests")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckSecMasterComponentId(t *testing.T) {
+	if HW_SECMASTER_COMPONENT_ID == "" {
+		t.Skip("HW_SECMASTER_COMPONENT_ID must be set for SecMaster acceptance tests")
 	}
 }
 
@@ -3592,6 +3626,13 @@ func TestAccPrecheckTimeStamp(t *testing.T) {
 func TestAccPrecheckCDNAnalytics(t *testing.T) {
 	if HW_CDN_START_TIME == "" || HW_CDN_END_TIME == "" || HW_CDN_STAT_TYPE == "" {
 		t.Skip("HW_CDN_START_TIME, HW_CDN_END_TIME, and HW_CDN_STAT_TYPE must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
+func TestAccPrecheckSFSTurboECSMoutShareIp(t *testing.T) {
+	if HW_SFS_TURBO_ECS_MOUNT_SHARE_IP == "" {
+		t.Skip("HW_SFS_TURBO_ECS_MOUNT_SHARE_IP must be set for the acceptance test")
 	}
 }
 
