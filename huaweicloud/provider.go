@@ -939,6 +939,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_dns_quotas":              dns.DataSourceQuotas(),
 			"huaweicloud_dns_recordsets":          dns.DataSourceRecordsets(),
 			"huaweicloud_dns_zones":               dns.DataSourceZones(),
+			"huaweicloud_dns_tags":                dns.DataSourceDNSTags(),
 
 			"huaweicloud_drs_availability_zones": drs.DataSourceAvailabilityZones(),
 			"huaweicloud_drs_node_types":         drs.DataSourceNodeTypes(),
@@ -1407,7 +1408,9 @@ func Provider() *schema.Provider {
 			"huaweicloud_sdrs_protected_instances_by_tags": sdrs.DataSourceSdrsProtectedInstancesByTags(),
 			"huaweicloud_sdrs_protected_instance_tags":     sdrs.DataSourceSdrsProtectedInstanceTags(),
 
+			"huaweicloud_secmaster_workflow_instance":         secmaster.DataSourceWorkflowInstanceDetail(),
 			"huaweicloud_secmaster_workflows":                 secmaster.DataSourceSecmasterWorkflows(),
+			"huaweicloud_secmaster_workflow_instances":        secmaster.DataSourceWorkflowInstances(),
 			"huaweicloud_secmaster_workspaces":                secmaster.DataSourceSecmasterWorkspaces(),
 			"huaweicloud_secmaster_incidents":                 secmaster.DataSourceIncidents(),
 			"huaweicloud_secmaster_alerts":                    secmaster.DataSourceAlerts(),
@@ -1415,6 +1418,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_secmaster_metric_results":            secmaster.DataSourceMetricResults(),
 			"huaweicloud_secmaster_baseline_check_results":    secmaster.DataSourceSecmasterBaselineCheckResults(),
 			"huaweicloud_secmaster_playbooks":                 secmaster.DataSourceSecmasterPlaybooks(),
+			"huaweicloud_secmaster_security_reports":          secmaster.DataSourceSecurityReports(),
 			"huaweicloud_secmaster_alert_rules":               secmaster.DataSourceSecmasterAlertRules(),
 			"huaweicloud_secmaster_alert_rule_templates":      secmaster.DataSourceSecmasterAlertRuleTemplates(),
 			"huaweicloud_secmaster_playbook_versions":         secmaster.DataSourceSecmasterPlaybookVersions(),
@@ -1431,6 +1435,13 @@ func Provider() *schema.Provider {
 			"huaweicloud_secmaster_catalogues":                secmaster.DataSourceSecmasterCatalogues(),
 			"huaweicloud_secmaster_component_templates":       secmaster.DataSourceComponentTemplates(),
 			"huaweicloud_secmaster_vpc_endpoint_services":     secmaster.DataSourceSecmasterVpcEndpointServices(),
+			"huaweicloud_secmaster_catalogues_search":         secmaster.DataSourceSecmasterCataloguesSearch(),
+			// In the API documentation, there are two API groups: Plugin Management and Component Management,
+			// and their API URLs are both named with "components". To differentiate them, all resources under the
+			// Plugin Management group are prefixed with "soc", since the API URLs in the Plugin Management group
+			// also contain "soc".
+			"huaweicloud_secmaster_soc_components":       secmaster.DataSourceSocComponents(),
+			"huaweicloud_secmaster_soc_component_detail": secmaster.DataSourceSocComponentDetail(),
 
 			// Querying by Ver.2 APIs
 			"huaweicloud_servicestage_component_runtimes": servicestage.DataSourceComponentRuntimes(),
@@ -1649,6 +1660,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_workspace_app_publishable_apps":                workspace.DataSourceWorkspaceAppPublishableApps(),
 			"huaweicloud_workspace_app_schedule_tasks":                  workspace.DataSourceAppScheduleTasks(),
 			"huaweicloud_workspace_app_schedule_task_executions":        workspace.DataSourceAppScheduleTaskExecutions(),
+			"huaweicloud_workspace_app_schedule_task_execute_details":   workspace.DataSourceAppScheduleTaskExecuteDetails(),
 			"huaweicloud_workspace_app_schedule_task_future_executions": workspace.DataSourceAppScheduleTaskFutureExecutions(),
 			"huaweicloud_workspace_app_servers":                         workspace.DataSourceAppServers(),
 			"huaweicloud_workspace_app_service":                         workspace.DataSourceAppService(),
@@ -2061,14 +2073,15 @@ func Provider() *schema.Provider {
 			"huaweicloud_dbss_instance":               dbss.ResourceInstance(),
 			"huaweicloud_dbss_rds_database":           dbss.ResourceAddRdsDatabase(),
 
-			"huaweicloud_dc_virtual_gateway":            dc.ResourceVirtualGateway(),
-			"huaweicloud_dc_virtual_interface":          dc.ResourceVirtualInterface(),
-			"huaweicloud_dc_virtual_interface_accepter": dc.ResourceInterfaceAccepter(),
-			"huaweicloud_dc_hosted_connect":             dc.ResourceHostedConnect(),
-			"huaweicloud_dc_global_gateway":             dc.ResourceDcGlobalGateway(),
-			"huaweicloud_dc_global_gateway_peer_link":   dc.ResourceDcGlobalGatewayPeerLink(),
-			"huaweicloud_dc_global_gateway_route_table": dc.ResourceDcGlobalGatewayRouteTable(),
-			"huaweicloud_dc_connect_gateway":            dc.ResourceDcConnectGateway(),
+			"huaweicloud_dc_virtual_gateway":              dc.ResourceVirtualGateway(),
+			"huaweicloud_dc_virtual_interface":            dc.ResourceVirtualInterface(),
+			"huaweicloud_dc_virtual_interface_accepter":   dc.ResourceInterfaceAccepter(),
+			"huaweicloud_dc_virtual_interface_switchover": dc.ResourceVirtualInterfaceSwitchover(),
+			"huaweicloud_dc_hosted_connect":               dc.ResourceHostedConnect(),
+			"huaweicloud_dc_global_gateway":               dc.ResourceDcGlobalGateway(),
+			"huaweicloud_dc_global_gateway_peer_link":     dc.ResourceDcGlobalGatewayPeerLink(),
+			"huaweicloud_dc_global_gateway_route_table":   dc.ResourceDcGlobalGatewayRouteTable(),
+			"huaweicloud_dc_connect_gateway":              dc.ResourceDcConnectGateway(),
 
 			"huaweicloud_dcs_instance":                           dcs.ResourceDcsInstance(),
 			"huaweicloud_dcs_instance_public_access":             dcs.ResourceDcsInstancePublicAccess(),
@@ -2724,6 +2737,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_secmaster_post_paid_order":             secmaster.ResourcePostPaidOrder(),
 			"huaweicloud_secmaster_workspace":                   secmaster.ResourceWorkspace(),
 			"huaweicloud_secmaster_workflow_action":             secmaster.ResourceWorkflowAction(),
+			"huaweicloud_secmaster_catalogue":                   secmaster.ResourceCatalogue(),
 
 			"huaweicloud_servicestage_application":                 servicestage.ResourceApplication(),
 			"huaweicloud_servicestage_component_instance":          servicestage.ResourceComponentInstance(),
@@ -2879,6 +2893,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_workspace_eip_associate":                workspace.ResourceEipAssociate(),
 
 			// Workspace APP
+			"huaweicloud_workspace_app_application_batch_attach":    workspace.ResourceAppApplicationBatchAttach(),
 			"huaweicloud_workspace_app_group_authorization":         workspace.ResourceAppGroupAuthorization(),
 			"huaweicloud_workspace_app_group":                       workspace.ResourceWorkspaceAppGroup(),
 			"huaweicloud_workspace_app_image_server":                workspace.ResourceAppImageServer(),
