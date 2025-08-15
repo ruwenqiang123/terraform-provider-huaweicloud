@@ -37,6 +37,12 @@ func ResourceVirtualInterface() *schema.Resource {
 
 		CustomizeDiff: config.MergeDefaultTags(),
 
+		Timeouts: &schema.ResourceTimeout{
+			Create: schema.DefaultTimeout(30 * time.Minute),
+			Update: schema.DefaultTimeout(30 * time.Minute),
+			Delete: schema.DefaultTimeout(30 * time.Minute),
+		},
+
 		Schema: map[string]*schema.Schema{
 			"region": {
 				Type:        schema.TypeString,
@@ -50,12 +56,6 @@ func ResourceVirtualInterface() *schema.Resource {
 				Required:    true,
 				ForceNew:    true,
 				Description: "The ID of the direct connection associated with the virtual interface.",
-			},
-			"vgw_id": {
-				Type:        schema.TypeString,
-				Required:    true,
-				ForceNew:    true,
-				Description: "The ID of the virtual gateway to which the virtual interface is connected.",
 			},
 			"name": {
 				Type:        schema.TypeString,
@@ -110,6 +110,13 @@ func ResourceVirtualInterface() *schema.Resource {
 				Computed:    true,
 				ForceNew:    true,
 				Description: "The service type of the virtual interface.",
+			},
+			"vgw_id": {
+				Type:        schema.TypeString,
+				Optional:    true,
+				Computed:    true,
+				ForceNew:    true,
+				Description: "The ID of the virtual gateway to which the virtual interface is connected.",
 			},
 			"gateway_id": {
 				Type:        schema.TypeString,
@@ -440,7 +447,6 @@ func buildCreateVirtualInterfaceEnableNqa(d *schema.ResourceData) interface{} {
 
 func buildCreateVirtualInterfaceBodyParams(d *schema.ResourceData, cfg *config.Config) map[string]interface{} {
 	bodyParams := map[string]interface{}{
-		"vgw_id":                d.Get("vgw_id"),
 		"type":                  d.Get("type"),
 		"route_mode":            d.Get("route_mode"),
 		"vlan":                  d.Get("vlan"),
@@ -451,6 +457,7 @@ func buildCreateVirtualInterfaceBodyParams(d *schema.ResourceData, cfg *config.C
 		"description":           utils.ValueIgnoreEmpty(d.Get("description")),
 		"direct_connect_id":     utils.ValueIgnoreEmpty(d.Get("direct_connect_id")),
 		"service_type":          utils.ValueIgnoreEmpty(d.Get("service_type")),
+		"vgw_id":                utils.ValueIgnoreEmpty(d.Get("vgw_id")),
 		"gateway_id":            utils.ValueIgnoreEmpty(d.Get("gateway_id")),
 		"local_gateway_v4_ip":   utils.ValueIgnoreEmpty(d.Get("local_gateway_v4_ip")),
 		"remote_gateway_v4_ip":  utils.ValueIgnoreEmpty(d.Get("remote_gateway_v4_ip")),
@@ -832,8 +839,11 @@ func virtualInterfaceRefreshFunc(client *golangsdk.ServiceClient, id string) res
 		completeStatus := []string{"ACTIVE", "DOWN", "ADMIN_SHUTDOWN", "DELETED", "REJECTED"}
 		failStatus := []string{"ERROR"}
 		status := utils.PathSearch("virtual_interface.status", getRespBody, "").(string)
-		if utils.StrSliceContains(completeStatus, status) || utils.StrSliceContains(failStatus, status) {
+		if utils.StrSliceContains(completeStatus, status) {
 			return getRespBody, status, nil
+		}
+		if utils.StrSliceContains(failStatus, status) {
+			return nil, status, errors.New("error getting virtual interface")
 		}
 
 		return getRespBody, "PENDING", nil
