@@ -89,6 +89,7 @@ var (
 	HW_CBR_EXTERNAL_PROJECT_ID = os.Getenv("HW_CBR_EXTERNAL_PROJECT_ID")
 	HW_CBR_BACKUP_ID           = os.Getenv("HW_CBR_BACKUP_ID")
 	HW_CBR_BACKUP_NAME         = os.Getenv("HW_CBR_BACKUP_NAME")
+	HW_CBR_RESOURCE_ID         = os.Getenv("HW_CBR_RESOURCE_ID")
 
 	HW_CBC_UNSUBSCRIBE_RESOURCE_ID = os.Getenv("HW_CBC_UNSUBSCRIBE_RESOURCE_ID")
 
@@ -439,6 +440,9 @@ var (
 	HW_SECMASTER_WORKFLOW_ID = os.Getenv("HW_SECMASTER_WORKFLOW_ID")
 
 	HW_SECMASTER_COMPONENT_ID = os.Getenv("HW_SECMASTER_COMPONENT_ID")
+
+	// The SecMaster field ID
+	HW_SECMASTER_FIELD_ID = os.Getenv("HW_SECMASTER_FIELD_ID")
 
 	HW_MODELARTS_HAS_SUBSCRIBE_MODEL                  = os.Getenv("HW_MODELARTS_HAS_SUBSCRIBE_MODEL")
 	HW_MODELARTS_USER_LOGIN_PASSWORD                  = os.Getenv("HW_MODELARTS_USER_LOGIN_PASSWORD")
@@ -1207,6 +1211,13 @@ func TestAccPreCheckCBRBackupID(t *testing.T) {
 func TestAccPreCheckCBRBackupName(t *testing.T) {
 	if HW_CBR_BACKUP_NAME == "" {
 		t.Skip("HW_CBR_BACKUP_NAME must be set for acceptance tests")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckCbrResourceId(t *testing.T) {
+	if HW_CBR_RESOURCE_ID == "" {
+		t.Skip("HW_CBR_RESOURCE_ID must be set for acceptance tests")
 	}
 }
 
@@ -2410,6 +2421,13 @@ func TestAccPreCheckSecMasterComponentId(t *testing.T) {
 func TestAccPreCheckSecMasterWorkflowId(t *testing.T) {
 	if HW_SECMASTER_WORKFLOW_ID == "" {
 		t.Skip("HW_SECMASTER_WORKFLOW_ID must be set for SecMaster acceptance tests")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckSecMasterFieldId(t *testing.T) {
+	if HW_SECMASTER_FIELD_ID == "" {
+		t.Skip("HW_SECMASTER_FIELD_ID must be set for SecMaster acceptance tests")
 	}
 }
 
