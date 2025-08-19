@@ -701,6 +701,8 @@ func Provider() *schema.Provider {
 			"huaweicloud_coc_patch_compliance_reports":      coc.DataSourceCocPatchComplianceReports(),
 			"huaweicloud_coc_patch_compliance_report_items": coc.DataSourceCocPatchComplianceReportItems(),
 			"huaweicloud_coc_public_scripts":                coc.DataSourceCocPublicScripts(),
+			"huaweicloud_coc_public_script_detail":          coc.DataSourceCocPublicScriptDetail(),
+			"huaweicloud_coc_documents":                     coc.DataSourceCocDocuments(),
 			"huaweicloud_coc_document_atomic_detail":        coc.DataSourceCocDocumentAtomicDetail(),
 
 			"huaweicloud_compute_flavors":                 ecs.DataSourceEcsFlavors(),
@@ -835,6 +837,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_dc_connect_gateways":                     dc.DataSourceDcConnectGateways(),
 			"huaweicloud_dc_connect_gateway_geips":                dc.DataSourceDcConnectGatewayGeips(),
 			"huaweicloud_dc_tags":                                 dc.DataSourceDcTags(),
+			"huaweicloud_dc_resources_by_tags":                    dc.DataSourceDcResourcesByTags(),
 
 			"huaweicloud_dcs_quotas":                              dcs.DataSourceDcsQuotas(),
 			"huaweicloud_dcs_flavors":                             dcs.DataSourceDcsFlavorsV2(),
@@ -1425,6 +1428,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_secmaster_workflow_instance":           secmaster.DataSourceWorkflowInstanceDetail(),
 			"huaweicloud_secmaster_workflows":                   secmaster.DataSourceSecmasterWorkflows(),
 			"huaweicloud_secmaster_workflow_instances":          secmaster.DataSourceWorkflowInstances(),
+			"huaweicloud_secmaster_workflow_versions":           secmaster.DataSourceWorkflowVersions(),
 			"huaweicloud_secmaster_workspaces":                  secmaster.DataSourceSecmasterWorkspaces(),
 			"huaweicloud_secmaster_incidents":                   secmaster.DataSourceIncidents(),
 			"huaweicloud_secmaster_alerts":                      secmaster.DataSourceAlerts(),
@@ -1805,6 +1809,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_aad_black_white_list":           aad.ResourceBlackWhiteList(),
 			"huaweicloud_aad_change_specification":       aad.ResourceChangeSpecification(),
 			"huaweicloud_aad_domain_security_protection": aad.ResourceDomainSecurityProtection(),
+			"huaweicloud_aad_unblock_ip":                 aad.ResourceUnblockIp(),
 
 			"huaweicloud_antiddos_basic":                     antiddos.ResourceCloudNativeAntiDdos(),
 			"huaweicloud_antiddos_default_protection_policy": antiddos.ResourceDefaultProtectionPolicy(),
@@ -2012,6 +2017,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_ces_resource_group":                     ces.ResourceResourceGroup(),
 			"huaweicloud_ces_one_click_alarm_rule_action":        ces.ResourceOneClickAlarmRuleAction(),
 			"huaweicloud_ces_one_click_alarm_rule_policy_action": ces.ResourceOneClickAlarmRulePolicyAction(),
+			"huaweicloud_ces_one_click_alarm_reset":              ces.ResourceOneClickAlarmReset(),
 
 			"huaweicloud_cfw_acl_rule":             cfw.ResourceAclRule(),
 			"huaweicloud_cfw_address_group":        cfw.ResourceAddressGroup(),
@@ -2036,6 +2042,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_cnad_advanced_policy":             cnad.ResourceCNADAdvancedPolicy(),
 			"huaweicloud_cnad_advanced_policy_associate":   cnad.ResourcePolicyAssociate(),
 			"huaweicloud_cnad_advanced_protected_object":   cnad.ResourceProtectedObject(),
+			"huaweicloud_cnad_advanced_protected_ip_tag":   cnad.ResourceProtectedIpTag(),
 
 			"huaweicloud_compute_instance":          ecs.ResourceComputeInstance(),
 			"huaweicloud_compute_interface_attach":  ecs.ResourceComputeInterfaceAttach(),
@@ -2863,6 +2870,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_vpc_traffic_mirror_filter":       vpc.ResourceTrafficMirrorFilter(),
 			"huaweicloud_vpc_traffic_mirror_filter_rule":  vpc.ResourceTrafficMirrorFilterRule(),
 			"huaweicloud_vpc_traffic_mirror_session":      vpc.ResourceTrafficMirrorSession(),
+			"huaweicloud_vpc_subnet_cidr_reservation":     vpc.ResourceVpcSubnetCidrReservation(),
 
 			"huaweicloud_vpcep_approval": vpcep.ResourceVPCEndpointApproval(),
 			"huaweicloud_vpcep_endpoint": vpcep.ResourceVPCEndpoint(),
