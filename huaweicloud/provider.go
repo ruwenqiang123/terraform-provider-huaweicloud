@@ -700,6 +700,8 @@ func Provider() *schema.Provider {
 			"huaweicloud_coc_resources":                     coc.DataSourceCocResources(),
 			"huaweicloud_coc_patch_compliance_reports":      coc.DataSourceCocPatchComplianceReports(),
 			"huaweicloud_coc_patch_compliance_report_items": coc.DataSourceCocPatchComplianceReportItems(),
+			"huaweicloud_coc_public_scripts":                coc.DataSourceCocPublicScripts(),
+			"huaweicloud_coc_document_atomic_detail":        coc.DataSourceCocDocumentAtomicDetail(),
 
 			"huaweicloud_compute_flavors":                 ecs.DataSourceEcsFlavors(),
 			"huaweicloud_compute_instance":                ecs.DataSourceComputeInstance(),
@@ -832,6 +834,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_dc_global_gateway_route_tables":          dc.DataSourceDcGlobalGatewayRouteTables(),
 			"huaweicloud_dc_connect_gateways":                     dc.DataSourceDcConnectGateways(),
 			"huaweicloud_dc_connect_gateway_geips":                dc.DataSourceDcConnectGatewayGeips(),
+			"huaweicloud_dc_tags":                                 dc.DataSourceDcTags(),
 
 			"huaweicloud_dcs_quotas":                              dcs.DataSourceDcsQuotas(),
 			"huaweicloud_dcs_flavors":                             dcs.DataSourceDcsFlavorsV2(),
@@ -945,6 +948,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_dns_recordsets":          dns.DataSourceRecordsets(),
 			"huaweicloud_dns_resolver_rules":      dns.DataSourceDNSResolverRules(),
 			"huaweicloud_dns_zones":               dns.DataSourceZones(),
+			"huaweicloud_dns_public_zone_lines":   dns.DataSourceDNSPublicZoneLines(),
 			"huaweicloud_dns_tags":                dns.DataSourceDNSTags(),
 			"huaweicloud_dns_tags_filter":         dns.DataSourceDNSTagsFilter(),
 			"huaweicloud_dns_endpoints":           dns.DataSourceDNSEndpoints(),
@@ -1673,6 +1677,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_workspace_app_groups":                          workspace.DataSourceWorkspaceAppGroups(),
 			"huaweicloud_workspace_app_hda_configurations":              workspace.DataSourceAppHdaConfigurations(),
 			"huaweicloud_workspace_app_hda_latest_versions":             workspace.DataSourceAppHdaLatestVersions(),
+			"huaweicloud_workspace_app_hda_upgrade_records":             workspace.DataSourceAppHdaUpgradeRecords(),
 			"huaweicloud_workspace_app_ies_availability_zones":          workspace.DataSourceIesAvailabilityZones(),
 			"huaweicloud_workspace_app_image_servers":                   workspace.DataSourceWorkspaceAppImageServers(),
 			"huaweicloud_workspace_app_latest_attached_applications":    workspace.DataSourceLatestAttachedApplications(),
@@ -2047,6 +2052,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_coc_incident_handle":        coc.ResourceIncidentHandle(),
 			"huaweicloud_coc_war_room":               coc.ResourceWarRoom(),
 			"huaweicloud_coc_custom_event_report":    coc.ResourceCustomEventReport(),
+			"huaweicloud_coc_document":               coc.ResourceDocument(),
 
 			"huaweicloud_cph_server":         cph.ResourceCphServer(),
 			"huaweicloud_cph_adb_command":    cph.ResourceAdbCommand(),
@@ -2781,6 +2787,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_servicestagev3_runtime_stack_batch_release": servicestage.ResourceV3RuntimeStackBatchRelease(),
 
 			"huaweicloud_sfs_turbo":                    sfsturbo.ResourceSFSTurbo(),
+			"huaweicloud_sfs_turbo_ad_domain":          sfsturbo.ResourceSFSTurboAdDomain(),
 			"huaweicloud_sfs_turbo_cold_data_eviction": sfsturbo.ResourceColdDataEviction(),
 			"huaweicloud_sfs_turbo_dir":                sfsturbo.ResourceSfsTurboDir(),
 			"huaweicloud_sfs_turbo_dir_quota":          sfsturbo.ResourceSfsTurboDirQuota(),
@@ -2918,6 +2925,7 @@ func Provider() *schema.Provider {
 
 			// Workspace APP
 			"huaweicloud_workspace_app_application_batch_attach":        workspace.ResourceAppApplicationBatchAttach(),
+			"huaweicloud_workspace_app_bucket_authorize":                workspace.ResourceAppBucketAuthorize(),
 			"huaweicloud_workspace_app_group_authorization":             workspace.ResourceAppGroupAuthorization(),
 			"huaweicloud_workspace_app_group":                           workspace.ResourceWorkspaceAppGroup(),
 			"huaweicloud_workspace_app_image_server":                    workspace.ResourceAppImageServer(),
@@ -2928,11 +2936,12 @@ func Provider() *schema.Provider {
 			"huaweicloud_workspace_app_policy_template":                 workspace.ResourceAppPolicyTemplate(),
 			"huaweicloud_workspace_app_publishment":                     workspace.ResourceAppPublishment(),
 			"huaweicloud_workspace_app_schedule_task":                   workspace.ResourceAppScheduleTask(),
+			"huaweicloud_workspace_app_server":                          workspace.ResourceAppServer(),
+			"huaweicloud_workspace_app_server_action":                   workspace.ResourceAppServerAction(),
+			"huaweicloud_workspace_app_server_batch_action":             workspace.ResourceAppServerBatchAction(),
 			"huaweicloud_workspace_app_server_group":                    workspace.ResourceAppServerGroup(),
 			"huaweicloud_workspace_app_server_group_batch_disassociate": workspace.ResourceAppServerGroupBatchDisassociate(),
 			"huaweicloud_workspace_app_server_group_scaling_policy":     workspace.ResourceAppServerGroupScalingPolicy(),
-			"huaweicloud_workspace_app_server":                          workspace.ResourceAppServer(),
-			"huaweicloud_workspace_app_server_batch_action":             workspace.ResourceAppServerBatchAction(),
 			"huaweicloud_workspace_app_shared_folder":                   workspace.ResourceAppSharedFolder(),
 			"huaweicloud_workspace_app_storage_policy":                  workspace.ResourceAppStoragePolicy(),
 			"huaweicloud_workspace_app_warehouse_app":                   workspace.ResourceWarehouseApplication(),

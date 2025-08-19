@@ -676,10 +676,13 @@ var (
 	HW_DMS_ROCKETMQ_TOPIC_NAME  = os.Getenv("HW_DMS_ROCKETMQ_TOPIC_NAME")
 	HW_DMS_ROCKETMQ_GROUP_NAME  = os.Getenv("HW_DMS_ROCKETMQ_GROUP_NAME")
 
-	HW_SFS_TURBO_SHARE_ID           = os.Getenv("HW_SFS_TURBO_SHARE_ID")
-	HW_SFS_TURBO_BACKUP_ID          = os.Getenv("HW_SFS_TURBO_BACKUP_ID")
-	HW_SFS_TURBO_ECS_MOUNT_SHARE_IP = os.Getenv("HW_SFS_TURBO_ECS_MOUNT_SHARE_IP")
-	HW_SFS_FILE_SYSTEM_NAMES        = os.Getenv("HW_SFS_FILE_SYSTEM_NAMES")
+	HW_SFS_TURBO_SHARE_ID                = os.Getenv("HW_SFS_TURBO_SHARE_ID")
+	HW_SFS_TURBO_BACKUP_ID               = os.Getenv("HW_SFS_TURBO_BACKUP_ID")
+	HW_SFS_TURBO_ECS_MOUNT_SHARE_IP      = os.Getenv("HW_SFS_TURBO_ECS_MOUNT_SHARE_IP")
+	HW_SFS_FILE_SYSTEM_NAMES             = os.Getenv("HW_SFS_FILE_SYSTEM_NAMES")
+	HW_SFS_TURBO_AD_DOMAIN_NAME          = os.Getenv("HW_SFS_TURBO_AD_DOMAIN_NAME")
+	HW_SFS_TURBO_AD_DOMAIN_PW            = os.Getenv("HW_SFS_TURBO_AD_DOMAIN_PW")
+	HW_SFS_TURBO_AD_DOMAIN_DNS_SERVER_IP = os.Getenv("HW_SFS_TURBO_AD_DOMAIN_DNS_SERVER_IP")
 
 	HW_SMN_SUBSCRIBED_TOPIC_URN = os.Getenv("HW_SMN_SUBSCRIBED_TOPIC_URN")
 
@@ -1999,9 +2002,16 @@ func TestAccPreCheckWorkspaceInternetAccessPort(t *testing.T) {
 
 // lintignore:AT003
 func TestAccPreCheckWorkspaceAppServerGroup(t *testing.T) {
-	if HW_WORKSPACE_APP_SERVER_GROUP_FLAVOR_ID == "" || HW_WORKSPACE_APP_SERVER_GROUP_IMAGE_ID == "" ||
-		HW_WORKSPACE_APP_SERVER_GROUP_IMAGE_PRODUCT_ID == "" {
-		t.Skip("Workspace APP server group acceptance test missing configuration parameters.")
+	if HW_WORKSPACE_APP_SERVER_GROUP_FLAVOR_ID == "" {
+		t.Skip("HW_WORKSPACE_APP_SERVER_GROUP_FLAVOR_ID must be set for Workspace APP acceptance tests.")
+	}
+	TestAccPreCheckWorkspaceAppServerImageInfo(t)
+}
+
+// lintignore:AT003
+func TestAccPreCheckWorkspaceAppServerImageInfo(t *testing.T) {
+	if HW_WORKSPACE_APP_SERVER_GROUP_IMAGE_ID == "" || HW_WORKSPACE_APP_SERVER_GROUP_IMAGE_PRODUCT_ID == "" {
+		t.Skip("HW_WORKSPACE_APP_SERVER_GROUP_IMAGE_ID and HW_WORKSPACE_APP_SERVER_GROUP_IMAGE_PRODUCT_ID must be set for Workspace APP acceptance tests.")
 	}
 }
 
@@ -3671,6 +3681,13 @@ func TestAccPrecheckSFSTurboShareId(t *testing.T) {
 func TestAccPrecheckSFSTurboBackupId(t *testing.T) {
 	if HW_SFS_TURBO_BACKUP_ID == "" {
 		t.Skip("HW_SFS_TURBO_BACKUP_ID must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
+func TestAccPrecheckSFSTurboADDomin(t *testing.T) {
+	if HW_SFS_TURBO_AD_DOMAIN_PW == "" || HW_SFS_TURBO_AD_DOMAIN_NAME == "" || HW_SFS_TURBO_AD_DOMAIN_DNS_SERVER_IP == "" {
+		t.Skip("HW_SFS_TURBO_AD_DOMAIN_PW, HW_SFS_TURBO_AD_DOMAIN_NAME and HW_SFS_TURBO_AD_DOMAIN_DNS_SERVER_IP must be set for the acceptance test")
 	}
 }
 
