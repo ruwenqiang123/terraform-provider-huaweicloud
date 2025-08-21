@@ -354,6 +354,9 @@ var (
 	HW_DSC_INSTANCE_ID    = os.Getenv("HW_DSC_INSTANCE_ID")
 	HW_DSC_ALARM_TOPIC_ID = os.Getenv("HW_DSC_ALARM_TOPIC_ID")
 
+	HW_EIP_ID      = os.Getenv("HW_EIP_ID")
+	HW_EIP_ADDRESS = os.Getenv("HW_EIP_ADDRESS")
+
 	HW_CES_ALARM_TEMPLATE_ID = os.Getenv("HW_CES_ALARM_TEMPLATE_ID")
 	HW_CES_START_TIME        = os.Getenv("HW_CES_START_TIME")
 	HW_CES_END_TIME          = os.Getenv("HW_CES_END_TIME")
@@ -500,6 +503,10 @@ var (
 	HW_EG_TEST_ON     = os.Getenv("HW_EG_TEST_ON") // Whether to run the EG related tests.
 	HW_EG_CHANNEL_ID  = os.Getenv("HW_EG_CHANNEL_ID")
 	HW_EG_AGENCY_NAME = os.Getenv("HW_EG_AGENCY_NAME")
+	// Currently, only up to 3 target connections are allowed to be created, so this variable is provided.
+	// The IDs of the EG connections. Using commas (,) to separate multiple IDs, the first ID is the webhook connection,
+	// the second is the Kafka connection, and the connections cannot be the default.
+	HW_EG_CONNECTION_IDS = os.Getenv("HW_EG_CONNECTION_IDS")
 
 	HW_KOOGALLERY_ASSET = os.Getenv("HW_KOOGALLERY_ASSET")
 
@@ -2578,6 +2585,13 @@ func TestAccPreCheckEgAgencyName(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckEgConnectionIds(t *testing.T) {
+	if HW_EG_CONNECTION_IDS == "" || len(strings.Split(HW_EG_CONNECTION_IDS, ",")) != 2 {
+		t.Skip("The number of HW_EG_CONNECTION_IDS must be 2 for the acceptance test, separated by a comma (,)")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckLtsAomAccess(t *testing.T) {
 	if HW_LTS_CLUSTER_ID == "" || HW_LTS_CLUSTER_NAME == "" {
 		t.Skip("HW_LTS_CLUSTER_ID and HW_LTS_CLUSTER_NAME must be set for LTS AOM access acceptance tests")
@@ -3672,6 +3686,13 @@ func TestAccPrecheckDscInstance(t *testing.T) {
 func TestAccPrecheckDscAlarmTopicID(t *testing.T) {
 	if HW_DSC_ALARM_TOPIC_ID == "" {
 		t.Skip("HW_DSC_ALARM_TOPIC_ID must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
+func TestAccPrecheckEipIDAndIP(t *testing.T) {
+	if HW_EIP_ID == "" || HW_EIP_ADDRESS == "" {
+		t.Skip("HW_EIP_ID and HW_EIP_ADDRESS must be set for the acceptance test")
 	}
 }
 
