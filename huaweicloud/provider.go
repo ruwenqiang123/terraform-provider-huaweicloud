@@ -981,6 +981,8 @@ func Provider() *schema.Provider {
 			"huaweicloud_eg_event_channels":        eg.DataSourceEventChannels(),
 			"huaweicloud_eg_event_sources":         eg.DataSourceEventSources(),
 			"huaweicloud_eg_event_streams":         eg.DataSourceEventStreams(),
+			"huaweicloud_eg_event_target_catalogs": eg.DataSourceEventTargetCatalogs(),
+			"huaweicloud_eg_quotas":                eg.DataSourceQuotas(),
 
 			// Professional EventRouter
 			"huaweicloud_eg_eventrouter_availability_zones": eg.DataSourceEventRouterAvailabilityZones(),
@@ -1425,6 +1427,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_rms_resource_aggregation_pending_requests":     rms.DataSourceRmsAggregationPendingRequests(),
 			"huaweicloud_rms_resource_aggregator_source_statuses":       rms.DataSourceRmsAggregatorSourceStatuses(),
 			"huaweicloud_rms_policy_states":                             rms.DataSourcePolicyStates(),
+			"huaweicloud_rms_policy_states_summary":                     rms.DataSourcePolicyStatesSummary(),
 			"huaweicloud_rms_policy_assignment_summary":                 rms.DataSourceRmsPolicyAssignmentSummary(),
 			"huaweicloud_rms_policy_assignment_evaluate_status":         rms.DataSourceRmsPolicyAssignmentEvaluateStatus(),
 			"huaweicloud_rms_assignment_package_scores":                 rms.DataSourceRmsAssignmentPackageScores(),
@@ -1442,6 +1445,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_rms_resource_instances":                        rms.DataSourceResourceInstances(),
 			"huaweicloud_rms_resource_policy_states":                    rms.DataSourceRmsPolicyStates(),
 			"huaweicloud_rms_resource_policy_states_summary":            rms.DataSourceRmsResourcePolicyStatesSummary(),
+			"huaweicloud_rms_tags":                                      rms.DataSourceRmsTags(),
 
 			"huaweicloud_sdrs_domain":                      sdrs.DataSourceSDRSDomain(),
 			"huaweicloud_sdrs_quotas":                      sdrs.DataSourceSdrsQuotas(),
@@ -1638,10 +1642,13 @@ func Provider() *schema.Provider {
 			"huaweicloud_waf_dedicated_domains":                    waf.DataSourceWafDedicatedDomains(),
 			"huaweicloud_waf_dedicated_instance_tags":              waf.DataSourceWafDedicatedInstanceTags(),
 			"huaweicloud_waf_dedicated_instances":                  waf.DataSourceWafDedicatedInstances(),
+			"huaweicloud_waf_domain_status":                        waf.DataSourceWafDomainStatus(),
 			"huaweicloud_waf_domains":                              waf.DataSourceWafDomains(),
 			"huaweicloud_waf_geolocation_detail":                   waf.DataSourceGeolocationDetail(),
 			"huaweicloud_waf_instance_groups":                      waf.DataSourceWafInstanceGroups(),
+			"huaweicloud_waf_overviews_attack_top_domains":         waf.DataSourceOverviewsAttackTopDomains(),
 			"huaweicloud_waf_overviews_bandwidth_timeline":         waf.DataSourceWafOverviewsBandwidthTimeline(),
+			"huaweicloud_waf_overviews_abnormal":                   waf.DataSourceWafOverviewsAbnormal(),
 			"huaweicloud_waf_overviews_classification":             waf.DataSourceWafOverviewsClassification(),
 			"huaweicloud_waf_overviews_qps_timeline":               waf.DataSourceWafOverviewsQPSTimeline(),
 			"huaweicloud_waf_overviews_request_timeline":           waf.DataSourceWafOverviewsRequestTimeline(),
@@ -2097,6 +2104,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_coc_war_room":               coc.ResourceWarRoom(),
 			"huaweicloud_coc_custom_event_report":    coc.ResourceCustomEventReport(),
 			"huaweicloud_coc_document":               coc.ResourceDocument(),
+			"huaweicloud_coc_application":            coc.ResourceApplication(),
 
 			"huaweicloud_cph_server":         cph.ResourceCphServer(),
 			"huaweicloud_cph_adb_command":    cph.ResourceAdbCommand(),
@@ -2313,6 +2321,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_eg_custom_event_channel": eg.ResourceCustomEventChannel(),
 			"huaweicloud_eg_custom_event_source":  eg.ResourceCustomEventSource(),
 			"huaweicloud_eg_endpoint":             eg.ResourceEndpoint(),
+			"huaweicloud_eg_event_batch_action":   eg.ResourceEventBatchAction(),
 			"huaweicloud_eg_event_stream":         eg.ResourceEventStream(),
 			"huaweicloud_eg_event_subscription":   eg.ResourceEventSubscription(),
 
