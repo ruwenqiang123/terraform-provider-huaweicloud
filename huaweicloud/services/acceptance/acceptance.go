@@ -43,6 +43,7 @@ var (
 	HW_IMS_DATA_DISK_IMAGE_ID        = os.Getenv("HW_IMS_DATA_DISK_IMAGE_ID")
 	HW_VPC_ID                        = os.Getenv("HW_VPC_ID")
 	HW_VPC_ENHANCED_LOCAL_ROUTE      = os.Getenv("HW_VPC_ENHANCED_LOCAL_ROUTE")
+	HW_VPN_GATEWAY_ID                = os.Getenv("HW_VPN_GATEWAY_ID")
 	HW_VPN_P2C_GATEWAY_ID            = os.Getenv("HW_VPN_P2C_GATEWAY_ID")
 	HW_VPN_P2C_SERVER                = os.Getenv("HW_VPN_P2C_SERVER")
 	HW_VPN_P2C_SERVER_CERTIFICATE_ID = os.Getenv("HW_VPN_P2C_SERVER_CERTIFICATE_ID")
@@ -157,6 +158,7 @@ var (
 	HW_RMS_EXCLUDED_ACCOUNT_1       = os.Getenv("HW_RMS_EXCLUDED_ACCOUNT_1")
 	HW_RMS_EXCLUDED_ACCOUNT_2       = os.Getenv("HW_RMS_EXCLUDED_ACCOUNT_2")
 	HW_RMS_RESOURCE_RECORDER_CLOSED = os.Getenv("HW_RMS_RESOURCE_RECORDER_CLOSED")
+	HW_RMS_REQUESTER_ACCOUNT_ID     = os.Getenv("HW_RMS_REQUESTER_ACCOUNT_ID")
 
 	HW_CDN_DOMAIN_NAME = os.Getenv("HW_CDN_DOMAIN_NAME")
 	// `HW_CDN_CERT_DOMAIN_NAME` Configure the domain name environment variable of the certificate type.
@@ -501,13 +503,13 @@ var (
 	HW_CODEARTS_SSH_CREDENTIAL_ID = os.Getenv("HW_CODEARTS_SSH_CREDENTIAL_ID")
 
 	HW_EG_TEST_ON     = os.Getenv("HW_EG_TEST_ON") // Whether to run the EG related tests.
-	HW_EG_CHANNEL_ID  = os.Getenv("HW_EG_CHANNEL_ID")
 	HW_EG_AGENCY_NAME = os.Getenv("HW_EG_AGENCY_NAME")
+	HW_EG_CHANNEL_ID  = os.Getenv("HW_EG_CHANNEL_ID")
 	// Currently, only up to 3 target connections are allowed to be created, so this variable is provided.
 	// The IDs of the EG connections. Using commas (,) to separate multiple IDs, the first ID is the webhook connection,
 	// the second is the Kafka connection, and the connections cannot be the default.
-	HW_EG_CONNECTION_IDS  = os.Getenv("HW_EG_CONNECTION_IDS")
-	HW_EG_EVENT_SOURCE_ID = os.Getenv("HW_EG_EVENT_SOURCE_ID")
+	HW_EG_CONNECTION_IDS         = os.Getenv("HW_EG_CONNECTION_IDS")
+	HW_EG_EVENT_SUBSCRIPTION_IDS = os.Getenv("HW_EG_EVENT_SUBSCRIPTION_IDS")
 
 	HW_KOOGALLERY_ASSET = os.Getenv("HW_KOOGALLERY_ASSET")
 
@@ -688,6 +690,9 @@ var (
 	HW_DMS_ROCKETMQ_INSTANCE_ID = os.Getenv("HW_DMS_ROCKETMQ_INSTANCE_ID")
 	HW_DMS_ROCKETMQ_TOPIC_NAME  = os.Getenv("HW_DMS_ROCKETMQ_TOPIC_NAME")
 	HW_DMS_ROCKETMQ_GROUP_NAME  = os.Getenv("HW_DMS_ROCKETMQ_GROUP_NAME")
+	// The list of dead letter message IDs. Using commas (,) to separate multiple IDs.
+	// At least one ID is required.
+	HW_DMS_ROCKETMQ_DEAD_LETTER_MESSAGE_IDs = os.Getenv("HW_DMS_ROCKETMQ_DEAD_LETTER_MESSAGE_IDs")
 
 	HW_SFS_TURBO_SHARE_ID                = os.Getenv("HW_SFS_TURBO_SHARE_ID")
 	HW_SFS_TURBO_BACKUP_ID               = os.Getenv("HW_SFS_TURBO_BACKUP_ID")
@@ -1510,6 +1515,13 @@ func TestAccPreCheckRMSExcludedAccounts(t *testing.T) {
 func TestAccPreCheckRMSResourceRecorder(t *testing.T) {
 	if HW_RMS_RESOURCE_RECORDER_CLOSED == "" {
 		t.Skip("HW_RMS_RESOURCE_RECORDER_CLOSED must be set for the acceptance tests.")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckRMSRequesterAccountId(t *testing.T) {
+	if HW_RMS_REQUESTER_ACCOUNT_ID == "" {
+		t.Skip("HW_RMS_REQUESTER_ACCOUNT_ID must be set for the acceptance tests.")
 	}
 }
 
@@ -2584,9 +2596,10 @@ func TestAccPreCheckEgConnectionIds(t *testing.T) {
 }
 
 // lintignore:AT003
-func TestAccPreCheckEgEventSourceId(t *testing.T) {
-	if HW_EG_EVENT_SOURCE_ID == "" {
-		t.Skip("The sub-resource acceptance test of the EG event source must set 'HW_EG_EVENT_SOURCE_ID'")
+func TestAccPreCheckEgEventSubscriptionIds(t *testing.T, min int) {
+	if HW_EG_EVENT_SUBSCRIPTION_IDS == "" || len(strings.Split(HW_EG_EVENT_SUBSCRIPTION_IDS, ",")) >= min {
+		t.Skipf(`At least %d subscription ID(s) must be supported during the HW_EG_EVENT_SUBSCRIPTION_IDS, separated by 
+		commas (,).`, min)
 	}
 }
 
@@ -3531,6 +3544,14 @@ func TestAccPreCheckDMSRocketMQTopicName(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckDMSRocketMQDeadLetterMessageIDs(t *testing.T, min int) {
+	if HW_DMS_ROCKETMQ_DEAD_LETTER_MESSAGE_IDs == "" || len(strings.Split(HW_DMS_ROCKETMQ_DEAD_LETTER_MESSAGE_IDs, ",")) < min {
+		t.Skipf("At least %d dead letter message IDs must be must be supported during the HW_DMS_ROCKETMQ_DEAD_LETTER_MESSAGE_IDs, "+
+			"separated by commas (,).", min)
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckAsDedicatedHostId(t *testing.T) {
 	if HW_DEDICATED_HOST_ID == "" {
 		t.Skip("HW_DEDICATED_HOST_ID must be set for the acceptance test")
@@ -3615,6 +3636,13 @@ func TestAccPreCheckWorkspaceBackupRestore(t *testing.T) {
 func TestAccPreCheckVpcEnhancedLocalRoute(t *testing.T) {
 	if HW_VPC_ENHANCED_LOCAL_ROUTE == "" {
 		t.Skip("HW_VPC_ENHANCED_LOCAL_ROUTE must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckVPNGatewayId(t *testing.T) {
+	if HW_VPN_GATEWAY_ID == "" {
+		t.Skip("HW_VPN_GATEWAY_ID must be set for the acceptance test")
 	}
 }
 
