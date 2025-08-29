@@ -77,7 +77,10 @@ var (
 	HW_APIG_DEDICATED_INSTANCE_ID             = os.Getenv("HW_APIG_DEDICATED_INSTANCE_ID")
 	HW_APIG_DEDICATED_INSTANCE_USED_SUBNET_ID = os.Getenv("HW_APIG_DEDICATED_INSTANCE_USED_SUBNET_ID")
 
-	HW_CAE_ENVIRONMENT_ID     = os.Getenv("HW_CAE_ENVIRONMENT_ID")
+	HW_CAE_ENVIRONMENT_ID = os.Getenv("HW_CAE_ENVIRONMENT_ID")
+	// The list of CAE environment IDs. Using commas (,) to separate multiple IDs. At least one ID is required.
+	// The first environment ID belongs to the default enterprise project ID, and the second belongs to non-default.
+	HW_CAE_ENVIRONMENT_IDs    = os.Getenv("HW_CAE_ENVIRONMENT_IDs")
 	HW_CAE_APPLICATION_ID     = os.Getenv("HW_CAE_APPLICATION_ID")
 	HW_CAE_CODE_URL           = os.Getenv("HW_CAE_CODE_URL")
 	HW_CAE_CODE_BRANCH        = os.Getenv("HW_CAE_CODE_BRANCH")
@@ -153,12 +156,13 @@ var (
 	HW_RAM_SHARE_INVITATION_ID       = os.Getenv("HW_RAM_SHARE_INVITATION_ID")
 	HW_RAM_SHARE_ID                  = os.Getenv("HW_RAM_SHARE_ID")
 
-	HW_RMS_TARGET_ID_FOR_FGS        = os.Getenv("HW_RMS_TARGET_ID_FOR_FGS")
-	HW_RMS_TARGET_ID_FOR_RFS        = os.Getenv("HW_RMS_TARGET_ID_FOR_RFS")
-	HW_RMS_EXCLUDED_ACCOUNT_1       = os.Getenv("HW_RMS_EXCLUDED_ACCOUNT_1")
-	HW_RMS_EXCLUDED_ACCOUNT_2       = os.Getenv("HW_RMS_EXCLUDED_ACCOUNT_2")
-	HW_RMS_RESOURCE_RECORDER_CLOSED = os.Getenv("HW_RMS_RESOURCE_RECORDER_CLOSED")
-	HW_RMS_REQUESTER_ACCOUNT_ID     = os.Getenv("HW_RMS_REQUESTER_ACCOUNT_ID")
+	HW_RMS_TARGET_ID_FOR_FGS                 = os.Getenv("HW_RMS_TARGET_ID_FOR_FGS")
+	HW_RMS_TARGET_ID_FOR_RFS                 = os.Getenv("HW_RMS_TARGET_ID_FOR_RFS")
+	HW_RMS_EXCLUDED_ACCOUNT_1                = os.Getenv("HW_RMS_EXCLUDED_ACCOUNT_1")
+	HW_RMS_EXCLUDED_ACCOUNT_2                = os.Getenv("HW_RMS_EXCLUDED_ACCOUNT_2")
+	HW_RMS_RESOURCE_RECORDER_CLOSED          = os.Getenv("HW_RMS_RESOURCE_RECORDER_CLOSED")
+	HW_RMS_REQUESTER_ACCOUNT_ID              = os.Getenv("HW_RMS_REQUESTER_ACCOUNT_ID")
+	HW_RMS_POLICY_ASSIGNMENT_EVALUATION_HASH = os.Getenv("HW_RMS_POLICY_ASSIGNMENT_EVALUATION_HASH")
 
 	HW_CDN_DOMAIN_NAME = os.Getenv("HW_CDN_DOMAIN_NAME")
 	// `HW_CDN_CERT_DOMAIN_NAME` Configure the domain name environment variable of the certificate type.
@@ -290,6 +294,8 @@ var (
 	HW_WORKSPACE_APP_FILE_NAME                     = os.Getenv("HW_WORKSPACE_APP_FILE_NAME")
 	HW_WORKSPACE_USER_NAMES                        = os.Getenv("HW_WORKSPACE_USER_NAMES")
 	HW_WORKSPACE_DESKTOP_POOL_IMAGE_ID             = os.Getenv("HW_WORKSPACE_DESKTOP_POOL_IMAGE_ID")
+
+	HW_FG_FUNCTION_NAME = os.Getenv("HW_EG_FUNCTION_NAME")
 
 	HW_FGS_AGENCY_NAME         = os.Getenv("HW_FGS_AGENCY_NAME")
 	HW_FGS_APP_AGENCY_NAME     = os.Getenv("HW_FGS_APP_AGENCY_NAME")
@@ -758,6 +764,15 @@ func TestAccPreCheckCaeEnvironment(t *testing.T) {
 	}
 }
 
+// Before the CAE environment resource is released, temporarily use this environment variables for acceptance tests.
+// lintignore:AT003
+func TestAccPreCheckCaeEnvironmentIds(t *testing.T, min int) {
+	if HW_CAE_ENVIRONMENT_IDs == "" || len(strings.Split(HW_CAE_ENVIRONMENT_IDs, ",")) < min {
+		t.Skipf("At least %d environment IDs must be must be supported during the HW_CAE_ENVIRONMENT_IDs, "+
+			"separated by commas (,).", min)
+	}
+}
+
 // Before the CAE application resource is released, temporarily use this environment variable for acceptance tests.
 // lintignore:AT003
 func TestAccPreCheckCaeApplication(t *testing.T) {
@@ -1019,6 +1034,13 @@ func TestAccPreCheckMrsCustom(t *testing.T) {
 func TestAccPreCheckMrsBootstrapScript(t *testing.T) {
 	if HW_MAPREDUCE_BOOTSTRAP_SCRIPT == "" {
 		t.Skip("HW_MAPREDUCE_BOOTSTRAP_SCRIPT must be set for acceptance tests: cluster of map reduce with bootstrap")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckFgFunctionName(t *testing.T) {
+	if HW_FG_FUNCTION_NAME == "" {
+		t.Skip("HW_FG_FUNCTION_NAME must be set for FG acceptance tests")
 	}
 }
 
@@ -1522,6 +1544,13 @@ func TestAccPreCheckRMSResourceRecorder(t *testing.T) {
 func TestAccPreCheckRMSRequesterAccountId(t *testing.T) {
 	if HW_RMS_REQUESTER_ACCOUNT_ID == "" {
 		t.Skip("HW_RMS_REQUESTER_ACCOUNT_ID must be set for the acceptance tests.")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckRMSPolicyAssignmentEvaluationHash(t *testing.T) {
+	if HW_RMS_POLICY_ASSIGNMENT_EVALUATION_HASH == "" {
+		t.Skip("HW_RMS_POLICY_ASSIGNMENT_EVALUATION_HASH must be set for the acceptance tests.")
 	}
 }
 
