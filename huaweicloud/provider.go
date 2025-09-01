@@ -94,6 +94,7 @@ import (
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/live"
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/lts"
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/meeting"
+	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/metastudio"
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/modelarts"
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/mpc"
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/mrs"
@@ -237,7 +238,6 @@ func Provider() *schema.Provider {
 			"assume_role": {
 				Type:     schema.TypeList,
 				Optional: true,
-				MaxItems: 1,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"agency_name": {
@@ -263,6 +263,53 @@ func Provider() *schema.Provider {
 							Optional:    true,
 							Description: descriptions["assume_role_duration"],
 							DefaultFunc: schema.EnvDefaultFunc("HW_ASSUME_ROLE_DURATION", nil),
+						},
+					},
+				},
+			},
+
+			"assume_role_with_oidc": {
+				Type:     schema.TypeList,
+				Optional: true,
+				MaxItems: 1,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"agency_name": {
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: descriptions["assume_role_agency_name"],
+							DefaultFunc: schema.EnvDefaultFunc("HW_ASSUME_ROLE_AGENCY_NAME", nil),
+						},
+						"domain_id": {
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: descriptions["assume_role_domain_id"],
+							DefaultFunc: schema.EnvDefaultFunc("HW_ASSUME_ROLE_DOMAIN_ID", nil),
+						},
+						"duration": {
+							Type:        schema.TypeInt,
+							Optional:    true,
+							Description: descriptions["assume_role_duration"],
+							DefaultFunc: schema.EnvDefaultFunc("HW_ASSUME_ROLE_DURATION", nil),
+						},
+						"idp_id": {
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: "The ID of the external IdP.",
+							DefaultFunc: schema.EnvDefaultFunc("HW_ASSUME_ROLE_IDP_ID", nil),
+						},
+						"id_token_file": {
+							Type:         schema.TypeString,
+							Optional:     true,
+							Description:  "The file path of Id token that is issued by the external IdP.",
+							DefaultFunc:  schema.EnvDefaultFunc("HW_ASSUME_ROLE_ID_TOKEN_FILE", nil),
+							ExactlyOneOf: []string{"assume_role_with_oidc.0.id_token", "assume_role_with_oidc.0.id_token_file"},
+						},
+						"id_token": {
+							Type:         schema.TypeString,
+							Optional:     true,
+							DefaultFunc:  schema.EnvDefaultFunc("HW_ASSUME_ROLE_ID_TOKEN", nil),
+							ExactlyOneOf: []string{"assume_role_with_oidc.0.id_token", "assume_role_with_oidc.0.id_token_file"},
 						},
 					},
 				},
@@ -566,7 +613,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_cae_applications":       cae.DataSourceApplications(),
 			"huaweicloud_cae_components":         cae.DataSourceComponents(),
 			"huaweicloud_cae_environments":       cae.DataSourceEnvironments(),
-			"huaweicloud_cae_notification_rules": cae.DataSourceCaeNotificationRules(),
+			"huaweicloud_cae_notification_rules": cae.DataSourceNotificationRules(),
 
 			"huaweicloud_cbr_agent_checks":             cbr.DataSourceAgentChecks(),
 			"huaweicloud_cbr_backup":                   cbr.DataSourceBackup(),
@@ -781,7 +828,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_cts_operations":           cts.DataSourceCtsOperations(),
 			"huaweicloud_cts_quotas":               cts.DataSourceCtsQuotas(),
 			"huaweicloud_cts_resources":            cts.DataSourceCtsResources(),
-			"huaweicloud_cts_resource_tags":        cts.DataSourceCtsResourcesTags(),
+			"huaweicloud_cts_resource_tags":        cts.DataSourceCtsResourceTags(),
 			"huaweicloud_cts_resource_tags_filter": cts.DataSourceResourceTagsFilter(),
 			"huaweicloud_cts_tags":                 cts.DataSourceCtsTags(),
 			"huaweicloud_cts_users":                cts.DataSourceCtsUsers(),
@@ -1436,6 +1483,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_rds_business_partners":                 rds.DataSourceRdsBusinessPartners(),
 			"huaweicloud_rds_marketplace_engine_products":       rds.DataSourceRdsMarketplaceEngineProducts(),
 			"huaweicloud_rds_instant_tasks":                     rds.DataSourceRdsInstantTasks(),
+			"huaweicloud_rds_schedule_tasks":                    rds.DataSourceRdsScheduleTasks(),
 
 			"huaweicloud_rms_policy_definitions":                           rms.DataSourcePolicyDefinitions(),
 			"huaweicloud_rms_assignment_package_templates":                 rms.DataSourceTemplates(),
@@ -1488,43 +1536,45 @@ func Provider() *schema.Provider {
 			"huaweicloud_sdrs_protected_instances_by_tags": sdrs.DataSourceSdrsProtectedInstancesByTags(),
 			"huaweicloud_sdrs_protected_instance_tags":     sdrs.DataSourceSdrsProtectedInstanceTags(),
 
-			"huaweicloud_secmaster_workflow_instance":           secmaster.DataSourceWorkflowInstanceDetail(),
-			"huaweicloud_secmaster_workflows":                   secmaster.DataSourceSecmasterWorkflows(),
-			"huaweicloud_secmaster_workflow_instances":          secmaster.DataSourceWorkflowInstances(),
-			"huaweicloud_secmaster_workflow_versions":           secmaster.DataSourceWorkflowVersions(),
-			"huaweicloud_secmaster_workspaces":                  secmaster.DataSourceSecmasterWorkspaces(),
-			"huaweicloud_secmaster_incidents":                   secmaster.DataSourceIncidents(),
-			"huaweicloud_secmaster_alerts":                      secmaster.DataSourceAlerts(),
-			"huaweicloud_secmaster_indicators":                  secmaster.DataSourceIndicators(),
-			"huaweicloud_secmaster_layout_fields":               secmaster.DataSourceLayoutFields(),
-			"huaweicloud_secmaster_layout_wizard_detail":        secmaster.DataSourceLayoutWizardDetail(),
-			"huaweicloud_secmaster_layout_wizards":              secmaster.DataSourceLayoutWizards(),
-			"huaweicloud_secmaster_metric_results":              secmaster.DataSourceMetricResults(),
-			"huaweicloud_secmaster_baseline_check_results":      secmaster.DataSourceSecmasterBaselineCheckResults(),
-			"huaweicloud_secmaster_playbooks":                   secmaster.DataSourceSecmasterPlaybooks(),
-			"huaweicloud_secmaster_security_reports":            secmaster.DataSourceSecurityReports(),
-			"huaweicloud_secmaster_alert_rules":                 secmaster.DataSourceSecmasterAlertRules(),
-			"huaweicloud_secmaster_alert_rule_templates":        secmaster.DataSourceSecmasterAlertRuleTemplates(),
-			"huaweicloud_secmaster_playbook_versions":           secmaster.DataSourceSecmasterPlaybookVersions(),
-			"huaweicloud_secmaster_playbook_instances":          secmaster.DataSourceSecmasterPlaybookInstances(),
-			"huaweicloud_secmaster_data_classes":                secmaster.DataSourceSecmasterDataClasses(),
-			"huaweicloud_secmaster_data_class_fields":           secmaster.DataSourceSecmasterDataClassFields(),
-			"huaweicloud_secmaster_playbook_action_instances":   secmaster.DataSourceSecmasterPlaybookActionInstances(),
-			"huaweicloud_secmaster_playbook_actions":            secmaster.DataSourceSecmasterPlaybookActions(),
-			"huaweicloud_secmaster_playbook_statistics":         secmaster.DataSourceSecmasterPlaybookStatistics(),
-			"huaweicloud_secmaster_playbook_audit_logs":         secmaster.DataSourceSecmasterPlaybookAuditLogs(),
-			"huaweicloud_secmaster_playbook_monitors":           secmaster.DataSourceSecmasterPlaybookMonitors(),
-			"huaweicloud_secmaster_playbook_approvals":          secmaster.DataSourcePlaybookApprovals(),
-			"huaweicloud_secmaster_subscription_resource":       secmaster.DataSourceSecmasterSubscriptionResource(),
-			"huaweicloud_secmaster_alert_rule_metrics":          secmaster.DataSourceSecmasterAlertRuleMetrics(),
-			"huaweicloud_secmaster_alert_rule_template_metrics": secmaster.DataSourceAlertRuleTemplateMetrics(),
-			"huaweicloud_secmaster_catalogues":                  secmaster.DataSourceSecmasterCatalogues(),
-			"huaweicloud_secmaster_component_templates":         secmaster.DataSourceComponentTemplates(),
-			"huaweicloud_secmaster_upgradation_version":         secmaster.DataSourceUpgradationVersion(),
-			"huaweicloud_secmaster_vpc_endpoint_services":       secmaster.DataSourceSecmasterVpcEndpointServices(),
-			"huaweicloud_secmaster_catalogues_search":           secmaster.DataSourceSecmasterCataloguesSearch(),
-			"huaweicloud_secmaster_installation_scripts":        secmaster.DataSourceSecmasterInstallationScripts(),
-			"huaweicloud_secmasterv2_alert_rule_templates":      secmaster.DataSourceAlertRuleTemplatesV2(),
+			"huaweicloud_secmaster_workflow_instance":            secmaster.DataSourceWorkflowInstanceDetail(),
+			"huaweicloud_secmaster_workflows":                    secmaster.DataSourceSecmasterWorkflows(),
+			"huaweicloud_secmaster_workflow_instances":           secmaster.DataSourceWorkflowInstances(),
+			"huaweicloud_secmaster_workflow_versions":            secmaster.DataSourceWorkflowVersions(),
+			"huaweicloud_secmaster_workspaces":                   secmaster.DataSourceSecmasterWorkspaces(),
+			"huaweicloud_secmaster_incidents":                    secmaster.DataSourceIncidents(),
+			"huaweicloud_secmaster_alerts":                       secmaster.DataSourceAlerts(),
+			"huaweicloud_secmaster_indicators":                   secmaster.DataSourceIndicators(),
+			"huaweicloud_secmaster_layout_fields":                secmaster.DataSourceLayoutFields(),
+			"huaweicloud_secmaster_layout_wizard_detail":         secmaster.DataSourceLayoutWizardDetail(),
+			"huaweicloud_secmaster_layout_wizards":               secmaster.DataSourceLayoutWizards(),
+			"huaweicloud_secmaster_metric_results":               secmaster.DataSourceMetricResults(),
+			"huaweicloud_secmaster_baseline_check_results":       secmaster.DataSourceSecmasterBaselineCheckResults(),
+			"huaweicloud_secmaster_playbooks":                    secmaster.DataSourceSecmasterPlaybooks(),
+			"huaweicloud_secmaster_security_reports":             secmaster.DataSourceSecurityReports(),
+			"huaweicloud_secmaster_alert_rules":                  secmaster.DataSourceSecmasterAlertRules(),
+			"huaweicloud_secmaster_alert_rule_templates":         secmaster.DataSourceSecmasterAlertRuleTemplates(),
+			"huaweicloud_secmaster_playbook_versions":            secmaster.DataSourceSecmasterPlaybookVersions(),
+			"huaweicloud_secmaster_playbook_instances":           secmaster.DataSourceSecmasterPlaybookInstances(),
+			"huaweicloud_secmaster_data_classes":                 secmaster.DataSourceSecmasterDataClasses(),
+			"huaweicloud_secmaster_data_class_fields":            secmaster.DataSourceSecmasterDataClassFields(),
+			"huaweicloud_secmaster_playbook_action_instances":    secmaster.DataSourceSecmasterPlaybookActionInstances(),
+			"huaweicloud_secmaster_playbook_actions":             secmaster.DataSourceSecmasterPlaybookActions(),
+			"huaweicloud_secmaster_playbook_statistics":          secmaster.DataSourceSecmasterPlaybookStatistics(),
+			"huaweicloud_secmaster_playbook_audit_logs":          secmaster.DataSourceSecmasterPlaybookAuditLogs(),
+			"huaweicloud_secmaster_playbook_monitors":            secmaster.DataSourceSecmasterPlaybookMonitors(),
+			"huaweicloud_secmaster_playbook_approvals":           secmaster.DataSourcePlaybookApprovals(),
+			"huaweicloud_secmaster_subscription_resource":        secmaster.DataSourceSecmasterSubscriptionResource(),
+			"huaweicloud_secmaster_alert_rule_metrics":           secmaster.DataSourceSecmasterAlertRuleMetrics(),
+			"huaweicloud_secmaster_alert_rule_template_detail":   secmaster.DataSourceAlertRuleTemplateDetail(),
+			"huaweicloud_secmaster_alert_rule_template_metrics":  secmaster.DataSourceAlertRuleTemplateMetrics(),
+			"huaweicloud_secmaster_catalogues":                   secmaster.DataSourceSecmasterCatalogues(),
+			"huaweicloud_secmaster_component_templates":          secmaster.DataSourceComponentTemplates(),
+			"huaweicloud_secmaster_upgradation_version":          secmaster.DataSourceUpgradationVersion(),
+			"huaweicloud_secmaster_vpc_endpoint_services":        secmaster.DataSourceSecmasterVpcEndpointServices(),
+			"huaweicloud_secmaster_catalogues_search":            secmaster.DataSourceSecmasterCataloguesSearch(),
+			"huaweicloud_secmaster_installation_scripts":         secmaster.DataSourceSecmasterInstallationScripts(),
+			"huaweicloud_secmasterv2_alert_rule_template_detail": secmaster.DataSourceAlertRuleTemplateDetailV2(),
+			"huaweicloud_secmasterv2_alert_rule_templates":       secmaster.DataSourceAlertRuleTemplatesV2(),
 			// In the API documentation, there are two API groups: Plugin Management and Component Management,
 			// and their API URLs are both named with "components". To differentiate them, all resources under the
 			// Plugin Management group are prefixed with "soc", since the API URLs in the Plugin Management group
@@ -2700,6 +2750,8 @@ func Provider() *schema.Provider {
 			"huaweicloud_modelartsv2_service":                modelarts.ResourceV2Service(),
 			"huaweicloud_modelartsv2_service_action":         modelarts.ResourceV2ServiceAction(),
 
+			"huaweicloud_metastudio_instance": metastudio.ResourceMetaStudio(),
+
 			// DataArts Studio - Management Center
 			"huaweicloud_dataarts_studio_data_connection": dataarts.ResourceDataConnection(),
 			"huaweicloud_dataarts_studio_instance":        dataarts.ResourceStudioInstance(),
@@ -2795,6 +2847,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_rds_sqlserver_database_copy":        rds.ResourceSQLServerDatabaseCopy(),
 			"huaweicloud_rds_sqlserver_database_privilege":   rds.ResourceSQLServerDatabasePrivilege(),
 			"huaweicloud_rds_instance":                       rds.ResourceRdsInstance(),
+			"huaweicloud_rds_instance_restart":               rds.ResourceInstanceRestart(),
 			"huaweicloud_rds_instance_eip_associate":         rds.ResourceRdsInstanceEipAssociate(),
 			"huaweicloud_rds_parametergroup":                 rds.ResourceRdsConfiguration(),
 			"huaweicloud_rds_parametergroup_copy":            rds.ResourceRdsConfigurationCopy(),
@@ -2981,6 +3034,7 @@ func Provider() *schema.Provider {
 
 			"huaweicloud_vpn_access_policy":                     vpn.ResourceAccessPolicy(),
 			"huaweicloud_vpn_gateway":                           vpn.ResourceGateway(),
+			"huaweicloud_vpn_gateway_upgrade":                   vpn.ResourceGatewayUpgrade(),
 			"huaweicloud_vpn_customer_gateway":                  vpn.ResourceCustomerGateway(),
 			"huaweicloud_vpn_connection":                        vpn.ResourceConnection(),
 			"huaweicloud_vpn_connection_health_check":           vpn.ResourceConnectionHealthCheck(),
@@ -3461,11 +3515,63 @@ func configureProvider(_ context.Context, d *schema.ResourceData, terraformVersi
 			conf.AssumeRoleDuration = delegatedDuration
 		}
 	} else {
-		assumeRole := assumeRoleList[0].(map[string]interface{})
-		conf.AssumeRoleAgency = assumeRole["agency_name"].(string)
-		conf.AssumeRoleDomain = assumeRole["domain_name"].(string)
-		conf.AssumeRoleDomainID = assumeRole["domain_id"].(string)
-		conf.AssumeRoleDuration = assumeRole["duration"].(int)
+		if len(assumeRoleList) == 1 {
+			assumeRole := assumeRoleList[0].(map[string]interface{})
+			conf.AssumeRoleAgency = assumeRole["agency_name"].(string)
+			conf.AssumeRoleDomain = assumeRole["domain_name"].(string)
+			conf.AssumeRoleDomainID = assumeRole["domain_id"].(string)
+			conf.AssumeRoleDuration = assumeRole["duration"].(int)
+		} else {
+			roleList := make([]config.AssumeRole, len(assumeRoleList))
+			for i, v := range assumeRoleList {
+				role := v.(map[string]interface{})
+				roleList[i] = config.AssumeRole{
+					RoleAgency:   role["agency_name"].(string),
+					RoleDomain:   role["domain_name"].(string),
+					RoleDomainID: role["domain_id"].(string),
+					RoleDuration: role["duration"].(int),
+				}
+			}
+
+			conf.AssumeRoleList = roleList
+		}
+	}
+
+	// get assume role with oidc
+	assumeRoleOidcList := d.Get("assume_role_with_oidc").([]interface{})
+	if len(assumeRoleOidcList) == 0 {
+		// without assume_role_with_oidc block in provider
+		delegatedAgencyName := os.Getenv("HW_ASSUME_ROLE_AGENCY_NAME")
+		delegatedDomianID := os.Getenv("HW_ASSUME_ROLE_DOMAIN_ID")
+		delegatedDurationStr := os.Getenv("HW_ASSUME_ROLE_DURATION")
+		delegatedIdpIDStr := os.Getenv("HW_ASSUME_ROLE_IDP_ID")
+		delegatedIdTokenStr := os.Getenv("HW_ASSUME_ROLE_ID_TOKEN")
+		delegatedIdTokenFileStr := os.Getenv("HW_ASSUME_ROLE_ID_TOKEN_FILE")
+		var delegatedDuration int
+		if delegatedDurationStr != "" {
+			var err error
+			delegatedDuration, err = strconv.Atoi(delegatedDurationStr)
+			if err != nil {
+				log.Printf("Error converting HW_ASSUME_ROLE_DURATION to int: %v", err)
+				delegatedDuration = 0 // or some default value
+			}
+		}
+		if delegatedIdpIDStr != "" {
+			conf.AssumeRoleAgency = delegatedAgencyName
+			conf.AssumeRoleDomainID = delegatedDomianID
+			conf.AssumeRoleDuration = delegatedDuration
+			conf.AssumeRoleIdpID = delegatedIdpIDStr
+			conf.AssumeRoleIdToken = delegatedIdTokenStr
+			conf.AssumeRoleIdTokenFile = delegatedIdTokenFileStr
+		}
+	} else {
+		assumeRoleOidc := assumeRoleOidcList[0].(map[string]interface{})
+		conf.AssumeRoleAgency = assumeRoleOidc["agency_name"].(string)
+		conf.AssumeRoleDomainID = assumeRoleOidc["domain_id"].(string)
+		conf.AssumeRoleDuration = assumeRoleOidc["duration"].(int)
+		conf.AssumeRoleIdpID = assumeRoleOidc["idp_id"].(string)
+		conf.AssumeRoleIdToken = assumeRoleOidc["id_token"].(string)
+		conf.AssumeRoleIdTokenFile = assumeRoleOidc["id_token_file"].(string)
 	}
 
 	conf.Region = d.Get("region").(string)
