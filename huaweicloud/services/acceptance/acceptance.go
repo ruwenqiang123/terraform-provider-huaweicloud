@@ -293,12 +293,11 @@ var (
 	HW_WORKSPACE_USER_NAMES                        = os.Getenv("HW_WORKSPACE_USER_NAMES")
 	HW_WORKSPACE_DESKTOP_POOL_IMAGE_ID             = os.Getenv("HW_WORKSPACE_DESKTOP_POOL_IMAGE_ID")
 
-	HW_FG_FUNCTION_NAME = os.Getenv("HW_EG_FUNCTION_NAME")
-
 	HW_FGS_AGENCY_NAME         = os.Getenv("HW_FGS_AGENCY_NAME")
 	HW_FGS_APP_AGENCY_NAME     = os.Getenv("HW_FGS_APP_AGENCY_NAME")
-	HW_FGS_GPU_TYPE            = os.Getenv("HW_FGS_GPU_TYPE")
 	HW_FGS_DEPENDENCY_OBS_LINK = os.Getenv("HW_FGS_DEPENDENCY_OBS_LINK")
+	HW_FGS_FUNCTION_NAME       = os.Getenv("HW_FGS_FUNCTION_NAME")
+	HW_FGS_GPU_TYPE            = os.Getenv("HW_FGS_GPU_TYPE")
 
 	HW_KMS_ENVIRONMENT         = os.Getenv("HW_KMS_ENVIRONMENT")
 	HW_KMS_HSM_CLUSTER_ID      = os.Getenv("HW_KMS_HSM_CLUSTER_ID")
@@ -474,6 +473,7 @@ var (
 	HW_COC_SCENE_ID              = os.Getenv("HW_COC_SCENE_ID")
 	HW_COC_INTEGRATION_KEY       = os.Getenv("HW_COC_INTEGRATION_KEY")
 	HW_COC_INSTANCE_COMPLIANT_ID = os.Getenv("HW_COC_INSTANCE_COMPLIANT_ID")
+	HW_COC_SCRIPT_ID             = os.Getenv("HW_COC_SCRIPT_ID")
 
 	// Deprecated
 	HW_SRC_ACCESS_KEY = os.Getenv("HW_SRC_ACCESS_KEY")
@@ -1039,9 +1039,9 @@ func TestAccPreCheckMrsBootstrapScript(t *testing.T) {
 }
 
 // lintignore:AT003
-func TestAccPreCheckFgFunctionName(t *testing.T) {
-	if HW_FG_FUNCTION_NAME == "" {
-		t.Skip("HW_FG_FUNCTION_NAME must be set for FG acceptance tests")
+func TestAccPreCheckFgsFunctionName(t *testing.T) {
+	if HW_FGS_FUNCTION_NAME == "" {
+		t.Skip("HW_FGS_FUNCTION_NAME must be set for acceptance test")
 	}
 }
 
@@ -2852,6 +2852,13 @@ func TestAccPreCheckCocIntegrationKey(t *testing.T) {
 func TestAccPreCheckCocInstanceCompliantID(t *testing.T) {
 	if HW_COC_INSTANCE_COMPLIANT_ID == "" {
 		t.Skip("HW_COC_INSTANCE_COMPLIANT_ID must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckCocScriptID(t *testing.T) {
+	if HW_COC_SCRIPT_ID == "" {
+		t.Skip("HW_COC_SCRIPT_ID must be set for the acceptance test")
 	}
 }
 
