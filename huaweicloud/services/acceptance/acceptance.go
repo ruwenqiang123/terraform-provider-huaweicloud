@@ -136,6 +136,7 @@ var (
 	HW_KPS_ENABLE_FLAG      = os.Getenv("HW_KPS_ENABLE_FLAG")
 	HW_KPS_FAILED_TASK_ID   = os.Getenv("HW_KPS_FAILED_TASK_ID")
 	HW_CSMS_TASK_ID         = os.Getenv("HW_CSMS_TASK_ID")
+	HW_CSMS_SECRET_ID       = os.Getenv("HW_CSMS_SECRET_ID")
 
 	HW_DEST_REGION          = os.Getenv("HW_DEST_REGION")
 	HW_DEST_PROJECT_ID      = os.Getenv("HW_DEST_PROJECT_ID")
@@ -310,6 +311,7 @@ var (
 	HW_KMS_KEY_PLAINTEXT_LEN   = os.Getenv("HW_KMS_KEY_PLAINTEXT_LEN")
 	HW_KMS_KEY_CIPHER_TEXT     = os.Getenv("HW_KMS_KEY_CIPHER_TEXT")
 	HW_KMS_KEY_CIPHER_TEXT_LEN = os.Getenv("HW_KMS_KEY_CIPHER_TEXT_LEN")
+	HW_KMS_KEY_MESSAGE         = os.Getenv("HW_KMS_KEY_MESSAGE")
 
 	HW_MULTI_ACCOUNT_ENVIRONMENT            = os.Getenv("HW_MULTI_ACCOUNT_ENVIRONMENT")
 	HW_ORGANIZATIONS_OPEN                   = os.Getenv("HW_ORGANIZATIONS_OPEN")
@@ -1955,6 +1957,13 @@ func TestAccPreCheckKmsKeyCiphertext(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckKmsKeyMessage(t *testing.T) {
+	if HW_KMS_KEY_MESSAGE == "" {
+		t.Skip("HW_KMS_KEY_MESSAGE must be set for acceptance tests.")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckKpsSSHPort(t *testing.T) {
 	if HW_KPS_KEYPAIR_SSH_PORT == "" {
 		t.Skip("HW_KPS_KEYPAIR_SSH_PORT must be set for acceptance tests.")
@@ -2796,6 +2805,13 @@ func TestAccPreCheckLTSLogConvergeMappingConfig(t *testing.T) {
 	if HW_LTS_LOG_CONVERGE_SOURCE_LOG_GROUP_ID == "" || HW_LTS_LOG_CONVERGE_SOURCE_LOG_STREAM_ID == "" {
 		t.Skip("The environment variables of HW_LTS_LOG_CONVERGE_SOURCE_LOG_GROUP_ID and HW_LTS_LOG_CONVERGE_SOURCE_LOG_STREAM_ID " +
 			"must be set for the log converge configuration acceptance test")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckLTSMemberAccountId(t *testing.T) {
+	if HW_LTS_LOG_CONVERGE_MEMBER_ACCOUNT_ID == "" {
+		t.Skip("HW_LTS_LOG_CONVERGE_MEMBER_ACCOUNT_ID must be set for the acceptance test")
 	}
 }
 
@@ -3844,6 +3860,13 @@ func TestAccPrecheckDewFlag(t *testing.T) {
 func TestAccPrecheckCsmsTask(t *testing.T) {
 	if HW_CSMS_TASK_ID == "" {
 		t.Skip("HW_CSMS_TASK_ID must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckCsmsSecretID(t *testing.T) {
+	if HW_CSMS_SECRET_ID == "" {
+		t.Skip("HW_CSMS_SECRET_ID must be set for the acceptance test")
 	}
 }
 
