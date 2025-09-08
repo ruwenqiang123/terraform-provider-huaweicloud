@@ -562,7 +562,6 @@ func Provider() *schema.Provider {
 			"huaweicloud_apig_api_associated_throttling_policies": apig.DataSourceApiAssociatedThrottlingPolicies(),
 			"huaweicloud_apig_api_basic_configurations":           apig.DataSourceApiBasicConfigurations(),
 			"huaweicloud_apig_api":                                apig.DataSourceApi(),
-			"huaweicloud_apig_apis_tags":                          apig.DataSourceApisTags(),
 			"huaweicloud_apig_appcodes":                           apig.DataSourceAppcodes(),
 			"huaweicloud_apig_applications":                       apig.DataSourceApplications(),
 			"huaweicloud_apig_availability_zones":                 apig.DataSourceAvailabilityZones(),
@@ -574,6 +573,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_apig_environment_variables":              apig.DataSourceApigEnvironmentVariables(),
 			"huaweicloud_apig_environments":                       apig.DataSourceEnvironments(),
 			"huaweicloud_apig_groups":                             apig.DataSourceGroups(),
+			"huaweicloud_apig_instance_api_tags":                  apig.DataSourceInstanceApiTags(),
 			"huaweicloud_apig_instance_ssl_certificates":          apig.DataSourceInstanceAssociatedSSLCertificates(),
 			"huaweicloud_apig_instance_features":                  apig.DataSourceInstanceFeatures(),
 			"huaweicloud_apig_instance_quotas":                    apig.DataSourceInstanceQuotas(),
@@ -667,7 +667,12 @@ func Provider() *schema.Provider {
 			"huaweicloud_cc_network_instances":                            cc.DataSourceCcNetworkInstances(),
 			"huaweicloud_cc_permissions":                                  cc.DataSourceCcPermissions(),
 			"huaweicloud_cc_site_network_capabilities":                    cc.DataSourceCcSiteNetworkCapabilities(),
+			"huaweicloud_cc_cloud_connection_quotas":                      cc.DataSourceCcCloudConnectionQuotas(),
 			"huaweicloud_cc_cloud_connection_capabilities":                cc.DataSourceCcCloudConnectionCapabilities(),
+			"huaweicloud_cc_across_area_bandwidth_package_flavors":        cc.DataSourceCcAcrossAreaBandwidthPackageFlavors(),
+			"huaweicloud_cc_across_regions_bandwidth_package_flavors":     cc.DataSourceCcAcrossRegionsBandwidthPackageFlavors(),
+			"huaweicloud_cc_supported_areas":                              cc.DataSourceCcSupportedAreas(),
+			"huaweicloud_cc_supported_regions":                            cc.DataSourceCcSupportedRegions(),
 
 			"huaweicloud_cce_addon_template":         cce.DataSourceAddonTemplate(),
 			"huaweicloud_cce_cluster":                cce.DataSourceCCEClusterV3(),
@@ -1865,6 +1870,8 @@ func Provider() *schema.Provider {
 			"huaweicloud_cpts_projects": cpts.DataSourceCptsProjects(),
 
 			// Legacy
+			"huaweicloud_apig_apis_tags": apig.DataSourceInstanceApiTags(),
+
 			"huaweicloud_images_image_v2":        ims.DataSourceImagesImageV2(),
 			"huaweicloud_networking_port_v2":     vpc.DataSourceNetworkingPortV2(),
 			"huaweicloud_networking_secgroup_v2": vpc.DataSourceNetworkingSecGroup(),
@@ -2015,6 +2022,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_apig_api_action":                     apig.ResourceApigApiAction(),
 			"huaweicloud_apig_api_batch_action":               apig.ResourceApigApiBatchAction(),
 			"huaweicloud_apig_api_check":                      apig.ResourceApiCheck(),
+			"huaweicloud_apig_api_debug":                      apig.ResourceApigApiDebug(),
 			"huaweicloud_apig_api_publishment":                apig.ResourceApigApiPublishment(),
 			"huaweicloud_apig_appcode":                        apig.ResourceAppcode(),
 			"huaweicloud_apig_application":                    apig.ResourceApigApplicationV2(),
@@ -3186,6 +3194,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_codearts_inspector_host":         codeartsinspector.ResourceInspectorHost(),
 
 			"huaweicloud_codearts_pipeline_basic_plugin":     codeartspipeline.ResourceCodeArtsPipelineBasicPlugin(),
+			"huaweicloud_codearts_pipeline_plugin_version":   codeartspipeline.ResourceCodeArtsPipelinePluginVersion(),
 			"huaweicloud_codearts_pipeline_rule":             codeartspipeline.ResourceCodeArtsPipelineRule(),
 			"huaweicloud_codearts_pipeline_group":            codeartspipeline.ResourceCodeArtsPipelineGroup(),
 			"huaweicloud_codearts_pipeline_group_swap":       codeartspipeline.ResourceCodeArtsPipelineGroupSwap(),
