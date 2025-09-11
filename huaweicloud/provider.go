@@ -116,6 +116,7 @@ import (
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/smn"
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/sms"
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/swr"
+	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/swrenterprise"
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/taurusdb"
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/tms"
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/ucs"
@@ -562,6 +563,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_apig_api_associated_throttling_policies": apig.DataSourceApiAssociatedThrottlingPolicies(),
 			"huaweicloud_apig_api_basic_configurations":           apig.DataSourceApiBasicConfigurations(),
 			"huaweicloud_apig_api":                                apig.DataSourceApi(),
+			"huaweicloud_apig_api_history_versions":               apig.DataSourceApiHistoryVersions(),
 			"huaweicloud_apig_appcodes":                           apig.DataSourceAppcodes(),
 			"huaweicloud_apig_applications":                       apig.DataSourceApplications(),
 			"huaweicloud_apig_availability_zones":                 apig.DataSourceAvailabilityZones(),
@@ -801,6 +803,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_coc_group_resource_relations":          coc.DataSourceCocGroupResourceRelations(),
 			"huaweicloud_coc_enterprise_project_collections":    coc.DataSourceCocEnterpriseProjectCollections(),
 			"huaweicloud_coc_script_tags":                       coc.DataSourceCocScriptTags(),
+			"huaweicloud_coc_incident_tasks":                    coc.DataSourceCocIncidentTasks(),
 
 			"huaweicloud_compute_flavors":                 ecs.DataSourceEcsFlavors(),
 			"huaweicloud_compute_instance":                ecs.DataSourceComputeInstance(),
@@ -2042,6 +2045,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_apig_api_check":                      apig.ResourceApiCheck(),
 			"huaweicloud_apig_api_debug":                      apig.ResourceApigApiDebug(),
 			"huaweicloud_apig_api_publishment":                apig.ResourceApigApiPublishment(),
+			"huaweicloud_apig_api_version_unpublish":          apig.ResourceApiVersionUnpublish(),
 			"huaweicloud_apig_appcode":                        apig.ResourceAppcode(),
 			"huaweicloud_apig_application":                    apig.ResourceApigApplicationV2(),
 			"huaweicloud_apig_application_acl":                apig.ResourceApplicationAcl(),
@@ -2162,6 +2166,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_cci_namespace":                 cci.ResourceCciNamespace(),
 			"huaweicloud_cci_network":                   cci.ResourceCciNetworkV1(),
 			"huaweicloud_cci_pvc":                       cci.ResourcePersistentVolumeClaimV1(),
+			"huaweicloud_cci_pool_binding":              cci.ResourceV2PoolBinding(),
 			"huaweicloud_cciv2_namespace":               cci.ResourceNamespace(),
 			"huaweicloud_cciv2_network":                 cci.ResourceV2Network(),
 			"huaweicloud_cciv2_config_map":              cci.ResourceV2ConfigMap(),
@@ -2173,7 +2178,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_cciv2_pvc":                     cci.ResourceV2PersistentVolumeClaim(),
 			"huaweicloud_cciv2_pod":                     cci.ResourceV2Pod(),
 			"huaweicloud_cciv2_persistent_volume_claim": cci.ResourceV2PersistentVolumeClaim(),
-			"huaweicloud_cci_pool_binding":              cci.ResourcePoolBinding(),
+			"huaweicloud_cciv2_pool_binding":            cci.ResourceV2PoolBinding(),
 			"huaweicloud_cciv2_hpa":                     cci.ResourceV2HPA(),
 
 			"huaweicloud_ccm_certificate":                ccm.ResourceCCMCertificate(),
@@ -2267,6 +2272,9 @@ func Provider() *schema.Provider {
 			"huaweicloud_coc_group_resource_relation":       coc.ResourceGroupResourceRelation(),
 			"huaweicloud_coc_resource_uniagent_sync":        coc.ResourceResourceUniAgentSync(),
 			"huaweicloud_coc_other_resource_uniagent_sync":  coc.ResourceOtherResourceUniAgentSync(),
+			"huaweicloud_coc_diagnosis_task":                coc.ResourceDiagnosisTask(),
+			"huaweicloud_coc_diagnosis_task_cancel":         coc.ResourceDiagnosisTaskCancel(),
+			"huaweicloud_coc_scheduled_task":                coc.ResourceScheduledTask(),
 
 			"huaweicloud_cph_server":         cph.ResourceCphServer(),
 			"huaweicloud_cph_adb_command":    cph.ResourceAdbCommand(),
@@ -3064,6 +3072,8 @@ func Provider() *schema.Provider {
 			"huaweicloud_swr_image_retention_policy":   swr.ResourceSwrImageRetentionPolicy(),
 			"huaweicloud_swr_image_auto_sync":          swr.ResourceSwrImageAutoSync(),
 			"huaweicloud_swr_temporary_login_command":  swr.ResourceSwrTemporaryLoginCommand(),
+
+			"huaweicloud_swr_enterprise_instance": swrenterprise.ResourceSwrEnterpriseInstance(),
 
 			"huaweicloud_tms_resource_tags": tms.ResourceResourceTags(),
 			"huaweicloud_tms_tags":          tms.ResourceTmsTag(),
