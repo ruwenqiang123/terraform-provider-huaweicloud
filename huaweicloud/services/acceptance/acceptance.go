@@ -44,6 +44,7 @@ var (
 	HW_VPC_ID                        = os.Getenv("HW_VPC_ID")
 	HW_VPC_ENHANCED_LOCAL_ROUTE      = os.Getenv("HW_VPC_ENHANCED_LOCAL_ROUTE")
 	HW_VPN_GATEWAY_ID                = os.Getenv("HW_VPN_GATEWAY_ID")
+	HW_VPN_GATEWAY_JOB_ID            = os.Getenv("HW_VPN_GATEWAY_JOB_ID")
 	HW_VPN_P2C_GATEWAY_ID            = os.Getenv("HW_VPN_P2C_GATEWAY_ID")
 	HW_VPN_P2C_SERVER                = os.Getenv("HW_VPN_P2C_SERVER")
 	HW_VPN_P2C_SERVER_CERTIFICATE_ID = os.Getenv("HW_VPN_P2C_SERVER_CERTIFICATE_ID")
@@ -423,6 +424,7 @@ var (
 
 	// The SecMaster workspace ID
 	HW_SECMASTER_WORKSPACE_ID = os.Getenv("HW_SECMASTER_WORKSPACE_ID")
+	HW_SECMASTER_RDS_ASSET_ID = os.Getenv("HW_SECMASTER_RDS_ASSET_ID")
 	HW_SECMASTER_LAYOUT_ID    = os.Getenv("HW_SECMASTER_LAYOUT_ID")
 	// The SecMaster indicator ID
 	HW_SECMASTER_INDICATOR_TYPE_ID        = os.Getenv("HW_SECMASTER_INDICATOR_TYPE_ID")
@@ -2390,6 +2392,13 @@ func TestAccPreCheckSecMasterWorkspaceID(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckSecMasterRDSAssetID(t *testing.T) {
+	if HW_SECMASTER_RDS_ASSET_ID == "" {
+		t.Skip("HW_SECMASTER_RDS_ASSET_ID must be set for SecMaster acceptance tests")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckSecMasterLayoutID(t *testing.T) {
 	if HW_SECMASTER_LAYOUT_ID == "" {
 		t.Skip("HW_SECMASTER_LAYOUT_ID must be set for SecMaster acceptance tests")
@@ -3711,6 +3720,13 @@ func TestAccPreCheckVpcEnhancedLocalRoute(t *testing.T) {
 func TestAccPreCheckVPNGatewayId(t *testing.T) {
 	if HW_VPN_GATEWAY_ID == "" {
 		t.Skip("HW_VPN_GATEWAY_ID must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckVPNGatewayJobId(t *testing.T) {
+	if HW_VPN_GATEWAY_JOB_ID == "" {
+		t.Skip("HW_VPN_GATEWAY_JOB_ID must be set for the acceptance test")
 	}
 }
 
