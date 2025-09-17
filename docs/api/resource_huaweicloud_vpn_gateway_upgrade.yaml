@@ -11,3 +11,6 @@ paths:
     /v5/{project_id}/vpn-gateways/{vgw_id}/upgrade:
         POST:
             tag: VPN
+    /v5/{project_id}/vpn-gateways/jobs:
+        GET:
+            tag: VPN

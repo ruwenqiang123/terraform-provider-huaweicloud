@@ -45,6 +45,7 @@ var (
 	HW_VPC_ENHANCED_LOCAL_ROUTE      = os.Getenv("HW_VPC_ENHANCED_LOCAL_ROUTE")
 	HW_VPN_GATEWAY_ID                = os.Getenv("HW_VPN_GATEWAY_ID")
 	HW_VPN_GATEWAY_JOB_ID            = os.Getenv("HW_VPN_GATEWAY_JOB_ID")
+	HW_VPN_P2C_GATEWAY_JOB_ID        = os.Getenv("HW_VPN_P2C_GATEWAY_JOB_ID")
 	HW_VPN_P2C_GATEWAY_ID            = os.Getenv("HW_VPN_P2C_GATEWAY_ID")
 	HW_VPN_P2C_SERVER                = os.Getenv("HW_VPN_P2C_SERVER")
 	HW_VPN_P2C_SERVER_CERTIFICATE_ID = os.Getenv("HW_VPN_P2C_SERVER_CERTIFICATE_ID")
@@ -472,7 +473,6 @@ var (
 
 	// the ID of ECS instance which has installed uniagent
 	HW_COC_INSTANCE_ID           = os.Getenv("HW_COC_INSTANCE_ID")
-	HW_COC_APPLICATION_ID        = os.Getenv("HW_COC_APPLICATION_ID")
 	HW_COC_ROLE_ID               = os.Getenv("HW_COC_ROLE_ID")
 	HW_COC_SCENE_ID              = os.Getenv("HW_COC_SCENE_ID")
 	HW_COC_INTEGRATION_KEY       = os.Getenv("HW_COC_INTEGRATION_KEY")
@@ -2847,13 +2847,6 @@ func TestAccPreCheckCocInstanceID(t *testing.T) {
 }
 
 // lintignore:AT003
-func TestAccPreCheckCocApplicationID(t *testing.T) {
-	if HW_COC_APPLICATION_ID == "" {
-		t.Skip("HW_COC_APPLICATION_ID must be set for the acceptance test")
-	}
-}
-
-// lintignore:AT003
 func TestAccPreCheckCocRoleID(t *testing.T) {
 	if HW_COC_ROLE_ID == "" {
 		t.Skip("HW_COC_ROLE_ID must be set for the acceptance test")
@@ -3727,6 +3720,13 @@ func TestAccPreCheckVPNGatewayId(t *testing.T) {
 func TestAccPreCheckVPNGatewayJobId(t *testing.T) {
 	if HW_VPN_GATEWAY_JOB_ID == "" {
 		t.Skip("HW_VPN_GATEWAY_JOB_ID must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckVPNP2cGatewayJobId(t *testing.T) {
+	if HW_VPN_P2C_GATEWAY_JOB_ID == "" {
+		t.Skip("HW_VPN_P2C_GATEWAY_JOB_ID must be set for the acceptance test")
 	}
 }
 

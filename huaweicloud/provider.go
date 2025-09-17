@@ -809,6 +809,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_coc_diagnosis_tasks":                   coc.DataSourceCocDiagnosisTasks(),
 			"huaweicloud_coc_diagnosis_task_summary":            coc.DataSourceCocDiagnosisTaskSummary(),
 			"huaweicloud_coc_diagnosis_task_node_detail":        coc.DataSourceCocDiagnosisTaskNodeDetail(),
+			"huaweicloud_coc_scheduled_tasks":                   coc.DataSourceCocScheduledTasks(),
 
 			"huaweicloud_compute_flavors":                 ecs.DataSourceEcsFlavors(),
 			"huaweicloud_compute_instance":                ecs.DataSourceComputeInstance(),
@@ -1305,6 +1306,8 @@ func Provider() *schema.Provider {
 			"huaweicloud_identitycenter_permission_set_provisionings":            identitycenter.DataSourceIdentitycenterPermissionSetProvisionings(),
 			"huaweicloud_identitycenter_system_policy_attachments":               identitycenter.DataSourceIdentitycenterSystemPolicyAttachments(),
 			"huaweicloud_identitycenter_system_identity_policy_attachments":      identitycenter.DataSourceSystemIdentityPolicyAttachments(),
+			"huaweicloud_identitycenter_catalog_applications":                    identitycenter.DataSourceIdentityCenterCatalogApplications(),
+			"huaweicloud_identitycenter_application_templates":                   identitycenter.DataSourceIdentityCenterApplicationTemplates(),
 
 			"huaweicloud_iec_bandwidths":     iec.DataSourceBandWidths(),
 			"huaweicloud_iec_eips":           iec.DataSourceEips(),
@@ -1704,6 +1707,10 @@ func Provider() *schema.Provider {
 			"huaweicloud_swr_domain_overviews":          swr.DataSourceSwrDomainOverviews(),
 			"huaweicloud_swr_domain_resource_reports":   swr.DataSourceSwrDomainReports(),
 
+			"huaweicloud_swr_enterprise_instances":             swrenterprise.DataSourceSwrEnterpriseInstances(),
+			"huaweicloud_swr_enterprise_namespaces":            swrenterprise.DataSourceSwrEnterpriseNamespaces(),
+			"huaweicloud_swr_enterprise_long_term_credentials": swrenterprise.DataSourceSwrEnterpriseLongTermCredentials(),
+
 			"huaweicloud_tms_resource_types":      tms.DataSourceResourceTypes(),
 			"huaweicloud_tms_resource_instances":  tms.DataSourceResourceInstances(),
 			"huaweicloud_tms_resource_tag_keys":   tms.DataSourceTmsTagKeys(),
@@ -1775,6 +1782,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_vpn_connection_health_checks":       vpn.DataSourceVpnConnectionHealthChecks(),
 			"huaweicloud_vpn_connection_logs":                vpn.DataSourceVpnConnectionLogs(),
 			"huaweicloud_vpn_p2c_gateways":                   vpn.DataSourceVpnP2cGateways(),
+			"huaweicloud_vpn_p2c_gateway_jobs":               vpn.DataSourceVpnP2CGatewayJobs(),
 			"huaweicloud_vpn_p2c_gateway_availability_zones": vpn.DataSourceVpnP2cGatewayAvailabilityZones(),
 			"huaweicloud_vpn_p2c_gateway_connections":        vpn.DataSourceVpnP2cGatewayConnections(),
 			"huaweicloud_vpn_servers":                        vpn.DataSourceVpnServers(),
@@ -1808,6 +1816,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_waf_overviews_classification":             waf.DataSourceWafOverviewsClassification(),
 			"huaweicloud_waf_overviews_qps_timeline":               waf.DataSourceWafOverviewsQPSTimeline(),
 			"huaweicloud_waf_overviews_request_timeline":           waf.DataSourceWafOverviewsRequestTimeline(),
+			"huaweicloud_waf_overviews_response_code_timeline":     waf.DataSourceOverviewsResponseCodeTimeline(),
 			"huaweicloud_waf_overviews_statistics":                 waf.DataSourceWafOverviewsStatistics(),
 			"huaweicloud_waf_policies":                             waf.DataSourceWafPolicies(),
 			"huaweicloud_waf_reference_tables":                     waf.DataSourceWafReferenceTables(),
@@ -1820,6 +1829,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_waf_rules_information_leakage_prevention": waf.DataSourceWafRulesInformationLeakagePrevention(),
 			"huaweicloud_waf_rules_known_attack_source":            waf.DataSourceWafRulesKnownAttackSource(),
 			"huaweicloud_waf_rules_precise_protection":             waf.DataSourceWafRulesPreciseProtection(),
+			"huaweicloud_waf_rules_threat_intelligence":            waf.DataSourceRulesThreatIntelligence(),
 			"huaweicloud_waf_rules_web_tamper_protection":          waf.DataSourceWafRulesWebTamperProtection(),
 			"huaweicloud_waf_security_report_subscriptions":        waf.DataSourceSecurityReportSubscriptions(),
 			"huaweicloud_waf_source_ips":                           waf.DataSourceWafSourceIps(),
@@ -2077,7 +2087,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_apig_instance_routes":                apig.ResourceInstanceRoutes(),
 			"huaweicloud_apig_instance":                       apig.ResourceApigInstanceV2(),
 			"huaweicloud_apig_orchestration_rule":             apig.ResourceOrchestrationRule(),
-			"huaweicloud_apig_plugin_associate":               apig.ResourcePluginAssociate(),
+			"huaweicloud_apig_plugin_batch_apis_associate":    apig.ResourcePluginBatchApisAssociate(),
 			"huaweicloud_apig_plugin":                         apig.ResourcePlugin(),
 			"huaweicloud_apig_response":                       apig.ResourceApigResponseV2(),
 			"huaweicloud_apig_signature_associate":            apig.ResourceSignatureAssociate(),
@@ -2270,6 +2280,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_coc_script_execute":                coc.ResourceScriptExecute(),
 			"huaweicloud_coc_script_order_operation":        coc.ResourceScriptOrderOperation(),
 			"huaweicloud_coc_script_approval":               coc.ResourceScriptApproval(),
+			"huaweicloud_coc_public_script_execute":         coc.ResourcePublicScriptExecute(),
 			"huaweicloud_coc_incident":                      coc.ResourceIncident(),
 			"huaweicloud_coc_incident_handle":               coc.ResourceIncidentHandle(),
 			"huaweicloud_coc_war_room":                      coc.ResourceWarRoom(),
@@ -2698,6 +2709,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_identitycenter_custom_role_attachment":                 identitycenter.ResourceCustomRoleAttachment(),
 			"huaweicloud_identitycenter_access_control_attribute_configuration": identitycenter.ResourceAccessControlAttributeConfiguration(),
 			"huaweicloud_identitycenter_provision_permission_set":               identitycenter.ResourceProvisionPermissionSet(),
+			"huaweicloud_identitycenter_application_instance":                   identitycenter.ResourceIdentityCenterApplicationInstance(),
 
 			"huaweicloud_iec_eip":                 iec.ResourceEip(),
 			"huaweicloud_iec_keypair":             iec.ResourceKeypair(),
@@ -3088,7 +3100,10 @@ func Provider() *schema.Provider {
 			"huaweicloud_swr_image_auto_sync":          swr.ResourceSwrImageAutoSync(),
 			"huaweicloud_swr_temporary_login_command":  swr.ResourceSwrTemporaryLoginCommand(),
 
-			"huaweicloud_swr_enterprise_instance": swrenterprise.ResourceSwrEnterpriseInstance(),
+			"huaweicloud_swr_enterprise_instance":             swrenterprise.ResourceSwrEnterpriseInstance(),
+			"huaweicloud_swr_enterprise_namespace":            swrenterprise.ResourceSwrEnterpriseNamespace(),
+			"huaweicloud_swr_enterprise_long_term_credential": swrenterprise.ResourceSwrEnterpriseLongTermCredential(),
+			"huaweicloud_swr_enterprise_temporary_credential": swrenterprise.ResourceSwrEnterpriseTemporaryCredential(),
 
 			"huaweicloud_tms_resource_tags": tms.ResourceResourceTags(),
 			"huaweicloud_tms_tags":          tms.ResourceTmsTag(),
@@ -3147,6 +3162,8 @@ func Provider() *schema.Provider {
 			"huaweicloud_vpn_client_ca_certificate":             vpn.ResourceClientCACertificate(),
 			"huaweicloud_vpn_server":                            vpn.ResourceServer(),
 			"huaweicloud_vpn_p2c_gateway_connection_disconnect": vpn.ResourceP2CGatewayConnectionDisconnect(),
+			"huaweicloud_vpn_p2c_gateway_upgrade":               vpn.ResourceP2CGatewayUpgrade(),
+			"huaweicloud_vpn_p2c_gateway_job_delete":            vpn.ResourceP2CGatewayJobDelete(),
 
 			"huaweicloud_waf_address_group":                       waf.ResourceWafAddressGroup(),
 			"huaweicloud_waf_certificate":                         waf.ResourceWafCertificate(),
@@ -3282,6 +3299,8 @@ func Provider() *schema.Provider {
 			"huaweicloud_lts_struct_template": lts.ResourceLtsStruct(),
 
 			// Legacy
+			"huaweicloud_apig_plugin_associate": apig.ResourcePluginBatchApisAssociate(),
+
 			"huaweicloud_networking_eip_associate": eip.ResourceEIPAssociate(),
 			"huaweicloud_dds_instance_recovery":    dds.ResourceDDSInstanceRestore(),
 
