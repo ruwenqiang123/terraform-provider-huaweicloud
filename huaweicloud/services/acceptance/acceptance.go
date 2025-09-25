@@ -125,6 +125,7 @@ var (
 	HW_WAF_ALERT_ID                             = os.Getenv("HW_WAF_ALERT_ID")
 	HW_WAF_DEDICATED_INSTANCE_ID                = os.Getenv("HW_WAF_DEDICATED_INSTANCE_ID")
 	HW_WAF_DEDICATED_INSTANCE_SECURITY_GROUP_ID = os.Getenv("HW_WAF_DEDICATED_INSTANCE_SECURITY_GROUP_ID")
+	HW_WAF_RULE_ID                              = os.Getenv("HW_WAF_RULE_ID")
 
 	HW_ELB_CERT_ID         = os.Getenv("HW_ELB_CERT_ID")
 	HW_ELB_LOADBALANCER_ID = os.Getenv("HW_ELB_LOADBALANCER_ID")
@@ -483,7 +484,6 @@ var (
 	HW_COC_DIAGNOSIS_TASK_ID     = os.Getenv("HW_COC_DIAGNOSIS_TASK_ID")
 	HW_COC_SCHEDULED_TASK_ID     = os.Getenv("HW_COC_SCHEDULED_TASK_ID")
 	HW_COC_TICKET_ID             = os.Getenv("HW_COC_TICKET_ID")
-	HW_COC_SUB_TICKET_ID         = os.Getenv("HW_COC_SUB_TICKET_ID")
 	HW_COC_ALARM_ID              = os.Getenv("HW_COC_ALARM_ID")
 	HW_COC_AGENT_SN              = os.Getenv("HW_COC_AGENT_SN")
 
@@ -1210,6 +1210,13 @@ func TestAccPreCheckWafAlertId(t *testing.T) {
 func TestAccPreCheckWafDedicatedInstanceAction(t *testing.T) {
 	if HW_WAF_DEDICATED_INSTANCE_ID == "" || HW_WAF_DEDICATED_INSTANCE_SECURITY_GROUP_ID == "" {
 		t.Skip("HW_WAF_DEDICATED_INSTANCE_ID and HW_WAF_DEDICATED_INSTANCE_SECURITY_GROUP_ID must be set for this acceptance test.")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckWafRuleId(t *testing.T) {
+	if HW_WAF_RULE_ID == "" {
+		t.Skip("HW_WAF_RULE_ID must be set for this acceptance test.")
 	}
 }
 
@@ -2920,13 +2927,6 @@ func TestAccPreCheckCocScheduledTaskID(t *testing.T) {
 func TestAccPreCheckCocTicketID(t *testing.T) {
 	if HW_COC_TICKET_ID == "" {
 		t.Skip("HW_COC_TICKET_ID must be set for the acceptance test")
-	}
-}
-
-// lintignore:AT003
-func TestAccPreCheckCocSubTicketID(t *testing.T) {
-	if HW_COC_SUB_TICKET_ID == "" {
-		t.Skip("HW_COC_SUB_TICKET_ID must be set for the acceptance test")
 	}
 }
 
