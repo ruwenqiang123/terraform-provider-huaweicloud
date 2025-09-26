@@ -114,6 +114,7 @@ var (
 	HW_INTERNAL_USED          = os.Getenv("HW_INTERNAL_USED")
 
 	HW_WAF_ENABLE_FLAG                          = os.Getenv("HW_WAF_ENABLE_FLAG")
+	HW_WAF_PRECHECK_GEO_IP_POLICY_RULES         = os.Getenv("HW_WAF_PRECHECK_GEO_IP_POLICY_RULES")
 	HW_WAF_CERTIFICATE_ID                       = os.Getenv("HW_WAF_CERTIFICATE_ID")
 	HW_WAF_DOMAIN_ID                            = os.Getenv("HW_WAF_DOMAIN_ID")
 	HW_WAF_TYPE                                 = os.Getenv("HW_WAF_TYPE")
@@ -375,6 +376,7 @@ var (
 	HW_CES_ALARM_RULE        = os.Getenv("HW_CES_ALARM_RULE")
 	HW_CES_ALARM_POLICY_1    = os.Getenv("HW_CES_ALARM_POLICY_1")
 	HW_CES_ALARM_POLICY_2    = os.Getenv("HW_CES_ALARM_POLICY_2")
+	HW_CES_DEM_0             = os.Getenv("HW_CES_DEM_0")
 
 	// The CFW instance ID
 	HW_CFW_INSTANCE_ID               = os.Getenv("HW_CFW_INSTANCE_ID")
@@ -1137,6 +1139,13 @@ func RandomPassword(customChars ...string) string {
 func TestAccPrecheckWafInstance(t *testing.T) {
 	if HW_WAF_ENABLE_FLAG == "" {
 		t.Skip("Skip the WAF acceptance tests.")
+	}
+}
+
+// lintignore:AT003
+func TestAccPrecheckWafGeoIpPolicyRules(t *testing.T) {
+	if HW_WAF_PRECHECK_GEO_IP_POLICY_RULES == "" {
+		t.Skip("Skip the WAF geo IP policy rules acceptance tests.")
 	}
 }
 
@@ -2246,6 +2255,13 @@ func TestAccPreCheckCesTimeRange(t *testing.T) {
 func TestAccPreCheckCesAlarmPolicies(t *testing.T) {
 	if HW_CES_ALARM_POLICY_1 == "" || HW_CES_ALARM_POLICY_2 == "" {
 		t.Skip("HW_CES_ALARM_POLICY_1 and HW_CES_ALARM_POLICY_2 must be set for CES acceptance tests")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckCesDem0(t *testing.T) {
+	if HW_CES_DEM_0 == "" {
+		t.Skip("HW_CES_DEM_0 must be set for CES acceptance tests")
 	}
 }
 

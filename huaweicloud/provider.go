@@ -567,6 +567,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_apig_api_history_versions":               apig.DataSourceApiHistoryVersions(),
 			"huaweicloud_apig_appcodes":                           apig.DataSourceAppcodes(),
 			"huaweicloud_apig_applications":                       apig.DataSourceApplications(),
+			"huaweicloud_apig_application_authorize_statistic":    apig.DataSourceApplicationAuthorizeStatistic(),
 			"huaweicloud_apig_availability_zones":                 apig.DataSourceAvailabilityZones(),
 			"huaweicloud_apig_application_acl":                    apig.DataSourceApplicationAcl(),
 			"huaweicloud_apig_application_associated_quota":       apig.DataSourceApplicationAssociatedQuota(),
@@ -754,6 +755,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_ces_resource_groups":                   ces.DataSourceCesGroups(),
 			"huaweicloud_ces_resource_group_service_resources":  ces.DataSourceCesGroupServiceResources(),
 			"huaweicloud_ces_resource_tags":                     ces.DataSourceCesTags(),
+			"huaweicloud_ces_host_configurations":               ces.DataSourceCesHostConfigurations(),
 
 			"huaweicloud_cfw_firewalls":                 cfw.DataSourceFirewalls(),
 			"huaweicloud_cfw_address_groups":            cfw.DataSourceCfwAddressGroups(),
@@ -1728,6 +1730,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_swr_enterprise_long_term_credentials":           swrenterprise.DataSourceSwrEnterpriseLongTermCredentials(),
 			"huaweicloud_swr_enterprise_private_network_access_controls": swrenterprise.DataSourceSwrEnterprisePrivateNetworkAccessControls(),
 			"huaweicloud_swr_enterprise_jobs":                            swrenterprise.DataSourceSwrEnterpriseJobs(),
+			"huaweicloud_swr_enterprise_image_signature_policies":        swrenterprise.DataSourceSwrEnterpriseImageSignaturePolicies(),
 
 			"huaweicloud_tms_resource_types":      tms.DataSourceResourceTypes(),
 			"huaweicloud_tms_resource_instances":  tms.DataSourceResourceInstances(),
@@ -1816,6 +1819,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_waf_alarm_notifications":                  waf.DataSourceWafAlarmNotifications(),
 			"huaweicloud_waf_alarm_optional_event_types":           waf.DataSourceAlarmOptionalEventTypes(),
 			"huaweicloud_waf_all_data_masking_rules":               waf.DataSourceAllDataMaskingRules(),
+			"huaweicloud_waf_all_geo_ip_policy_rules":              waf.DataSourceAllGeoIpPolicyRules(),
 			"huaweicloud_waf_all_domains":                          waf.DataSourceWafAllDomains(),
 			"huaweicloud_waf_all_precise_protection_rules":         waf.DataSourceAllPreciseProtectionRules(),
 			"huaweicloud_waf_all_whiteblackip_rules":               waf.DataSourceAllWhiteblackipRules(),
@@ -2342,6 +2346,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_coc_change_delete":                 coc.ResourceChangeDelete(),
 			"huaweicloud_coc_alarm_action":                  coc.ResourceAlarmAction(),
 			"huaweicloud_coc_alarm_clear":                   coc.ResourceAlarmClear(),
+			"huaweicloud_coc_alarm_linked_incident":         coc.ResourceAlarmLinkedIncident(),
 
 			"huaweicloud_cph_server":         cph.ResourceCphServer(),
 			"huaweicloud_cph_adb_command":    cph.ResourceAdbCommand(),
@@ -2491,11 +2496,13 @@ func Provider() *schema.Provider {
 			"huaweicloud_dms_kafka_message_produce":           kafka.ResourceDmsKafkaMessageProduce(),
 			"huaweicloud_dms_kafka_partition_reassign":        kafka.ResourceDmsKafkaPartitionReassign(),
 			"huaweicloud_dms_kafka_consumer_group":            kafka.ResourceDmsKafkaConsumerGroup(),
+			"huaweicloud_dms_kafka_instance_batch_action":     kafka.ResourceInstanceBatchAction(),
 			"huaweicloud_dms_kafka_message_offset_reset":      kafka.ResourceDmsKafkaMessageOffsetReset(),
 			"huaweicloud_dms_kafka_smart_connect":             kafka.ResourceDmsKafkaSmartConnect(),
 			"huaweicloud_dms_kafka_smart_connect_task":        kafka.ResourceDmsKafkaSmartConnectTask(),
 			"huaweicloud_dms_kafkav2_smart_connect_task":      kafka.ResourceDmsKafkav2SmartConnectTask(),
 			"huaweicloud_dms_kafka_smart_connect_task_action": kafka.ResourceDmsKafkaSmartConnectTaskAction(),
+			"huaweicloud_dms_kafka_smart_connector_validate":  kafka.ResourceSmartConnectorValidate(),
 			"huaweicloud_dms_kafka_user_client_quota":         kafka.ResourceDmsKafkaUserClientQuota(),
 			"huaweicloud_dms_kafka_message_diagnosis_task":    kafka.ResourceDmsKafkaMessageDiagnosisTask(),
 
