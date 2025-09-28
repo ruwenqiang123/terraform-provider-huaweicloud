@@ -115,6 +115,7 @@ var (
 
 	HW_WAF_ENABLE_FLAG                          = os.Getenv("HW_WAF_ENABLE_FLAG")
 	HW_WAF_PRECHECK_GEO_IP_POLICY_RULES         = os.Getenv("HW_WAF_PRECHECK_GEO_IP_POLICY_RULES")
+	HW_WAF_PRECHECK_IP_REPUTATION_POLICY_RULES  = os.Getenv("HW_WAF_PRECHECK_IP_REPUTATION_POLICY_RULES")
 	HW_WAF_CERTIFICATE_ID                       = os.Getenv("HW_WAF_CERTIFICATE_ID")
 	HW_WAF_DOMAIN_ID                            = os.Getenv("HW_WAF_DOMAIN_ID")
 	HW_WAF_TYPE                                 = os.Getenv("HW_WAF_TYPE")
@@ -127,6 +128,7 @@ var (
 	HW_WAF_DEDICATED_INSTANCE_ID                = os.Getenv("HW_WAF_DEDICATED_INSTANCE_ID")
 	HW_WAF_DEDICATED_INSTANCE_SECURITY_GROUP_ID = os.Getenv("HW_WAF_DEDICATED_INSTANCE_SECURITY_GROUP_ID")
 	HW_WAF_RULE_ID                              = os.Getenv("HW_WAF_RULE_ID")
+	HW_WAF_GEO_RULE_ID                          = os.Getenv("HW_WAF_GEO_RULE_ID")
 
 	HW_ELB_CERT_ID         = os.Getenv("HW_ELB_CERT_ID")
 	HW_ELB_LOADBALANCER_ID = os.Getenv("HW_ELB_LOADBALANCER_ID")
@@ -1150,6 +1152,13 @@ func TestAccPrecheckWafGeoIpPolicyRules(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPrecheckWafIpReputationPolicyRules(t *testing.T) {
+	if HW_WAF_PRECHECK_IP_REPUTATION_POLICY_RULES == "" {
+		t.Skip("Skip the WAF IP reputation policy rules acceptance tests.")
+	}
+}
+
+// lintignore:AT003
 // Used as a switch to enable the creation of cloud mode instance test cases.
 func TestAccPreCheckWafCloudInstance(t *testing.T) {
 	if HW_WAF_CLOUD_INSTANCE_FLAG == "" {
@@ -1226,6 +1235,13 @@ func TestAccPreCheckWafDedicatedInstanceAction(t *testing.T) {
 func TestAccPreCheckWafRuleId(t *testing.T) {
 	if HW_WAF_RULE_ID == "" {
 		t.Skip("HW_WAF_RULE_ID must be set for this acceptance test.")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckWafGeoRuleId(t *testing.T) {
+	if HW_WAF_GEO_RULE_ID == "" {
+		t.Skip("HW_WAF_GEO_RULE_ID must be set for this acceptance test.")
 	}
 }
 
