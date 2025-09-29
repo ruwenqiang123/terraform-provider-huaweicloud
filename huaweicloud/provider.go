@@ -591,6 +591,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_apig_instance_tags":                      apig.DataSourceInstanceTags(),
 			"huaweicloud_apig_instances_filter":                   apig.DataSourceInstancesFilter(),
 			"huaweicloud_apig_instances":                          apig.DataSourceInstances(),
+			"huaweicloud_apig_instance_restriction":               apig.DataSourceInstanceRestriction(),
 			"huaweicloud_apig_orchestration_rules":                apig.DataSourceOrchestrationRules(),
 			"huaweicloud_apig_orchestration_rule_associated_apis": apig.DataSourceOrchestrationRuleAssociatedApis(),
 			"huaweicloud_apig_plugins":                            apig.DataSourcePlugins(),
@@ -827,6 +828,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_coc_issue_tickets":                     coc.DataSourceCocIssueTickets(),
 			"huaweicloud_coc_alarm_action_histories":            coc.DataSourceCocAlarmActionHistories(),
 
+			"huaweicloud_compute_quotas":                  ecs.DataSourceEcsComputeQuotas(),
 			"huaweicloud_compute_flavors":                 ecs.DataSourceEcsFlavors(),
 			"huaweicloud_compute_flavor_sales_policies":   ecs.DataSourceEcsComputeFlavorSalesPolicies(),
 			"huaweicloud_compute_instance":                ecs.DataSourceComputeInstance(),
@@ -835,6 +837,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_compute_instances":               ecs.DataSourceComputeInstances(),
 			"huaweicloud_compute_servergroups":            ecs.DataSourceComputeServerGroups(),
 			"huaweicloud_compute_instance_remote_console": ecs.DataSourceComputeInstanceRemoteConsole(),
+			"huaweicloud_compute_volume_attachments":      ecs.DataSourceEcsComputeVolumeAttachments(),
 
 			// CodeArts
 			"huaweicloud_codearts_deploy_groups":                         codeartsdeploy.DataSourceCodeartsDeployGroups(),
@@ -1294,6 +1297,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_hss_resource_quotas":                       hss.DataSourceResourceQuotas(),
 			"huaweicloud_hss_setting_login_common_ips":              hss.DataSourceSettingLoginCommonIps(),
 			"huaweicloud_hss_setting_login_common_locations":        hss.DataSourceSettingLoginCommonLocations(),
+			"huaweicloud_hss_setting_two_factor_login_hosts":        hss.DataSourceSettingTwoFactorLoginHosts(),
 			"huaweicloud_hss_tags":                                  hss.DataSourceHssTags(),
 			"huaweicloud_hss_vulnerabilities":                       hss.DataSourceVulnerabilities(),
 			"huaweicloud_hss_vulnerability_handle_history":          hss.DataSourceVulnerabilityHandleHistory(),
@@ -1736,6 +1740,10 @@ func Provider() *schema.Provider {
 			"huaweicloud_swr_enterprise_jobs":                            swrenterprise.DataSourceSwrEnterpriseJobs(),
 			"huaweicloud_swr_enterprise_image_signature_policies":        swrenterprise.DataSourceSwrEnterpriseImageSignaturePolicies(),
 			"huaweicloud_swr_enterprise_instance_tags":                   swrenterprise.DataSourceSwrEnterpriseInstanceTags(),
+			"huaweicloud_swr_enterprise_namespace_tags":                  swrenterprise.DataSourceSwrEnterpriseNamespaceTags(),
+			"huaweicloud_swr_enterprise_resources_filter":                swrenterprise.DataSourceSwrEnterpriseResourcesFilter(),
+			//nolint:revive
+			"huaweicloud_swr_enterprise_image_signature_policy_execution_records": swrenterprise.DataSourceSwrEnterpriseImageSignaturePolicyExecutionRecords(),
 
 			"huaweicloud_tms_resource_types":      tms.DataSourceResourceTypes(),
 			"huaweicloud_tms_resource_instances":  tms.DataSourceResourceInstances(),
@@ -1831,6 +1839,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_waf_all_ip_reputation_policy_rules":       waf.DataSourceAllIpReputationPolicyRules(),
 			"huaweicloud_waf_all_domains":                          waf.DataSourceWafAllDomains(),
 			"huaweicloud_waf_all_precise_protection_rules":         waf.DataSourceAllPreciseProtectionRules(),
+			"huaweicloud_waf_all_web_antitamper_rules":             waf.DataSourceAllWebAntitamperRules(),
 			"huaweicloud_waf_all_whiteblackip_rules":               waf.DataSourceAllWhiteblackipRules(),
 			"huaweicloud_waf_bundle":                               waf.DataSourceUserBundle(),
 			"huaweicloud_waf_certificate":                          waf.DataSourceWafCertificate(),
@@ -2032,7 +2041,6 @@ func Provider() *schema.Provider {
 			"huaweicloud_antiddos":                      deprecated.DataSourceAntiDdosV1(),
 			"huaweicloud_antiddos_v1":                   deprecated.DataSourceAntiDdosV1(),
 			"huaweicloud_compute_availability_zones_v2": deprecated.DataSourceComputeAvailabilityZonesV2(),
-			"huaweicloud_csbs_backup":                   deprecated.DataSourceCSBSBackupV1(),
 			"huaweicloud_csbs_backup_policy":            deprecated.DataSourceCSBSBackupPolicyV1(),
 			"huaweicloud_csbs_backup_policy_v1":         deprecated.DataSourceCSBSBackupPolicyV1(),
 			"huaweicloud_csbs_backup_v1":                deprecated.DataSourceCSBSBackupV1(),
@@ -2723,6 +2731,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_hss_container_kubernetes_sync_mccs":                 hss.ResourceContainerKubernetesSyncMccs(),
 			"huaweicloud_hss_container_kubernetes_cluster_daemonset":         hss.ResourceContainerKubernetesClusterDaemonset(),
 			"huaweicloud_hss_container_kubernetes_cluster_protection_enable": hss.ResourceContainerKubernetesClusterProtectionEnable(),
+			"huaweicloud_hss_cicd_configuration":                             hss.ResourceCiCdConfiguration(),
 			"huaweicloud_hss_honeypot_port_policy":                           hss.ResourceHoneypotPortPolicy(),
 			"huaweicloud_hss_host_protection":                                hss.ResourceHostProtection(),
 			"huaweicloud_hss_webtamper_protection":                           hss.ResourceWebTamperProtection(),
