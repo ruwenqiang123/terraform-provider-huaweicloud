@@ -9,7 +9,7 @@ import (
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/acceptance"
 )
 
-func TestAccDataSourceSwrEnterprisesFilter_basic(t *testing.T) {
+func TestAccDataSourceSwrEnterpriseResourcesFilter_basic(t *testing.T) {
 	dataSource := "data.huaweicloud_swr_enterprise_resources_filter.test"
 	rName := acceptance.RandomAccResourceName()
 	dc := acceptance.InitDataSourceCheck(dataSource)
@@ -21,7 +21,7 @@ func TestAccDataSourceSwrEnterprisesFilter_basic(t *testing.T) {
 		ProviderFactories: acceptance.TestAccProviderFactories,
 		Steps: []resource.TestStep{
 			{
-				Config: testDataSourceDataSourceSwrEnterprisesFilter_basic(rName),
+				Config: testDataSourceSwrEnterpriseResourcesFilter_basic(rName),
 				Check: resource.ComposeTestCheckFunc(
 					dc.CheckResourceExists(),
 					resource.TestCheckResourceAttrSet(dataSource, "resources.#"),
@@ -37,7 +37,7 @@ func TestAccDataSourceSwrEnterprisesFilter_basic(t *testing.T) {
 	})
 }
 
-func testDataSourceDataSourceSwrEnterprisesFilter_basic(name string) string {
+func testDataSourceSwrEnterpriseResourcesFilter_basic(name string) string {
 	return fmt.Sprintf(`
 %[1]s
 

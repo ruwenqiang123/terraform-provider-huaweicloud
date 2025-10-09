@@ -121,6 +121,7 @@ func dataSourceSwrEnterpriseResourcesFilterRead(_ context.Context, d *schema.Res
 			return diag.FromErr(err)
 		}
 
+		totalCount = utils.PathSearch("total_count", listRespBody, float64(0)).(float64)
 		resources := utils.PathSearch("resources", listRespBody, make([]interface{}, 0)).([]interface{})
 		if len(resources) == 0 {
 			break

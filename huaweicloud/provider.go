@@ -838,6 +838,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_compute_servergroups":            ecs.DataSourceComputeServerGroups(),
 			"huaweicloud_compute_instance_remote_console": ecs.DataSourceComputeInstanceRemoteConsole(),
 			"huaweicloud_compute_volume_attachments":      ecs.DataSourceEcsComputeVolumeAttachments(),
+			"huaweicloud_compute_password":                ecs.DataSourceEcsComputePassword(),
 
 			// CodeArts
 			"huaweicloud_codearts_deploy_groups":                         codeartsdeploy.DataSourceCodeartsDeployGroups(),
@@ -1042,6 +1043,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_dms_kafka_extend_flavors":          kafka.DataSourceDmsKafkaExtendFlavors(),
 			"huaweicloud_dms_kafka_flavors":                 kafka.DataSourceKafkaFlavors(),
 			"huaweicloud_dms_kafka_instances":               kafka.DataSourceDmsKafkaInstances(),
+			"huaweicloud_dms_kafka_maintainwindows":         kafka.DataSourceMaintainWindows(),
 			"huaweicloud_dms_kafka_message_diagnosis_tasks": kafka.DataSourceDmsKafkaMessageDiagnosisTasks(),
 			"huaweicloud_dms_kafka_messages":                kafka.DataSourceDmsKafkaMessages(),
 			"huaweicloud_dms_kafka_smart_connect_tasks":     kafka.DataSourceDmsKafkaSmartConnectTasks(),
@@ -1269,6 +1271,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_hss_auto_launch_statistics":                hss.DataSourceAutoLaunchStatistics(),
 			"huaweicloud_hss_auto_launchs":                          hss.DataSourceAutoLaunchs(),
 			"huaweicloud_hss_cluster_asset_statistics":              hss.DataSourceClusterAssetStatistics(),
+			"huaweicloud_hss_common_tasks":                          hss.DataSourceCommonTasks(),
 			"huaweicloud_hss_container_kubernetes":                  hss.DataSourceContainerKubernetes(),
 			"huaweicloud_hss_container_kubernetes_clusters":         hss.DataSourceContainerKubernetesClusters(),
 			"huaweicloud_hss_container_kubernetes_clusters_configs": hss.DataSourceContainerKubernetesClustersConfigs(),
@@ -1276,6 +1279,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_hss_container_kubernetes_endpoint_detail":  hss.DataSourceContainerKubernetesEndpointDetail(),
 			"huaweicloud_hss_container_nodes":                       hss.DataSourceContainerNodes(),
 			"huaweicloud_hss_container_node_statistics":             hss.DataSourceContainerNodeStatistics(),
+			"huaweicloud_hss_container_cluster_risks":               hss.DataSourceContainerClusterRisks(),
 			"huaweicloud_hss_event_handle_history":                  hss.DataSourceEventHandleHistory(),
 			"huaweicloud_hss_event_system_user_white_lists":         hss.DataSourceEventSystemUserWhiteLists(),
 			"huaweicloud_hss_event_login_white_lists":               hss.DataSourceEventLoginWhiteLists(),
@@ -1311,6 +1315,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_hss_antivirus_pay_per_scan_switch_status":  hss.DataSourceAntivirusPayPerScanSwitchStatus(),
 			"huaweicloud_hss_antivirus_virus_scan_tasks":            hss.DataSourceAntivirusVirusScanTasks(),
 			"huaweicloud_hss_backup_policy":                         hss.DataSourceBackupPolicy(),
+			"huaweicloud_hss_cicd_configurations":                   hss.DataSourceCiCdConfigurations(),
 
 			"huaweicloud_identity_permissions": iam.DataSourceIdentityPermissions(),
 			"huaweicloud_identity_role":        iam.DataSourceIdentityRole(),
@@ -1743,6 +1748,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_swr_enterprise_instance_tags":                   swrenterprise.DataSourceSwrEnterpriseInstanceTags(),
 			"huaweicloud_swr_enterprise_namespace_tags":                  swrenterprise.DataSourceSwrEnterpriseNamespaceTags(),
 			"huaweicloud_swr_enterprise_resources_filter":                swrenterprise.DataSourceSwrEnterpriseResourcesFilter(),
+			"huaweicloud_swr_enterprise_sub_resources_filter":            swrenterprise.DataSourceSwrEnterpriseSubResourcesFilter(),
 			//nolint:revive
 			"huaweicloud_swr_enterprise_image_signature_policy_execution_records": swrenterprise.DataSourceSwrEnterpriseImageSignaturePolicyExecutionRecords(),
 
@@ -2337,6 +2343,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_compute_kernel_dump_trigger": ecs.ResourceComputeKernelDumpTrigger(),
 			"huaweicloud_compute_os_reinstall":        ecs.ResourceComputeOsReinstall(),
 			"huaweicloud_compute_os_change":           ecs.ResourceComputeOsChange(),
+			"huaweicloud_compute_password_delete":     ecs.ResourceComputePasswordDelete(),
 
 			"huaweicloud_coc_script":                        coc.ResourceScript(),
 			"huaweicloud_coc_script_execute":                coc.ResourceScriptExecute(),
@@ -2744,8 +2751,10 @@ func Provider() *schema.Provider {
 			"huaweicloud_hss_event_alarm_white_list_delete":                  hss.ResourceEventAlarmWhiteListDelete(),
 			"huaweicloud_hss_event_login_white_list":                         hss.ResourceEventLoginWhiteList(),
 			"huaweicloud_hss_image_batch_scan":                               hss.ResourceImageBatchScan(),
+			"huaweicloud_hss_setting_two_factor_login_config":                hss.ResourceSettingTwoFactorLoginConfig(),
 			"huaweicloud_hss_switch_honeypot_port_policy":                    hss.ResourceSwitchHoneypotPortPolicy(),
 			"huaweicloud_hss_vulnerability_information_export":               hss.ResourceVulnerabilityInformationExport(),
+			"huaweicloud_hss_vulnerability_task_user_trace":                  hss.ResourceVulnerabilityTaskUserTrace(),
 			"huaweicloud_hss_file_download":                                  hss.ResourceFileDownload(),
 			"huaweicloud_hss_ignore_failed_pcc":                              hss.ResourceIgnoreFailedPCC(),
 			"huaweicloud_hss_antivirus_create_virus_scan_task":               hss.ResourceCreateVirusScanTask(),
