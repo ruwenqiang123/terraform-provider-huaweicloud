@@ -1262,6 +1262,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_hss_app_statistics":                        hss.DataSourceAppStatistics(),
 			"huaweicloud_hss_asset_apps":                            hss.DataSourceAssetApps(),
 			"huaweicloud_hss_asset_manual_collect":                  hss.DataSourceAssetManualCollect(),
+			"huaweicloud_hss_asset_overview_status_host_protection": hss.DataSourceAssetOverviewStatusHostProtection(),
 			"huaweicloud_hss_asset_port_info":                       hss.DataSourceAssetPortInfo(),
 			"huaweicloud_hss_asset_port_statistics":                 hss.DataSourceAssetPortStatistics(),
 			"huaweicloud_hss_asset_ports":                           hss.DataSourceAssetPorts(),
@@ -1316,6 +1317,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_hss_antivirus_virus_scan_tasks":            hss.DataSourceAntivirusVirusScanTasks(),
 			"huaweicloud_hss_backup_policy":                         hss.DataSourceBackupPolicy(),
 			"huaweicloud_hss_cicd_configurations":                   hss.DataSourceCiCdConfigurations(),
+			"huaweicloud_hss_page_notices":                          hss.DataSourcePageNotices(),
 
 			"huaweicloud_identity_permissions": iam.DataSourceIdentityPermissions(),
 			"huaweicloud_identity_role":        iam.DataSourceIdentityRole(),
@@ -2535,6 +2537,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_dms_kafka_smart_connect_task_action": kafka.ResourceDmsKafkaSmartConnectTaskAction(),
 			"huaweicloud_dms_kafka_smart_connector_validate":  kafka.ResourceSmartConnectorValidate(),
 			"huaweicloud_dms_kafka_topic":                     kafka.ResourceDmsKafkaTopic(),
+			"huaweicloud_dms_kafka_topic_quota":               kafka.ResourceTopicQuota(),
 			"huaweicloud_dms_kafka_user":                      kafka.ResourceDmsKafkaUser(),
 			"huaweicloud_dms_kafka_user_client_quota":         kafka.ResourceDmsKafkaUserClientQuota(),
 			"huaweicloud_dms_kafka_user_password_reset":       kafka.ResourceUserPasswordReset(),
