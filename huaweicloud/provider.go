@@ -741,6 +741,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_cdn_domain_tags":         cdn.DataSourceDomainTags(),
 			"huaweicloud_cdn_ip_information":      cdn.DataSourceIpInformation(),
 			"huaweicloud_cdn_quotas":              cdn.DataSourceQuotas(),
+			"huaweicloud_cdn_top_url_statistics":  cdn.DataSourceTopUrlStatistics(),
 
 			"huaweicloud_ces_agent_dimensions":                  ces.DataSourceCesAgentDimensions(),
 			"huaweicloud_ces_agent_maintenance_tasks":           ces.DataSourceCesAgentMaintenanceTasks(),
@@ -1338,12 +1339,14 @@ func Provider() *schema.Provider {
 			"huaweicloud_hss_vulnerability_hosts":                        hss.DataSourceVulnerabilityHosts(),
 			"huaweicloud_hss_vulnerability_statistics":                   hss.DataSourceVulnerabilityStatistics(),
 			"huaweicloud_hss_webtamper_hosts":                            hss.DataSourceWebTamperHosts(),
+			"huaweicloud_hss_webtamper_host_management_hosts":            hss.DataSourceWebTamperHostManagementHosts(),
 			"huaweicloud_hss_webtamper_rasp_path":                        hss.DataSourceWebtamperRaspPath(),
 			"huaweicloud_hss_webtamper_policy":                           hss.DataSourceWebTamperPolicy(),
 			"huaweicloud_hss_antivirus_custom_scan_policies":             hss.DataSourceAntivirusCustomScanPolicies(),
 			"huaweicloud_hss_antivirus_available_hosts":                  hss.DataSourceAntivirusAvailableHosts(),
 			"huaweicloud_hss_antivirus_statistic":                        hss.DataSourceAntivirusStatistic(),
 			"huaweicloud_hss_antivirus_pay_per_scan_switch_status":       hss.DataSourceAntivirusPayPerScanSwitchStatus(),
+			"huaweicloud_hss_antivirus_pay_per_scan_free_quotas":         hss.DataSourceAntivirusPayPerScanFreeQuotas(),
 			"huaweicloud_hss_antivirus_virus_scan_tasks":                 hss.DataSourceAntivirusVirusScanTasks(),
 			"huaweicloud_hss_backup_policy":                              hss.DataSourceBackupPolicy(),
 			"huaweicloud_hss_cicd_configurations":                        hss.DataSourceCiCdConfigurations(),
@@ -2324,6 +2327,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_cdn_cache_preheat":                 cdn.ResourceCachePreheat(),
 			"huaweicloud_cdn_cache_refresh":                 cdn.ResourceCacheRefresh(),
 			"huaweicloud_cdn_certificate_associate_domains": cdn.ResourceCertificateAssociateDomains(),
+			"huaweicloud_cdn_domain_batch_copy":             cdn.ResourceDomainBatchCopy(),
 
 			"huaweicloud_ces_alarmrule":                                     ces.ResourceAlarmRule(),
 			"huaweicloud_ces_alarm_template":                                ces.ResourceCesAlarmTemplate(),
@@ -3239,6 +3243,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_swr_enterprise_temporary_credential":           swrenterprise.ResourceSwrEnterpriseTemporaryCredential(),
 			"huaweicloud_swr_enterprise_private_network_access_control": swrenterprise.ResourceSwrEnterprisePrivateNetworkAccessControl(),
 			"huaweicloud_swr_enterprise_retention_policy":               swrenterprise.ResourceSwrEnterpriseRetentionPolicy(),
+			"huaweicloud_swr_enterprise_retention_policy_execute":       swrenterprise.ResourceSwrEnterpriseRetentionPolicyExecute(),
 
 			"huaweicloud_tms_resource_tags": tms.ResourceResourceTags(),
 			"huaweicloud_tms_tags":          tms.ResourceTmsTag(),
