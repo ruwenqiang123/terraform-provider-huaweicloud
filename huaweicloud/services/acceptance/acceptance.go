@@ -152,6 +152,7 @@ var (
 	HW_CHARGING_MODE        = os.Getenv("HW_CHARGING_MODE")
 	HW_HIGH_COST_ALLOW      = os.Getenv("HW_HIGH_COST_ALLOW")
 	HW_SWR_SHARING_ACCOUNT  = os.Getenv("HW_SWR_SHARING_ACCOUNT")
+	HW_SWR_USER             = os.Getenv("HW_SWR_USER")
 
 	HW_CBH_INSTANCE_ID = os.Getenv("HW_CBH_INSTANCE_ID")
 
@@ -421,6 +422,9 @@ var (
 	// The repository of SWR image tag
 	HW_SWR_REPOSITORY = os.Getenv("HW_SWR_REPOSITORY")
 
+	HW_SCM_CERTIFICATE_ID          = os.Getenv("HW_SCM_CERTIFICATE_ID")
+	HW_SCM_CERTIFICATE_DOMAIN_NAME = os.Getenv("HW_SCM_CERTIFICATE_DOMAIN_NAME")
+
 	// The ID of the CBR vault
 	HW_IMS_VAULT_ID = os.Getenv("HW_IMS_VAULT_ID")
 	// The ID of the CBR backup
@@ -684,6 +688,7 @@ var (
 	// The vulnerability ID
 	HW_HSS_VUL_ID    = os.Getenv("HW_HSS_VUL_ID")
 	HW_HSS_POLICY_ID = os.Getenv("HW_HSS_POLICY_ID")
+	HW_HSS_DOMAIN    = os.Getenv("HW_HSS_DOMAIN")
 
 	HW_DDM_INSTANCE_ID = os.Getenv("HW_DDM_INSTANCE_ID")
 	HW_DDM_PROCESS_ID  = os.Getenv("HW_DDM_PROCESS_ID")
@@ -1532,6 +1537,13 @@ func TestAccPreCheckSWRDomian(t *testing.T) {
 	if HW_SWR_SHARING_ACCOUNT == "" {
 		t.Skip("HW_SWR_SHARING_ACCOUNT must be set for swr domian tests, " +
 			"the value of HW_SWR_SHARING_ACCOUNT should be another IAM user name")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckSWRUser(t *testing.T) {
+	if HW_SWR_USER == "" {
+		t.Skip("HW_SWR_USER must be set for CCE autopilot addon tests")
 	}
 }
 
@@ -2420,6 +2432,20 @@ func TestAccPreCheckSwrOrigination(t *testing.T) {
 func TestAccPreCheckSwrRepository(t *testing.T) {
 	if HW_SWR_REPOSITORY == "" {
 		t.Skip("HW_SWR_REPOSITORY must be set for SWR image tags tests")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckScmCertificateId(t *testing.T) {
+	if HW_SCM_CERTIFICATE_ID == "" {
+		t.Skip("HW_SCM_CERTIFICATE_ID must be set for tests")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckScmCertificateDomainName(t *testing.T) {
+	if HW_SCM_CERTIFICATE_DOMAIN_NAME == "" {
+		t.Skip("HW_SCM_CERTIFICATE_DOMAIN_NAME must be set for tests")
 	}
 }
 
@@ -3530,6 +3556,13 @@ func TestAccPreCheckHSSVulnerabilityId(t *testing.T) {
 func TestAccPreCheckHSSPolicyId(t *testing.T) {
 	if HW_HSS_POLICY_ID == "" {
 		t.Skip("HW_HSS_POLICY_ID must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckHSSDomain(t *testing.T) {
+	if HW_HSS_DOMAIN == "" {
+		t.Skip("HW_HSS_DOMAIN must be set for the acceptance test")
 	}
 }
 
