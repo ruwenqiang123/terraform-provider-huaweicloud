@@ -135,16 +135,18 @@ var (
 
 	HW_DBSS_INSATNCE_ID = os.Getenv("HW_DBSS_INSATNCE_ID")
 
-	HW_DEW_ENABLE_FLAG      = os.Getenv("HW_DEW_ENABLE_FLAG")
-	HW_KPS_KEY_FILE_PATH    = os.Getenv("HW_KPS_KEY_FILE_PATH")
-	HW_KPS_KEYPAIR_NAME_1   = os.Getenv("HW_KPS_KEYPAIR_NAME_1")
-	HW_KPS_KEYPAIR_NAME_2   = os.Getenv("HW_KPS_KEYPAIR_NAME_2")
-	HW_KPS_KEYPAIR_KEY_1    = os.Getenv("HW_KPS_KEYPAIR_KEY_1")
-	HW_KPS_KEYPAIR_SSH_PORT = os.Getenv("HW_KPS_KEYPAIR_SSH_PORT")
-	HW_KPS_ENABLE_FLAG      = os.Getenv("HW_KPS_ENABLE_FLAG")
-	HW_KPS_FAILED_TASK_ID   = os.Getenv("HW_KPS_FAILED_TASK_ID")
-	HW_CSMS_TASK_ID         = os.Getenv("HW_CSMS_TASK_ID")
-	HW_CSMS_SECRET_ID       = os.Getenv("HW_CSMS_SECRET_ID")
+	HW_DEW_ENABLE_FLAG           = os.Getenv("HW_DEW_ENABLE_FLAG")
+	HW_KPS_KEY_FILE_PATH         = os.Getenv("HW_KPS_KEY_FILE_PATH")
+	HW_KPS_KEYPAIR_NAME_1        = os.Getenv("HW_KPS_KEYPAIR_NAME_1")
+	HW_KPS_KEYPAIR_NAME_2        = os.Getenv("HW_KPS_KEYPAIR_NAME_2")
+	HW_KPS_KEYPAIR_KEY_1         = os.Getenv("HW_KPS_KEYPAIR_KEY_1")
+	HW_KPS_KEYPAIR_SSH_PORT      = os.Getenv("HW_KPS_KEYPAIR_SSH_PORT")
+	HW_KPS_ENABLE_FLAG           = os.Getenv("HW_KPS_ENABLE_FLAG")
+	HW_KPS_PUBLIC_KEY_FILE_PATH  = os.Getenv("HW_KPS_PUBLIC_KEY_FILE_PATH")
+	HW_KPS_PRIVATE_KEY_FILE_PATH = os.Getenv("HW_KPS_PRIVATE_KEY_FILE_PATH")
+	HW_KPS_FAILED_TASK_ID        = os.Getenv("HW_KPS_FAILED_TASK_ID")
+	HW_CSMS_TASK_ID              = os.Getenv("HW_CSMS_TASK_ID")
+	HW_CSMS_SECRET_ID            = os.Getenv("HW_CSMS_SECRET_ID")
 
 	HW_DEST_REGION          = os.Getenv("HW_DEST_REGION")
 	HW_DEST_PROJECT_ID      = os.Getenv("HW_DEST_PROJECT_ID")
@@ -421,6 +423,8 @@ var (
 	HW_SWR_ORGANIZATION = os.Getenv("HW_SWR_ORGANIZATION")
 	// The repository of SWR image tag
 	HW_SWR_REPOSITORY = os.Getenv("HW_SWR_REPOSITORY")
+	// The signature task is sign with image exist
+	HW_SWR_SIGNATURE_WITH_IAMGE_ENABLED = os.Getenv("HW_SWR_SIGNATURE_WITH_IAMGE_ENABLED")
 
 	HW_SCM_CERTIFICATE_ID          = os.Getenv("HW_SCM_CERTIFICATE_ID")
 	HW_SCM_CERTIFICATE_DOMAIN_NAME = os.Getenv("HW_SCM_CERTIFICATE_DOMAIN_NAME")
@@ -684,11 +688,13 @@ var (
 	HW_HSS_EVENT_ALARM_WHITE_LIST_HASH        = os.Getenv("HW_HSS_EVENT_ALARM_WHITE_LIST_HASH")
 	HW_HSS_EVENT_ALARM_WHITE_LIST_DESCRIPTION = os.Getenv("HW_HSS_EVENT_ALARM_WHITE_LIST_DESCRIPTION")
 	HW_HSS_ANTIVIRUS_ENABLED                  = os.Getenv("HW_HSS_ANTIVIRUS_ENABLED")
+	HW_HSS_CLUSTER_ID                         = os.Getenv("HW_HSS_CLUSTER_ID")
 	HW_HSS_CLUSTER_RISK_ID                    = os.Getenv("HW_HSS_CLUSTER_RISK_ID")
 	// The vulnerability ID
-	HW_HSS_VUL_ID    = os.Getenv("HW_HSS_VUL_ID")
-	HW_HSS_POLICY_ID = os.Getenv("HW_HSS_POLICY_ID")
-	HW_HSS_DOMAIN    = os.Getenv("HW_HSS_DOMAIN")
+	HW_HSS_VUL_ID      = os.Getenv("HW_HSS_VUL_ID")
+	HW_HSS_POLICY_ID   = os.Getenv("HW_HSS_POLICY_ID")
+	HW_HSS_DOMAIN      = os.Getenv("HW_HSS_DOMAIN")
+	HW_HSS_IAC_FILE_ID = os.Getenv("HW_HSS_IAC_FILE_ID")
 
 	HW_DDM_INSTANCE_ID = os.Getenv("HW_DDM_INSTANCE_ID")
 	HW_DDM_PROCESS_ID  = os.Getenv("HW_DDM_PROCESS_ID")
@@ -2081,6 +2087,13 @@ func TestAccPreCheckKpsEnable(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckKpsKeyFilePath(t *testing.T) {
+	if HW_KPS_PUBLIC_KEY_FILE_PATH == "" || HW_KPS_PRIVATE_KEY_FILE_PATH == "" {
+		t.Skip("HW_KPS_PUBLIC_KEY_FILE_PATH or HW_KPS_PRIVATE_KEY_FILE_PATH must be set for acceptance tests.")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckProjectID(t *testing.T) {
 	if HW_PROJECT_ID == "" {
 		t.Skip("HW_PROJECT_ID must be set for acceptance tests")
@@ -2432,6 +2445,13 @@ func TestAccPreCheckSwrOrigination(t *testing.T) {
 func TestAccPreCheckSwrRepository(t *testing.T) {
 	if HW_SWR_REPOSITORY == "" {
 		t.Skip("HW_SWR_REPOSITORY must be set for SWR image tags tests")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckSwrSignatureWithImageEnabled(t *testing.T) {
+	if HW_SWR_SIGNATURE_WITH_IAMGE_ENABLED == "" {
+		t.Skip("HW_SWR_SIGNATURE_WITH_IAMGE_ENABLED must be set for SWR image signature tests")
 	}
 }
 
@@ -3532,6 +3552,13 @@ func TestAccPreCheckHSSAntivirusEnabled(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckHSSClusterId(t *testing.T) {
+	if HW_HSS_CLUSTER_ID == "" {
+		t.Skip("HW_HSS_CLUSTER_ID must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckHSSClusterRiskId(t *testing.T) {
 	if HW_HSS_CLUSTER_RISK_ID == "" {
 		t.Skip("HW_HSS_CLUSTER_RISK_ID must be set for the acceptance test")
@@ -3563,6 +3590,13 @@ func TestAccPreCheckHSSPolicyId(t *testing.T) {
 func TestAccPreCheckHSSDomain(t *testing.T) {
 	if HW_HSS_DOMAIN == "" {
 		t.Skip("HW_HSS_DOMAIN must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckHSSIACFileId(t *testing.T) {
+	if HW_HSS_IAC_FILE_ID == "" {
+		t.Skip("HW_HSS_IAC_FILE_ID must be set for the acceptance test")
 	}
 }
 
