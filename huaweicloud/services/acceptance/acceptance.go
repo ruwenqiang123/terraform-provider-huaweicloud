@@ -149,6 +149,7 @@ var (
 	HW_CSMS_SECRET_ID            = os.Getenv("HW_CSMS_SECRET_ID")
 
 	HW_CPCS_CLUSTER_ID = os.Getenv("HW_CPCS_CLUSTER_ID")
+	HW_CPCS_APP_ID     = os.Getenv("HW_CPCS_APP_ID")
 
 	HW_DEST_REGION          = os.Getenv("HW_DEST_REGION")
 	HW_DEST_PROJECT_ID      = os.Getenv("HW_DEST_PROJECT_ID")
@@ -750,6 +751,8 @@ var (
 
 	HW_SERVICESTAGE_JAR_PKG_STORAGE_URLS = os.Getenv("HW_SERVICESTAGE_JAR_PKG_STORAGE_URLS")
 	HW_SERVICESTAGE_ZIP_STORAGE_URLS     = os.Getenv("HW_SERVICESTAGE_ZIP_STORAGE_URLS")
+
+	HW_DNS_ZONE_NAMES = os.Getenv("HW_DNS_ZONE_NAMES")
 )
 
 // TestAccProviders is a static map containing only the main provider instance.
@@ -4116,6 +4119,13 @@ func TestAccPrecheckCpcsClusterId(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPrecheckCpcsAppClusterAssociation(t *testing.T) {
+	if HW_CPCS_APP_ID == "" || HW_CPCS_CLUSTER_ID == "" {
+		t.Skip("HW_CPCS_APP_ID and HW_CPCS_CLUSTER_ID must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckCsmsSecretID(t *testing.T) {
 	if HW_CSMS_SECRET_ID == "" {
 		t.Skip("HW_CSMS_SECRET_ID must be set for the acceptance test")
@@ -4175,5 +4185,12 @@ func TestAccPreCheckServiceStageJarPkgStorageURLs(t *testing.T, n int) {
 func TestAccPreCheckServiceStageZipStorageURLs(t *testing.T, n int) {
 	if len(strings.Split(HW_SERVICESTAGE_ZIP_STORAGE_URLS, ",")) < n {
 		t.Skipf("at least %d URLs for HW_SERVICESTAGE_ZIP_STORAGE_URLS must be set, separated by a comma (,)", n)
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckDnsZoneNames(t *testing.T, min int) {
+	if HW_DNS_ZONE_NAMES == "" || len(strings.Split(HW_DNS_ZONE_NAMES, ",")) < min {
+		t.Skipf("At least %d DNS zone name(s) must be supported during the HW_DNS_ZONE_NAMES, separated by commas (,)", min)
 	}
 }
