@@ -509,6 +509,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_access_analyzer_archive_rules": accessanalyzer.DataSourceAccessAnalyzerArchiveRules(),
 
 			"huaweicloud_aad_instances":                   aad.DataSourceAADInstances(),
+			"huaweicloud_aadv2_instances":                 aad.DataSourceV2Instances(),
 			"huaweicloud_aad_unblock_quota_statistics":    aad.DataSourceUnblockQuotaStatistics(),
 			"huaweicloud_aad_black_white_lists":           aad.DataSourceAadBlackWhiteLists(),
 			"huaweicloud_aad_web_protection_policies":     aad.DataSourceAadWebProtectionPolicies(),
@@ -530,6 +531,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_aad_ddos_attack_protection_info": aad.DataSourceDdosAttackProtectionInfo(),
 			"huaweicloud_aad_attack_events":               aad.DataSourceAttackEvents(),
 			"huaweicloud_aad_connection_numbers":          aad.DataSourceConnectionNumbers(),
+			"huaweicloud_aad_user_quotas":                 aad.DataSourceUserQuotas(),
 
 			"huaweicloud_antiddos_config_ranges":                antiddos.DataSourceConfigRanges(),
 			"huaweicloud_antiddos_weekly_protection_statistics": antiddos.DataSourceWeeklyProtectionStatistics(),
@@ -2534,9 +2536,10 @@ func Provider() *schema.Provider {
 			"huaweicloud_cse_microservice_instance":             cse.ResourceMicroserviceInstance(),
 			"huaweicloud_cse_nacos_namespace":                   cse.ResourceNacosNamespace(),
 
-			"huaweicloud_cpcs_app_access_key":          dew.ResourceCpcsAppAccessKey(),
-			"huaweicloud_cpcs_app_cluster_association": dew.ResourceCpcsAppClusterAssociation(),
-			"huaweicloud_cpcs_app":                     dew.ResourceCpcsApp(),
+			"huaweicloud_cpcs_app_access_key":               dew.ResourceCpcsAppAccessKey(),
+			"huaweicloud_cpcs_app_cluster_association":      dew.ResourceCpcsAppClusterAssociation(),
+			"huaweicloud_cpcs_app":                          dew.ResourceCpcsApp(),
+			"huaweicloud_cpcs_cluster_authorize_access_key": dew.ResourceClusterAuthorizeAccessKey(),
 
 			"huaweicloud_csms_agency":                       dew.ResourceAgency(),
 			"huaweicloud_csms_event":                        dew.ResourceCsmsEvent(),
