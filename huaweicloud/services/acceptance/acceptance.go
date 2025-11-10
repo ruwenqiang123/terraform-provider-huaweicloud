@@ -148,11 +148,13 @@ var (
 	HW_KPS_PRIVATE_KEY_FILE_PATH = os.Getenv("HW_KPS_PRIVATE_KEY_FILE_PATH")
 	HW_KPS_FAILED_TASK_ID        = os.Getenv("HW_KPS_FAILED_TASK_ID")
 	HW_CSMS_TASK_ID              = os.Getenv("HW_CSMS_TASK_ID")
+	HW_CSMS_SECRET_NAME          = os.Getenv("HW_CSMS_SECRET_NAME")
 	HW_CSMS_SECRET_ID            = os.Getenv("HW_CSMS_SECRET_ID")
 
 	HW_CPCS_CLUSTER_ID    = os.Getenv("HW_CPCS_CLUSTER_ID")
 	HW_CPCS_APP_ID        = os.Getenv("HW_CPCS_APP_ID")
 	HW_CPCS_ACCESS_KEY_ID = os.Getenv("HW_CPCS_ACCESS_KEY_ID")
+	HW_CPCS_INSTANCE_ID   = os.Getenv("HW_CPCS_INSTANCE_ID")
 
 	HW_DEST_REGION          = os.Getenv("HW_DEST_REGION")
 	HW_DEST_PROJECT_ID      = os.Getenv("HW_DEST_PROJECT_ID")
@@ -4225,6 +4227,13 @@ func TestAccPrecheckCpcsAccessKeyId(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPrecheckCpcsInstanceId(t *testing.T) {
+	if HW_CPCS_INSTANCE_ID == "" {
+		t.Skip("HW_CPCS_INSTANCE_ID must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
 func TestAccPrecheckCpcsAppId(t *testing.T) {
 	if HW_CPCS_APP_ID == "" {
 		t.Skip("HW_CPCS_APP_ID must be set for the acceptance test")
@@ -4242,6 +4251,13 @@ func TestAccPrecheckCpcsAppClusterAssociation(t *testing.T) {
 func TestAccPreCheckCsmsSecretID(t *testing.T) {
 	if HW_CSMS_SECRET_ID == "" {
 		t.Skip("HW_CSMS_SECRET_ID must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckCsmsSecretName(t *testing.T) {
+	if HW_CSMS_SECRET_NAME == "" {
+		t.Skip("HW_CSMS_SECRET_NAME must be set for the acceptance test")
 	}
 }
 
