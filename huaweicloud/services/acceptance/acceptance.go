@@ -316,6 +316,7 @@ var (
 	HW_WORKSPACE_APP_FILE_NAME                     = os.Getenv("HW_WORKSPACE_APP_FILE_NAME")
 	HW_WORKSPACE_USER_NAMES                        = os.Getenv("HW_WORKSPACE_USER_NAMES")
 	HW_WORKSPACE_DESKTOP_POOL_IMAGE_ID             = os.Getenv("HW_WORKSPACE_DESKTOP_POOL_IMAGE_ID")
+	HW_WORKSPACE_SCHEDULED_TASK_ID                 = os.Getenv("HW_WORKSPACE_SCHEDULED_TASK_ID")
 
 	HW_FGS_AGENCY_NAME         = os.Getenv("HW_FGS_AGENCY_NAME")
 	HW_FGS_APP_AGENCY_NAME     = os.Getenv("HW_FGS_APP_AGENCY_NAME")
@@ -506,6 +507,7 @@ var (
 	HW_MODELARTS_RESOURCE_POOL_NAME                   = os.Getenv("HW_MODELARTS_RESOURCE_POOL_NAME")
 	HW_MODELARTS_RESOURCE_POOL_BATCH_RESIZE_NODE_NAME = os.Getenv("HW_MODELARTS_RESOURCE_POOL_BATCH_RESIZE_NODE_NAME")
 
+	HW_AOM_ALARM_EVENT_SN                        = os.Getenv("HW_AOM_ALARM_EVENT_SN")
 	HW_AOM_INSTALLER_AGENT_ID                    = os.Getenv("HW_AOM_INSTALLER_AGENT_ID")
 	HW_AOM_MULTI_ACCOUNT_AGGREGATION_RULE_ENABLE = os.Getenv("HW_AOM_MULTI_ACCOUNT_AGGREGATION_RULE_ENABLE")
 	HW_AOM_SUB_APPLICATION_ID                    = os.Getenv("HW_AOM_SUB_APPLICATION_ID") // The CMDB sub-application ID of AOM service
@@ -721,6 +723,7 @@ var (
 	HW_HSS_POLICY_ID   = os.Getenv("HW_HSS_POLICY_ID")
 	HW_HSS_DOMAIN      = os.Getenv("HW_HSS_DOMAIN")
 	HW_HSS_IAC_FILE_ID = os.Getenv("HW_HSS_IAC_FILE_ID")
+	HW_HSS_TASK_ID     = os.Getenv("HW_HSS_TASK_ID")
 
 	HW_DDM_INSTANCE_ID = os.Getenv("HW_DDM_INSTANCE_ID")
 	HW_DDM_PROCESS_ID  = os.Getenv("HW_DDM_PROCESS_ID")
@@ -1120,6 +1123,13 @@ func TestAccPreCheckMigrateEpsID(t *testing.T) {
 func TestAccPreCheckUserId(t *testing.T) {
 	if HW_USER_ID == "" {
 		t.Skip("The environment variables does not support the user ID (HW_USER_ID) for acc tests")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckUserName(t *testing.T) {
+	if HW_USER_NAME == "" {
+		t.Skip("HW_USER_NAME must be set for acceptance tests.")
 	}
 }
 
@@ -2294,6 +2304,13 @@ func TestAccPreCheckWorkspaceAppServerGroup(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckWorkspaceScheduledTaskId(t *testing.T) {
+	if HW_WORKSPACE_SCHEDULED_TASK_ID == "" {
+		t.Skip("HW_WORKSPACE_SCHEDULED_TASK_ID must be set for Workspace acceptance tests.")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckWorkspaceAppServerImageInfo(t *testing.T) {
 	if HW_WORKSPACE_APP_SERVER_GROUP_IMAGE_ID == "" || HW_WORKSPACE_APP_SERVER_GROUP_IMAGE_PRODUCT_ID == "" {
 		t.Skip("HW_WORKSPACE_APP_SERVER_GROUP_IMAGE_ID and HW_WORKSPACE_APP_SERVER_GROUP_IMAGE_PRODUCT_ID must be set for Workspace APP acceptance tests.")
@@ -3081,6 +3098,13 @@ func TestAccPreCheckLTSMemberAccountId(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckAomAlarmEventSn(t *testing.T) {
+	if HW_AOM_ALARM_EVENT_SN == "" {
+		t.Skip("HW_AOM_ALARM_EVENT_SN must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckAomInstallerAgentId(t *testing.T) {
 	if HW_AOM_INSTALLER_AGENT_ID == "" {
 		t.Skip("HW_AOM_INSTALLER_AGENT_ID must be set for the acceptance test")
@@ -3767,6 +3791,13 @@ func TestAccPreCheckHSSDomain(t *testing.T) {
 func TestAccPreCheckHSSIACFileId(t *testing.T) {
 	if HW_HSS_IAC_FILE_ID == "" {
 		t.Skip("HW_HSS_IAC_FILE_ID must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckHSSTaskId(t *testing.T) {
+	if HW_HSS_TASK_ID == "" {
+		t.Skip("HW_HSS_TASK_ID must be set for the acceptance test")
 	}
 }
 
