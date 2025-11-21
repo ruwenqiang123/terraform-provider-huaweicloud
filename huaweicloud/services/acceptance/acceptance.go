@@ -115,6 +115,7 @@ var (
 	HW_INTERNAL_USED          = os.Getenv("HW_INTERNAL_USED")
 
 	HW_WAF_ENABLE_FLAG                          = os.Getenv("HW_WAF_ENABLE_FLAG")
+	HW_WAF_SECURITY_REPORT_SUBSCRIPTION_ID      = os.Getenv("HW_WAF_SECURITY_REPORT_SUBSCRIPTION_ID")
 	HW_WAF_PRECHECK_GEO_IP_POLICY_RULES         = os.Getenv("HW_WAF_PRECHECK_GEO_IP_POLICY_RULES")
 	HW_WAF_PRECHECK_IP_REPUTATION_POLICY_RULES  = os.Getenv("HW_WAF_PRECHECK_IP_REPUTATION_POLICY_RULES")
 	HW_WAF_CERTIFICATE_ID                       = os.Getenv("HW_WAF_CERTIFICATE_ID")
@@ -510,6 +511,7 @@ var (
 	HW_AOM_ALARM_EVENT_SN                        = os.Getenv("HW_AOM_ALARM_EVENT_SN")
 	HW_AOM_INSTALLER_AGENT_ID                    = os.Getenv("HW_AOM_INSTALLER_AGENT_ID")
 	HW_AOM_MULTI_ACCOUNT_AGGREGATION_RULE_ENABLE = os.Getenv("HW_AOM_MULTI_ACCOUNT_AGGREGATION_RULE_ENABLE")
+	HW_AOM_PROMETHEUS_INSTANCE_ID                = os.Getenv("HW_AOM_PROMETHEUS_INSTANCE_ID")
 	HW_AOM_SUB_APPLICATION_ID                    = os.Getenv("HW_AOM_SUB_APPLICATION_ID") // The CMDB sub-application ID of AOM service
 	HW_AOM_TARGET_MACHINE_ACCOUNT                = os.Getenv("HW_AOM_TARGET_MACHINE_ACCOUNT")
 	HW_AOM_TARGET_MACHINE_PASSWORD               = os.Getenv("HW_AOM_TARGET_MACHINE_PASSWORD")
@@ -1262,6 +1264,13 @@ func RandomPassword(customChars ...string) string {
 func TestAccPrecheckWafInstance(t *testing.T) {
 	if HW_WAF_ENABLE_FLAG == "" {
 		t.Skip("Skip the WAF acceptance tests.")
+	}
+}
+
+// lintignore:AT003
+func TestAccPrecheckWafSecurityReportSubscription(t *testing.T) {
+	if HW_WAF_SECURITY_REPORT_SUBSCRIPTION_ID == "" {
+		t.Skip("HW_WAF_SECURITY_REPORT_SUBSCRIPTION_ID must be set for WAF security report subscription acceptance tests.")
 	}
 }
 
@@ -3108,6 +3117,13 @@ func TestAccPreCheckAomAlarmEventSn(t *testing.T) {
 func TestAccPreCheckAomInstallerAgentId(t *testing.T) {
 	if HW_AOM_INSTALLER_AGENT_ID == "" {
 		t.Skip("HW_AOM_INSTALLER_AGENT_ID must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckAomPrometheusInstanceId(t *testing.T) {
+	if HW_AOM_PROMETHEUS_INSTANCE_ID == "" {
+		t.Skip("HW_AOM_PROMETHEUS_INSTANCE_ID must be set for the acceptance test")
 	}
 }
 
