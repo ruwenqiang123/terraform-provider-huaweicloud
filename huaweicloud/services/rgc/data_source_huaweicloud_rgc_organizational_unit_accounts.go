@@ -166,7 +166,7 @@ func dataSourceOrganizationalUnitAccountsRead(_ context.Context, d *schema.Resou
 			return diag.FromErr(err)
 		}
 
-		onePageOrganizationalUnitAccounts := flattenAccountsResp(listOrganizationalUnitAccountsRespBody)
+		onePageOrganizationalUnitAccounts := flattenOrganizationalUnitAccountsResp(listOrganizationalUnitAccountsRespBody)
 		organizationalUnitAccounts = append(organizationalUnitAccounts, onePageOrganizationalUnitAccounts...)
 		marker = utils.PathSearch("page_info.next_marker", listOrganizationalUnitAccountsRespBody, "").(string)
 		if marker == "" {
@@ -199,7 +199,7 @@ func buildListOrganizationalUnitAccountQueryParams(marker string) string {
 	return res
 }
 
-func flattenAccountsResp(resp interface{}) []interface{} {
+func flattenOrganizationalUnitAccountsResp(resp interface{}) []interface{} {
 	if resp == nil {
 		return nil
 	}
