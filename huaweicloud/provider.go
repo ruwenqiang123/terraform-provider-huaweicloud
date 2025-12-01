@@ -76,6 +76,7 @@ import (
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/elb"
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/eps"
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/er"
+	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/esw"
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/evs"
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/fgs"
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/ga"
@@ -750,6 +751,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_cdn_cache_history_tasks":       cdn.DataSourceCacheHistoryTasks(),
 			"huaweicloud_cdn_cache_sharing_groups":      cdn.DataSourceCacheSharingGroups(),
 			"huaweicloud_cdn_domains":                   cdn.DataSourceDomains(),
+			"huaweicloud_cdn_domain_templates":          cdn.DataSourceDomainTemplates(),
 			"huaweicloud_cdn_domain_certificates":       cdn.DataSourceDomainCertificates(),
 			"huaweicloud_cdn_domain_owner_verification": cdn.DataSourceDomainOwnerVerification(),
 			"huaweicloud_cdn_domain_tags":               cdn.DataSourceDomainTags(),
@@ -758,6 +760,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_cdn_quotas":                    cdn.DataSourceQuotas(),
 			"huaweicloud_cdn_domain_statistics":         cdn.DataSourceStatistics(),
 			"huaweicloud_cdn_rule_engine_rules":         cdn.DataSourceRuleEngineRules(),
+			"huaweicloud_cdn_statistic_configuration":   cdn.DataSourceStatisticConfiguration(),
 			"huaweicloud_cdn_top_referrer_statistics":   cdn.DataSourceTopReferrerStatistics(),
 			"huaweicloud_cdn_top_url_statistics":        cdn.DataSourceTopUrlStatistics(),
 
@@ -1097,6 +1100,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_dms_kafka_extend_flavors":                   kafka.DataSourceDmsKafkaExtendFlavors(),
 			"huaweicloud_dms_kafka_flavors":                          kafka.DataSourceKafkaFlavors(),
 			"huaweicloud_dms_kafka_instance_coordinators":            kafka.DataSourceInstanceCoordinators(),
+			"huaweicloud_dms_kafka_instance_upgrade_information":     kafka.DataSourceInstanceUpgradeInformation(),
 			"huaweicloud_dms_kafka_instances":                        kafka.DataSourceInstances(),
 			"huaweicloud_dms_kafka_maintainwindows":                  kafka.DataSourceMaintainWindows(),
 			"huaweicloud_dms_kafka_message_diagnosis_tasks":          kafka.DataSourceDmsKafkaMessageDiagnosisTasks(),
@@ -1225,6 +1229,11 @@ func Provider() *schema.Provider {
 			"huaweicloud_evs_recycle_bin_policy":         evs.DataSourceRecycleBinPolicy(),
 			"huaweicloud_evs_recycle_bin_volumes_detail": evs.DataSourceRecycleBinVolumesDetail(),
 			"huaweicloud_evs_recycle_bin_volume_detail":  evs.DataSourceRecycleBinVolumeDetail(),
+
+			"huaweicloud_esw_flavors":            esw.DataSourceEswFlavors(),
+			"huaweicloud_esw_availability_zones": esw.DataSourceEswAvailabilityZones(),
+			"huaweicloud_esw_quotas":             esw.DataSourceEswQuotas(),
+			"huaweicloud_esw_instances":          esw.DataSourceEswInstances(),
 
 			"huaweicloud_fgs_applications":                fgs.DataSourceApplications(),
 			"huaweicloud_fgs_application_templates":       fgs.DataSourceApplicationTemplates(),
@@ -1448,6 +1457,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_hss_vulnerabilities":                            hss.DataSourceVulnerabilities(),
 			"huaweicloud_hss_vulnerability_handle_history":               hss.DataSourceVulnerabilityHandleHistory(),
 			"huaweicloud_hss_vulnerability_hosts":                        hss.DataSourceVulnerabilityHosts(),
+			"huaweicloud_hss_vulnerability_scan_policy":                  hss.DataSourceVulnerabilityScanPolicy(),
 			"huaweicloud_hss_vulnerability_scan_task_hosts":              hss.DataSourceVulnerabilityScanTaskHosts(),
 			"huaweicloud_hss_vulnerability_scan_tasks":                   hss.DataSourceVulnerabilityScanTasks(),
 			"huaweicloud_hss_vulnerability_statistics":                   hss.DataSourceVulnerabilityStatistics(),
@@ -1994,12 +2004,14 @@ func Provider() *schema.Provider {
 			"huaweicloud_swr_enterprise_instance_all_artifacts":             swrenterprise.DataSourceSwrEnterpriseInstanceAllArtifacts(),
 			"huaweicloud_swr_enterprise_instance_artifacts":                 swrenterprise.DataSourceSwrEnterpriseInstanceArtifacts(),
 			"huaweicloud_swr_enterprise_instance_artifact_accessories":      swrenterprise.DataSourceSwrEnterpriseInstanceArtifactAccessories(),
+			"huaweicloud_swr_enterprise_instance_artifact_addition":         swrenterprise.DataSourceSwrEnterpriseInstanceArtifactAddition(),
 			"huaweicloud_swr_enterprise_namespace_repositories":             swrenterprise.DataSourceSwrEnterpriseNamespaceRepositories(),
 			"huaweicloud_swr_enterprise_namespaces":                         swrenterprise.DataSourceSwrEnterpriseNamespaces(),
 			"huaweicloud_swr_enterprise_repositories":                       swrenterprise.DataSourceSwrEnterpriseRepositories(),
 			"huaweicloud_swr_enterprise_repository_tags":                    swrenterprise.DataSourceSwrEnterpriseRepositoryTags(),
 			"huaweicloud_swr_enterprise_immutable_tag_rules":                swrenterprise.DataSourceSwrEnterpriseImmutableTagRules(),
 			"huaweicloud_swr_enterprise_triggers":                           swrenterprise.DataSourceSwrEnterpriseTriggers(),
+			"huaweicloud_swr_enterprise_trigger_jobs":                       swrenterprise.DataSourceSwrEnterpriseTriggerJobs(),
 			"huaweicloud_swr_enterprise_long_term_credentials":              swrenterprise.DataSourceSwrEnterpriseLongTermCredentials(),
 			"huaweicloud_swr_enterprise_private_network_access_controls":    swrenterprise.DataSourceSwrEnterprisePrivateNetworkAccessControls(),
 			"huaweicloud_swr_enterprise_domain_names":                       swrenterprise.DataSourceSwrEnterpriseDomainNames(),
@@ -2207,6 +2219,7 @@ func Provider() *schema.Provider {
 
 			// Workspace
 			"huaweicloud_workspace_applications":                         workspace.DataSourceApplications(),
+			"huaweicloud_workspace_application_authorizations":           workspace.DataSourceApplicationAuthorizations(),
 			"huaweicloud_workspace_application_catalogs":                 workspace.DataSourceApplicationCatalogs(),
 			"huaweicloud_workspace_application_restricted_rules":         workspace.DataSourceApplicationRestrictedRules(),
 			"huaweicloud_workspace_application_rules":                    workspace.DataSourceApplicationRules(),
@@ -2609,7 +2622,9 @@ func Provider() *schema.Provider {
 			"huaweicloud_cdn_domain_batch_copy":             cdn.ResourceDomainBatchCopy(),
 			"huaweicloud_cdn_domain_owner_verify":           cdn.ResourceDomainOwnerVerify(),
 			"huaweicloud_cdn_domain_rule":                   cdn.ResourceDomainRule(),
+			"huaweicloud_cdn_domain_template":               cdn.ResourceDomainTemplate(),
 			"huaweicloud_cdn_rule_engine_rule":              cdn.ResourceRuleEngineRule(),
+			"huaweicloud_cdn_statistic_configuration":       cdn.ResourceStatisticConfiguration(),
 
 			"huaweicloud_ces_alarmrule":                                     ces.ResourceAlarmRule(),
 			"huaweicloud_ces_alarm_template":                                ces.ResourceCesAlarmTemplate(),
@@ -3004,6 +3019,8 @@ func Provider() *schema.Provider {
 			"huaweicloud_evs_recycle_bin_volume_delete":  evs.ResourceRecycleBinVolumeDelete(),
 			"huaweicloud_evs_recycle_bin_volume_revert":  evs.ResourceRecycleBinVolumeRevert(),
 
+			"huaweicloud_esw_instance": esw.ResourceInstance(),
+
 			"huaweicloud_fgs_application":                    fgs.ResourceApplication(),
 			"huaweicloud_fgs_async_invoke_configuration":     fgs.ResourceAsyncInvokeConfiguration(),
 			"huaweicloud_fgs_async_log_configuration":        fgs.ResourceAsyncLogConfiguration(),
@@ -3113,6 +3130,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_hss_setting_two_factor_login_config":                hss.ResourceSettingTwoFactorLoginConfig(),
 			"huaweicloud_hss_switch_honeypot_port_policy":                    hss.ResourceSwitchHoneypotPortPolicy(),
 			"huaweicloud_hss_vulnerability_information_export":               hss.ResourceVulnerabilityInformationExport(),
+			"huaweicloud_hss_vulnerability_scan_policy":                      hss.ResourceVulnerabilityScanPolicy(),
 			"huaweicloud_hss_vulnerability_scan_task":                        hss.ResourceVulnerabilityScanTask(),
 			"huaweicloud_hss_vulnerability_task_user_trace":                  hss.ResourceVulnerabilityTaskUserTrace(),
 			"huaweicloud_hss_vulnerability_history_export_task":              hss.ResourceVulnerabilityHistoryExportTask(),
@@ -3596,11 +3614,13 @@ func Provider() *schema.Provider {
 			"huaweicloud_swr_organization":             swr.ResourceSWROrganization(),
 			"huaweicloud_swr_organization_permissions": swr.ResourceSWROrganizationPermissions(),
 			"huaweicloud_swr_repository":               swr.ResourceSWRRepository(),
+			"huaweicloud_swr_repository_tag":           swr.ResourceSwrRepositoryTag(),
 			"huaweicloud_swr_repository_sharing":       swr.ResourceSWRRepositorySharing(),
 			"huaweicloud_swr_image_permissions":        swr.ResourceSwrImagePermissions(),
 			"huaweicloud_swr_image_trigger":            swr.ResourceSwrImageTrigger(),
 			"huaweicloud_swr_image_retention_policy":   swr.ResourceSwrImageRetentionPolicy(),
 			"huaweicloud_swr_image_auto_sync":          swr.ResourceSwrImageAutoSync(),
+			"huaweicloud_swr_image_manual_sync":        swr.ResourceSwrImageManualSync(),
 			"huaweicloud_swr_temporary_login_command":  swr.ResourceSwrTemporaryLoginCommand(),
 
 			"huaweicloud_swr_enterprise_instance":                          swrenterprise.ResourceSwrEnterpriseInstance(),
@@ -3719,10 +3739,10 @@ func Provider() *schema.Provider {
 			"huaweicloud_waf_instance_group_associate":            waf.ResourceWafInstGroupAssociate(),
 
 			// Workspace
-			"huaweicloud_workspace_user_group":                           workspace.ResourceUserGroup(),
 			"huaweicloud_workspace_access_policy":                        workspace.ResourceAccessPolicy(),
 			"huaweicloud_workspace_application":                          workspace.ResourceApplication(),
 			"huaweicloud_workspace_application_batch_authorize":          workspace.ResourceApplicationBatchAuthorize(),
+			"huaweicloud_workspace_application_batch_auto_install":       workspace.ResourceApplicationBatchAutoInstall(),
 			"huaweicloud_workspace_application_rule":                     workspace.ResourceApplicationRule(),
 			"huaweicloud_workspace_application_rule_restriction":         workspace.ResourceApplicationRuleRestriction(),
 			"huaweicloud_workspace_application_rule_restriction_setting": workspace.ResourceApplicationRuleRestrictionSetting(),
@@ -3735,15 +3755,18 @@ func Provider() *schema.Provider {
 			"huaweicloud_workspace_desktop_pool":                         workspace.ResourceDesktopPool(),
 			"huaweicloud_workspace_desktop_pool_action":                  workspace.ResourceDesktopPoolAction(),
 			"huaweicloud_workspace_desktop_pool_notification":            workspace.ResourceDesktopPoolNotification(),
+			"huaweicloud_workspace_eip_associate":                        workspace.ResourceEipAssociate(),
+			"huaweicloud_workspace_log_configuration":                    workspace.ResourceLogConfiguration(),
 			"huaweicloud_workspace_policy_group":                         workspace.ResourcePolicyGroup(),
 			"huaweicloud_workspace_service":                              workspace.ResourceService(),
-			"huaweicloud_workspace_app_service_action":                   workspace.ResourceAppServiceAction(),
 			"huaweicloud_workspace_terminal_binding":                     workspace.ResourceTerminalBinding(),
 			"huaweicloud_workspace_user":                                 workspace.ResourceUser(),
-			"huaweicloud_workspace_eip_associate":                        workspace.ResourceEipAssociate(),
+			"huaweicloud_workspace_user_group":                           workspace.ResourceUserGroup(),
 
 			// Workspace APP
+			"huaweicloud_workspace_app_application_batch_action":                workspace.ResourceAppApplicationBatchAction(),
 			"huaweicloud_workspace_app_application_batch_attach":                workspace.ResourceAppApplicationBatchAttach(),
+			"huaweicloud_workspace_app_application_publishment":                 workspace.ResourceAppApplicationPublishment(),
 			"huaweicloud_workspace_app_bucket_authorize":                        workspace.ResourceAppBucketAuthorize(),
 			"huaweicloud_workspace_app_group_authorization":                     workspace.ResourceAppGroupAuthorization(),
 			"huaweicloud_workspace_app_group_authorization_notification_resend": workspace.ResourceAppGroupAuthorizationNotificationResend(),
@@ -3755,7 +3778,6 @@ func Provider() *schema.Provider {
 			"huaweicloud_workspace_app_personal_folders":                        workspace.ResourceAppPersonalFolders(),
 			"huaweicloud_workspace_app_policy_group":                            workspace.ResourceAppPolicyGroup(),
 			"huaweicloud_workspace_app_policy_template":                         workspace.ResourceAppPolicyTemplate(),
-			"huaweicloud_workspace_app_publishment":                             workspace.ResourceAppPublishment(),
 			"huaweicloud_workspace_app_schedule_task":                           workspace.ResourceAppScheduleTask(),
 			"huaweicloud_workspace_app_server":                                  workspace.ResourceAppServer(),
 			"huaweicloud_workspace_app_server_action":                           workspace.ResourceAppServerAction(),
@@ -3763,6 +3785,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_workspace_app_server_group":                            workspace.ResourceAppServerGroup(),
 			"huaweicloud_workspace_app_server_group_batch_disassociate":         workspace.ResourceAppServerGroupBatchDisassociate(),
 			"huaweicloud_workspace_app_server_group_scaling_policy":             workspace.ResourceAppServerGroupScalingPolicy(),
+			"huaweicloud_workspace_app_service_action":                          workspace.ResourceAppServiceAction(),
 			"huaweicloud_workspace_app_shared_folder":                           workspace.ResourceAppSharedFolder(),
 			"huaweicloud_workspace_app_storage_policy":                          workspace.ResourceAppStoragePolicy(),
 			"huaweicloud_workspace_app_warehouse_application":                   workspace.ResourceAppWarehouseApplication(),
@@ -3936,6 +3959,8 @@ func Provider() *schema.Provider {
 			"huaweicloud_fgs_function_v2":             fgs.ResourceFgsFunction(),
 			"huaweicloud_cdn_domain_v1":               cdn.ResourceDomain(),
 			"huaweicloud_scm_certificate":             ccm.ResourceCertificateImport(),
+
+			"huaweicloud_workspace_app_publishment": workspace.ResourceAppApplicationPublishment(),
 
 			// Deprecated
 			"huaweicloud_apig_vpc_channel":               deprecated.ResourceApigVpcChannelV2(),
