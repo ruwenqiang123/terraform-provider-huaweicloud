@@ -9,12 +9,12 @@ tags:
     - name: Workspace
 paths:
     /v1/{project_id}/policy-groups:
-        GET:
-            tag: Workspace
         POST:
             tag: Workspace
     /v1/{project_id}/policy-groups/{policy_group_id}:
         DELETE:
+            tag: Workspace
+        GET:
             tag: Workspace
         PATCH:
             tag: Workspace

@@ -313,8 +313,12 @@ var (
 	HW_WORKSPACE_AD_VPC_ID     = os.Getenv("HW_WORKSPACE_AD_VPC_ID")     // The VPC ID to which the AD servers and desktops belong.
 	HW_WORKSPACE_AD_NETWORK_ID = os.Getenv("HW_WORKSPACE_AD_NETWORK_ID") // The network ID to which the AD servers belong.
 	// The internet access port to which the Workspace service.
-	HW_WORKSPACE_INTERNET_ACCESS_PORT  = os.Getenv("HW_WORKSPACE_INTERNET_ACCESS_PORT")
-	HW_WORKSPACE_OU_NAME               = os.Getenv("HW_WORKSPACE_OU_NAME")
+	HW_WORKSPACE_INTERNET_ACCESS_PORT = os.Getenv("HW_WORKSPACE_INTERNET_ACCESS_PORT")
+	// HW_WORKSPACE_OU_NAME indicates an OU that has been added to the Workspace service.
+	HW_WORKSPACE_OU_NAME = os.Getenv("HW_WORKSPACE_OU_NAME")
+	// HW_WORKSPACE_AD_SERVER_OU_NAMES indicates OUs that do not exist in the Workspace service but only in the Active Directory server.
+	HW_WORKSPACE_AD_SERVER_OU_NAMES    = os.Getenv("HW_WORKSPACE_AD_SERVER_OU_NAMES")
+	HW_WORKSPACE_DESKTOP_IDS           = os.Getenv("HW_WORKSPACE_DESKTOP_IDS")
 	HW_WORKSPACE_DESKTOP_POOL_IMAGE_ID = os.Getenv("HW_WORKSPACE_DESKTOP_POOL_IMAGE_ID")
 	HW_WORKSPACE_SCHEDULED_TASK_ID     = os.Getenv("HW_WORKSPACE_SCHEDULED_TASK_ID")
 
@@ -740,6 +744,8 @@ var (
 	HW_HSS_ANTIVIRUS_ENABLED                  = os.Getenv("HW_HSS_ANTIVIRUS_ENABLED")
 	HW_HSS_CLUSTER_ID                         = os.Getenv("HW_HSS_CLUSTER_ID")
 	HW_HSS_CLUSTER_RISK_ID                    = os.Getenv("HW_HSS_CLUSTER_RISK_ID")
+	HW_HSS_HOST_ID1                           = os.Getenv("HW_HSS_HOST_ID1")
+	HW_HSS_HOST_ID2                           = os.Getenv("HW_HSS_HOST_ID2")
 	// The vulnerability ID
 	HW_HSS_VUL_ID      = os.Getenv("HW_HSS_VUL_ID")
 	HW_HSS_POLICY_ID   = os.Getenv("HW_HSS_POLICY_ID")
@@ -801,7 +807,8 @@ var (
 	HW_SERVICESTAGE_JAR_PKG_STORAGE_URLS = os.Getenv("HW_SERVICESTAGE_JAR_PKG_STORAGE_URLS")
 	HW_SERVICESTAGE_ZIP_STORAGE_URLS     = os.Getenv("HW_SERVICESTAGE_ZIP_STORAGE_URLS")
 
-	HW_DNS_ZONE_NAMES = os.Getenv("HW_DNS_ZONE_NAMES")
+	HW_DNS_ZONE_NAMES          = os.Getenv("HW_DNS_ZONE_NAMES")
+	HW_DNS_ZONE_RETRIEVAL_NAME = os.Getenv("HW_DNS_ZONE_RETRIEVAL_NAME")
 )
 
 // TestAccProviders is a static map containing only the main provider instance.
@@ -2441,6 +2448,13 @@ func TestAccPreCheckWorkspaceScheduledTaskId(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckWorkspaceDesktopIds(t *testing.T, min int) {
+	if HW_WORKSPACE_DESKTOP_IDS == "" || len(strings.Split(HW_WORKSPACE_DESKTOP_IDS, ",")) < min {
+		t.Skip("At least two of desktops must be configured in the HW_WORKSPACE_DESKTOP_IDS, and separated by commas (,).")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckWorkspaceAppServerImageInfo(t *testing.T) {
 	if HW_WORKSPACE_APP_SERVER_GROUP_IMAGE_ID == "" || HW_WORKSPACE_APP_SERVER_GROUP_IMAGE_PRODUCT_ID == "" {
 		t.Skip("HW_WORKSPACE_APP_SERVER_GROUP_IMAGE_ID and HW_WORKSPACE_APP_SERVER_GROUP_IMAGE_PRODUCT_ID must be set for Workspace APP acceptance tests.")
@@ -2490,6 +2504,13 @@ func TestAccPrecheckWorkspaceUserNames(t *testing.T) {
 func TestAccPreCheckWorkspaceOUName(t *testing.T) {
 	if HW_WORKSPACE_OU_NAME == "" {
 		t.Skip("HW_WORKSPACE_OU_NAME must be set for Workspace service acceptance tests.")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckWorkspaceOUNames(t *testing.T, min int) {
+	if HW_WORKSPACE_AD_SERVER_OU_NAMES == "" || len(strings.Split(HW_WORKSPACE_AD_SERVER_OU_NAMES, ",")) < min {
+		t.Skipf("At least %d OU must be configured in the HW_WORKSPACE_AD_SERVER_OU_NAMES, and separated by commas (,).", min)
 	}
 }
 
@@ -3871,6 +3892,13 @@ func TestAccPreCheckHSSPolicyGroupId(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckHSSHostIds(t *testing.T) {
+	if HW_HSS_HOST_ID1 == "" || HW_HSS_HOST_ID2 == "" {
+		t.Skip("HW_HSS_HOST_ID1 and HW_HSS_HOST_ID2 must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckHSSTargetPolicyGroupId(t *testing.T) {
 	if HW_HSS_TARGET_POLICY_GROUP_ID == "" {
 		t.Skip("HW_HSS_TARGET_POLICY_GROUP_ID must be set for the acceptance test")
@@ -4598,5 +4626,12 @@ func TestAccPreCheckServiceStageZipStorageURLs(t *testing.T, n int) {
 func TestAccPreCheckDnsZoneNames(t *testing.T, min int) {
 	if HW_DNS_ZONE_NAMES == "" || len(strings.Split(HW_DNS_ZONE_NAMES, ",")) < min {
 		t.Skipf("At least %d DNS zone name(s) must be supported during the HW_DNS_ZONE_NAMES, separated by commas (,)", min)
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckDnsZoneRetrievalName(t *testing.T) {
+	if HW_DNS_ZONE_RETRIEVAL_NAME == "" {
+		t.Skipf("HW_DNS_ZONE_RETRIEVAL_NAME must be set for the acceptance test")
 	}
 }
