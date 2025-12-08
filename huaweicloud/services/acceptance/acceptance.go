@@ -493,6 +493,7 @@ var (
 	HW_SECMASTER_INDICATOR_TYPE_ID        = os.Getenv("HW_SECMASTER_INDICATOR_TYPE_ID")
 	HW_SECMASTER_INDICATOR_TYPE_ID_UPDATE = os.Getenv("HW_SECMASTER_INDICATOR_TYPE_ID_UPDATE")
 	HW_SECMASTER_METRIC_ID                = os.Getenv("HW_SECMASTER_METRIC_ID")
+	HW_SECMASTER_COMPONENT_VERSION_ID     = os.Getenv("HW_SECMASTER_COMPONENT_VERSION_ID")
 
 	// The SecMaster pipeline ID
 	HW_SECMASTER_PIPELINE_ID = os.Getenv("HW_SECMASTER_PIPELINE_ID")
@@ -2437,7 +2438,7 @@ func TestAccPreCheckWorkspaceAppServerGroup(t *testing.T) {
 	if HW_WORKSPACE_APP_SERVER_GROUP_FLAVOR_ID == "" {
 		t.Skip("HW_WORKSPACE_APP_SERVER_GROUP_FLAVOR_ID must be set for Workspace APP acceptance tests.")
 	}
-	TestAccPreCheckWorkspaceAppServerImageInfo(t)
+	TestAccPreCheckWorkspaceAppServerImageId(t)
 }
 
 // lintignore:AT003
@@ -2455,9 +2456,10 @@ func TestAccPreCheckWorkspaceDesktopIds(t *testing.T, min int) {
 }
 
 // lintignore:AT003
-func TestAccPreCheckWorkspaceAppServerImageInfo(t *testing.T) {
-	if HW_WORKSPACE_APP_SERVER_GROUP_IMAGE_ID == "" || HW_WORKSPACE_APP_SERVER_GROUP_IMAGE_PRODUCT_ID == "" {
-		t.Skip("HW_WORKSPACE_APP_SERVER_GROUP_IMAGE_ID and HW_WORKSPACE_APP_SERVER_GROUP_IMAGE_PRODUCT_ID must be set for Workspace APP acceptance tests.")
+func TestAccPreCheckWorkspaceAppServerImageId(t *testing.T) {
+	// HW_WORKSPACE_APP_SERVER_GROUP_IMAGE_PRODUCT_ID is not required for acceptance tests.
+	if HW_WORKSPACE_APP_SERVER_GROUP_IMAGE_ID == "" {
+		t.Skip("HW_WORKSPACE_APP_SERVER_GROUP_IMAGE_ID must be set for Workspace APP acceptance tests.")
 	}
 }
 
@@ -2815,6 +2817,13 @@ func TestAccPreCheckSourceImage(t *testing.T) {
 func TestAccPreCheckSecMasterWorkspaceID(t *testing.T) {
 	if HW_SECMASTER_WORKSPACE_ID == "" {
 		t.Skip("HW_SECMASTER_WORKSPACE_ID must be set for SecMaster acceptance tests")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckSecMasterComponentVersionID(t *testing.T) {
+	if HW_SECMASTER_COMPONENT_VERSION_ID == "" {
+		t.Skip("HW_SECMASTER_COMPONENT_VERSION_ID must be set for SecMaster acceptance tests")
 	}
 }
 
