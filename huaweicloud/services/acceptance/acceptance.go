@@ -319,6 +319,7 @@ var (
 	// HW_WORKSPACE_AD_SERVER_OU_NAMES indicates OUs that do not exist in the Workspace service but only in the Active Directory server.
 	HW_WORKSPACE_AD_SERVER_OU_NAMES    = os.Getenv("HW_WORKSPACE_AD_SERVER_OU_NAMES")
 	HW_WORKSPACE_DESKTOP_IDS           = os.Getenv("HW_WORKSPACE_DESKTOP_IDS")
+	HW_WORKSPACE_DESKTOP_IMAGE_ID      = os.Getenv("HW_WORKSPACE_DESKTOP_IMAGE_ID")
 	HW_WORKSPACE_DESKTOP_POOL_IMAGE_ID = os.Getenv("HW_WORKSPACE_DESKTOP_POOL_IMAGE_ID")
 	HW_WORKSPACE_SCHEDULED_TASK_ID     = os.Getenv("HW_WORKSPACE_SCHEDULED_TASK_ID")
 
@@ -805,6 +806,7 @@ var (
 	HW_SFS_TURBO_AD_DOMAIN_DNS_SERVER_IP = os.Getenv("HW_SFS_TURBO_AD_DOMAIN_DNS_SERVER_IP")
 
 	HW_SMN_SUBSCRIBED_TOPIC_URN = os.Getenv("HW_SMN_SUBSCRIBED_TOPIC_URN")
+	HW_SMN_SUBSCRIBE_ID         = os.Getenv("HW_SMN_SUBSCRIBE_ID")
 
 	HW_SERVICESTAGE_JAR_PKG_STORAGE_URLS = os.Getenv("HW_SERVICESTAGE_JAR_PKG_STORAGE_URLS")
 	HW_SERVICESTAGE_ZIP_STORAGE_URLS     = os.Getenv("HW_SERVICESTAGE_ZIP_STORAGE_URLS")
@@ -2514,6 +2516,13 @@ func TestAccPreCheckWorkspaceOUName(t *testing.T) {
 func TestAccPreCheckWorkspaceOUNames(t *testing.T, min int) {
 	if HW_WORKSPACE_AD_SERVER_OU_NAMES == "" || len(strings.Split(HW_WORKSPACE_AD_SERVER_OU_NAMES, ",")) < min {
 		t.Skipf("At least %d OU must be configured in the HW_WORKSPACE_AD_SERVER_OU_NAMES, and separated by commas (,).", min)
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckWorkspaceDesktopImageId(t *testing.T) {
+	if HW_WORKSPACE_DESKTOP_IMAGE_ID == "" {
+		t.Skip("HW_WORKSPACE_DESKTOP_IMAGE_ID must be set for the acceptance tests.")
 	}
 }
 
@@ -4615,6 +4624,13 @@ func TestAccPrecheckCphObsBucketName(t *testing.T) {
 func TestAccPrecheckSmnSubscribedTopicUrn(t *testing.T) {
 	if HW_SMN_SUBSCRIBED_TOPIC_URN == "" {
 		t.Skip("HW_SMN_SUBSCRIBED_TOPIC_URN must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
+func TestAccPrecheckSmnSubscribeId(t *testing.T) {
+	if HW_SMN_SUBSCRIBE_ID == "" {
+		t.Skip("HW_SMN_SUBSCRIBE_ID must be set for the acceptance test")
 	}
 }
 
