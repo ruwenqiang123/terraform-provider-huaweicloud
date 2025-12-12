@@ -1780,6 +1780,11 @@ func Provider() *schema.Provider {
 			"huaweicloud_ram_tags":                                  ram.DataSourceTags(),
 			"huaweicloud_ram_permission_versions":                   ram.DataSourcePermissionVersions(),
 			"huaweicloud_ram_quotas":                                ram.DataSourceQuotas(),
+			"huaweicloud_ram_distinct_shared_principals":            ram.DataSourceDistinctSharedPrincipals(),
+			"huaweicloud_ram_distinct_shared_resources":             ram.DataSourceDistinctSharedResources(),
+			"huaweicloud_ram_resource_permission":                   ram.DataSourcePermission(),
+			"huaweicloud_ram_resource_instances_filter":             ram.DataSourceResourceInstancesFilter(),
+			"huaweicloud_ram_resource_instances_count":              ram.DataSourceResourceInstancesCount(),
 
 			"huaweicloud_rds_flavors":                            rds.DataSourceRdsFlavors(),
 			"huaweicloud_rds_available_flavors":                  rds.DataSourceRdsAvailableFlavors(),
@@ -1949,6 +1954,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_secmaster_layout_wizards":               secmaster.DataSourceLayoutWizards(),
 			"huaweicloud_secmaster_layouts":                      secmaster.DataSourceLayouts(),
 			"huaweicloud_secmaster_metric_results":               secmaster.DataSourceMetricResults(),
+			"huaweicloud_secmaster_modules":                      secmaster.DataSourceModules(),
 			"huaweicloud_secmaster_notes":                        secmaster.DataSourceNotes(),
 			"huaweicloud_secmaster_baseline_check_results":       secmaster.DataSourceSecmasterBaselineCheckResults(),
 			"huaweicloud_secmaster_baseline_checkitems":          secmaster.DataSourceBaselineCheckitems(),
@@ -3540,9 +3546,10 @@ func Provider() *schema.Provider {
 			"huaweicloud_oms_migration_task":       oms.ResourceMigrationTask(),
 			"huaweicloud_oms_migration_task_group": oms.ResourceMigrationTaskGroup(),
 
-			"huaweicloud_ram_organization":            ram.ResourceRAMOrganization(),
-			"huaweicloud_ram_resource_share":          ram.ResourceRAMShare(),
-			"huaweicloud_ram_resource_share_accepter": ram.ResourceShareAccepter(),
+			"huaweicloud_ram_organization":              ram.ResourceRAMOrganization(),
+			"huaweicloud_ram_resource_share":            ram.ResourceRAMShare(),
+			"huaweicloud_ram_resource_share_accepter":   ram.ResourceShareAccepter(),
+			"huaweicloud_ram_resource_share_permission": ram.ResourceRAMResourceSharePermission(),
 
 			"huaweicloud_rds_mysql_account":                  rds.ResourceMysqlAccount(),
 			"huaweicloud_rds_mysql_binlog":                   rds.ResourceMysqlBinlog(),
