@@ -8,6 +8,6 @@ host: huaweicloud.com
 tags:
     - name: EPS
 paths:
-    /v1.0/enterprise-projects/configs:
+    /v1/enterprise-projects/configs:
         GET:
             tag: EPS
