@@ -634,8 +634,10 @@ func Provider() *schema.Provider {
 			"huaweicloud_account":            DataSourceAccount(),
 			"huaweicloud_availability_zones": DataSourceAvailabilityZones(),
 
-			"huaweicloud_bms_flavors":   bms.DataSourceBmsFlavors(),
-			"huaweicloud_bms_instances": bms.DataSourceBmsInstances(),
+			"huaweicloud_bms_flavors":             bms.DataSourceBmsFlavors(),
+			"huaweicloud_bms_available_resources": bms.DataSourceAvailableResources(),
+			"huaweicloud_bms_instances":           bms.DataSourceBmsInstances(),
+			"huaweicloud_bms_volume_attachments":  bms.DataSourceBmsVolumeAttachments(),
 
 			"huaweicloud_cae_applications":       cae.DataSourceApplications(),
 			"huaweicloud_cae_components":         cae.DataSourceComponents(),
@@ -1394,6 +1396,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_hss_auto_launchs":                               hss.DataSourceAutoLaunchs(),
 			"huaweicloud_hss_baseline_check_rule_hab":                    hss.DataSourceBaselineCheckRuleHAB(),
 			"huaweicloud_hss_baseline_overviews":                         hss.DataSourceBaselineOverviews(),
+			"huaweicloud_hss_baseline_risk_config_check_rules":           hss.DataSourceBaselineRiskConfigCheckRules(),
 			"huaweicloud_hss_baseline_scan_status":                       hss.DataSourceBaselineScanStatus(),
 			"huaweicloud_hss_baseline_white_lists":                       hss.DataSourceBaselineWhiteLists(),
 			"huaweicloud_hss_cluster_asset_statistics":                   hss.DataSourceClusterAssetStatistics(),
@@ -1409,6 +1412,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_hss_image_registry_statistics":                  hss.DataSourceHssImageRegistryStatistics(),
 			"huaweicloud_hss_image_upload_command":                       hss.DataSourceHssImageUploadCommand(),
 			"huaweicloud_hss_image_asset_statistics":                     hss.DataSourceImageAssetStatistics(),
+			"huaweicloud_hss_image_pay_per_scan_statistics":              hss.DataSourceImagePayPerScanStatistics(),
 			"huaweicloud_hss_image_baseline_risk_configs":                hss.DataSourceImageBaselineRiskConfigs(),
 			"huaweicloud_hss_container_clusters_policy_templates":        hss.DataSourceContainerClustersPolicyTemplates(),
 			"huaweicloud_hss_container_clusters_policy_template":         hss.DataSourceContainerClustersPolicyTemplate(),
@@ -2316,6 +2320,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_workspace_desktop_remote_console":                    workspace.DataSourceDesktopRemoteConsole(),
 			"huaweicloud_workspace_desktop_sysprep":                           workspace.DataSourceDesktopSysprep(),
 			"huaweicloud_workspace_desktop_pools":                             workspace.DataSourceDesktopPools(),
+			"huaweicloud_workspace_desktop_pool_associated_desktops":          workspace.DataSourceDesktopPoolAssociatedDesktops(),
 			"huaweicloud_workspace_desktop_tags":                              workspace.DataSourceDesktopTags(),
 			"huaweicloud_workspace_desktop_tags_filter":                       workspace.DataSourceDesktopTagsFilter(),
 			"huaweicloud_workspace_flavors":                                   workspace.DataSourceWorkspaceFlavors(),
@@ -2589,7 +2594,9 @@ func Provider() *schema.Provider {
 
 			"huaweicloud_asm_mesh": asm.ResourceAsmMesh(),
 
-			"huaweicloud_bms_instance": bms.ResourceBmsInstance(),
+			"huaweicloud_bms_instance":      bms.ResourceBmsInstance(),
+			"huaweicloud_bms_volume_attach": bms.ResourceVolumeAttach(),
+
 			"huaweicloud_bcs_instance": bcs.ResourceInstance(),
 
 			"huaweicloud_cae_application":              cae.ResourceApplication(),
@@ -2668,6 +2675,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_cce_node_pool_scale":                       cce.ResourceNodePoolScale(),
 			"huaweicloud_cce_cluster_certificate_rotatecredentials": cce.ResourceRotatecredentials(),
 			"huaweicloud_cce_nodes_remove":                          cce.ResourceNodesRemove(),
+			"huaweicloud_cce_release":                               cce.ResourceRelease(),
 
 			"huaweicloud_cts_tracker":       cts.ResourceCTSTracker(),
 			"huaweicloud_cts_configuration": cts.ResourceConfiguration(),
@@ -3236,6 +3244,8 @@ func Provider() *schema.Provider {
 			"huaweicloud_hss_event_login_white_list":                         hss.ResourceEventLoginWhiteList(),
 			"huaweicloud_hss_image_batch_scan":                               hss.ResourceImageBatchScan(),
 			"huaweicloud_hss_login_common_location":                          hss.ResourceLoginCommonLocation(),
+			"huaweicloud_hss_login_white_ip":                                 hss.ResourceLoginWhiteIp(),
+			"huaweicloud_hss_change_host_ignore_status":                      hss.ResourceChangeHostIgnoreStatus(),
 			"huaweicloud_hss_modify_webtamper_protection_policy":             hss.ResourceModifyWebtamperProtectionPolicy(),
 			"huaweicloud_hss_modify_webtamper_rasp_path":                     hss.ResourceModifyWebtamperRaspPath(),
 			"huaweicloud_hss_rasp_protection_policy":                         hss.ResourceRaspProtectionPolicy(),
@@ -3836,6 +3846,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_waf_cc_protection_rule_batch_delete":     waf.ResourceCcRuleBatchDelete(),
 			"huaweicloud_waf_certificate":                         waf.ResourceWafCertificate(),
 			"huaweicloud_waf_cloud_instance":                      waf.ResourceCloudInstance(),
+			"huaweicloud_waf_dedicated_agency":                    waf.ResourceWafDedicatedAgency(),
 			"huaweicloud_waf_dedicated_domain":                    waf.ResourceWafDedicatedDomain(),
 			"huaweicloud_waf_dedicated_instance":                  waf.ResourceWafDedicatedInstance(),
 			"huaweicloud_waf_dedicated_instance_action":           waf.ResourceDedicatedInstanceAction(),
@@ -3884,6 +3895,8 @@ func Provider() *schema.Provider {
 			"huaweicloud_workspace_desktop_pool":                                workspace.ResourceDesktopPool(),
 			"huaweicloud_workspace_desktop_pool_action":                         workspace.ResourceDesktopPoolAction(),
 			"huaweicloud_workspace_desktop_pool_notification":                   workspace.ResourceDesktopPoolNotification(),
+			"huaweicloud_workspace_desktop_user_batch_attach":                   workspace.ResourceDesktopUserBatchAttach(),
+			"huaweicloud_workspace_desktop_user_batch_detach":                   workspace.ResourceDesktopUserBatchDetach(),
 			"huaweicloud_workspace_desktop_volume_batch_delete":                 workspace.ResourceDesktopVolumeBatchDelete(),
 			"huaweicloud_workspace_eip_associate":                               workspace.ResourceEipAssociate(),
 			"huaweicloud_workspace_log_configuration":                           workspace.ResourceLogConfiguration(),
