@@ -638,6 +638,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_bms_available_resources": bms.DataSourceAvailableResources(),
 			"huaweicloud_bms_instances":           bms.DataSourceBmsInstances(),
 			"huaweicloud_bms_volume_attachments":  bms.DataSourceBmsVolumeAttachments(),
+			"huaweicloud_bms_instance_password":   bms.DataSourceBmsInstancePassword(),
 
 			"huaweicloud_cae_applications":       cae.DataSourceApplications(),
 			"huaweicloud_cae_components":         cae.DataSourceComponents(),
@@ -2277,6 +2278,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_waf_source_ips":                           waf.DataSourceWafSourceIps(),
 			"huaweicloud_waf_tag_antileakage_map":                  waf.DataSourceTagAntileakageMap(),
 			"huaweicloud_waf_tag_ip_reputation_map":                waf.DataSourceTagIpReputationMap(),
+			"huaweicloud_waf_web_basic_protection_rules":           waf.DataSourceWafWebBasicProtectionRules(),
 			"huaweicloud_waf_security_report_sending_records":      waf.DataSourceWafSecurityReportSendingRecords(),
 			"huaweicloud_waf_protectable_resources":                waf.DataSourceWafProtectables(),
 			"huaweicloud_waf_rules_application_types":              waf.DataSourceWafRulesApplicationTypes(),
@@ -2594,8 +2596,10 @@ func Provider() *schema.Provider {
 
 			"huaweicloud_asm_mesh": asm.ResourceAsmMesh(),
 
-			"huaweicloud_bms_instance":      bms.ResourceBmsInstance(),
-			"huaweicloud_bms_volume_attach": bms.ResourceVolumeAttach(),
+			"huaweicloud_bms_instance":                 bms.ResourceBmsInstance(),
+			"huaweicloud_bms_volume_attach":            bms.ResourceVolumeAttach(),
+			"huaweicloud_bms_instance_password_reset":  bms.ResourceInstancePasswordReset(),
+			"huaweicloud_bms_instance_password_delete": bms.ResourceInstancePasswordDelete(),
 
 			"huaweicloud_bcs_instance": bcs.ResourceInstance(),
 
@@ -2655,6 +2659,7 @@ func Provider() *schema.Provider {
 
 			"huaweicloud_cce_autopilot_cluster": cceautopilot.ResourceAutopilotCluster(),
 			"huaweicloud_cce_autopilot_addon":   cceautopilot.ResourceAutopilotAddon(),
+			"huaweicloud_cce_autopilot_chart":   cceautopilot.ResourceAutopilotChart(),
 
 			"huaweicloud_cce_access_policy":                         cce.ResourceAccessPolicy(),
 			"huaweicloud_cce_cluster":                               cce.ResourceCluster(),
@@ -3298,6 +3303,8 @@ func Provider() *schema.Provider {
 			"huaweicloud_identityv5_login_profile":               iam.ResourceIdentityV5LoginProfile(),
 			"huaweicloud_identityv5_login_policy":                iam.ResourceIdentityV5LoginPolicy(),
 			"huaweicloud_identityv5_password_policy":             iam.ResourceIdentityV5PasswordPolicy(),
+			"huaweicloud_identityv5_policy_default_version":      iam.ResourceIamV5PolicyDefaultVersion(),
+			"huaweicloud_identityv5_policy_group_attach":         iam.ResourceIdentityV5PolicyGroupAttach(),
 			"huaweicloud_identityv5_virtual_mfa_device":          iam.ResourceIdentityV5VirtualMFADevice(),
 			"huaweicloud_identityv5_group":                       iam.ResourceIdentityV5Group(),
 			"huaweicloud_identityv5_group_membership":            iam.ResourceIdentityV5GroupMembership(),
