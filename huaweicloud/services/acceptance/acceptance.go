@@ -102,6 +102,7 @@ var (
 
 	HW_MAPREDUCE_CUSTOM           = os.Getenv("HW_MAPREDUCE_CUSTOM")
 	HW_MAPREDUCE_BOOTSTRAP_SCRIPT = os.Getenv("HW_MAPREDUCE_BOOTSTRAP_SCRIPT")
+	HW_MRS_CLUSTER_FLAVOR_ID      = os.Getenv("HW_MRS_CLUSTER_FLAVOR_ID")
 
 	HW_CNAD_ENABLE_FLAG       = os.Getenv("HW_CNAD_ENABLE_FLAG")
 	HW_CNAD_PROJECT_OBJECT_ID = os.Getenv("HW_CNAD_PROJECT_OBJECT_ID")
@@ -134,6 +135,7 @@ var (
 	HW_WAF_DEDICATED_INSTANCE_SECURITY_GROUP_ID = os.Getenv("HW_WAF_DEDICATED_INSTANCE_SECURITY_GROUP_ID")
 	HW_WAF_RULE_ID                              = os.Getenv("HW_WAF_RULE_ID")
 	HW_WAF_GEO_RULE_ID                          = os.Getenv("HW_WAF_GEO_RULE_ID")
+	HW_WAF_ALARM_NOTIFICATION_ID                = os.Getenv("HW_WAF_ALARM_NOTIFICATION_ID")
 
 	HW_ELB_CERT_ID         = os.Getenv("HW_ELB_CERT_ID")
 	HW_ELB_LOADBALANCER_ID = os.Getenv("HW_ELB_LOADBALANCER_ID")
@@ -525,6 +527,7 @@ var (
 
 	// The SecMaster alert rule template ID
 	HW_SECMASTER_TEMPLATE_ID = os.Getenv("HW_SECMASTER_TEMPLATE_ID")
+	HW_SECMASTER_MAPPING_ID  = os.Getenv("HW_SECMASTER_MAPPING_ID")
 
 	HW_MODELARTS_HAS_SUBSCRIBE_MODEL                  = os.Getenv("HW_MODELARTS_HAS_SUBSCRIBE_MODEL")
 	HW_MODELARTS_USER_LOGIN_PASSWORD                  = os.Getenv("HW_MODELARTS_USER_LOGIN_PASSWORD")
@@ -1283,6 +1286,13 @@ func TestAccPreCheckMrsBootstrapScript(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckMrsClusterFlavorID(t *testing.T) {
+	if HW_MRS_CLUSTER_FLAVOR_ID == "" {
+		t.Skip("HW_MRS_CLUSTER_FLAVOR_ID must be set for MRS cluster acceptance tests")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckFgsFunctionName(t *testing.T) {
 	if HW_FGS_FUNCTION_NAME == "" {
 		t.Skip("HW_FGS_FUNCTION_NAME must be set for acceptance test")
@@ -1376,6 +1386,13 @@ func TestAccPrecheckWafInstance(t *testing.T) {
 func TestAccPrecheckWafSecurityReportSubscription(t *testing.T) {
 	if HW_WAF_SECURITY_REPORT_SUBSCRIPTION_ID == "" {
 		t.Skip("HW_WAF_SECURITY_REPORT_SUBSCRIPTION_ID must be set for WAF security report subscription acceptance tests.")
+	}
+}
+
+// lintignore:AT003
+func TestAccPrecheckWafAlarmNotificationId(t *testing.T) {
+	if HW_WAF_ALARM_NOTIFICATION_ID == "" {
+		t.Skip("HW_WAF_ALARM_NOTIFICATION_ID must be set for WAF alarm notification ID acceptance tests.")
 	}
 }
 
@@ -2964,6 +2981,13 @@ func TestAccPreCheckSecMasterFieldId(t *testing.T) {
 func TestAccPreCheckSecMasterTemplateId(t *testing.T) {
 	if HW_SECMASTER_TEMPLATE_ID == "" {
 		t.Skip("HW_SECMASTER_TEMPLATE_ID must be set for SecMaster acceptance tests")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckSecMasterMappingId(t *testing.T) {
+	if HW_SECMASTER_MAPPING_ID == "" {
+		t.Skip("HW_SECMASTER_MAPPING_ID must be set for SecMaster acceptance tests")
 	}
 }
 
