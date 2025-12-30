@@ -9,5 +9,5 @@ tags:
     - name: IAM
 paths:
     /v3.0/OS-USER/users/{user_id}/info:
-        POST:
+        PUT:
             tag: IAM

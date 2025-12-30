@@ -11,3 +11,6 @@ paths:
     /v3/users/{user_id}/projects:
         GET:
             tag: IAM
+    /v5/caller-identity:
+        GET:
+            tag: IAM
