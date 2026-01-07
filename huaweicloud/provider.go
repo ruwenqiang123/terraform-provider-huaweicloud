@@ -2111,6 +2111,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_sfs_turbo_quotas":      sfsturbo.DataSourceSfsTurboQuotas(),
 			"huaweicloud_sfs_turbo_mounted_ips": sfsturbo.DataSourceSfsTurboMountedIps(),
 
+			"huaweicloud_swr_sync_regions":              swr.DataSourceSyncRegions(),
 			"huaweicloud_swr_organizations":             swr.DataSourceOrganizations(),
 			"huaweicloud_swr_repositories":              swr.DataSourceRepositories(),
 			"huaweicloud_swrv3_repositories":            swr.DataSourceSwrv3Repositories(),
@@ -2641,6 +2642,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_bms_volume_attach":            bms.ResourceVolumeAttach(),
 			"huaweicloud_bms_instance_password_reset":  bms.ResourceInstancePasswordReset(),
 			"huaweicloud_bms_instance_password_delete": bms.ResourceInstancePasswordDelete(),
+			"huaweicloud_bms_os_reinstall":             bms.ResourceBmsOsReinstall(),
 
 			"huaweicloud_bcs_instance": bcs.ResourceInstance(),
 
@@ -3808,6 +3810,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_sms_task_consistency_result_report":      sms.ResourceTaskConsistencyResultReport(),
 			"huaweicloud_sms_task_network_check_info_report":      sms.ResourceTaskNetworkCheckInfoReport(),
 
+			"huaweicloud_swr_agency":                   swr.ResourceSwrAgency(),
 			"huaweicloud_swr_organization":             swr.ResourceSWROrganization(),
 			"huaweicloud_swr_organization_permissions": swr.ResourceSWROrganizationPermissions(),
 			"huaweicloud_swr_repository":               swr.ResourceSWRRepository(),
