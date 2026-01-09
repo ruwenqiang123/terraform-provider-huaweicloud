@@ -15,19 +15,19 @@ import (
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/utils"
 )
 
-var enterpriseInstanceArtifactDeleteNonUpdatableParams = []string{
+var enterpriseInstanceArtifactManualScanNonUpdatableParams = []string{
 	"instance_id", "namespace_name", "repository_name", "reference",
 }
 
-// @API SWR DELETE /v2/{project_id}/instances/{instance_id}/namespaces/{namespace_name}/repositories/{repository_name}/artifacts/{reference}
-func ResourceSwrEnterpriseInstanceArtifactDelete() *schema.Resource {
+// @API SWR POST /v2/{project_id}/instances/{instance_id}/namespaces/{namespace_name}/repositories/{repository_name}/artifacts/{reference}/scan
+func ResourceSwrEnterpriseInstanceArtifactManualScan() *schema.Resource {
 	return &schema.Resource{
-		CreateContext: resourceSwrEnterpriseInstanceArtifactDeleteCreate,
-		UpdateContext: resourceSwrEnterpriseInstanceArtifactDeleteUpdate,
-		ReadContext:   resourceSwrEnterpriseInstanceArtifactDeleteRead,
-		DeleteContext: resourceSwrEnterpriseInstanceArtifactDeleteDelete,
+		CreateContext: resourceSwrEnterpriseInstanceArtifactManualScanCreate,
+		UpdateContext: resourceSwrEnterpriseInstanceArtifactManualScanUpdate,
+		ReadContext:   resourceSwrEnterpriseInstanceArtifactManualScanRead,
+		DeleteContext: resourceSwrEnterpriseInstanceArtifactManualScanDelete,
 
-		CustomizeDiff: config.FlexibleForceNew(enterpriseInstanceArtifactDeleteNonUpdatableParams),
+		CustomizeDiff: config.FlexibleForceNew(enterpriseInstanceArtifactManualScanNonUpdatableParams),
 
 		Schema: map[string]*schema.Schema{
 			"region": {
@@ -66,7 +66,7 @@ func ResourceSwrEnterpriseInstanceArtifactDelete() *schema.Resource {
 	}
 }
 
-func resourceSwrEnterpriseInstanceArtifactDeleteCreate(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceSwrEnterpriseInstanceArtifactManualScanCreate(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	cfg := meta.(*config.Config)
 	region := cfg.GetRegion(d)
 	client, err := cfg.NewServiceClient("swr", region)
@@ -79,22 +79,21 @@ func resourceSwrEnterpriseInstanceArtifactDeleteCreate(_ context.Context, d *sch
 	repositoryName := d.Get("repository_name").(string)
 	reference := d.Get("reference").(string)
 
-	deleteHttpUrl := "v2/{project_id}/instances/{instance_id}/namespaces/{namespace_name}/repositories/{repository_name}/artifacts/{reference}"
+	deleteHttpUrl := "v2/{project_id}/instances/{instance_id}/namespaces/{namespace_name}/repositories/{repository_name}/artifacts/{reference}/scan"
 	deletePath := client.Endpoint + deleteHttpUrl
 	deletePath = strings.ReplaceAll(deletePath, "{project_id}", client.ProjectID)
 	deletePath = strings.ReplaceAll(deletePath, "{instance_id}", instanceId)
 	deletePath = strings.ReplaceAll(deletePath, "{namespace_name}", namespaceName)
-	deletePath = strings.ReplaceAll(deletePath, "{repository_name}",
-		url.PathEscape(strings.ReplaceAll(d.Get("repository_name").(string), "/", "%2F")))
+	deletePath = strings.ReplaceAll(deletePath, "{repository_name}", url.PathEscape(strings.ReplaceAll(repositoryName, "/", "%2F")))
 	deletePath = strings.ReplaceAll(deletePath, "{reference}", reference)
 
 	deleteOpt := golangsdk.RequestOpts{
 		KeepResponseBody: true,
 	}
 
-	_, err = client.Request("DELETE", deletePath, &deleteOpt)
+	_, err = client.Request("POST", deletePath, &deleteOpt)
 	if err != nil {
-		return diag.Errorf("error deleting SWR enterprise artifact: %s", err)
+		return diag.Errorf("error scanning SWR enterprise artifact manually: %s", err)
 	}
 
 	d.SetId(instanceId + "/" + namespaceName + "/" + repositoryName + "/" + reference)
@@ -102,16 +101,16 @@ func resourceSwrEnterpriseInstanceArtifactDeleteCreate(_ context.Context, d *sch
 	return nil
 }
 
-func resourceSwrEnterpriseInstanceArtifactDeleteRead(_ context.Context, _ *schema.ResourceData, _ interface{}) diag.Diagnostics {
+func resourceSwrEnterpriseInstanceArtifactManualScanRead(_ context.Context, _ *schema.ResourceData, _ interface{}) diag.Diagnostics {
 	return nil
 }
 
-func resourceSwrEnterpriseInstanceArtifactDeleteUpdate(_ context.Context, _ *schema.ResourceData, _ interface{}) diag.Diagnostics {
+func resourceSwrEnterpriseInstanceArtifactManualScanUpdate(_ context.Context, _ *schema.ResourceData, _ interface{}) diag.Diagnostics {
 	return nil
 }
 
-func resourceSwrEnterpriseInstanceArtifactDeleteDelete(_ context.Context, _ *schema.ResourceData, _ interface{}) diag.Diagnostics {
-	errorMsg := "Deleting SWR enterprise artifact delete resource is not supported. The resource is only removed from the state."
+func resourceSwrEnterpriseInstanceArtifactManualScanDelete(_ context.Context, _ *schema.ResourceData, _ interface{}) diag.Diagnostics {
+	errorMsg := "Deleting SWR enterprise artifact manual scan resource is not supported. The resource is only removed from the state."
 	return diag.Diagnostics{
 		diag.Diagnostic{
 			Severity: diag.Warning,

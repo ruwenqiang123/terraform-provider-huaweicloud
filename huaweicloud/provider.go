@@ -1438,6 +1438,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_hss_image_asset_statistics":                     hss.DataSourceImageAssetStatistics(),
 			"huaweicloud_hss_image_pay_per_scan_statistics":              hss.DataSourceImagePayPerScanStatistics(),
 			"huaweicloud_hss_image_baseline_risk_configs":                hss.DataSourceImageBaselineRiskConfigs(),
+			"huaweicloud_hss_image_baseline_ewp":                         hss.DataSourceImageBaselineEWP(),
 			"huaweicloud_hss_container_clusters_policy_templates":        hss.DataSourceContainerClustersPolicyTemplates(),
 			"huaweicloud_hss_container_clusters_policy_template":         hss.DataSourceContainerClustersPolicyTemplate(),
 			"huaweicloud_hss_common_task_statistics":                     hss.DataSourceCommonTaskStatistics(),
@@ -1997,6 +1998,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_secmaster_baseline_checkitems":           secmaster.DataSourceBaselineCheckitems(),
 			"huaweicloud_secmaster_catalogues_search":             secmaster.DataSourceSecmasterCataloguesSearch(),
 			"huaweicloud_secmaster_catalogues":                    secmaster.DataSourceSecmasterCatalogues(),
+			"huaweicloud_secmaster_cloud_log_resources":           secmaster.DataSourceCloudLogResources(),
 			"huaweicloud_secmaster_collector_channel_groups":      secmaster.DataSourceCollectorChannelGroups(),
 			"huaweicloud_secmaster_collector_channel_instances":   secmaster.DataSourceCollectorChannelInstances(),
 			"huaweicloud_secmaster_collector_cloudlog_regions":    secmaster.DataSourceCollectorCloudlogRegions(),
@@ -2137,6 +2139,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_swr_enterprise_instance_artifacts":                 swrenterprise.DataSourceSwrEnterpriseInstanceArtifacts(),
 			"huaweicloud_swr_enterprise_instance_artifact_accessories":      swrenterprise.DataSourceSwrEnterpriseInstanceArtifactAccessories(),
 			"huaweicloud_swr_enterprise_instance_artifact_addition":         swrenterprise.DataSourceSwrEnterpriseInstanceArtifactAddition(),
+			"huaweicloud_swr_enterprise_instance_artifact_vulnerabilities":  swrenterprise.DataSourceSwrEnterpriseInstanceArtifactVulnerabilities(),
 			"huaweicloud_swr_enterprise_namespace_repositories":             swrenterprise.DataSourceSwrEnterpriseNamespaceRepositories(),
 			"huaweicloud_swr_enterprise_namespaces":                         swrenterprise.DataSourceSwrEnterpriseNamespaces(),
 			"huaweicloud_swr_enterprise_repositories":                       swrenterprise.DataSourceSwrEnterpriseRepositories(),
@@ -3088,6 +3091,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_dns_private_zone_associate":    dns.ResourceDNSPrivateZoneAssociate(),
 			"huaweicloud_dns_endpoint_assignment":       dns.ResourceEndpointAssignment(),
 			"huaweicloud_dns_endpoint":                  dns.ResourceDNSEndpoint(),
+			"huaweicloud_dns_resolver_access_log":       dns.ResourceResolverAccessLog(),
 			"huaweicloud_dns_resolver_rule":             dns.ResourceResolverRule(),
 			"huaweicloud_dns_resolver_rule_associate":   dns.ResourceResolverRuleAssociate(),
 			"huaweicloud_dns_line_group":                dns.ResourceLineGroup(),
@@ -3294,6 +3298,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_hss_event_alarm_white_list_delete":                  hss.ResourceEventAlarmWhiteListDelete(),
 			"huaweicloud_hss_event_login_white_list":                         hss.ResourceEventLoginWhiteList(),
 			"huaweicloud_hss_image_batch_scan":                               hss.ResourceImageBatchScan(),
+			"huaweicloud_hss_image_baseline_change_ewp":                      hss.ResourceImageBaselineChangeEWP(),
 			"huaweicloud_hss_login_common_location":                          hss.ResourceLoginCommonLocation(),
 			"huaweicloud_hss_login_white_ip":                                 hss.ResourceLoginWhiteIp(),
 			"huaweicloud_hss_change_host_ignore_status":                      hss.ResourceChangeHostIgnoreStatus(),
@@ -3601,9 +3606,6 @@ func Provider() *schema.Provider {
 			"huaweicloud_mpc_transcoding_template":       mpc.ResourceTranscodingTemplate(),
 			"huaweicloud_mpc_transcoding_template_group": mpc.ResourceTranscodingTemplateGroup(),
 
-			"huaweicloud_mrs_cluster": ResourceMRSClusterV1(),
-			"huaweicloud_mrs_job":     ResourceMRSJobV1(),
-
 			"huaweicloud_nat_dnat_rule": nat.ResourcePublicDnatRule(),
 			"huaweicloud_nat_gateway":   nat.ResourcePublicGateway(),
 			"huaweicloud_nat_snat_rule": nat.ResourcePublicSnatRule(),
@@ -3753,6 +3755,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_secmaster_soc_mapping_delete":          secmaster.ResourceSocMappingDelete(),
 			"huaweicloud_secmaster_workflow_action":             secmaster.ResourceWorkflowAction(),
 			"huaweicloud_secmaster_workflow_version_approval":   secmaster.ResourceWorkflowVersionApproval(),
+			"huaweicloud_secmaster_workflow_version_validation": secmaster.ResourceWorkflowVersionValidation(),
 			"huaweicloud_secmaster_workflow_version":            secmaster.ResourceWorkflowVersion(),
 			"huaweicloud_secmaster_workflow":                    secmaster.ResourceWorkflow(),
 			"huaweicloud_secmaster_workspace":                   secmaster.ResourceWorkspace(),
@@ -3830,6 +3833,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_swr_enterprise_image_signature_policy":            swrenterprise.ResourceSwrEnterpriseImageSignaturePolicy(),
 			"huaweicloud_swr_enterprise_image_signature_policy_execute":    swrenterprise.ResourceSwrEnterpriseImageSignaturePolicyExecute(),
 			"huaweicloud_swr_enterprise_job_delete":                        swrenterprise.ResourceSwrEnterpriseJobDelete(),
+			"huaweicloud_swr_enterprise_instance_artifact_manual_scan":     swrenterprise.ResourceSwrEnterpriseInstanceArtifactManualScan(),
 			"huaweicloud_swr_enterprise_instance_artifact_delete":          swrenterprise.ResourceSwrEnterpriseInstanceArtifactDelete(),
 			"huaweicloud_swr_enterprise_instance_artifact_tag_delete":      swrenterprise.ResourceSwrEnterpriseInstanceArtifactTagDelete(),
 			"huaweicloud_swr_enterprise_domain_name":                       swrenterprise.ResourceSwrEnterpriseDomainName(),
@@ -3924,6 +3928,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_waf_alarm_notification":                  waf.ResourceWafAlarmNotification(),
 			"huaweicloud_waf_batch_create_whiteblackip_rules":     waf.ResourceWafBatchCreateWhiteBlackIpRules(),
 			"huaweicloud_waf_batch_create_antileakage_rules":      waf.ResourceWafBatchCreateAntileakageRules(),
+			"huaweicloud_waf_batch_create_antitamper_rules":       waf.ResourceWafBatchCreateAntitamperRules(),
 			"huaweicloud_waf_batch_create_cc_rules":               waf.ResourceWafBatchCreateCcRules(),
 			"huaweicloud_waf_batch_create_custom_rules":           waf.ResourceWafBatchCreateCustomRules(),
 			"huaweicloud_waf_batch_create_geoip_rules":            waf.ResourceWafBatchCreateGeoipRules(),
@@ -3931,6 +3936,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_waf_batch_create_ip_reputation_rules":    waf.ResourceWafBatchCreateIpReputationRules(),
 			"huaweicloud_waf_batch_create_privacy_rules":          waf.ResourceWafBatchCreatePrivacyRules(),
 			"huaweicloud_waf_batch_delete_alarm_notifications":    waf.ResourceWafBatchDeleteAlarmNotifications(),
+			"huaweicloud_waf_batch_update_whiteblackip_rules":     waf.ResourceWafBatchUpdateWhiteblackipRules(),
 			"huaweicloud_waf_migrate_domain":                      waf.ResourceMigrateDomain(),
 			"huaweicloud_waf_policy":                              waf.ResourceWafPolicy(),
 			"huaweicloud_waf_policies_batch_delete":               waf.ResourcePoliciesBatchDelete(),
@@ -4120,9 +4126,6 @@ func Provider() *schema.Provider {
 			"huaweicloud_lb_l7rule_v2":       lb.ResourceL7RuleV2(),
 			"huaweicloud_lb_whitelist_v2":    lb.ResourceWhitelistV2(),
 
-			"huaweicloud_mrs_cluster_v1": ResourceMRSClusterV1(),
-			"huaweicloud_mrs_job_v1":     ResourceMRSJobV1(),
-
 			"huaweicloud_networking_secgroup_v2":      vpc.ResourceNetworkingSecGroup(),
 			"huaweicloud_networking_secgroup_rule_v2": vpc.ResourceNetworkingSecGroupRule(),
 
@@ -4246,6 +4249,11 @@ func Provider() *schema.Provider {
 			"huaweicloud_cs_peering_connect_v1": deprecated.ResourceCsPeeringConnectV1(),
 
 			"huaweicloud_lts_structuring_configuration": lts.ResourceStructConfig(),
+
+			"huaweicloud_mrs_cluster":    deprecated.ResourceMRSClusterV1(),
+			"huaweicloud_mrs_cluster_v1": deprecated.ResourceMRSClusterV1(),
+			"huaweicloud_mrs_job":        deprecated.ResourceMRSJobV1(),
+			"huaweicloud_mrs_job_v1":     deprecated.ResourceMRSJobV1(),
 
 			"huaweicloud_sfs_access_rule":    deprecated.ResourceSFSAccessRuleV2(),
 			"huaweicloud_sfs_file_system":    deprecated.ResourceSFSFileSystemV2(),
