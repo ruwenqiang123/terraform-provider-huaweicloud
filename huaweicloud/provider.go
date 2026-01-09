@@ -1486,6 +1486,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_hss_image_tasks":                                hss.DataSourceImageTasks(),
 			"huaweicloud_hss_image_vulnerability_cves":                   hss.DataSourceImageVulnerabilityCves(),
 			"huaweicloud_hss_image_whitelists":                           hss.DataSourceImageWhitelists(),
+			"huaweicloud_hss_image_apps":                                 hss.DataSourceImageApps(),
 			"huaweicloud_hss_image_files_statistics":                     hss.DataSourceImageFilesStatistics(),
 			"huaweicloud_hss_kubernetes_services":                        hss.DataSourceKubernetesServices(),
 			"huaweicloud_hss_malware_collect_status":                     hss.DataSourceHssMalwareCollectStatus(),
@@ -4167,6 +4168,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_identity_user_v3":             iam.ResourceIdentityUser(),
 			"huaweicloud_identity_group_v3":            iam.ResourceIdentityGroup(),
 			"huaweicloud_identity_group_membership_v3": iam.ResourceIdentityGroupMembership(),
+			"huaweicloud_identity_provider_mapping":    iam.ResourceIAMProviderMapping(),
 
 			"huaweicloud_cdm_cluster_v1": cdm.ResourceCdmCluster(),
 			"huaweicloud_css_cluster_v1": css.ResourceCssCluster(),
