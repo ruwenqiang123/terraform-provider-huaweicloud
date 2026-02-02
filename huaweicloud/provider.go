@@ -91,6 +91,7 @@ import (
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/iotda"
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/kafka"
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/koogallery"
+	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/lakeformation"
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/lb"
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/live"
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/lts"
@@ -1733,6 +1734,8 @@ func Provider() *schema.Provider {
 			"huaweicloud_iotda_upgrade_packages":           iotda.DataSourceUpgradePackages(),
 
 			"huaweicloud_koogallery_assets": koogallery.DataSourceKooGalleryAssets(),
+
+			"huaweicloud_lakeformation_specifications": lakeformation.DataSourceSpecifications(),
 
 			"huaweicloud_lb_listeners":    lb.DataSourceListeners(),
 			"huaweicloud_lb_loadbalancer": lb.DataSourceELBV2Loadbalancer(),
@@ -3509,6 +3512,10 @@ func Provider() *schema.Provider {
 			"huaweicloud_kps_export_private_key":       dew.ResourceKpsExportPrivateKey(),
 			"huaweicloud_kps_failed_task_delete":       dew.ResourceKpsFailedTaskDelete(),
 
+			"huaweicloud_lakeformation_instance":                lakeformation.ResourceInstance(),
+			"huaweicloud_lakeformation_instance_default_update": lakeformation.ResourceInstanceDefaultUpdate(),
+			"huaweicloud_lakeformation_instance_recover":        lakeformation.ResourceInstanceRecover(),
+
 			"huaweicloud_lb_certificate":  lb.ResourceCertificateV2(),
 			"huaweicloud_lb_l7policy":     lb.ResourceL7PolicyV2(),
 			"huaweicloud_lb_l7rule":       lb.ResourceL7RuleV2(),
@@ -3668,7 +3675,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_ram_organization":              ram.ResourceRAMOrganization(),
 			"huaweicloud_ram_resource_share":            ram.ResourceRAMShare(),
 			"huaweicloud_ram_resource_share_accepter":   ram.ResourceShareAccepter(),
-			"huaweicloud_ram_resource_share_permission": ram.ResourceRAMResourceSharePermission(),
+			"huaweicloud_ram_resource_share_permission": ram.ResourceSharePermission(),
 
 			"huaweicloud_rds_mysql_account":                  rds.ResourceMysqlAccount(),
 			"huaweicloud_rds_mysql_binlog":                   rds.ResourceMysqlBinlog(),
