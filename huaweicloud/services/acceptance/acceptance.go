@@ -60,7 +60,7 @@ var (
 	HW_ADMIN                               = os.Getenv("HW_ADMIN")
 	HW_IAM_V5                              = os.Getenv("HW_IAM_V5")
 	HW_IAM_SERVICE_LINKED_AGENCY_PRINCIPAL = os.Getenv("HW_IAM_SERVICE_LINKED_AGENCY_PRINCIPAL")
-	HW_RUNNER_PUBLIC_IP                    = os.Getenv("HW_RUNNER_PUBLIC_IP")
+	HW_RUNNER_PUBLIC_IPS                   = os.Getenv("HW_RUNNER_PUBLIC_IPS")
 
 	// CBR environment
 	HW_CBR_ECS_BACKUP_ID          = os.Getenv("HW_CBR_ECS_BACKUP_ID")          // The ECS backup ID.
@@ -764,14 +764,15 @@ var (
 	HW_HSS_HOST_ID1                           = os.Getenv("HW_HSS_HOST_ID1")
 	HW_HSS_HOST_ID2                           = os.Getenv("HW_HSS_HOST_ID2")
 	// The vulnerability ID
-	HW_HSS_VUL_ID      = os.Getenv("HW_HSS_VUL_ID")
-	HW_HSS_POLICY_ID   = os.Getenv("HW_HSS_POLICY_ID")
-	HW_HSS_DOMAIN      = os.Getenv("HW_HSS_DOMAIN")
-	HW_HSS_IAC_FILE_ID = os.Getenv("HW_HSS_IAC_FILE_ID")
-	HW_HSS_TASK_ID     = os.Getenv("HW_HSS_TASK_ID")
-	HW_HSS_AGENT_ID    = os.Getenv("HW_HSS_AGENT_ID")
-	HW_HSS_IMAGE_ID    = os.Getenv("HW_HSS_IMAGE_ID")
-	HW_HSS_BACKUP_ID   = os.Getenv("HW_HSS_BACKUP_ID")
+	HW_HSS_VUL_ID        = os.Getenv("HW_HSS_VUL_ID")
+	HW_HSS_POLICY_ID     = os.Getenv("HW_HSS_POLICY_ID")
+	HW_HSS_DOMAIN        = os.Getenv("HW_HSS_DOMAIN")
+	HW_HSS_IAC_FILE_ID   = os.Getenv("HW_HSS_IAC_FILE_ID")
+	HW_HSS_TASK_ID       = os.Getenv("HW_HSS_TASK_ID")
+	HW_HSS_AGENT_ID      = os.Getenv("HW_HSS_AGENT_ID")
+	HW_HSS_IMAGE_ID      = os.Getenv("HW_HSS_IMAGE_ID")
+	HW_HSS_BACKUP_ID     = os.Getenv("HW_HSS_BACKUP_ID")
+	HW_HSS_CHECK_RULE_ID = os.Getenv("HW_HSS_CHECK_RULE_ID")
 
 	HW_DDM_INSTANCE_ID = os.Getenv("HW_DDM_INSTANCE_ID")
 	HW_DDM_PROCESS_ID  = os.Getenv("HW_DDM_PROCESS_ID")
@@ -1644,9 +1645,9 @@ func TestAccPreCheckServiceLinkedAgencyPrincipal(t *testing.T) {
 }
 
 // lintignore:AT003
-func TestAccPreCheckRunnerPublicIP(t *testing.T) {
-	if HW_RUNNER_PUBLIC_IP == "" {
-		t.Skip("HW_RUNNER_PUBLIC_IP must be set for this acceptance test.")
+func TestAccPreCheckRunnerPublicIPs(t *testing.T, min int) {
+	if HW_RUNNER_PUBLIC_IPS == "" || len(strings.Split(HW_RUNNER_PUBLIC_IPS, ",")) < min {
+		t.Skipf(`At least %d public IP(s) must be supported during the HW_RUNNER_PUBLIC_IPS, separated by commas (,).`, min)
 	}
 }
 
@@ -4130,6 +4131,13 @@ func TestAccPreCheckHSSImageId(t *testing.T) {
 func TestAccPreCheckHSSBackupId(t *testing.T) {
 	if HW_HSS_BACKUP_ID == "" {
 		t.Skip("HW_HSS_BACKUP_ID must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckHSSCheckRuleId(t *testing.T) {
+	if HW_HSS_CHECK_RULE_ID == "" {
+		t.Skip("HW_HSS_CHECK_RULE_ID must be set for the acceptance test")
 	}
 }
 
