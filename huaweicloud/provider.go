@@ -767,6 +767,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_ccm_private_ca_agency":            ccm.DataSourcePrivateCaAgency(),
 			"huaweicloud_ccm_private_ca_config_console":    ccm.DataSourceCcmPrivateCaConfigConsole(),
 			"huaweicloud_ccm_certificate_export":           ccm.DataSourceCertificateExport(),
+			"huaweicloud_ccm_certificate_tags":             ccm.DataSourceCcmCertificateTags(),
 			"huaweicloud_ccm_certificates_by_tags":         ccm.DataSourceCertificatesByTags(),
 			"huaweicloud_ccm_private_cas":                  ccm.DataSourcePrivateCas(),
 			"huaweicloud_ccm_private_ca_export":            ccm.DataSourcePrivateCaExport(),
@@ -775,6 +776,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_ccm_private_cas_by_tags":          ccm.DataSourcePrivateCasByTags(),
 			"huaweicloud_ccm_private_certificates":         ccm.DataSourcePrivateCertificates(),
 			"huaweicloud_ccm_private_certificate_export":   ccm.DataSourcePrivateCertificateExport(),
+			"huaweicloud_ccm_private_certificate_tags":     ccm.DataSourceCcmPrivateCertificateTags(),
 			"huaweicloud_ccm_private_certificates_by_tags": ccm.DataSourcePrivateCertificatesByTags(),
 
 			"huaweicloud_cdn_analytics":                     cdn.DataSourceAnalytics(),
@@ -1476,6 +1478,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_hss_container_kubernetes_endpoint_detail":       hss.DataSourceContainerKubernetesEndpointDetail(),
 			"huaweicloud_hss_container_kubernetes_mcc":                   hss.DataSourceContainerKubernetesMCC(),
 			"huaweicloud_hss_container_kubernetes_template":              hss.DataSourceHssContainerKubernetesTemplate(),
+			"huaweicloud_hss_container_kubernetes_clusters_daemonsets":   hss.DataSourceContainerKubernetesClustersDaemonsets(),
 			"huaweicloud_hss_container_nodes":                            hss.DataSourceContainerNodes(),
 			"huaweicloud_hss_container_node_statistics":                  hss.DataSourceContainerNodeStatistics(),
 			"huaweicloud_hss_container_cluster_risks":                    hss.DataSourceContainerClusterRisks(),
@@ -1606,6 +1609,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_hss_security_check_config":                      hss.DataSourceSecurityCheckConfig(),
 			"huaweicloud_hss_baseline_security_checks_directories":       hss.DataSourceBaselineSecurityChecksDirectories(),
 			"huaweicloud_hss_baseline_security_checks_default_policy":    hss.DataSourceBaselineSecurityChecksDefaultPolicy(),
+			"huaweicloud_hss_baseline_security_checks_details":           hss.DataSourceBaselineSecurityChecksDetails(),
 			"huaweicloud_hss_configs":                                    hss.DataSourceConfigs(),
 			"huaweicloud_hss_container_kubernetes_mciuc":                 hss.DataSourceHssContainerKubernetesMciuc(),
 			"huaweicloud_hss_container_kubernetes_mcan":                  hss.DataSourceContainerKubernetesMCAN(),
@@ -1859,6 +1863,8 @@ func Provider() *schema.Provider {
 
 			"huaweicloud_obs_buckets":       obs.DataSourceObsBuckets(),
 			"huaweicloud_obs_bucket_object": obs.DataSourceObsBucketObject(),
+
+			"huaweicloud_oms_migration_sync_tasks": oms.DataSourceMigrationSyncTasks(),
 
 			"huaweicloud_ram_resource_permissions":                  ram.DataSourceResourcePermissions(),
 			"huaweicloud_ram_resource_permission":                   ram.DataSourceResourcePermission(),
