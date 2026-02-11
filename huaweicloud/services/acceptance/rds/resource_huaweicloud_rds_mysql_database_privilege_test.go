@@ -1,78 +1,25 @@
 package rds
 
 import (
-	"encoding/json"
 	"fmt"
-	"strings"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 
-	"github.com/chnsz/golangsdk/pagination"
-
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/config"
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/acceptance"
-	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/utils"
+	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/rds"
 )
 
 func getMysqlDatabasePrivilegeResourceFunc(cfg *config.Config, state *terraform.ResourceState) (interface{}, error) {
-	region := acceptance.HW_REGION_NAME
-	// getMysqlDatabasePrivilege: query RDS Mysql database privilege
-	var (
-		getMysqlDatabasePrivilegeHttpUrl = "v3/{project_id}/instances/{instance_id}/database/db_user"
-		getMysqlDatabasePrivilegeProduct = "rds"
-	)
-	getMysqlDatabasePrivilegeClient, err := cfg.NewServiceClient(getMysqlDatabasePrivilegeProduct, region)
+	client, err := cfg.NewServiceClient("rds", acceptance.HW_REGION_NAME)
 	if err != nil {
 		return nil, fmt.Errorf("error creating RDS client: %s", err)
 	}
 
-	// Split instance_id and database from resource id
-	parts := strings.Split(state.Primary.ID, "/")
-	if len(parts) != 2 {
-		return nil, fmt.Errorf("invalid id format, must be <instance_id>/<db_name>")
-	}
-	instanceId := parts[0]
-	dbName := parts[1]
-
-	getMysqlDatabasePrivilegePath := getMysqlDatabasePrivilegeClient.Endpoint + getMysqlDatabasePrivilegeHttpUrl
-	getMysqlDatabasePrivilegePath = strings.ReplaceAll(getMysqlDatabasePrivilegePath, "{project_id}",
-		getMysqlDatabasePrivilegeClient.ProjectID)
-	getMysqlDatabasePrivilegePath = strings.ReplaceAll(getMysqlDatabasePrivilegePath, "{instance_id}", instanceId)
-
-	getMysqlDatabasePrivilegeQueryParams := buildGetMysqlDatabasePrivilegeQueryParams(dbName)
-	getMysqlDatabasePrivilegePath += getMysqlDatabasePrivilegeQueryParams
-
-	getMysqlDatabasePrivilegeResp, err := pagination.ListAllItems(
-		getMysqlDatabasePrivilegeClient,
-		"page",
-		getMysqlDatabasePrivilegePath,
-		&pagination.QueryOpts{MarkerField: ""})
-	if err != nil {
-		return nil, fmt.Errorf("error retrieving Mysql database privilege: %s", err)
-	}
-
-	getMysqlDatabasePrivilegeRespJson, err := json.Marshal(getMysqlDatabasePrivilegeResp)
-	if err != nil {
-		return nil, fmt.Errorf("error retrieving Mysql database privilege: %s", err)
-	}
-	var getMysqlDatabasePrivilegeRespBody interface{}
-	err = json.Unmarshal(getMysqlDatabasePrivilegeRespJson, &getMysqlDatabasePrivilegeRespBody)
-	if err != nil {
-		return nil, fmt.Errorf("error retrieving Mysql database privilege: %s", err)
-	}
-
-	curJson := utils.PathSearch("users", getMysqlDatabasePrivilegeRespBody, make([]interface{}, 0))
-	if len(curJson.([]interface{})) == 0 {
-		return nil, fmt.Errorf("error get RDS Mysql database privilege")
-	}
-
-	return getMysqlDatabasePrivilegeRespBody, nil
-}
-
-func buildGetMysqlDatabasePrivilegeQueryParams(dbName string) string {
-	return fmt.Sprintf("?db-name=%s&page=1&limit=100", dbName)
+	return rds.ListMysqlDatabasePrivileges(client, state.Primary.Attributes["instance_id"],
+		state.Primary.Attributes["db_name"], nil)
 }
 
 func TestAccMysqlDatabasePrivilege_basic(t *testing.T) {
@@ -104,28 +51,43 @@ func TestAccMysqlDatabasePrivilege_basic(t *testing.T) {
 				Config: testAccMysqlDatabasePrivilege_basic_step1(name),
 				Check: resource.ComposeTestCheckFunc(
 					rc.CheckResourceExists(),
-					resource.TestCheckResourceAttrPair(rName, "instance_id",
-						"huaweicloud_rds_instance.test", "id"),
-					resource.TestCheckResourceAttrPair(rName, "db_name",
-						"huaweicloud_rds_mysql_database.test", "name"),
-					resource.TestCheckResourceAttr(rName, "users.#", "2"),
+					resource.TestCheckResourceAttrPair(rName, "instance_id", "huaweicloud_rds_instance.test", "id"),
+					resource.TestCheckResourceAttrPair(rName, "db_name", "huaweicloud_rds_mysql_database.test", "name"),
+					resource.TestCheckResourceAttr(rName, "users.#", "4"),
+					resource.TestCheckResourceAttrPair(rName, "users.0.name", "huaweicloud_rds_mysql_account.test.0", "name"),
+					resource.TestCheckResourceAttr(rName, "users.0.readonly", "true"),
+					resource.TestCheckResourceAttrPair(rName, "users.1.name", "huaweicloud_rds_mysql_account.test.1", "name"),
+					resource.TestCheckResourceAttr(rName, "users.1.readonly", "true"),
+					resource.TestCheckResourceAttrPair(rName, "users.2.name", "huaweicloud_rds_mysql_account.test.2", "name"),
+					resource.TestCheckResourceAttr(rName, "users.2.readonly", "false"),
+					resource.TestCheckResourceAttrPair(rName, "users.3.name", "huaweicloud_rds_mysql_account.test.3", "name"),
+					resource.TestCheckResourceAttr(rName, "users.3.readonly", "false"),
 				),
 			},
 			{
 				Config: testAccMysqlDatabasePrivilege_basic_step2(name),
 				Check: resource.ComposeTestCheckFunc(
 					rc.CheckResourceExists(),
-					resource.TestCheckResourceAttrPair(rName, "instance_id",
-						"huaweicloud_rds_instance.test", "id"),
-					resource.TestCheckResourceAttrPair(rName, "db_name",
-						"huaweicloud_rds_mysql_database.test", "name"),
-					resource.TestCheckResourceAttr(rName, "users.#", "2"),
+					resource.TestCheckResourceAttrPair(rName, "instance_id", "huaweicloud_rds_instance.test", "id"),
+					resource.TestCheckResourceAttrPair(rName, "db_name", "huaweicloud_rds_mysql_database.test", "name"),
+					resource.TestCheckResourceAttr(rName, "users.#", "4"),
+					resource.TestCheckResourceAttrPair(rName, "users.0.name", "huaweicloud_rds_mysql_account.test.1", "name"),
+					resource.TestCheckResourceAttr(rName, "users.0.readonly", "true"),
+					resource.TestCheckResourceAttrPair(rName, "users.1.name", "huaweicloud_rds_mysql_account.test.2", "name"),
+					resource.TestCheckResourceAttr(rName, "users.1.readonly", "true"),
+					resource.TestCheckResourceAttrPair(rName, "users.2.name", "huaweicloud_rds_mysql_account.test.3", "name"),
+					resource.TestCheckResourceAttr(rName, "users.2.readonly", "false"),
+					resource.TestCheckResourceAttrPair(rName, "users.3.name", "huaweicloud_rds_mysql_account.test.4", "name"),
+					resource.TestCheckResourceAttr(rName, "users.3.readonly", "false"),
 				),
 			},
 			{
 				ResourceName:      rName,
 				ImportState:       true,
 				ImportStateVerify: true,
+				ImportStateVerifyIgnore: []string{
+					"users_origin",
+				},
 			},
 		},
 	})
@@ -197,7 +159,7 @@ resource "random_password" "test" {
 }
 
 resource "huaweicloud_rds_mysql_account" "test" {
-  count = 3
+  count = 5
 
   instance_id = huaweicloud_rds_instance.test.id
   name        = format("%[1]s_%%d", count.index)
@@ -217,13 +179,23 @@ resource "huaweicloud_rds_mysql_database_privilege" "test" {
 
   instance_id = huaweicloud_rds_instance.test.id
   db_name     = huaweicloud_rds_mysql_database.test.name
-  
+
+  # Read-Only privileges.
   dynamic "users" {
     for_each = slice(huaweicloud_rds_mysql_account.test[*].name, 0, 2)
 
     content {
       name     = users.value
       readonly = true
+    }
+  }
+  # Read-and-Write privileges.
+  dynamic "users" {
+    for_each = slice(huaweicloud_rds_mysql_account.test[*].name, 2, 4)
+
+    content {
+      name     = users.value
+      readonly = false
     }
   }
 }
@@ -241,13 +213,23 @@ resource "huaweicloud_rds_mysql_database_privilege" "test" {
 
   instance_id = huaweicloud_rds_instance.test.id
   db_name     = huaweicloud_rds_mysql_database.test.name
-  
+
+  # Read-Only privileges.
   dynamic "users" {
     for_each = slice(huaweicloud_rds_mysql_account.test[*].name, 1, 3)
 
     content {
       name     = users.value
       readonly = true
+    }
+  }
+  # Read-and-Write privileges.
+  dynamic "users" {
+    for_each = slice(huaweicloud_rds_mysql_account.test[*].name, 3, 5)
+
+    content {
+      name     = users.value
+      readonly = false
     }
   }
 }

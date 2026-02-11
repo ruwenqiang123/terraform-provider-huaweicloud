@@ -1661,10 +1661,10 @@ func Provider() *schema.Provider {
 			"huaweicloud_identityv5_policies":                 iam.DataSourceIdentityV5Policies(),
 			"huaweicloud_identityv5_policy_versions":          iam.DataSourceIdentityV5PolicyVersions(),
 			"huaweicloud_identityv5_policy_attached_entities": iam.DataSourceIdentityV5PolicyAttachedEntities(),
-			"huaweicloud_identityv5_agency_attached_policies": iam.DataSourceIdentityV5AgencyAttachedPolicies(),
-			"huaweicloud_identityv5_group_attached_policies":  iam.DataSourceIdentityV5GroupAttachedPolicies(),
+			"huaweicloud_identityv5_agency_attached_policies": iam.DataSourceV5AgencyAttachedPolicies(),
+			"huaweicloud_identityv5_group_attached_policies":  iam.DataSourceV5GroupAttachedPolicies(),
 			"huaweicloud_identityv5_authorization_schema":     iam.DataSourceIdentityV5AuthorizationSchema(),
-			"huaweicloud_identityv5_user_attached_policies":   iam.DataSourceIdentityV5UserAttachedPolicies(),
+			"huaweicloud_identityv5_user_attached_policies":   iam.DataSourceV5UserAttachedPolicies(),
 			"huaweicloud_identityv5_access_key":               iam.DataSourceIdentityV5AccessKey(),
 
 			"huaweicloud_identitycenter_access_control_attribute_configurations": identitycenter.DataSourceAccessControlAttributeConfigurations(),
@@ -1864,8 +1864,9 @@ func Provider() *schema.Provider {
 			"huaweicloud_obs_buckets":       obs.DataSourceObsBuckets(),
 			"huaweicloud_obs_bucket_object": obs.DataSourceObsBucketObject(),
 
-			"huaweicloud_oms_cloud_type_venders":   oms.DataSourceCloudTypeVenders(),
-			"huaweicloud_oms_migration_sync_tasks": oms.DataSourceMigrationSyncTasks(),
+			"huaweicloud_oms_cloud_type_venders":    oms.DataSourceCloudTypeVenders(),
+			"huaweicloud_oms_migration_sync_tasks":  oms.DataSourceMigrationSyncTasks(),
+			"huaweicloud_oms_migration_task_groups": oms.DataSourceMigrationTaskGroups(),
 
 			"huaweicloud_ram_resource_permissions":                  ram.DataSourceResourcePermissions(),
 			"huaweicloud_ram_resource_permission":                   ram.DataSourceResourcePermission(),
@@ -2811,6 +2812,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_cciv2_observability_configuration": cci.ResourceV2ObservabilityConfiguration(),
 
 			"huaweicloud_ccm_certificate":                ccm.ResourceCCMCertificate(),
+			"huaweicloud_ccm_csr":                        ccm.ResourceCsr(),
 			"huaweicloud_ccm_certificate_apply":          ccm.ResourceCertificateApply(),
 			"huaweicloud_ccm_certificate_deploy":         ccm.ResourceCertificateDeploy(),
 			"huaweicloud_ccm_certificate_import":         ccm.ResourceCertificateImport(),
@@ -3411,8 +3413,8 @@ func Provider() *schema.Provider {
 
 			"huaweicloud_identityv5_user":                        iam.ResourceIdentityV5User(),
 			"huaweicloud_identityv5_user_password":               iam.ResourceIdentityV5UserPassword(),
-			"huaweicloud_identityv5_login_profile":               iam.ResourceIdentityV5LoginProfile(),
-			"huaweicloud_identityv5_login_policy":                iam.ResourceIdentityV5LoginPolicy(),
+			"huaweicloud_identityv5_login_profile":               iam.ResourceV5LoginProfile(),
+			"huaweicloud_identityv5_login_policy":                iam.ResourceV5LoginPolicy(),
 			"huaweicloud_identityv5_password_policy":             iam.ResourceIdentityV5PasswordPolicy(),
 			"huaweicloud_identityv5_policy_default_version":      iam.ResourceV5PolicyDefaultVersion(),
 			"huaweicloud_identityv5_policy_group_attach":         iam.ResourceV5PolicyGroupAttach(),
