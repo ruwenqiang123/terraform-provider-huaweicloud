@@ -116,7 +116,8 @@ var (
 	HW_OBS_USER_DOMAIN_NAME2  = os.Getenv("HW_OBS_USER_DOMAIN_NAME2")
 	HW_OBS_ENDPOINT           = os.Getenv("HW_OBS_ENDPOINT")
 
-	HW_OMS_ENABLE_FLAG = os.Getenv("HW_OMS_ENABLE_FLAG")
+	HW_OMS_ENABLE_FLAG  = os.Getenv("HW_OMS_ENABLE_FLAG")
+	HW_OMS_SYNC_TASK_ID = os.Getenv("HW_OMS_SYNC_TASK_ID")
 
 	HW_DEPRECATED_ENVIRONMENT = os.Getenv("HW_DEPRECATED_ENVIRONMENT")
 	HW_INTERNAL_USED          = os.Getenv("HW_INTERNAL_USED")
@@ -370,6 +371,7 @@ var (
 
 	HW_MULTI_ACCOUNT_ENVIRONMENT            = os.Getenv("HW_MULTI_ACCOUNT_ENVIRONMENT")
 	HW_ORGANIZATIONS_OPEN                   = os.Getenv("HW_ORGANIZATIONS_OPEN")
+	HW_ORGANIZATIONS_CLOSE_ACCOUNT_ID       = os.Getenv("HW_ORGANIZATIONS_CLOSE_ACCOUNT_ID")
 	HW_ORGANIZATIONS_ACCOUNT_ID             = os.Getenv("HW_ORGANIZATIONS_ACCOUNT_ID")
 	HW_ORGANIZATIONS_ACCOUNT_NAME           = os.Getenv("HW_ORGANIZATIONS_ACCOUNT_NAME")
 	HW_ORGANIZATIONS_INVITE_ACCOUNT_ID      = os.Getenv("HW_ORGANIZATIONS_INVITE_ACCOUNT_ID")
@@ -922,6 +924,13 @@ func TestAccPreCheckCbcResourcesUnsubscribe(t *testing.T) {
 func TestAccPreCheckOrganizationsOpen(t *testing.T) {
 	if HW_ORGANIZATIONS_OPEN == "" {
 		t.Skip("HW_ORGANIZATIONS_OPEN must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckOrganizationsCloseAccountId(t *testing.T) {
+	if HW_ORGANIZATIONS_CLOSE_ACCOUNT_ID == "" {
+		t.Skip("HW_ORGANIZATIONS_CLOSE_ACCOUNT_ID must be set for the acceptance test")
 	}
 }
 
@@ -1620,6 +1629,13 @@ func TestAccPreCheckCNADProtectedObject(t *testing.T) {
 func TestAccPreCheckOmsInstance(t *testing.T) {
 	if HW_OMS_ENABLE_FLAG == "" {
 		t.Skip("Skip the OMS acceptance tests.")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckOmsSyncTaskId(t *testing.T) {
+	if HW_OMS_SYNC_TASK_ID == "" {
+		t.Skip("HW_OMS_SYNC_TASK_ID must be set for this acceptance test")
 	}
 }
 

@@ -29,7 +29,7 @@ In addition to all arguments above, the following attributes are exported:
 
 * `id` - The data source ID.
 
-* `quotas` - The certificate quota.
+* `quotas` - The CA quota.
 
   The [quotas](#quotas_struct) structure is documented below.
 
@@ -43,12 +43,8 @@ The `quotas` block supports:
 <a name="quotas_resources_struct"></a>
 The `resources` block supports:
 
-* `type` - The certificate type. Valid values are:
-  + **CERTIFICATE_AUTHORITY**: CA certificate.
-  + **CERTIFICATE**: Private certificate.
+* `type` - The certificate type.
 
 * `used` - The used quota.
 
-* `quota` - The total quota. There are two scenarios:
-  + For **CERTIFICATE_AUTHORITY** certificate, the default value is `100`.
-  + For **CERTIFICATE** certificate, the default value is `100,000`.
+* `quota` - The total quota.
