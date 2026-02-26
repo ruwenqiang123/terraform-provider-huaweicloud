@@ -7,40 +7,26 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 
-	"github.com/chnsz/golangsdk"
-	"github.com/chnsz/golangsdk/openstack/identity/v3.0/security"
-
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/config"
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/acceptance"
+	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/iam"
 )
 
-func getPasswordPolicyResourceFunc(cfg *config.Config, state *terraform.ResourceState) (interface{}, error) {
-	client, err := cfg.IAMV3Client(acceptance.HW_REGION_NAME)
+func getV3PasswordPolicyResourceFunc(cfg *config.Config, _ *terraform.ResourceState) (interface{}, error) {
+	client, err := cfg.NewServiceClient("iam", acceptance.HW_REGION_NAME)
 	if err != nil {
 		return nil, fmt.Errorf("error creating IAM client: %s", err)
 	}
 
-	policy, err := security.GetPasswordPolicy(client, state.Primary.ID)
-	if err != nil {
-		return nil, err
-	}
-
-	if policy.MinCharCombination == 2 &&
-		policy.MinPasswordLength == 8 &&
-		policy.RecentPasswordsDisallowedCount == 1 &&
-		policy.PasswordValidityPeriod == 0 &&
-		policy.MinPasswordAge == 0 {
-		return nil, golangsdk.ErrDefault404{}
-	}
-	return policy, nil
+	return iam.GetV3PasswordPolicy(client, cfg.DomainID)
 }
 
-func TestAccPasswordPolicy_basic(t *testing.T) {
+func TestAccV3PasswordPolicy_basic(t *testing.T) {
 	var (
 		obj interface{}
 
 		resourceName = "huaweicloud_identity_password_policy.test"
-		rc           = acceptance.InitResourceCheck(resourceName, &obj, getPasswordPolicyResourceFunc)
+		rc           = acceptance.InitResourceCheck(resourceName, &obj, getV3PasswordPolicyResourceFunc)
 	)
 
 	resource.ParallelTest(t, resource.TestCase{
@@ -52,7 +38,7 @@ func TestAccPasswordPolicy_basic(t *testing.T) {
 		CheckDestroy:      rc.CheckResourceDestroy(),
 		Steps: []resource.TestStep{
 			{
-				Config: testAccPasswordPolicy_basic_step1,
+				Config: testAccV3PasswordPolicy_basic_step1,
 				Check: resource.ComposeTestCheckFunc(
 					rc.CheckResourceExists(),
 					resource.TestCheckResourceAttr(resourceName, "password_char_combination", "4"),
@@ -65,7 +51,7 @@ func TestAccPasswordPolicy_basic(t *testing.T) {
 				),
 			},
 			{
-				Config: testAccPasswordPolicy_basic_step2,
+				Config: testAccV3PasswordPolicy_basic_step2,
 				Check: resource.ComposeTestCheckFunc(
 					rc.CheckResourceExists(),
 					resource.TestCheckResourceAttr(resourceName, "password_char_combination", "2"),
@@ -86,7 +72,7 @@ func TestAccPasswordPolicy_basic(t *testing.T) {
 	})
 }
 
-const testAccPasswordPolicy_basic_step1 = `
+const testAccV3PasswordPolicy_basic_step1 = `
 resource "huaweicloud_identity_password_policy" "test" {
   password_char_combination             = 4
   minimum_password_length               = 12
@@ -95,7 +81,7 @@ resource "huaweicloud_identity_password_policy" "test" {
 }
 `
 
-const testAccPasswordPolicy_basic_step2 = `
+const testAccV3PasswordPolicy_basic_step2 = `
 resource "huaweicloud_identity_password_policy" "test" {
   password_char_combination             = 2
   minimum_password_length               = 12

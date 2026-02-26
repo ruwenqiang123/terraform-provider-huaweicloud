@@ -190,17 +190,20 @@ func resourceV3LoginPolicyRead(_ context.Context, d *schema.ResourceData, meta i
 }
 
 func resourceV3LoginPolicyDelete(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	cfg := meta.(*config.Config)
-	region := cfg.GetRegion(d)
-	dproduct := "iam"
-	client, err := cfg.NewServiceClient(dproduct, region)
+	var (
+		cfg      = meta.(*config.Config)
+		region   = cfg.GetRegion(d)
+		domainId = cfg.DomainID
+	)
+
+	client, err := cfg.NewServiceClient("iam", region)
 	if err != nil {
 		return diag.Errorf("error creating IAM Client: %s", err)
 	}
 
 	httpUrl := "v3.0/OS-SECURITYPOLICY/domains/{domain_id}/login-policy"
 	restorePath := client.Endpoint + httpUrl
-	restorePath = strings.ReplaceAll(restorePath, "{domain_id}", cfg.DomainID)
+	restorePath = strings.ReplaceAll(restorePath, "{domain_id}", domainId)
 	restoreOpt := golangsdk.RequestOpts{
 		KeepResponseBody: true,
 		JSONBody: map[string]interface{}{
@@ -219,7 +222,7 @@ func resourceV3LoginPolicyDelete(_ context.Context, d *schema.ResourceData, meta
 
 	_, err = client.Request("PUT", restorePath, &restoreOpt)
 	if err != nil {
-		return diag.Errorf("error deleting IAM login policy: %s", err)
+		return diag.Errorf("error restoring the default login policy: %s", err)
 	}
 	return nil
 }

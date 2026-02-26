@@ -1870,6 +1870,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_obs_buckets":       obs.DataSourceObsBuckets(),
 			"huaweicloud_obs_bucket_object": obs.DataSourceObsBucketObject(),
 
+			"huaweicloud_oms_bucket_objects":        oms.DataSourceBucketObjects(),
 			"huaweicloud_oms_bucket_region":         oms.DataSourceObjectstorageBucketRegion(),
 			"huaweicloud_oms_buckets":               oms.DataSourceObjectstorageBuckets(),
 			"huaweicloud_oms_cloud_type_venders":    oms.DataSourceCloudTypeVenders(),
@@ -3400,6 +3401,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_identity_group_membership":             iam.ResourceV3GroupMembership(),
 			"huaweicloud_identity_group_role_assignment":        iam.ResourceV3GroupRoleAssignment(),
 			"huaweicloud_identity_login_policy":                 iam.ResourceV3LoginPolicy(),
+			"huaweicloud_identity_password_policy":              iam.ResourceV3PasswordPolicy(),
 			"huaweicloud_identity_service_agency":               iam.ResourceV3ServiceAgency(),
 			"huaweicloud_identity_trust_agency":                 iam.ResourceIAMTrustAgency(),
 			"huaweicloud_identity_project":                      iam.ResourceIdentityProject(),
@@ -3410,7 +3412,6 @@ func Provider() *schema.Provider {
 			"huaweicloud_identity_user_role_assignment":         iam.ResourceIdentityUserRoleAssignment(),
 			"huaweicloud_identity_provider":                     iam.ResourceV3Provider(),
 			"huaweicloud_identity_provider_protocol":            iam.ResourceV3ProviderProtocol(),
-			"huaweicloud_identity_password_policy":              iam.ResourceIdentityPasswordPolicy(),
 			"huaweicloud_identity_protection_policy":            iam.ResourceIdentityProtectionPolicy(),
 			"huaweicloud_identity_virtual_mfa_device":           iam.ResourceIdentityVirtualMFADevice(),
 			"huaweicloud_identity_user_token":                   iam.ResourceV3UserToken(),
