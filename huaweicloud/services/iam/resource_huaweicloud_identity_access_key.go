@@ -23,12 +23,12 @@ import (
 // @API IAM DELETE /v3.0/OS-CREDENTIAL/credentials/{access_key}
 // @API IAM GET /v3.0/OS-CREDENTIAL/credentials/{access_key}
 // @API IAM GET /v3.0/OS-USER/users/{user_id}
-func ResourceAccessKey() *schema.Resource {
+func ResourceV3AccessKey() *schema.Resource {
 	return &schema.Resource{
-		CreateContext: resourceAccessKeyCreate,
-		ReadContext:   resourceAccessKeyRead,
-		UpdateContext: resourceAccessKeyUpdate,
-		DeleteContext: resourceAccessKeyDelete,
+		CreateContext: resourceV3AccessKeyCreate,
+		ReadContext:   resourceV3AccessKeyRead,
+		UpdateContext: resourceV3AccessKeyUpdate,
+		DeleteContext: resourceV3AccessKeyDelete,
 
 		Schema: map[string]*schema.Schema{
 			"user_id": {
@@ -90,7 +90,7 @@ func ResourceAccessKey() *schema.Resource {
 	}
 }
 
-func storeAccessKeyToCsvFile(path string, cred *credentials.Credential) error {
+func storeV3AccessKeyToCsvFile(path string, cred *credentials.Credential) error {
 	var (
 		csvFile *os.File
 		data    = [][]string{
@@ -121,7 +121,7 @@ func storeAccessKeyToCsvFile(path string, cred *credentials.Credential) error {
 	return nil
 }
 
-func resourceAccessKeyCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceV3AccessKeyCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	var (
 		cfg    = meta.(*config.Config)
 		mErr   *multierror.Error
@@ -158,7 +158,7 @@ func resourceAccessKeyCreate(ctx context.Context, d *schema.ResourceData, meta i
 		outputFile = customStoragePath.(string)
 	}
 
-	if err := storeAccessKeyToCsvFile(outputFile, accessKey); err != nil {
+	if err := storeV3AccessKeyToCsvFile(outputFile, accessKey); err != nil {
 		// When the CSV file fails to be saved, the secret key is stored in tfstate to prevent the value from being lost.
 		mErr = multierror.Append(mErr, d.Set("secret", accessKey.SecretKey))
 		diags = append(diags, diag.Diagnostic{
@@ -187,10 +187,10 @@ func resourceAccessKeyCreate(ctx context.Context, d *schema.ResourceData, meta i
 		}
 	}
 
-	return append(diags, resourceAccessKeyRead(ctx, d, meta)...)
+	return append(diags, resourceV3AccessKeyRead(ctx, d, meta)...)
 }
 
-func resourceAccessKeyRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceV3AccessKeyRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	var (
 		cfg         = meta.(*config.Config)
 		accessKeyId = d.Id()
@@ -216,7 +216,7 @@ func resourceAccessKeyRead(_ context.Context, d *schema.ResourceData, meta inter
 	return nil
 }
 
-func resourceAccessKeyUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceV3AccessKeyUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	var (
 		cfg         = meta.(*config.Config)
 		accessKeyId = d.Id()
@@ -237,10 +237,10 @@ func resourceAccessKeyUpdate(ctx context.Context, d *schema.ResourceData, meta i
 		}
 	}
 
-	return resourceAccessKeyRead(ctx, d, meta)
+	return resourceV3AccessKeyRead(ctx, d, meta)
 }
 
-func resourceAccessKeyDelete(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceV3AccessKeyDelete(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	var (
 		cfg         = meta.(*config.Config)
 		accessKeyId = d.Id()

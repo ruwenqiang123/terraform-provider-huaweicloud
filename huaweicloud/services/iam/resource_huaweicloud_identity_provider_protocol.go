@@ -73,6 +73,29 @@ func ResourceV3ProviderProtocol() *schema.Resource {
 	}
 }
 
+func getV3ProviderProtocolPath(endpoint string, idpId string, protocolId string) string {
+	protocolPath := endpoint + "v3/OS-FEDERATION/identity_providers/{idp_id}/protocols/{protocol_id}"
+	protocolPath = strings.ReplaceAll(protocolPath, "{idp_id}", idpId)
+	protocolPath = strings.ReplaceAll(protocolPath, "{protocol_id}", protocolId)
+	return protocolPath
+}
+
+func getV3ProviderProtocolRequestOptsWithBody(mappingId string) golangsdk.RequestOpts {
+	options := golangsdk.RequestOpts{KeepResponseBody: true}
+	if mappingId != "" {
+		options.JSONBody = map[string]interface{}{
+			"protocol": map[string]string{
+				"mapping_id": mappingId,
+			},
+		}
+	} else {
+		options.JSONBody = map[string]interface{}{
+			"protocol": map[string]string{},
+		}
+	}
+	return options
+}
+
 func resourceV3ProviderProtocolCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	cfg := meta.(*config.Config)
 	client, err := cfg.IAMV3Client(cfg.GetRegion(d))
@@ -84,8 +107,8 @@ func resourceV3ProviderProtocolCreate(ctx context.Context, d *schema.ResourceDat
 	protocolId := d.Get("protocol_id").(string)
 	mappingId := d.Get("mapping_id").(string)
 
-	protocolPath := getProtocolPath(client.Endpoint, idpId, protocolId)
-	options := getProtocolRequestOptsWithBody(mappingId)
+	protocolPath := getV3ProviderProtocolPath(client.Endpoint, idpId, protocolId)
+	options := getV3ProviderProtocolRequestOptsWithBody(mappingId)
 	_, err = client.Request("PUT", protocolPath, &options)
 	conflictMsg := "Conflict occurred attempting to store federation_protocol"
 	if err != nil {
@@ -107,7 +130,7 @@ func resourceV3ProviderProtocolRead(_ context.Context, d *schema.ResourceData, m
 		return diag.Errorf("error creating IAM client: %s", err)
 	}
 
-	protocolPath := getProtocolPath(client.Endpoint, d.Get("provider_id").(string), d.Get("protocol_id").(string))
+	protocolPath := getV3ProviderProtocolPath(client.Endpoint, d.Get("provider_id").(string), d.Get("protocol_id").(string))
 	options := golangsdk.RequestOpts{KeepResponseBody: true}
 	response, err := client.Request("GET", protocolPath, &options)
 	if err != nil {
@@ -145,8 +168,8 @@ func resourceV3ProviderProtocolUpdate(ctx context.Context, d *schema.ResourceDat
 	idpId := d.Get("provider_id").(string)
 	protocolId := d.Get("protocol_id").(string)
 	mappingId := d.Get("mapping_id").(string)
-	protocolPath := getProtocolPath(client.Endpoint, idpId, protocolId)
-	options := getProtocolRequestOptsWithBody(mappingId)
+	protocolPath := getV3ProviderProtocolPath(client.Endpoint, idpId, protocolId)
+	options := getV3ProviderProtocolRequestOptsWithBody(mappingId)
 	_, err = client.Request("PATCH", protocolPath, &options)
 	if err != nil {
 		return diag.Errorf("UpdateProtocol error : %s", err)
@@ -161,7 +184,7 @@ func resourceV3ProviderProtocolDelete(_ context.Context, d *schema.ResourceData,
 		return diag.Errorf("error creating IAM client: %s", err)
 	}
 
-	protocolPath := getProtocolPath(client.Endpoint, d.Get("provider_id").(string), d.Get("protocol_id").(string))
+	protocolPath := getV3ProviderProtocolPath(client.Endpoint, d.Get("provider_id").(string), d.Get("protocol_id").(string))
 	options := golangsdk.RequestOpts{KeepResponseBody: true}
 	_, err = client.Request("DELETE", protocolPath, &options)
 	if err != nil {
@@ -184,26 +207,4 @@ func resourceV3ProviderProtocolImportState(
 		return nil, fmt.Errorf("failed to set value to state when import identity provider protocol, %s", err)
 	}
 	return []*schema.ResourceData{d}, nil
-}
-
-func getProtocolPath(endpoint string, idpId string, protocolId string) string {
-	protocolPath := endpoint + "v3/OS-FEDERATION/identity_providers/{idp_id}/protocols/{protocol_id}"
-	protocolPath = strings.ReplaceAll(protocolPath, "{idp_id}", idpId)
-	protocolPath = strings.ReplaceAll(protocolPath, "{protocol_id}", protocolId)
-	return protocolPath
-}
-
-func getProtocolRequestOptsWithBody(mappingId string) golangsdk.RequestOpts {
-	options := golangsdk.RequestOpts{KeepResponseBody: true}
-	if mappingId != "" {
-		options.JSONBody = map[string]interface{}{
-			"protocol": map[string]string{
-				"mapping_id": mappingId},
-		}
-	} else {
-		options.JSONBody = map[string]interface{}{
-			"protocol": map[string]string{},
-		}
-	}
-	return options
 }

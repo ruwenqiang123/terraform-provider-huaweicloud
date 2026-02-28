@@ -13,24 +13,24 @@ import (
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/iam"
 )
 
-func getAclResourceFunc(cfg *config.Config, state *terraform.ResourceState) (interface{}, error) {
+func getV3AclResourceFunc(cfg *config.Config, state *terraform.ResourceState) (interface{}, error) {
 	client, err := cfg.IAMV3Client(acceptance.HW_REGION_NAME)
 	if err != nil {
 		return nil, fmt.Errorf("error creating IAM client: %s", err)
 	}
 
-	return iam.GetAclByDomainId(client, state.Primary.Attributes["type"], cfg.DomainID)
+	return iam.GetV3AclByDomainId(client, state.Primary.Attributes["type"], cfg.DomainID)
 }
 
-func TestAccAcl_basic(t *testing.T) {
+func TestAccV3Acl_basic(t *testing.T) {
 	var (
 		obj interface{}
 
 		aclByConsole = "huaweicloud_identity_acl.test.0"
-		rcByConsole  = acceptance.InitResourceCheck(aclByConsole, &obj, getAclResourceFunc)
+		rcByConsole  = acceptance.InitResourceCheck(aclByConsole, &obj, getV3AclResourceFunc)
 
 		aclByApi = "huaweicloud_identity_acl.test.1"
-		rcByApi  = acceptance.InitResourceCheck(aclByApi, &obj, getAclResourceFunc)
+		rcByApi  = acceptance.InitResourceCheck(aclByApi, &obj, getV3AclResourceFunc)
 	)
 
 	// the runner public IP must includes the IP address of your current machine and make sure the first IP address is
@@ -49,7 +49,7 @@ func TestAccAcl_basic(t *testing.T) {
 		),
 		Steps: []resource.TestStep{
 			{
-				Config: testAccAcl_basic_step1(),
+				Config: testAccV3Acl_basic_step1(),
 				Check: resource.ComposeTestCheckFunc(
 					rcByConsole.CheckResourceExists(),
 					resource.TestCheckResourceAttr(aclByConsole, "type", "console"),
@@ -90,7 +90,7 @@ func TestAccAcl_basic(t *testing.T) {
 				),
 			},
 			{
-				Config: testAccAcl_basic_step2(),
+				Config: testAccV3Acl_basic_step2(),
 				Check: resource.ComposeTestCheckFunc(
 					rcByConsole.CheckResourceExists(),
 					resource.TestCheckResourceAttr(aclByConsole, "type", "console"),
@@ -144,7 +144,7 @@ func TestAccAcl_basic(t *testing.T) {
 	})
 }
 
-func testAccAcl_basic_step1() string {
+func testAccV3Acl_basic_step1() string {
 	return fmt.Sprintf(`
 variable "acl_types" {
   type    = list(string)
@@ -186,7 +186,7 @@ resource "huaweicloud_identity_acl" "test" {
 `, acceptance.HW_RUNNER_PUBLIC_IPS)
 }
 
-func testAccAcl_basic_step2() string {
+func testAccV3Acl_basic_step2() string {
 	return fmt.Sprintf(`
 variable "acl_types" {
   type    = list(string)

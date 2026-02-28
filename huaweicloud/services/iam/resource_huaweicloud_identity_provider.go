@@ -316,7 +316,7 @@ func createProtocol(client *golangsdk.ServiceClient, d *schema.ResourceData) err
 
 	// Create default mapping
 	defaultConversionRules := getDefaultConversionOpts()
-	mappingID := generateMappingID(providerID)
+	mappingID := generateV3ProviderMappingID(providerID)
 	_, err := mappings.Create(client, mappingID, *defaultConversionRules)
 	if err != nil {
 		return fmt.Errorf("error in creating default conversion rule: %s", err)
@@ -388,11 +388,10 @@ func resourceV3IdentityProviderRead(_ context.Context, d *schema.ResourceData, m
 	)
 
 	// Query and set conversion rules
-	mappingID := generateMappingID(providerID)
+	mappingID := generateV3ProviderMappingID(providerID)
 	conversions, err := mappings.Get(client, mappingID)
 	if err == nil {
-		conversionRules := flattenConversionRulesAttr(conversions)
-		err = d.Set("conversion_rules", conversionRules)
+		err = d.Set("conversion_rules", flattenV3ProviderConversionRules(conversions))
 		mErr = multierror.Append(mErr, err)
 	}
 
@@ -435,7 +434,7 @@ func resourceV3IdentityProviderRead(_ context.Context, d *schema.ResourceData, m
 	return nil
 }
 
-func flattenConversionRulesAttr(conversions *mappings.IdentityMapping) []interface{} {
+func flattenV3ProviderConversionRules(conversions *mappings.IdentityMapping) []interface{} {
 	conversionRules := make([]interface{}, 0, len(conversions.Rules))
 	for _, v := range conversions.Rules {
 		localRules := make([]map[string]interface{}, 0, len(v.Local))
@@ -475,7 +474,7 @@ func flattenConversionRulesAttr(conversions *mappings.IdentityMapping) []interfa
 	return conversionRules
 }
 
-func generateMappingID(providerID string) string {
+func generateV3ProviderMappingID(providerID string) string {
 	return "mapping_" + providerID
 }
 

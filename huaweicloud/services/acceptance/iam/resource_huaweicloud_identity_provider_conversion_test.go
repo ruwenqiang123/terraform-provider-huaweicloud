@@ -13,7 +13,7 @@ import (
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/acceptance"
 )
 
-func getProviderConversionFunc(c *config.Config, state *terraform.ResourceState) (interface{}, error) {
+func getV3ProviderConversionFunc(c *config.Config, state *terraform.ResourceState) (interface{}, error) {
 	client, err := c.IAMNoVersionClient(acceptance.HW_REGION_NAME)
 	if err != nil {
 		return nil, fmt.Errorf("error creating IAM client without version: %s", err)
@@ -23,12 +23,12 @@ func getProviderConversionFunc(c *config.Config, state *terraform.ResourceState)
 	return mappings.Get(client, conversionID)
 }
 
-func TestAccProviderConversion_basic(t *testing.T) {
+func TestAccV3ProviderConversion_basic(t *testing.T) {
 	var (
 		obj interface{}
 
 		resourceName = "huaweicloud_identity_provider_conversion.test"
-		rc           = acceptance.InitResourceCheck(resourceName, &obj, getProviderConversionFunc)
+		rc           = acceptance.InitResourceCheck(resourceName, &obj, getV3ProviderConversionFunc)
 
 		name = acceptance.RandomAccResourceName()
 	)
@@ -42,7 +42,7 @@ func TestAccProviderConversion_basic(t *testing.T) {
 		CheckDestroy:      rc.CheckResourceDestroy(),
 		Steps: []resource.TestStep{
 			{
-				Config: testAccProviderConversion_basic_step1(name),
+				Config: testAccV3ProviderConversion_basic_step1(name),
 				Check: resource.ComposeTestCheckFunc(
 					rc.CheckResourceExists(),
 					resource.TestCheckResourceAttr(resourceName, "conversion_rules.#", "1"),
@@ -50,7 +50,7 @@ func TestAccProviderConversion_basic(t *testing.T) {
 				),
 			},
 			{
-				Config: testAccProviderConversion_basic_step2(name),
+				Config: testAccV3ProviderConversion_basic_step2(name),
 				Check: resource.ComposeTestCheckFunc(
 					rc.CheckResourceExists(),
 					resource.TestCheckResourceAttr(resourceName, "conversion_rules.#", "2"),
@@ -68,7 +68,7 @@ func TestAccProviderConversion_basic(t *testing.T) {
 	})
 }
 
-func testAccProviderConversion_basic_step1(name string) string {
+func testAccV3ProviderConversion_basic_step1(name string) string {
 	return fmt.Sprintf(`
 resource "huaweicloud_identity_provider" "test" {
   name     = "%[1]s"
@@ -90,7 +90,7 @@ resource "huaweicloud_identity_provider_conversion" "test" {
 `, name)
 }
 
-func testAccProviderConversion_basic_step2(name string) string {
+func testAccV3ProviderConversion_basic_step2(name string) string {
 	return fmt.Sprintf(`
 resource "huaweicloud_identity_provider" "test" {
   name     = "%[1]s"

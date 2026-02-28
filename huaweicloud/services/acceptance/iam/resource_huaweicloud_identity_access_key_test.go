@@ -14,7 +14,7 @@ import (
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/acceptance"
 )
 
-func getAccessKeyResourceFunc(c *config.Config, state *terraform.ResourceState) (interface{}, error) {
+func getV3AccessKeyResourceFunc(c *config.Config, state *terraform.ResourceState) (interface{}, error) {
 	iamClient, err := c.IAMV3Client(acceptance.HW_REGION_NAME)
 	if err != nil {
 		return nil, fmt.Errorf("error creating IAM client: %s", err)
@@ -23,12 +23,12 @@ func getAccessKeyResourceFunc(c *config.Config, state *terraform.ResourceState) 
 	return credentials.Get(iamClient, state.Primary.ID).Extract()
 }
 
-func TestAccAccessKey_basic(t *testing.T) {
+func TestAccV3AccessKey_basic(t *testing.T) {
 	var (
 		obj interface{}
 
 		resourceName = "huaweicloud_identity_access_key.test"
-		rc           = acceptance.InitResourceCheck(resourceName, &obj, getAccessKeyResourceFunc)
+		rc           = acceptance.InitResourceCheck(resourceName, &obj, getV3AccessKeyResourceFunc)
 
 		name       = acceptance.RandomAccResourceNameWithDash()
 		updateName = acceptance.RandomAccResourceNameWithDash()
@@ -50,7 +50,7 @@ func TestAccAccessKey_basic(t *testing.T) {
 		CheckDestroy: rc.CheckResourceDestroy(),
 		Steps: []resource.TestStep{
 			{
-				Config: testAccAccessKey_basic_step1(name),
+				Config: testAccV3AccessKey_basic_step1(name),
 				Check: resource.ComposeTestCheckFunc(
 					rc.CheckResourceExists(),
 					resource.TestCheckResourceAttr(resourceName, "status", "active"),
@@ -61,7 +61,7 @@ func TestAccAccessKey_basic(t *testing.T) {
 				),
 			},
 			{
-				Config: testAccAccessKey_basic_step2(updateName),
+				Config: testAccV3AccessKey_basic_step2(updateName),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr(resourceName, "status", "inactive"),
 					resource.TestCheckResourceAttr(resourceName, "description", ""),
@@ -73,7 +73,7 @@ func TestAccAccessKey_basic(t *testing.T) {
 	})
 }
 
-func testAccAccessKey_basic_base(name string) string {
+func testAccV3AccessKey_basic_base(name string) string {
 	return fmt.Sprintf(`
 resource "random_string" "test" {
   length           = 10
@@ -92,7 +92,7 @@ resource "huaweicloud_identity_user" "test" {
 `, name)
 }
 
-func testAccAccessKey_basic_step1(name string) string {
+func testAccV3AccessKey_basic_step1(name string) string {
 	return fmt.Sprintf(`
 %[1]s
 
@@ -101,10 +101,10 @@ resource "huaweicloud_identity_access_key" "test" {
   description = "Created by terraform script"
   secret_file = abspath("./credentials.csv")
 }
-`, testAccAccessKey_basic_base(name))
+`, testAccV3AccessKey_basic_base(name))
 }
 
-func testAccAccessKey_basic_step2(name string) string {
+func testAccV3AccessKey_basic_step2(name string) string {
 	return fmt.Sprintf(`
 %[1]s
 
@@ -119,15 +119,15 @@ resource "huaweicloud_identity_access_key" "test" {
     when    = destroy
   }
 }
-`, testAccAccessKey_basic_base(name))
+`, testAccV3AccessKey_basic_base(name))
 }
 
-func TestAccAccessKey_withoutSecretFileInput(t *testing.T) {
+func TestAccV3AccessKey_withoutSecretFileInput(t *testing.T) {
 	var (
 		obj interface{}
 
 		resourceName = "huaweicloud_identity_access_key.test"
-		rc           = acceptance.InitResourceCheck(resourceName, &obj, getAccessKeyResourceFunc)
+		rc           = acceptance.InitResourceCheck(resourceName, &obj, getV3AccessKeyResourceFunc)
 
 		name = acceptance.RandomAccResourceNameWithDash()
 	)
@@ -148,7 +148,7 @@ func TestAccAccessKey_withoutSecretFileInput(t *testing.T) {
 		CheckDestroy: rc.CheckResourceDestroy(),
 		Steps: []resource.TestStep{
 			{
-				Config: testAccAccessKey_withoutSecretFileInput_step1(name),
+				Config: testAccV3AccessKey_withoutSecretFileInput_step1(name),
 				Check: resource.ComposeTestCheckFunc(
 					rc.CheckResourceExists(),
 					resource.TestCheckResourceAttr(resourceName, "status", "active"),
@@ -162,7 +162,7 @@ func TestAccAccessKey_withoutSecretFileInput(t *testing.T) {
 	})
 }
 
-func testAccAccessKey_withoutSecretFileInput_base(name string) string {
+func testAccV3AccessKey_withoutSecretFileInput_base(name string) string {
 	return fmt.Sprintf(`
 resource "random_string" "test" {
   length           = 10
@@ -181,7 +181,7 @@ resource "huaweicloud_identity_user" "test" {
 `, name)
 }
 
-func testAccAccessKey_withoutSecretFileInput_step1(name string) string {
+func testAccV3AccessKey_withoutSecretFileInput_step1(name string) string {
 	return fmt.Sprintf(`
 %[1]s
 
@@ -198,15 +198,15 @@ resource "huaweicloud_identity_access_key" "test" {
     when    = destroy
   }
 }
-`, testAccAccessKey_withoutSecretFileInput_base(name), name)
+`, testAccV3AccessKey_withoutSecretFileInput_base(name), name)
 }
 
-func TestAccAccessKey_withIncorrectSecretFileInput(t *testing.T) {
+func TestAccV3AccessKey_withIncorrectSecretFileInput(t *testing.T) {
 	var (
 		obj interface{}
 
 		resourceName = "huaweicloud_identity_access_key.test"
-		rc           = acceptance.InitResourceCheck(resourceName, &obj, getAccessKeyResourceFunc)
+		rc           = acceptance.InitResourceCheck(resourceName, &obj, getV3AccessKeyResourceFunc)
 
 		name = acceptance.RandomAccResourceNameWithDash()
 	)
@@ -227,7 +227,7 @@ func TestAccAccessKey_withIncorrectSecretFileInput(t *testing.T) {
 		CheckDestroy: rc.CheckResourceDestroy(),
 		Steps: []resource.TestStep{
 			{
-				Config: testAccAccessKey_withIncorrectSecretFileInput_step1(name),
+				Config: testAccV3AccessKey_withIncorrectSecretFileInput_step1(name),
 				Check: resource.ComposeTestCheckFunc(
 					rc.CheckResourceExists(),
 					resource.TestCheckResourceAttr(resourceName, "status", "active"),
@@ -241,7 +241,7 @@ func TestAccAccessKey_withIncorrectSecretFileInput(t *testing.T) {
 	})
 }
 
-func testAccAccessKey_withIncorrectSecretFileInput_base(name string) string {
+func testAccV3AccessKey_withIncorrectSecretFileInput_base(name string) string {
 	return fmt.Sprintf(`
 resource "random_string" "test" {
   length           = 10
@@ -260,7 +260,7 @@ resource "huaweicloud_identity_user" "test" {
 `, name)
 }
 
-func testAccAccessKey_withIncorrectSecretFileInput_step1(name string) string {
+func testAccV3AccessKey_withIncorrectSecretFileInput_step1(name string) string {
 	return fmt.Sprintf(`
 %[1]s
 
@@ -271,5 +271,5 @@ resource "huaweicloud_identity_access_key" "test" {
   description = "Created by terraform script"
   secret_file = "/null/credentials.csv" # Invalid storage path
 }
-`, testAccAccessKey_withIncorrectSecretFileInput_base(name))
+`, testAccV3AccessKey_withIncorrectSecretFileInput_base(name))
 }

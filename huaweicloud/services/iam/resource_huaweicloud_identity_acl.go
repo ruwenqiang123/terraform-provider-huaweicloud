@@ -18,20 +18,20 @@ import (
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/utils"
 )
 
-var resourceAclNonUpdatableParams = []string{"type"}
+var v3AclNonUpdatableParams = []string{"type"}
 
 // @API IAM GET /v3.0/OS-SECURITYPOLICY/domains/{domain_id}/api-acl-policy
 // @API IAM PUT /v3.0/OS-SECURITYPOLICY/domains/{domain_id}/api-acl-policy
 // @API IAM GET /v3.0/OS-SECURITYPOLICY/domains/{domain_id}/console-acl-policy
 // @API IAM PUT /v3.0/OS-SECURITYPOLICY/domains/{domain_id}/console-acl-policy
-func ResourceAcl() *schema.Resource {
+func ResourceV3Acl() *schema.Resource {
 	return &schema.Resource{
-		CreateContext: resourceAclCreate,
-		ReadContext:   resourceAclRead,
-		UpdateContext: resourceAclUpdate,
-		DeleteContext: resourceAclDelete,
+		CreateContext: resourceV3AclCreate,
+		ReadContext:   resourceV3AclRead,
+		UpdateContext: resourceV3AclUpdate,
+		DeleteContext: resourceV3AclDelete,
 
-		CustomizeDiff: config.FlexibleForceNew(resourceAclNonUpdatableParams),
+		CustomizeDiff: config.FlexibleForceNew(v3AclNonUpdatableParams),
 
 		Schema: map[string]*schema.Schema{
 			"type": {
@@ -140,7 +140,7 @@ func ResourceAcl() *schema.Resource {
 	}
 }
 
-func buildIpCidersOrder(d *schema.ResourceData) []interface{} {
+func buildV3AclIpCidersOrder(d *schema.ResourceData) []interface{} {
 	ipCiders, ok := utils.GetNestedObjectFromRawConfig(d.GetRawConfig(), "ip_cidrs").([]interface{})
 	if !ok || ipCiders == nil {
 		return nil
@@ -156,7 +156,7 @@ func buildIpCidersOrder(d *schema.ResourceData) []interface{} {
 	return result
 }
 
-func buildIpRangesOrder(d *schema.ResourceData) []interface{} {
+func buildV3AclIpRangesOrder(d *schema.ResourceData) []interface{} {
 	ipRanges, ok := utils.GetNestedObjectFromRawConfig(d.GetRawConfig(), "ip_ranges").([]interface{})
 	if !ok || ipRanges == nil {
 		return nil
@@ -172,7 +172,7 @@ func buildIpRangesOrder(d *schema.ResourceData) []interface{} {
 	return result
 }
 
-func resourceAclCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceV3AclCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	var (
 		cfg      = meta.(*config.Config)
 		err      error
@@ -190,22 +190,22 @@ func resourceAclCreate(ctx context.Context, d *schema.ResourceData, meta interfa
 	}
 
 	d.SetId(fmt.Sprintf("%s/%s", domainId, d.Get("type").(string)))
-	err = updateAclPolicy(client, d, domainId)
+	err = updateV3AclPolicy(client, d, domainId)
 	if err != nil {
 		return diag.Errorf("error creating identity ACL: %s", err)
 	}
 
-	if err = d.Set("ip_ciders_order", buildIpCidersOrder(d)); err != nil {
+	if err = d.Set("ip_ciders_order", buildV3AclIpCidersOrder(d)); err != nil {
 		log.Printf("[ERROR] error setting the ip_ciders_order field after creating ACL: %s", err)
 	}
-	if err = d.Set("ip_ranges_order", buildIpRangesOrder(d)); err != nil {
+	if err = d.Set("ip_ranges_order", buildV3AclIpRangesOrder(d)); err != nil {
 		log.Printf("[ERROR] error setting the ip_ranges_order field after creating ACL: %s", err)
 	}
 
-	return resourceAclRead(ctx, d, meta)
+	return resourceV3AclRead(ctx, d, meta)
 }
 
-func orderIpCidersByIpCidersOrderOrigin(ipCiders, ipCidersOrigin []interface{}) []interface{} {
+func orderV3AclIpCidersByIpCidersOrderOrigin(ipCiders, ipCidersOrigin []interface{}) []interface{} {
 	if len(ipCidersOrigin) == 0 {
 		return ipCiders
 	}
@@ -229,12 +229,12 @@ func orderIpCidersByIpCidersOrderOrigin(ipCiders, ipCidersOrigin []interface{}) 
 	return sortedIpCiders
 }
 
-func flattenIpCiders(ipCiders, ipCidersOrigin []interface{}) []interface{} {
+func flattenV3AclIpCiders(ipCiders, ipCidersOrigin []interface{}) []interface{} {
 	if len(ipCiders) < 1 {
 		return nil
 	}
 
-	sortedIpCiders := orderIpCidersByIpCidersOrderOrigin(ipCiders, ipCidersOrigin)
+	sortedIpCiders := orderV3AclIpCidersByIpCidersOrderOrigin(ipCiders, ipCidersOrigin)
 	result := make([]interface{}, 0, len(sortedIpCiders))
 	for _, ipCider := range sortedIpCiders {
 		result = append(result, map[string]interface{}{
@@ -246,7 +246,7 @@ func flattenIpCiders(ipCiders, ipCidersOrigin []interface{}) []interface{} {
 	return result
 }
 
-func orderIpRangesByIpRangesOrderOrigin(ipRanges, ipRangesOrigin []interface{}) []interface{} {
+func orderV3AclIpRangesByIpRangesOrderOrigin(ipRanges, ipRangesOrigin []interface{}) []interface{} {
 	if len(ipRangesOrigin) == 0 {
 		return ipRanges
 	}
@@ -270,12 +270,12 @@ func orderIpRangesByIpRangesOrderOrigin(ipRanges, ipRangesOrigin []interface{}) 
 	return sortedIpRanges
 }
 
-func flattenIpRanges(ipRanges, ipRangesOrigin []interface{}) []interface{} {
+func flattenV3AclIpRanges(ipRanges, ipRangesOrigin []interface{}) []interface{} {
 	if len(ipRanges) < 1 {
 		return nil
 	}
 
-	sortedIpRanges := orderIpRangesByIpRangesOrderOrigin(ipRanges, ipRangesOrigin)
+	sortedIpRanges := orderV3AclIpRangesByIpRangesOrderOrigin(ipRanges, ipRangesOrigin)
 	result := make([]interface{}, 0, len(sortedIpRanges))
 	for _, ipRange := range sortedIpRanges {
 		result = append(result, map[string]interface{}{
@@ -287,7 +287,7 @@ func flattenIpRanges(ipRanges, ipRangesOrigin []interface{}) []interface{} {
 	return result
 }
 
-func GetAclByDomainId(client *golangsdk.ServiceClient, aclType, domainId string) (*acl.ACLPolicy, error) {
+func GetV3AclByDomainId(client *golangsdk.ServiceClient, aclType, domainId string) (*acl.ACLPolicy, error) {
 	var (
 		result *acl.ACLPolicy
 		err    error
@@ -331,7 +331,7 @@ func GetAclByDomainId(client *golangsdk.ServiceClient, aclType, domainId string)
 	return result, nil
 }
 
-func resourceAclRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceV3AclRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	var (
 		mErr     = &multierror.Error{}
 		cfg      = meta.(*config.Config)
@@ -342,7 +342,7 @@ func resourceAclRead(_ context.Context, d *schema.ResourceData, meta interface{}
 		return diag.Errorf("error creating IAM client: %s", err)
 	}
 
-	aclPolicy, err := GetAclByDomainId(iamClient, d.Get("type").(string), domainId)
+	aclPolicy, err := GetV3AclByDomainId(iamClient, d.Get("type").(string), domainId)
 	if err != nil {
 		return common.CheckDeletedDiag(d, err, "error fetching identity ACL")
 	}
@@ -355,7 +355,7 @@ func resourceAclRead(_ context.Context, d *schema.ResourceData, meta interface{}
 				"description": v.Description,
 			})
 		}
-		mErr = multierror.Append(mErr, d.Set("ip_cidrs", flattenIpCiders(addressNetmasks, d.Get("ip_ciders_order").([]interface{}))))
+		mErr = multierror.Append(mErr, d.Set("ip_cidrs", flattenV3AclIpCiders(addressNetmasks, d.Get("ip_ciders_order").([]interface{}))))
 	}
 	if len(aclPolicy.AllowIPRanges) > 0 {
 		ipRanges := make([]interface{}, 0, len(aclPolicy.AllowIPRanges))
@@ -365,7 +365,7 @@ func resourceAclRead(_ context.Context, d *schema.ResourceData, meta interface{}
 				"description": v.Description,
 			})
 		}
-		mErr = multierror.Append(mErr, d.Set("ip_ranges", flattenIpRanges(ipRanges, d.Get("ip_ranges_order").([]interface{}))))
+		mErr = multierror.Append(mErr, d.Set("ip_ranges", flattenV3AclIpRanges(ipRanges, d.Get("ip_ranges_order").([]interface{}))))
 	}
 
 	if err = mErr.ErrorOrNil(); err != nil {
@@ -374,7 +374,7 @@ func resourceAclRead(_ context.Context, d *schema.ResourceData, meta interface{}
 	return nil
 }
 
-func resourceAclUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceV3AclUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	var (
 		cfg      = meta.(*config.Config)
 		domainId = cfg.DomainID
@@ -390,21 +390,21 @@ func resourceAclUpdate(ctx context.Context, d *schema.ResourceData, meta interfa
 		return diag.Errorf("error creating IAM client: %s", err)
 	}
 
-	if err := updateAclPolicy(client, d, domainId); err != nil {
+	if err := updateV3AclPolicy(client, d, domainId); err != nil {
 		return diag.Errorf("error updating identity ACL: %s", err)
 	}
 
-	if err = d.Set("ip_ciders_order", buildIpCidersOrder(d)); err != nil {
+	if err = d.Set("ip_ciders_order", buildV3AclIpCidersOrder(d)); err != nil {
 		log.Printf("[ERROR] error setting the ip_ciders_order field after updating ACL: %s", err)
 	}
-	if err = d.Set("ip_ranges_order", buildIpRangesOrder(d)); err != nil {
+	if err = d.Set("ip_ranges_order", buildV3AclIpRangesOrder(d)); err != nil {
 		log.Printf("[ERROR] error setting the ip_ranges_order field after updating ACL: %s", err)
 	}
 
-	return resourceAclRead(ctx, d, meta)
+	return resourceV3AclRead(ctx, d, meta)
 }
 
-func resourceAclDelete(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceV3AclDelete(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	var (
 		cfg      = meta.(*config.Config)
 		domainId = cfg.DomainID
@@ -442,7 +442,7 @@ func resourceAclDelete(_ context.Context, d *schema.ResourceData, meta interface
 	return nil
 }
 
-func updateAclPolicy(client *golangsdk.ServiceClient, d *schema.ResourceData, domainId string) error {
+func updateV3AclPolicy(client *golangsdk.ServiceClient, d *schema.ResourceData, domainId string) error {
 	var (
 		updateOpts = &acl.ACLPolicy{}
 		err        error

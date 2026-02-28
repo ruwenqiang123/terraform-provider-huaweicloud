@@ -14,7 +14,7 @@ import (
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/acceptance"
 )
 
-func getAgencyResourceFunc(c *config.Config, state *terraform.ResourceState) (interface{}, error) {
+func getV3AgencyResourceFunc(c *config.Config, state *terraform.ResourceState) (interface{}, error) {
 	client, err := c.IAMV3Client(acceptance.HW_REGION_NAME)
 	if err != nil {
 		return nil, fmt.Errorf("error creating IAM client: %s", err)
@@ -22,15 +22,15 @@ func getAgencyResourceFunc(c *config.Config, state *terraform.ResourceState) (in
 	return agency.Get(client, state.Primary.ID).Extract()
 }
 
-func TestAccAgency_basic(t *testing.T) {
+func TestAccV3Agency_basic(t *testing.T) {
 	var (
 		obj interface{}
 
 		createWithRoleAssignments = "huaweicloud_identity_agency.create_with_role_assignments"
-		rcWithRoleAssignments     = acceptance.InitResourceCheck(createWithRoleAssignments, &obj, getAgencyResourceFunc)
+		rcWithRoleAssignments     = acceptance.InitResourceCheck(createWithRoleAssignments, &obj, getV3AgencyResourceFunc)
 
 		createWithoutRoleAssignments = "huaweicloud_identity_agency.create_without_role_assignments"
-		rcWithoutRoleAssignments     = acceptance.InitResourceCheck(createWithoutRoleAssignments, &obj, getAgencyResourceFunc)
+		rcWithoutRoleAssignments     = acceptance.InitResourceCheck(createWithoutRoleAssignments, &obj, getV3AgencyResourceFunc)
 
 		name = acceptance.RandomAccResourceName()
 	)
@@ -49,7 +49,7 @@ func TestAccAgency_basic(t *testing.T) {
 		),
 		Steps: []resource.TestStep{
 			{
-				Config: testAccAgency_basic_step1(name),
+				Config: testAccV3Agency_basic_step1(name),
 				Check: resource.ComposeTestCheckFunc(
 					rcWithRoleAssignments.CheckResourceExists(),
 					resource.TestCheckResourceAttr(createWithRoleAssignments, "name", name+"_create_with_role_assignments"),
@@ -75,7 +75,7 @@ func TestAccAgency_basic(t *testing.T) {
 				),
 			},
 			{
-				Config: testAccAgency_basic_step2(name),
+				Config: testAccV3Agency_basic_step2(name),
 				Check: resource.ComposeTestCheckFunc(
 					rcWithRoleAssignments.CheckResourceExists(),
 					resource.TestCheckResourceAttr(createWithRoleAssignments, "name", name+"_create_with_role_assignments"),
@@ -119,7 +119,7 @@ func TestAccAgency_basic(t *testing.T) {
 	})
 }
 
-func testAccAgency_basic_step1(name string) string {
+func testAccV3Agency_basic_step1(name string) string {
 	return fmt.Sprintf(`
 data "huaweicloud_enterprise_projects" "test" {
   enterprise_project_id = "%[1]s"
@@ -166,7 +166,7 @@ resource "huaweicloud_identity_agency" "create_without_role_assignments" {
 	)
 }
 
-func testAccAgency_basic_step2(name string) string {
+func testAccV3Agency_basic_step2(name string) string {
 	return fmt.Sprintf(`
 data "huaweicloud_enterprise_projects" "test" {
   enterprise_project_id = "%[1]s"

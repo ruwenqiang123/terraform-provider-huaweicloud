@@ -24,7 +24,7 @@ import (
 // @API IAM GET /v3/OS-FEDERATION/mappings
 // @API IAM GET /v3/OS-FEDERATION/mappings/{id}
 // @API IAM GET /v3/OS-FEDERATION/identity_providers/{id}
-func ResourceV3Conversion() *schema.Resource {
+func ResourceV3ProviderConversion() *schema.Resource {
 	return &schema.Resource{
 		CreateContext: resourceV3ProviderConversionCreate,
 		ReadContext:   resourceV3ProviderConversionRead,
@@ -101,51 +101,7 @@ func ResourceV3Conversion() *schema.Resource {
 	}
 }
 
-func resourceV3ProviderConversionCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	conf := meta.(*config.Config)
-	client, err := conf.IAMNoVersionClient(conf.GetRegion(d))
-	if err != nil {
-		return diag.Errorf("error creating IAM client without version: %s", err)
-	}
-	providerID := d.Get("provider_id").(string)
-	mappingID := generateMappingID(providerID)
-
-	// Check if the mappingID exists, update if it exists, otherwise create it.
-	r, err := mappings.List(client).AllPages()
-	err404 := golangsdk.ErrDefault404{}
-	if err != nil && !errors.As(err, &err404) {
-		return diag.Errorf("error in querying or extract conversions: %s", err)
-	}
-
-	conversions, err := mappings.ExtractMappings(r)
-	if err != nil {
-		return diag.Errorf("error in extracting provider conversions: %s", err)
-	}
-
-	filterData, err := utils.FilterSliceWithField(conversions, map[string]interface{}{
-		"ID": mappingID,
-	})
-	if err != nil {
-		return diag.Errorf("error in filtering conversions: %s", err)
-	}
-
-	conversionRules := d.Get("conversion_rules").([]interface{})
-	mappingOpts := buildConversionRules(conversionRules)
-	// Create the mapping if it does not exist, otherwise update it.
-	if len(filterData) == 0 {
-		_, err = mappings.Create(client, mappingID, mappingOpts)
-	} else {
-		_, err = mappings.Update(client, mappingID, mappingOpts)
-	}
-	if err != nil {
-		return diag.Errorf("error in creating/updating mapping: %s", err)
-	}
-
-	d.SetId(mappingID)
-	return resourceV3ProviderConversionRead(ctx, d, meta)
-}
-
-func buildConversionRules(conversionRules []interface{}) mappings.MappingOption {
+func buildV3ProviderConversionRules(conversionRules []interface{}) mappings.MappingOption {
 	rules := make([]mappings.MappingRule, 0, len(conversionRules))
 
 	for _, cr := range conversionRules {
@@ -204,6 +160,50 @@ func buildConversionRules(conversionRules []interface{}) mappings.MappingOption 
 	return opts
 }
 
+func resourceV3ProviderConversionCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+	conf := meta.(*config.Config)
+	client, err := conf.IAMNoVersionClient(conf.GetRegion(d))
+	if err != nil {
+		return diag.Errorf("error creating IAM client without version: %s", err)
+	}
+	providerID := d.Get("provider_id").(string)
+	mappingID := generateV3ProviderMappingID(providerID)
+
+	// Check if the mappingID exists, update if it exists, otherwise create it.
+	r, err := mappings.List(client).AllPages()
+	err404 := golangsdk.ErrDefault404{}
+	if err != nil && !errors.As(err, &err404) {
+		return diag.Errorf("error in querying or extract conversions: %s", err)
+	}
+
+	conversions, err := mappings.ExtractMappings(r)
+	if err != nil {
+		return diag.Errorf("error in extracting provider conversions: %s", err)
+	}
+
+	filterData, err := utils.FilterSliceWithField(conversions, map[string]interface{}{
+		"ID": mappingID,
+	})
+	if err != nil {
+		return diag.Errorf("error in filtering conversions: %s", err)
+	}
+
+	conversionRules := d.Get("conversion_rules").([]interface{})
+	mappingOpts := buildV3ProviderConversionRules(conversionRules)
+	// Create the mapping if it does not exist, otherwise update it.
+	if len(filterData) == 0 {
+		_, err = mappings.Create(client, mappingID, mappingOpts)
+	} else {
+		_, err = mappings.Update(client, mappingID, mappingOpts)
+	}
+	if err != nil {
+		return diag.Errorf("error in creating/updating mapping: %s", err)
+	}
+
+	d.SetId(mappingID)
+	return resourceV3ProviderConversionRead(ctx, d, meta)
+}
+
 func resourceV3ProviderConversionRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	conf := meta.(*config.Config)
 	client, err := conf.IAMNoVersionClient(conf.GetRegion(d))
@@ -217,11 +217,10 @@ func resourceV3ProviderConversionRead(_ context.Context, d *schema.ResourceData,
 		return common.CheckDeletedDiag(d, err, "error in querying conversion rules")
 	}
 
-	conversionRules := flattenConversionRulesAttr(conversions)
 	providerID := strings.ReplaceAll(conversionID, "mapping_", "")
 	mErr := multierror.Append(
 		d.Set("provider_id", providerID),
-		d.Set("conversion_rules", conversionRules),
+		d.Set("conversion_rules", flattenV3ProviderConversionRules(conversions)),
 	)
 
 	if mErr.ErrorOrNil() != nil {
@@ -238,7 +237,7 @@ func resourceV3ProviderConversionUpdate(ctx context.Context, d *schema.ResourceD
 	}
 
 	conversionRules := d.Get("conversion_rules").([]interface{})
-	conversionRuleOpts := buildConversionRules(conversionRules)
+	conversionRuleOpts := buildV3ProviderConversionRules(conversionRules)
 	conversionID := d.Id()
 	_, err = mappings.Update(client, conversionID, conversionRuleOpts)
 	if err != nil {
