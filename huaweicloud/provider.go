@@ -1013,6 +1013,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_csms_tasks":                dew.DataSourceCsmsTasks(),
 
 			"huaweicloud_css_flavors":                   css.DataSourceCssFlavors(),
+			"huaweicloud_css_flavor_details":            css.DataSourceFlavorDetails(),
 			"huaweicloud_css_clusters":                  css.DataSourceCssClusters(),
 			"huaweicloud_css_logstash_pipelines":        css.DataSourceCssLogstashPipelines(),
 			"huaweicloud_css_logstash_configurations":   css.DataSourceCssLogstashConfigurations(),
@@ -1023,6 +1024,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_css_logstash_templates":        css.DataSourceCssLogstashTemplates(),
 			"huaweicloud_css_cluster_tags":              css.DataSourceCssClusterTags(),
 			"huaweicloud_css_log_backup_records":        css.DataSourceCssLogBackupRecords(),
+			"huaweicloud_css_resize_flavors":            css.DataSourceResizeFlavors(),
 			"huaweicloud_css_scan_tasks":                css.DataSourceCssScanTasks(),
 			"huaweicloud_css_snapshots":                 css.DataSourceCssSnapshots(),
 
@@ -2553,11 +2555,11 @@ func Provider() *schema.Provider {
 			"huaweicloud_organizations_policies":                 organizations.DataSourcePolicies(),
 			"huaweicloud_organizations_policy_attached_entities": organizations.DataSourceOrganizationsPolicyAttachedEntities(),
 			"huaweicloud_organizations_quotas":                   organizations.DataSourceOrganizationsQuotas(),
-			"huaweicloud_organizations_received_invitations":     organizations.DataSourceOrganizationsReceivedInvitations(),
+			"huaweicloud_organizations_received_invitations":     organizations.DataSourceReceivedInvitations(),
 			"huaweicloud_organizations_resource_instances":       organizations.DataSourceOrganizationsResourceInstances(),
 			"huaweicloud_organizations_resource_tags":            organizations.DataSourceOrganizationsTags(),
 			"huaweicloud_organizations_services":                 organizations.DataSourceOrganizationsServices(),
-			"huaweicloud_organizations_sent_invitations":         organizations.DataSourceOrganizationsSentInvitations(),
+			"huaweicloud_organizations_sent_invitations":         organizations.DataSourceSentInvitations(),
 			"huaweicloud_organizations_tag_policy_services":      organizations.DataSourceOrganizationsTagPolicyServices(),
 			"huaweicloud_organizations_trusted_services":         organizations.DataSourceTrustedServices(),
 
@@ -2893,6 +2895,9 @@ func Provider() *schema.Provider {
 			"huaweicloud_cfw_dns_resolution":                cfw.ResourceDNSResolution(),
 			"huaweicloud_cfw_capture_task":                  cfw.ResourceCaptureTask(),
 			"huaweicloud_cfw_ips_rule_mode_change":          cfw.ResourceCfwIpsRuleModeChange(),
+			"huaweicloud_cfw_export_logs":                   cfw.ResourceExportLogs(),
+			"huaweicloud_cfw_delete_ip_blacklist":           cfw.ResourceDeleteIpBlacklist(),
+			"huaweicloud_cfw_export_ip_blacklist":           cfw.ResourceExportIpBlacklist(),
 
 			"huaweicloud_cloudtable_cluster": cloudtable.ResourceCloudTableCluster(),
 
