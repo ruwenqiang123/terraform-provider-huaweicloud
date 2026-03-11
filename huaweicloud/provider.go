@@ -1017,6 +1017,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_css_clusters":                  css.DataSourceCssClusters(),
 			"huaweicloud_css_logstash_pipelines":        css.DataSourceCssLogstashPipelines(),
 			"huaweicloud_css_logstash_configurations":   css.DataSourceCssLogstashConfigurations(),
+			"huaweicloud_css_datastore_flavors":         css.DataSourceDatastoreFlavors(),
 			"huaweicloud_css_elb_loadbalancers":         css.DataSourceCssElbLoadbalancers(),
 			"huaweicloud_css_logstash_certificates":     css.DataSourceCssLogstashCertificates(),
 			"huaweicloud_css_logstash_pipeline_actions": css.DataSourceCssLogstashPipelineActions(),
@@ -1027,6 +1028,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_css_resize_flavors":            css.DataSourceResizeFlavors(),
 			"huaweicloud_css_scan_tasks":                css.DataSourceCssScanTasks(),
 			"huaweicloud_css_snapshots":                 css.DataSourceCssSnapshots(),
+			"huaweicloud_css_vpcep_connections":         css.DataSourceVpcepserviceConnections(),
 
 			"huaweicloud_dataarts_studio_data_connections": dataarts.DataSourceDataConnections(),
 			"huaweicloud_dataarts_studio_workspaces":       dataarts.DataSourceDataArtsStudioWorkspaces(),
