@@ -23,8 +23,13 @@
               },
               "connect_address": {
                 "type": "string",
-                "description": "The address that used to send requests and manage configuration.",
+                "description": "The address that used to access engine and query microservice instances.",
                 "required": true
+              },
+              "enterprise_project_id": {
+                "type": "string",
+                "description": "The enterprise project ID to which the microservice instances belong.",
+                "optional": true
               },
               "id": {
                 "type": "string",
@@ -81,7 +86,7 @@
               },
               "microservice_id": {
                 "type": "string",
-                "description": "The ID of the dedicated microservice to which the instances belong.",
+                "description": "The ID of the microservice to which the microservice instances belong.",
                 "required": true
               }
             }

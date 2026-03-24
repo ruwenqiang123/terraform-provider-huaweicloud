@@ -11,7 +11,7 @@
               },
               "region": {
                 "type": "string",
-                "description": "Specifies the region in which to query the resource. If omitted, the provider-level region will be used.",
+                "description": "The region where the trusted services are located.",
                 "computed": true
               },
               "trusted_services": {
@@ -25,7 +25,7 @@
                     }
                   ]
                 ],
-                "description": "Indicates the list of service principals for the services that are integrated with Organizations.",
+                "description": "The list of service principals for the services that are integrated with Organizations.",
                 "computed": true
               }
             }

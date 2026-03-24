@@ -1,0 +1,148 @@
+{
+  "provider_schemas": {
+    "huaweicloud/huaweicloud": {
+      "resource_schemas": {
+        "huaweicloud_cfw_ips_custom_rule": {
+          "block": {
+            "attributes": {
+              "action_type": {
+                "type": "number",
+                "required": true
+              },
+              "affected_os": {
+                "type": "number",
+                "required": true
+              },
+              "attack_type": {
+                "type": "number",
+                "required": true
+              },
+              "config_status": {
+                "type": "number",
+                "computed": true
+              },
+              "direction": {
+                "type": "number",
+                "required": true
+              },
+              "fw_instance_id": {
+                "type": "string",
+                "required": true
+              },
+              "id": {
+                "type": "string",
+                "computed": true
+              },
+              "ips_name": {
+                "type": "string",
+                "required": true
+              },
+              "protocol": {
+                "type": "number",
+                "required": true
+              },
+              "region": {
+                "type": "string",
+                "computed": true
+              },
+              "severity": {
+                "type": "number",
+                "required": true
+              },
+              "software": {
+                "type": "number",
+                "required": true
+              }
+            },
+            "block_types": {
+              "contents": {
+                "block": {
+                  "attributes": {
+                    "content": {
+                      "type": "string",
+                      "required": true
+                    },
+                    "depth": {
+                      "type": "number",
+                      "required": true
+                    },
+                    "is_hex": {
+                      "type": "bool",
+                      "optional": true,
+                      "computed": true
+                    },
+                    "is_ignore": {
+                      "type": "bool",
+                      "optional": true,
+                      "computed": true
+                    },
+                    "is_uri": {
+                      "type": "bool",
+                      "optional": true,
+                      "computed": true
+                    },
+                    "offset": {
+                      "type": "number",
+                      "optional": true,
+                      "computed": true
+                    },
+                    "relative_position": {
+                      "type": "number",
+                      "optional": true,
+                      "computed": true
+                    }
+                  }
+                },
+                "nesting_mode": "list",
+                "min_items": 1
+              },
+              "dst_port": {
+                "block": {
+                  "attributes": {
+                    "port_type": {
+                      "type": "number",
+                      "required": true
+                    },
+                    "ports": {
+                      "type": "string",
+                      "optional": true,
+                      "computed": true
+                    }
+                  }
+                },
+                "nesting_mode": "list",
+                "min_items": 1,
+                "max_items": 1
+              },
+              "src_port": {
+                "block": {
+                  "attributes": {
+                    "port_type": {
+                      "type": "number",
+                      "required": true
+                    },
+                    "ports": {
+                      "type": "string",
+                      "optional": true,
+                      "computed": true
+                    }
+                  }
+                },
+                "nesting_mode": "list",
+                "min_items": 1,
+                "max_items": 1
+              }
+            }
+          },
+          "product": {
+            "short": "CFW",
+            "name": "Cloud Firewall",
+            "catalog": "Security & Compliance",
+            "name_cn": "云防火墙",
+            "catalog_cn": "安全与合规"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,76 @@
+{
+  "provider_schemas": {
+    "huaweicloud/huaweicloud": {
+      "data_source_schemas": {
+        "huaweicloud_mapreduce_available_flavors": {
+          "block": {
+            "attributes": {
+              "available_flavors": {
+                "type": [
+                  "list",
+                  [
+                    "object",
+                    {
+                      "az_code": "string",
+                      "az_name": "string",
+                      "core": [
+                        "list",
+                        [
+                          "object",
+                          {
+                            "flavor_name": "string"
+                          }
+                        ]
+                      ],
+                      "master": [
+                        "list",
+                        [
+                          "object",
+                          {
+                            "flavor_name": "string"
+                          }
+                        ]
+                      ],
+                      "task": [
+                        "list",
+                        [
+                          "object",
+                          {
+                            "flavor_name": "string"
+                          }
+                        ]
+                      ]
+                    }
+                  ]
+                ],
+                "description": "The list of available flavors.",
+                "computed": true
+              },
+              "id": {
+                "type": "string",
+                "computed": true
+              },
+              "region": {
+                "type": "string",
+                "description": "The region where the flavors are located.",
+                "computed": true
+              },
+              "version_name": {
+                "type": "string",
+                "description": "The version name of the cluster.",
+                "required": true
+              }
+            }
+          },
+          "product": {
+            "short": "MRS",
+            "name": "MapReduce Service",
+            "catalog": "Analytics",
+            "name_cn": "MapReduce服务",
+            "catalog_cn": "大数据"
+          }
+        }
+      }
+    }
+  }
+}

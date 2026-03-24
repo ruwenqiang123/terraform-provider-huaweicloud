@@ -7,7 +7,7 @@
             "attributes": {
               "created_at": {
                 "type": "string",
-                "description": "Indicates the time when the OU was created.",
+                "description": "The time when the OU was created.",
                 "computed": true
               },
               "id": {
@@ -16,12 +16,12 @@
               },
               "name": {
                 "type": "string",
-                "description": "Specifies the name of the organizational unit.",
+                "description": "The name of the organizational unit.",
                 "required": true
               },
               "parent_id": {
                 "type": "string",
-                "description": "Specifies the ID of the root or organizational unit in which you\nwant to create a new organizational unit.",
+                "description": "The ID of the root or organizational unit in which you\nwant to create a new organizational unit.",
                 "required": true,
                 "forcenew": true
               },
@@ -30,12 +30,13 @@
                   "map",
                   "string"
                 ],
+                "description": "The key/value pairs associated with the organizational unit.",
                 "optional": true,
                 "computed": true
               },
               "urn": {
                 "type": "string",
-                "description": "Indicates the uniform resource name of the organizational unit.",
+                "description": "The uniform resource name of the organizational unit.",
                 "computed": true
               }
             }

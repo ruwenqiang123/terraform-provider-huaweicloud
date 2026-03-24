@@ -47,6 +47,12 @@
                 "description": "The expiration time of the agency.",
                 "computed": true
               },
+              "force_dissociate_v5_policies": {
+                "type": "bool",
+                "description": "Whether to force dissociate the associated v5 policies when deleting the agency.",
+                "optional": true,
+                "default": false
+              },
               "id": {
                 "type": "string",
                 "computed": true

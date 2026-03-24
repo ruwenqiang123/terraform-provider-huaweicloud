@@ -17,6 +17,10 @@
                 "type": "string",
                 "required": true
               },
+              "created_at": {
+                "type": "string",
+                "computed": true
+              },
               "description": {
                 "type": "string",
                 "optional": true,
@@ -43,6 +47,14 @@
               "name": {
                 "type": "string",
                 "required": true
+              },
+              "order_id": {
+                "type": "string",
+                "computed": true
+              },
+              "product_id": {
+                "type": "string",
+                "computed": true
               },
               "project_id": {
                 "type": "string",
@@ -83,6 +95,32 @@
                 ],
                 "optional": true,
                 "computed": true
+              },
+              "updated_at": {
+                "type": "string",
+                "computed": true
+              }
+            },
+            "block_types": {
+              "prepaid_options": {
+                "block": {
+                  "attributes": {
+                    "is_auto_renew": {
+                      "type": "bool",
+                      "optional": true
+                    },
+                    "period_num": {
+                      "type": "number",
+                      "required": true
+                    },
+                    "period_type": {
+                      "type": "string",
+                      "required": true
+                    }
+                  }
+                },
+                "nesting_mode": "list",
+                "max_items": 1
               }
             }
           },

@@ -33,7 +33,7 @@
                     }
                   ]
                 ],
-                "description": "Indicates the list of invitations (handshakes).",
+                "description": "The list of invitations (handshakes).",
                 "computed": true
               },
               "id": {
@@ -42,7 +42,7 @@
               },
               "region": {
                 "type": "string",
-                "description": "Specifies the region in which to query the resource. If omitted, the provider-level region will be used.",
+                "description": "The region where the sent invitations are located.",
                 "computed": true
               }
             }

@@ -7,7 +7,7 @@
             "attributes": {
               "entity_id": {
                 "type": "string",
-                "description": "Specifies the unique ID of an account.",
+                "description": "The unique ID of an account.",
                 "required": true
               },
               "id": {
@@ -26,12 +26,12 @@
               },
               "policy_type": {
                 "type": "string",
-                "description": "Specifies the name of a policy type.",
+                "description": "The name of a policy type.",
                 "required": true
               },
               "region": {
                 "type": "string",
-                "description": "Specifies the region in which to query the resource. If omitted, the provider-level region will be used.",
+                "description": "The region where the effective policies are located.",
                 "computed": true
               }
             }

@@ -11,7 +11,7 @@
               },
               "invitation_id": {
                 "type": "string",
-                "description": "Specifies the unique ID of an invitation (handshake).",
+                "description": "The unique ID of an invitation (handshake).",
                 "required": true,
                 "forcenew": true
               }

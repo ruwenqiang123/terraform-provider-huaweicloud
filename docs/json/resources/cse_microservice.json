@@ -9,41 +9,43 @@
                 "type": "string",
                 "description": "The user password that used to pass the RBAC control.",
                 "optional": true,
-                "forcenew": true,
                 "sensitive": true
               },
               "admin_user": {
                 "type": "string",
                 "description": "The user name that used to pass the RBAC control.",
-                "optional": true,
-                "forcenew": true
+                "optional": true
               },
               "app_name": {
                 "type": "string",
-                "required": true,
-                "forcenew": true
+                "description": "The name of the microservice application.",
+                "required": true
               },
               "auth_address": {
                 "type": "string",
                 "description": "The address that used to request the access token.",
-                "required": true,
-                "forcenew": true
+                "required": true
               },
               "connect_address": {
                 "type": "string",
-                "description": "The address that used to send requests and manage configuration.",
-                "required": true,
-                "forcenew": true
+                "description": "The address that used to access engine and manages microservice.",
+                "required": true
               },
               "description": {
                 "type": "string",
+                "description": "The description of the microservice.",
+                "optional": true
+              },
+              "enterprise_project_id": {
+                "type": "string",
+                "description": "The enterprise project ID to which the microservice belongs.",
                 "optional": true,
-                "forcenew": true
+                "computed": true
               },
               "environment": {
                 "type": "string",
-                "optional": true,
-                "forcenew": true
+                "description": "The environment (stage) type of the microservice.",
+                "optional": true
               },
               "id": {
                 "type": "string",
@@ -51,22 +53,23 @@
               },
               "level": {
                 "type": "string",
-                "optional": true,
-                "forcenew": true
+                "description": "The level of the microservice.",
+                "optional": true
               },
               "name": {
                 "type": "string",
-                "required": true,
-                "forcenew": true
+                "description": "The name of the microservice.",
+                "required": true
               },
               "status": {
                 "type": "string",
+                "description": "The status of the microservice.",
                 "computed": true
               },
               "version": {
                 "type": "string",
-                "required": true,
-                "forcenew": true
+                "description": "The version of the microservice.",
+                "required": true
               }
             }
           },

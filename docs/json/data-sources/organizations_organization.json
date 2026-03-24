@@ -7,7 +7,7 @@
             "attributes": {
               "created_at": {
                 "type": "string",
-                "description": "Indicates the time when the organization was created.",
+                "description": "The time when the organization was created.",
                 "computed": true
               },
               "enabled_policy_types": {
@@ -15,7 +15,7 @@
                   "set",
                   "string"
                 ],
-                "description": "Indicates the list of enabled Organizations policy types in the Organization Root.",
+                "description": "The list of enabled Organizations policy types in the Organization Root.",
                 "computed": true
               },
               "id": {
@@ -24,22 +24,22 @@
               },
               "master_account_id": {
                 "type": "string",
-                "description": "Indicates the unique ID of the organization's management account.",
+                "description": "The unique ID of the organization's management account.",
                 "computed": true
               },
               "master_account_name": {
                 "type": "string",
-                "description": "Indicates the name of the organization's management account.",
+                "description": "The name of the organization's management account.",
                 "computed": true
               },
               "root_id": {
                 "type": "string",
-                "description": "Indicates the ID of the root.",
+                "description": "The ID of the root.",
                 "computed": true
               },
               "root_name": {
                 "type": "string",
-                "description": "Indicates the name of the root.",
+                "description": "The name of the root.",
                 "computed": true
               },
               "root_tags": {
@@ -47,17 +47,17 @@
                   "map",
                   "string"
                 ],
-                "description": "Indicates the key/value attached to the root.",
+                "description": "The key/value pairs attached to the root.",
                 "computed": true
               },
               "root_urn": {
                 "type": "string",
-                "description": "Indicates the urn of the root.",
+                "description": "The urn of the root.",
                 "computed": true
               },
               "urn": {
                 "type": "string",
-                "description": "Indicates the uniform resource name of the organization.",
+                "description": "The uniform resource name of the organization.",
                 "computed": true
               }
             }

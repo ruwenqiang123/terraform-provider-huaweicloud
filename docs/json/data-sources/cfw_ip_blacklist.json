@@ -1,0 +1,61 @@
+{
+  "provider_schemas": {
+    "huaweicloud/huaweicloud": {
+      "data_source_schemas": {
+        "huaweicloud_cfw_ip_blacklist": {
+          "block": {
+            "attributes": {
+              "data": {
+                "type": [
+                  "list",
+                  [
+                    "object",
+                    {
+                      "records": [
+                        "list",
+                        [
+                          "object",
+                          {
+                            "effect_scope": [
+                              "list",
+                              "number"
+                            ],
+                            "error_message": "string",
+                            "import_status": "number",
+                            "import_time": "number",
+                            "name": "string"
+                          }
+                        ]
+                      ],
+                      "total": "number"
+                    }
+                  ]
+                ],
+                "computed": true
+              },
+              "fw_instance_id": {
+                "type": "string",
+                "required": true
+              },
+              "id": {
+                "type": "string",
+                "computed": true
+              },
+              "region": {
+                "type": "string",
+                "computed": true
+              }
+            }
+          },
+          "product": {
+            "short": "CFW",
+            "name": "Cloud Firewall",
+            "catalog": "Security & Compliance",
+            "name_cn": "云防火墙",
+            "catalog_cn": "安全与合规"
+          }
+        }
+      }
+    }
+  }
+}

@@ -9,26 +9,22 @@
                 "type": "string",
                 "description": "The user password that used to pass the RBAC control.",
                 "optional": true,
-                "forcenew": true,
                 "sensitive": true
               },
               "admin_user": {
                 "type": "string",
                 "description": "The user name that used to pass the RBAC control.",
-                "optional": true,
-                "forcenew": true
+                "optional": true
               },
               "auth_address": {
                 "type": "string",
                 "description": "The address that used to request the access token.",
-                "required": true,
-                "forcenew": true
+                "required": true
               },
               "connect_address": {
                 "type": "string",
-                "description": "The address that used to send requests and manage configuration.",
-                "required": true,
-                "forcenew": true
+                "description": "The address that used to access the engine and manage configuration.",
+                "required": true
               },
               "create_revision": {
                 "type": "number",
@@ -40,6 +36,12 @@
                 "description": "The creation time of the configuration, in RFC3339 format.",
                 "computed": true
               },
+              "enterprise_project_id": {
+                "type": "string",
+                "description": "The enterprise project ID to which the microservice engine configuration belongs.",
+                "optional": true,
+                "computed": true
+              },
               "id": {
                 "type": "string",
                 "computed": true
@@ -47,8 +49,7 @@
               "key": {
                 "type": "string",
                 "description": "The configuration key (item name).",
-                "required": true,
-                "forcenew": true
+                "required": true
               },
               "status": {
                 "type": "string",
@@ -61,10 +62,9 @@
                   "map",
                   "string"
                 ],
-                "description": "The key/value pairs to associate with the configuration that used to filter resource.",
+                "description": "The key/value pairs to associate with the configuration.",
                 "optional": true,
-                "computed": true,
-                "forcenew": true
+                "computed": true
               },
               "update_revision": {
                 "type": "number",
@@ -84,8 +84,7 @@
               "value_type": {
                 "type": "string",
                 "description": "The type of the configuration value.",
-                "required": true,
-                "forcenew": true
+                "required": true
               }
             }
           },

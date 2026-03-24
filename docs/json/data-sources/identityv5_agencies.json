@@ -24,11 +24,12 @@
                     }
                   ]
                 ],
-                "description": "The list of agencies.",
+                "description": "The list of the agencies.",
                 "computed": true
               },
               "agency_id": {
                 "type": "string",
+                "description": "The ID of the agency.",
                 "optional": true
               },
               "id": {
@@ -37,6 +38,7 @@
               },
               "path_prefix": {
                 "type": "string",
+                "description": "The path prefix of the agency.",
                 "optional": true
               }
             }

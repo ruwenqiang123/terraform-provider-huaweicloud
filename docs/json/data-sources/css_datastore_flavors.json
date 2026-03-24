@@ -1,0 +1,109 @@
+{
+  "provider_schemas": {
+    "huaweicloud/huaweicloud": {
+      "data_source_schemas": {
+        "huaweicloud_css_datastore_flavors": {
+          "block": {
+            "attributes": {
+              "datastore_id": {
+                "type": "string",
+                "required": true
+              },
+              "datastore_id_str": {
+                "type": "string",
+                "computed": true
+              },
+              "datastore_version_id": {
+                "type": "string",
+                "optional": true
+              },
+              "dbname": {
+                "type": "string",
+                "computed": true
+              },
+              "id": {
+                "type": "string",
+                "computed": true
+              },
+              "model_list": {
+                "type": [
+                  "list",
+                  [
+                    "object",
+                    {
+                      "models": [
+                        "list",
+                        [
+                          "object",
+                          {
+                            "arch_type": "string",
+                            "datastore_type": "string",
+                            "datastore_version": "string",
+                            "desc": "string",
+                            "id": "string",
+                            "is_text_model": "string",
+                            "language": "string",
+                            "model_version_id": "string",
+                            "name": "string"
+                          }
+                        ]
+                      ],
+                      "total_size": "number"
+                    }
+                  ]
+                ],
+                "computed": true
+              },
+              "region": {
+                "type": "string",
+                "computed": true
+              },
+              "versions": {
+                "type": [
+                  "list",
+                  [
+                    "object",
+                    {
+                      "flavors": [
+                        "list",
+                        [
+                          "object",
+                          {
+                            "cond_operation_az": "string",
+                            "cond_operation_status": "string",
+                            "cpu": "number",
+                            "diskrange": "string",
+                            "edge": "bool",
+                            "flavor_type_cn": "string",
+                            "flavor_type_en": "string",
+                            "is_allow_https": "bool",
+                            "localdisk": "string",
+                            "name": "string",
+                            "ram": "number",
+                            "region": "string",
+                            "str_id": "string",
+                            "typename": "string"
+                          }
+                        ]
+                      ],
+                      "id": "string",
+                      "name": "string"
+                    }
+                  ]
+                ],
+                "computed": true
+              }
+            }
+          },
+          "product": {
+            "short": "CSS",
+            "name": "Cloud Search Service",
+            "catalog": "Analytics",
+            "name_cn": "云搜索服务",
+            "catalog_cn": "大数据"
+          }
+        }
+      }
+    }
+  }
+}

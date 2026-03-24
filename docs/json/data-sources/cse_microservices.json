@@ -1,0 +1,101 @@
+{
+  "provider_schemas": {
+    "huaweicloud/huaweicloud": {
+      "data_source_schemas": {
+        "huaweicloud_cse_microservices": {
+          "block": {
+            "attributes": {
+              "admin_pass": {
+                "type": "string",
+                "description": "The user password that used to pass the RBAC control.",
+                "optional": true,
+                "sensitive": true
+              },
+              "admin_user": {
+                "type": "string",
+                "description": "The user name that used to pass the RBAC control.",
+                "optional": true
+              },
+              "auth_address": {
+                "type": "string",
+                "description": "The address that used to request the access token.",
+                "required": true
+              },
+              "connect_address": {
+                "type": "string",
+                "description": "The address that used to send requests and manage configuration.",
+                "required": true
+              },
+              "enterprise_project_id": {
+                "type": "string",
+                "description": "The enterprise project ID to which the microservices belong.",
+                "optional": true
+              },
+              "id": {
+                "type": "string",
+                "computed": true
+              },
+              "microservices": {
+                "type": [
+                  "list",
+                  [
+                    "object",
+                    {
+                      "app_id": "string",
+                      "created_at": "string",
+                      "description": "string",
+                      "environment": "string",
+                      "framework": [
+                        "list",
+                        [
+                          "object",
+                          {
+                            "name": "string",
+                            "version": "string"
+                          }
+                        ]
+                      ],
+                      "id": "string",
+                      "level": "string",
+                      "name": "string",
+                      "paths": [
+                        "list",
+                        [
+                          "object",
+                          {
+                            "path": "string",
+                            "properties": "string"
+                          }
+                        ]
+                      ],
+                      "properties": [
+                        "map",
+                        "string"
+                      ],
+                      "schemas": [
+                        "list",
+                        "string"
+                      ],
+                      "status": "string",
+                      "updated_at": "string",
+                      "version": "string"
+                    }
+                  ]
+                ],
+                "description": "The list of all microservices.",
+                "computed": true
+              }
+            }
+          },
+          "product": {
+            "short": "CSE",
+            "name": "Cloud Service Engine",
+            "catalog": "Middleware",
+            "name_cn": "微服务引擎",
+            "catalog_cn": "应用中间件"
+          }
+        }
+      }
+    }
+  }
+}

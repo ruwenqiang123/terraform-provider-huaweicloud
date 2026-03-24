@@ -1,0 +1,310 @@
+{
+  "provider_schemas": {
+    "huaweicloud/huaweicloud": {
+      "resource_schemas": {
+        "huaweicloud_rds_publication": {
+          "block": {
+            "attributes": {
+              "extend_tables": {
+                "type": [
+                  "set",
+                  "string"
+                ],
+                "optional": true
+              },
+              "id": {
+                "type": "string",
+                "computed": true
+              },
+              "instance_id": {
+                "type": "string",
+                "required": true
+              },
+              "is_create_snapshot_immediately": {
+                "type": "string",
+                "required": true
+              },
+              "is_select_all_table": {
+                "type": "string",
+                "optional": true
+              },
+              "publication_database": {
+                "type": "string",
+                "required": true
+              },
+              "publication_name": {
+                "type": "string",
+                "required": true
+              },
+              "region": {
+                "type": "string",
+                "computed": true
+              },
+              "status": {
+                "type": "string",
+                "computed": true
+              },
+              "subscription_count": {
+                "type": "number",
+                "computed": true
+              }
+            },
+            "block_types": {
+              "job_schedule": {
+                "block": {
+                  "attributes": {
+                    "id": {
+                      "type": "string",
+                      "computed": true
+                    },
+                    "job_schedule_type": {
+                      "type": "string",
+                      "optional": true
+                    }
+                  },
+                  "block_types": {
+                    "daily_frequency": {
+                      "block": {
+                        "attributes": {
+                          "active_end_time": {
+                            "type": "string",
+                            "optional": true
+                          },
+                          "active_start_time": {
+                            "type": "string",
+                            "optional": true
+                          },
+                          "freq_interval_unit": {
+                            "type": "string",
+                            "optional": true
+                          },
+                          "freq_subday_interval": {
+                            "type": "number",
+                            "optional": true
+                          },
+                          "freq_subday_type": {
+                            "type": "string",
+                            "required": true
+                          }
+                        }
+                      },
+                      "nesting_mode": "list",
+                      "max_items": 1
+                    },
+                    "duration": {
+                      "block": {
+                        "attributes": {
+                          "active_end_date": {
+                            "type": "string",
+                            "optional": true
+                          },
+                          "active_start_date": {
+                            "type": "string",
+                            "optional": true
+                          }
+                        }
+                      },
+                      "nesting_mode": "list",
+                      "max_items": 1
+                    },
+                    "frequency": {
+                      "block": {
+                        "attributes": {
+                          "freq_interval": {
+                            "type": "number",
+                            "optional": true
+                          },
+                          "freq_interval_day_monthly": {
+                            "type": "number",
+                            "optional": true
+                          },
+                          "freq_interval_monthly": {
+                            "type": "string",
+                            "optional": true
+                          },
+                          "freq_interval_weekly": {
+                            "type": [
+                              "set",
+                              "string"
+                            ],
+                            "optional": true
+                          },
+                          "freq_relative_interval_monthly": {
+                            "type": "string",
+                            "optional": true
+                          },
+                          "freq_type": {
+                            "type": "string",
+                            "optional": true
+                          }
+                        }
+                      },
+                      "nesting_mode": "list",
+                      "max_items": 1
+                    },
+                    "one_time_occurrence": {
+                      "block": {
+                        "attributes": {
+                          "active_start_date": {
+                            "type": "string",
+                            "optional": true
+                          },
+                          "active_start_time": {
+                            "type": "string",
+                            "optional": true
+                          }
+                        }
+                      },
+                      "nesting_mode": "list",
+                      "max_items": 1
+                    }
+                  }
+                },
+                "nesting_mode": "list",
+                "min_items": 1,
+                "max_items": 1
+              },
+              "subscription_options": {
+                "block": {
+                  "attributes": {
+                    "allow_initialize_from_backup": {
+                      "type": "string",
+                      "optional": true
+                    },
+                    "independent_agent": {
+                      "type": "string",
+                      "optional": true
+                    },
+                    "replicate_ddl": {
+                      "type": "string",
+                      "optional": true
+                    },
+                    "snapshot_always_available": {
+                      "type": "string",
+                      "optional": true
+                    }
+                  }
+                },
+                "nesting_mode": "list",
+                "max_items": 1
+              },
+              "tables": {
+                "block": {
+                  "attributes": {
+                    "columns": {
+                      "type": [
+                        "set",
+                        "string"
+                      ],
+                      "optional": true
+                    },
+                    "filter_statement": {
+                      "type": "string",
+                      "optional": true
+                    },
+                    "primary_key": {
+                      "type": [
+                        "set",
+                        "string"
+                      ],
+                      "optional": true
+                    },
+                    "schema": {
+                      "type": "string",
+                      "optional": true
+                    },
+                    "table_name": {
+                      "type": "string",
+                      "required": true
+                    }
+                  },
+                  "block_types": {
+                    "article_properties": {
+                      "block": {
+                        "attributes": {
+                          "delete_delivery_format": {
+                            "type": "string",
+                            "optional": true
+                          },
+                          "delete_stored_procedure": {
+                            "type": "string",
+                            "optional": true
+                          },
+                          "destination_object_name": {
+                            "type": "string",
+                            "optional": true
+                          },
+                          "destination_object_owner": {
+                            "type": "string",
+                            "optional": true
+                          },
+                          "insert_delivery_format": {
+                            "type": "string",
+                            "optional": true
+                          },
+                          "insert_stored_procedure": {
+                            "type": "string",
+                            "optional": true
+                          },
+                          "update_delivery_format": {
+                            "type": "string",
+                            "optional": true
+                          },
+                          "update_stored_procedure": {
+                            "type": "string",
+                            "optional": true
+                          }
+                        }
+                      },
+                      "nesting_mode": "list",
+                      "max_items": 1
+                    },
+                    "filter": {
+                      "block": {
+                        "attributes": {
+                          "column": {
+                            "type": "string",
+                            "optional": true
+                          },
+                          "condition": {
+                            "type": "string",
+                            "optional": true
+                          },
+                          "filters": {
+                            "type": [
+                              "set",
+                              "string"
+                            ],
+                            "optional": true
+                          },
+                          "relation": {
+                            "type": "string",
+                            "optional": true
+                          },
+                          "value": {
+                            "type": "string",
+                            "optional": true
+                          }
+                        }
+                      },
+                      "nesting_mode": "list",
+                      "max_items": 1
+                    }
+                  }
+                },
+                "nesting_mode": "set"
+              }
+            }
+          },
+          "product": {
+            "short": "RDS",
+            "name": "Relational Database Service",
+            "catalog": "Databases",
+            "name_cn": "云数据库",
+            "catalog_cn": "数据库"
+          }
+        }
+      }
+    }
+  }
+}

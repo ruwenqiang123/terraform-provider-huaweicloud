@@ -18,7 +18,7 @@
                     }
                   ]
                 ],
-                "description": "List of OUs in an organization.",
+                "description": "The list of child organizational units.",
                 "computed": true
               },
               "id": {
@@ -27,7 +27,7 @@
               },
               "parent_id": {
                 "type": "string",
-                "description": "Specifies the ID of root or organizational unit.",
+                "description": "The ID of root or organizational unit.",
                 "required": true
               }
             }

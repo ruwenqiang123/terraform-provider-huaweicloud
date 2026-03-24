@@ -7,7 +7,7 @@
             "attributes": {
               "enabled_at": {
                 "type": "string",
-                "description": "Indicates the date when the trusted service was integrated with Organizations.",
+                "description": "The time when the trusted service was integrated with Organizations.",
                 "computed": true
               },
               "id": {
@@ -16,7 +16,7 @@
               },
               "service": {
                 "type": "string",
-                "description": "Specifies the name of the trusted service principal.",
+                "description": "The name of the trusted service principal.",
                 "required": true,
                 "forcenew": true
               }

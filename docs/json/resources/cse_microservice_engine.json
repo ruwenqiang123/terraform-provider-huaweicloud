@@ -7,23 +7,23 @@
             "attributes": {
               "admin_pass": {
                 "type": "string",
+                "description": "The administrator account password of the microservice engine.",
                 "optional": true,
-                "forcenew": true,
                 "sensitive": true
               },
               "auth_type": {
                 "type": "string",
-                "required": true,
-                "forcenew": true
+                "description": "The authentication type of the microservice engine.",
+                "required": true
               },
               "availability_zones": {
                 "type": [
                   "set",
                   "string"
                 ],
+                "description": "The availability zones where the microservice engine is deployed.",
                 "optional": true,
-                "computed": true,
-                "forcenew": true
+                "computed": true
               },
               "config_center_addresses": {
                 "type": [
@@ -36,37 +36,39 @@
                     }
                   ]
                 ],
+                "description": "The config center addresses of the microservice engine.",
                 "computed": true
               },
               "description": {
                 "type": "string",
+                "description": "The description of the microservice engine.",
                 "optional": true,
-                "forcenew": true
+                "computed": true
               },
               "eip_id": {
                 "type": "string",
-                "optional": true,
-                "forcenew": true
+                "description": "The EIP ID bound to the microservice engine.",
+                "optional": true
               },
               "enterprise_project_id": {
                 "type": "string",
+                "description": "The enterprise project ID to which the microservice engine belongs.",
                 "optional": true,
-                "computed": true,
-                "forcenew": true
+                "computed": true
               },
               "extend_params": {
                 "type": [
                   "map",
                   "string"
                 ],
+                "description": "The extended parameters of the microservice engine.",
                 "optional": true,
-                "computed": true,
-                "forcenew": true
+                "computed": true
               },
               "flavor": {
                 "type": "string",
-                "required": true,
-                "forcenew": true
+                "description": "The flavor of the microservice engine.",
+                "required": true
               },
               "id": {
                 "type": "string",
@@ -74,24 +76,27 @@
               },
               "instance_limit": {
                 "type": "number",
+                "description": "The maximum number of the microservice instance resources.",
                 "computed": true
               },
               "name": {
                 "type": "string",
-                "required": true,
-                "forcenew": true
+                "description": "The name of the microservice engine.",
+                "required": true
               },
               "network_id": {
                 "type": "string",
-                "required": true,
-                "forcenew": true
+                "description": "The network ID of the subnet to which the microservice engine belongs.",
+                "required": true
               },
               "region": {
                 "type": "string",
+                "description": "The region where the microservice engine is located.",
                 "computed": true
               },
               "service_limit": {
                 "type": "number",
+                "description": "The maximum number of the microservice resources.",
                 "computed": true
               },
               "service_registry_addresses": {
@@ -105,12 +110,22 @@
                     }
                   ]
                 ],
+                "description": "The service registry addresses of the microservice engine.",
+                "computed": true
+              },
+              "tags": {
+                "type": [
+                  "map",
+                  "string"
+                ],
+                "description": "The key/value pairs to associate with the microservice engine.",
+                "optional": true,
                 "computed": true
               },
               "version": {
                 "type": "string",
+                "description": "The version of the microservice engine.",
                 "optional": true,
-                "forcenew": true,
                 "default": "CSE2"
               }
             }

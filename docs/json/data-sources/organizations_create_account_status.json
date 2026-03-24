@@ -33,7 +33,7 @@
                   "list",
                   "string"
                 ],
-                "description": "Specifies the list of states.",
+                "description": "The state list of the account.",
                 "optional": true
               }
             }

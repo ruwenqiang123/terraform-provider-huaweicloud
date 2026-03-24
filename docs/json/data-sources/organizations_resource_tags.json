@@ -11,12 +11,12 @@
               },
               "region": {
                 "type": "string",
-                "description": "Specifies the region in which to query the resource. If omitted, the provider-level region will be used.",
+                "description": "The region where the resource tags are located.",
                 "computed": true
               },
               "resource_type": {
                 "type": "string",
-                "description": "Specifies the resource type.",
+                "description": "The type of the resource.",
                 "required": true
               },
               "tags": {
@@ -33,7 +33,7 @@
                     }
                   ]
                 ],
-                "description": "Indicates the list of tags.",
+                "description": "The list of tags.",
                 "computed": true
               }
             }

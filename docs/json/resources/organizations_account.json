@@ -7,15 +7,18 @@
             "attributes": {
               "agency_name": {
                 "type": "string",
+                "description": "The agency name of the account.",
                 "optional": true,
                 "forcenew": true
               },
               "description": {
                 "type": "string",
+                "description": "The description of the account.",
                 "optional": true
               },
               "email": {
                 "type": "string",
+                "description": "The email address of the account.",
                 "optional": true,
                 "computed": true,
                 "forcenew": true
@@ -26,29 +29,34 @@
               },
               "intl_number_prefix": {
                 "type": "string",
+                "description": "The prefix of a mobile number.",
                 "computed": true
               },
               "joined_at": {
                 "type": "string",
+                "description": "The time when the account was created.",
                 "computed": true
               },
               "joined_method": {
                 "type": "string",
+                "description": "How the account joined the organization.",
                 "computed": true
               },
               "name": {
                 "type": "string",
-                "description": "Specifies the name of the account.",
+                "description": "The name of the account.",
                 "required": true,
                 "forcenew": true
               },
               "parent_id": {
                 "type": "string",
+                "description": "The ID of the organizational unit or root to which the account belongs.",
                 "optional": true,
                 "computed": true
               },
               "phone": {
                 "type": "string",
+                "description": "The mobile number of the account.",
                 "optional": true,
                 "computed": true,
                 "forcenew": true
@@ -58,11 +66,13 @@
                   "map",
                   "string"
                 ],
+                "description": "The key/value pairs to be associated with the account",
                 "optional": true,
                 "computed": true
               },
               "urn": {
                 "type": "string",
+                "description": "The uniform resource name of the account.",
                 "computed": true
               }
             }

@@ -1,0 +1,76 @@
+{
+  "provider_schemas": {
+    "huaweicloud/huaweicloud": {
+      "data_source_schemas": {
+        "huaweicloud_css_resize_flavors": {
+          "block": {
+            "attributes": {
+              "cluster_id": {
+                "type": "string",
+                "required": true
+              },
+              "datastore_id": {
+                "type": "string",
+                "computed": true
+              },
+              "dbname": {
+                "type": "string",
+                "computed": true
+              },
+              "id": {
+                "type": "string",
+                "computed": true
+              },
+              "region": {
+                "type": "string",
+                "computed": true
+              },
+              "type": {
+                "type": "string",
+                "optional": true
+              },
+              "versions": {
+                "type": [
+                  "list",
+                  [
+                    "object",
+                    {
+                      "flavors": [
+                        "list",
+                        [
+                          "object",
+                          {
+                            "cond_operation_status": "string",
+                            "cpu": "number",
+                            "diskrange": "string",
+                            "edge": "bool",
+                            "localdisk": "string",
+                            "name": "string",
+                            "ram": "number",
+                            "region": "string",
+                            "str_id": "string",
+                            "typename": "string"
+                          }
+                        ]
+                      ],
+                      "id": "string",
+                      "name": "string"
+                    }
+                  ]
+                ],
+                "computed": true
+              }
+            }
+          },
+          "product": {
+            "short": "CSS",
+            "name": "Cloud Search Service",
+            "catalog": "Analytics",
+            "name_cn": "云搜索服务",
+            "catalog_cn": "大数据"
+          }
+        }
+      }
+    }
+  }
+}
