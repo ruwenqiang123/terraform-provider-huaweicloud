@@ -1,0 +1,21 @@
+info:
+    version: ""
+    title: resource_huaweicloud_cfw_schedule
+    description: ""
+schemes:
+    - https
+host: huaweicloud.com
+tags:
+    - name: CFW
+paths:
+    /v1/{project_id}/schedule:
+        POST:
+            tag: CFW
+    /v1/{project_id}/schedule/{schedule_id}:
+        DELETE:
+            tag: CFW
+        PUT:
+            tag: CFW
+    /v1/{project_id}/schedules:
+        GET:
+            tag: CFW

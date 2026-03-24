@@ -1,0 +1,20 @@
+info:
+    version: ""
+    title: resource_huaweicloud_cfw_report_profile
+    description: ""
+schemes:
+    - https
+host: huaweicloud.com
+tags:
+    - name: CFW
+paths:
+    /v1/{project_id}/report-profile:
+        POST:
+            tag: CFW
+    /v1/{project_id}/report-profile/{report_profile_id}:
+        DELETE:
+            tag: CFW
+        GET:
+            tag: CFW
+        PUT:
+            tag: CFW

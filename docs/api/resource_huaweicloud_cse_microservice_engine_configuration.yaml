@@ -20,3 +20,6 @@ paths:
             tag: CSE
         PUT:
             tag: CSE
+    /v4/token:
+        POST:
+            tag: CSE

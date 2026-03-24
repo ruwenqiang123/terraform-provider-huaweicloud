@@ -1,0 +1,23 @@
+info:
+    version: ""
+    title: resource_huaweicloud_cfw_ips_custom_rule
+    description: ""
+schemes:
+    - https
+host: huaweicloud.com
+tags:
+    - name: CFW
+paths:
+    /v1/{project_id}/ips/custom-rule:
+        GET:
+            tag: CFW
+        POST:
+            tag: CFW
+    /v1/{project_id}/ips/custom-rule/{ips_cfw_id}:
+        GET:
+            tag: CFW
+        PUT:
+            tag: CFW
+    /v1/{project_id}/ips/custom-rule/batch-delete:
+        POST:
+            tag: CFW

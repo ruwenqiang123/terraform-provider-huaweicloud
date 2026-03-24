@@ -1,0 +1,13 @@
+info:
+    version: ""
+    title: data_source_huaweicloud_mapreduce_cluster_nodes
+    description: ""
+schemes:
+    - https
+host: huaweicloud.com
+tags:
+    - name: MRS
+paths:
+    /v2/{project_id}/clusters/{cluster_id}/nodes:
+        GET:
+            tag: MRS

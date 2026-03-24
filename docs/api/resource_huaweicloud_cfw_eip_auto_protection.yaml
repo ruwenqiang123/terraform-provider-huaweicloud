@@ -1,0 +1,16 @@
+info:
+    version: ""
+    title: resource_huaweicloud_cfw_eip_auto_protection
+    description: ""
+schemes:
+    - https
+host: huaweicloud.com
+tags:
+    - name: CFW
+paths:
+    /v1/{project_id}/eip/auto-protect-status/{object_id}:
+        GET:
+            tag: CFW
+    /v1/{project_id}/eip/auto-protect-status/switch:
+        POST:
+            tag: CFW

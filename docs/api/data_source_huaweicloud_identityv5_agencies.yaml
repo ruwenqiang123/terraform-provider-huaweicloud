@@ -11,3 +11,6 @@ paths:
     /v5/agencies:
         GET:
             tag: IAM
+    /v5/agencies/{agency_id}:
+        GET:
+            tag: IAM

@@ -11,3 +11,6 @@ paths:
     /v1/{project_id}/kie/kv:
         GET:
             tag: CSE
+    /v4/token:
+        POST:
+            tag: CSE
