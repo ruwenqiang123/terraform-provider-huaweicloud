@@ -1,0 +1,13 @@
+info:
+    version: ""
+    title: data_source_huaweicloud_cfw_inspection_vpcs
+    description: ""
+schemes:
+    - https
+host: huaweicloud.com
+tags:
+    - name: CFW
+paths:
+    /v1/{project_id}/firewall/east-west/inspection-vpc:
+        GET:
+            tag: CFW

@@ -7,7 +7,7 @@
             "attributes": {
               "build_type": {
                 "type": "string",
-                "description": "Specifies the build type of the policy.",
+                "description": "The build type of the policy.",
                 "optional": true
               },
               "id": {
@@ -16,7 +16,7 @@
               },
               "name": {
                 "type": "string",
-                "description": "Specifies the name of the policy.",
+                "description": "The name of the policy.",
                 "optional": true
               },
               "policies": {
@@ -34,12 +34,12 @@
                     }
                   ]
                 ],
-                "description": "List of policies in an organization.",
+                "description": "The list of policies that match the filter parameters.",
                 "computed": true
               },
               "type": {
                 "type": "string",
-                "description": "Specifies the type of the policy.",
+                "description": "The type of the policy.",
                 "optional": true
               }
             }

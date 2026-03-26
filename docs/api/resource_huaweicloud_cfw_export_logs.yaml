@@ -1,0 +1,13 @@
+info:
+    version: ""
+    title: resource_huaweicloud_cfw_export_logs
+    description: ""
+schemes:
+    - https
+host: huaweicloud.com
+tags:
+    - name: CFW
+paths:
+    /v1/{project_id}/cfw/{fw_instance_id}/logs/export:
+        POST:
+            tag: CFW

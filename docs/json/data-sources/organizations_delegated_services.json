@@ -7,6 +7,7 @@
             "attributes": {
               "account_id": {
                 "type": "string",
+                "description": "The unique ID of an account.",
                 "required": true
               },
               "delegated_services": {
@@ -20,7 +21,7 @@
                     }
                   ]
                 ],
-                "description": "List of the services for which the specified account is a delegated administrator.",
+                "description": "The list of the delegated services.",
                 "computed": true
               },
               "id": {

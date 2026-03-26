@@ -1,0 +1,16 @@
+info:
+    version: ""
+    title: resource_huaweicloud_mapreduce_cluster_default_tags_switch
+    description: ""
+schemes:
+    - https
+host: huaweicloud.com
+tags:
+    - name: MRS
+paths:
+    /v2/{project_id}/clusters/{cluster_id}/tags/status:
+        GET:
+            tag: MRS
+    /v2/{project_id}/clusters/{cluster_id}/tags/switch:
+        POST:
+            tag: MRS

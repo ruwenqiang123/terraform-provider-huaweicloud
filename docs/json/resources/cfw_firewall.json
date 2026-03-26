@@ -84,8 +84,7 @@
               "name": {
                 "type": "string",
                 "description": "Specifies the firewall name.",
-                "required": true,
-                "forcenew": true
+                "required": true
               },
               "period": {
                 "type": "number",

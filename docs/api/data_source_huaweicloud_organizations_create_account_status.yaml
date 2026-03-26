@@ -6,8 +6,8 @@ schemes:
     - https
 host: huaweicloud.com
 tags:
-    - name: ORGANIZATIONS
+    - name: Organizations
 paths:
     /v1/organizations/create-account-status:
         GET:
-            tag: ORGANIZATIONS
+            tag: Organizations

@@ -11,6 +11,7 @@
               },
               "resource_type": {
                 "type": "string",
+                "description": "The resource type.",
                 "required": true
               },
               "resources": {
@@ -34,10 +35,12 @@
                     }
                   ]
                 ],
+                "description": "The list of resources that match the filter parameters.",
                 "computed": true
               },
               "without_any_tag": {
                 "type": "bool",
+                "description": "Whether to only get the resources without tags.",
                 "optional": true
               }
             },
@@ -47,13 +50,16 @@
                   "attributes": {
                     "key": {
                       "type": "string",
+                      "description": "The field name.",
                       "required": true
                     },
                     "value": {
                       "type": "string",
+                      "description": "The value corresponding to the field name.",
                       "required": true
                     }
-                  }
+                  },
+                  "description": "The fields to be queried."
                 },
                 "nesting_mode": "list"
               },
@@ -62,6 +68,7 @@
                   "attributes": {
                     "key": {
                       "type": "string",
+                      "description": "The key of the tag.",
                       "required": true
                     },
                     "values": {
@@ -69,9 +76,11 @@
                         "list",
                         "string"
                       ],
+                      "description": "The list of values of the tag.",
                       "required": true
                     }
-                  }
+                  },
+                  "description": "The list of tags to be queried."
                 },
                 "nesting_mode": "list"
               }

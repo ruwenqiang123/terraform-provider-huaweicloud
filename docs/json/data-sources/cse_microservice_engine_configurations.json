@@ -43,13 +43,18 @@
                     }
                   ]
                 ],
-                "description": "All queried configurations of the dedicated microservice engine.",
+                "description": "The list of configurations that matched filter parameters.",
                 "computed": true
               },
               "connect_address": {
                 "type": "string",
-                "description": "The address that used to send requests and manage configuration.",
+                "description": "The address that used to access the engine and query configurations.",
                 "required": true
+              },
+              "enterprise_project_id": {
+                "type": "string",
+                "description": "The enterprise project ID to which the microservice engine configurations belong.",
+                "optional": true
               },
               "id": {
                 "type": "string",

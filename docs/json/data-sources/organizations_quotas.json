@@ -31,7 +31,7 @@
                     }
                   ]
                 ],
-                "description": "Indicates the list organization's quotas.",
+                "description": "Indicates the list of the Organizations quotas.",
                 "computed": true
               }
             }

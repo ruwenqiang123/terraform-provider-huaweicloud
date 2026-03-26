@@ -20,7 +20,7 @@
                     }
                   ]
                 ],
-                "description": "Indicates the list of close account statuses.",
+                "description": "The list of close account statuses.",
                 "computed": true
               },
               "id": {
@@ -32,7 +32,7 @@
                   "list",
                   "string"
                 ],
-                "description": "Specifies the list of one or more states that you want to include in the response.",
+                "description": "The state list of the account.",
                 "optional": true
               }
             }

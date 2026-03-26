@@ -1,0 +1,13 @@
+info:
+    version: ""
+    title: data_source_huaweicloud_mapreduce_available_flavors
+    description: ""
+schemes:
+    - https
+host: huaweicloud.com
+tags:
+    - name: MRS
+paths:
+    /v2/{project_id}/metadata/version/{version_name}/available-flavor:
+        GET:
+            tag: MRS

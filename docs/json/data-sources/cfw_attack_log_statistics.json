@@ -1,0 +1,126 @@
+{
+  "provider_schemas": {
+    "huaweicloud/huaweicloud": {
+      "data_source_schemas": {
+        "huaweicloud_cfw_attack_log_statistics": {
+          "block": {
+            "attributes": {
+              "action": {
+                "type": "number",
+                "required": true
+              },
+              "data": {
+                "type": [
+                  "list",
+                  [
+                    "object",
+                    {
+                      "app_count": "number",
+                      "attack_rule_count": "number",
+                      "attack_type_count": "number",
+                      "count": "number",
+                      "dst_ip_count": "number",
+                      "dst_port_count": "number",
+                      "end_time": "number",
+                      "records": [
+                        "list",
+                        [
+                          "object",
+                          {
+                            "action": "string",
+                            "app": "string",
+                            "attack_rule": "string",
+                            "attack_rule_id": "string",
+                            "attack_type": "string",
+                            "direction": "string",
+                            "dst_city_id": "string",
+                            "dst_city_name": "string",
+                            "dst_ip": "string",
+                            "dst_port": "number",
+                            "dst_province_id": "string",
+                            "dst_province_name": "string",
+                            "dst_region_id": "string",
+                            "dst_region_name": "string",
+                            "event_time": "number",
+                            "level": "string",
+                            "protocol": "string",
+                            "real_ip": "string",
+                            "source": "string",
+                            "src_city_id": "string",
+                            "src_city_name": "string",
+                            "src_ip": "string",
+                            "src_port": "number",
+                            "src_province_id": "string",
+                            "src_province_name": "string",
+                            "src_region_id": "string",
+                            "src_region_name": "string",
+                            "tag": "number",
+                            "vgw_id": "string"
+                          }
+                        ]
+                      ],
+                      "src_ip_count": "number",
+                      "start_time": "number",
+                      "total": "number"
+                    }
+                  ]
+                ],
+                "computed": true
+              },
+              "end_time": {
+                "type": "number",
+                "optional": true
+              },
+              "fw_instance_id": {
+                "type": "string",
+                "required": true
+              },
+              "id": {
+                "type": "string",
+                "computed": true
+              },
+              "item": {
+                "type": "string",
+                "required": true
+              },
+              "log_type": {
+                "type": "string",
+                "required": true
+              },
+              "range": {
+                "type": "string",
+                "optional": true
+              },
+              "region": {
+                "type": "string",
+                "computed": true
+              },
+              "start_time": {
+                "type": "number",
+                "optional": true
+              },
+              "value": {
+                "type": "string",
+                "required": true
+              },
+              "vgw_id": {
+                "type": [
+                  "list",
+                  "string"
+                ],
+                "optional": true
+              }
+            }
+          },
+          "product": {
+            "short": "CFW",
+            "name": "Cloud Firewall",
+            "catalog": "Security & Compliance",
+            "name_cn": "云防火墙",
+            "catalog_cn": "安全与合规"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,13 @@
+info:
+    version: ""
+    title: data_source_huaweicloud_mapreduce_availability_zones
+    description: ""
+schemes:
+    - https
+host: huaweicloud.com
+tags:
+    - name: MRS
+paths:
+    /v1.1/{region_id}/available-zones:
+        GET:
+            tag: MRS

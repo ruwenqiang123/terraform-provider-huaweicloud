@@ -11,3 +11,6 @@ paths:
     /v4/{project_id}/registry/microservices/{service_id}/instances:
         GET:
             tag: CSE
+    /v4/token:
+        POST:
+            tag: CSE

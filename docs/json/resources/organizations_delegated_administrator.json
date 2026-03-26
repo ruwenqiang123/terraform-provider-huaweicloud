@@ -7,7 +7,7 @@
             "attributes": {
               "account_id": {
                 "type": "string",
-                "description": "Specifies the unique ID of an account.",
+                "description": "The unique ID of an account.",
                 "required": true,
                 "forcenew": true
               },
@@ -17,7 +17,7 @@
               },
               "service_principal": {
                 "type": "string",
-                "description": "Specifies the name of the service principal.",
+                "description": "The name of the service principal.",
                 "required": true,
                 "forcenew": true
               }

@@ -24,7 +24,7 @@
                     }
                   ]
                 ],
-                "description": "List of accounts in an organization.",
+                "description": "The list of accounts that match the filter parameters.",
                 "computed": true
               },
               "id": {
@@ -33,12 +33,12 @@
               },
               "name": {
                 "type": "string",
-                "description": "Specifies the name of the account.",
+                "description": "The name of the account.",
                 "optional": true
               },
               "parent_id": {
                 "type": "string",
-                "description": "Specifies the ID of root or organizational unit.",
+                "description": "The ID of root or organizational unit.",
                 "optional": true
               },
               "with_register_contact_info": {

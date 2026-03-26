@@ -58,6 +58,12 @@
                 "description": "All queried dedicated microservice engines.",
                 "computed": true
               },
+              "enterprise_project_id": {
+                "type": "string",
+                "description": "The enterprise project ID to which the dedicated microservice engines belong.",
+                "optional": true,
+                "computed": true
+              },
               "id": {
                 "type": "string",
                 "computed": true

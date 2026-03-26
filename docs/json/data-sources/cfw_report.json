@@ -1,0 +1,471 @@
+{
+  "provider_schemas": {
+    "huaweicloud/huaweicloud": {
+      "data_source_schemas": {
+        "huaweicloud_cfw_report": {
+          "block": {
+            "attributes": {
+              "attack_info": {
+                "type": [
+                  "list",
+                  [
+                    "object",
+                    {
+                      "dst_ip": [
+                        "list",
+                        [
+                          "object",
+                          {
+                            "key": "string",
+                            "name": "string",
+                            "value": "number"
+                          }
+                        ]
+                      ],
+                      "ips_mode": "number",
+                      "level": [
+                        "list",
+                        [
+                          "object",
+                          {
+                            "key": "string",
+                            "name": "string",
+                            "value": "number"
+                          }
+                        ]
+                      ],
+                      "rule": [
+                        "list",
+                        [
+                          "object",
+                          {
+                            "key": "string",
+                            "name": "string",
+                            "value": "number"
+                          }
+                        ]
+                      ],
+                      "src_ip": [
+                        "list",
+                        [
+                          "object",
+                          {
+                            "key": "string",
+                            "name": "string",
+                            "value": "number"
+                          }
+                        ]
+                      ],
+                      "trend": [
+                        "list",
+                        [
+                          "object",
+                          {
+                            "agg_time": "number",
+                            "bps": "number",
+                            "deny": "number",
+                            "in_bps": "number",
+                            "out_bps": "number",
+                            "permit": "number"
+                          }
+                        ]
+                      ],
+                      "type": [
+                        "list",
+                        [
+                          "object",
+                          {
+                            "key": "string",
+                            "name": "string",
+                            "value": "number"
+                          }
+                        ]
+                      ]
+                    }
+                  ]
+                ],
+                "computed": true
+              },
+              "category": {
+                "type": "string",
+                "computed": true
+              },
+              "fw_instance_id": {
+                "type": "string",
+                "required": true
+              },
+              "id": {
+                "type": "string",
+                "computed": true
+              },
+              "internet_firewall": {
+                "type": [
+                  "list",
+                  [
+                    "object",
+                    {
+                      "eip": [
+                        "list",
+                        [
+                          "object",
+                          {
+                            "protected": [
+                              "list",
+                              [
+                                "object",
+                                {
+                                  "changed": "number",
+                                  "total": "number",
+                                  "value": "number"
+                                }
+                              ]
+                            ],
+                            "total": "number"
+                          }
+                        ]
+                      ],
+                      "in2out": [
+                        "list",
+                        [
+                          "object",
+                          {
+                            "dst_host": [
+                              "list",
+                              [
+                                "object",
+                                {
+                                  "key": "string",
+                                  "name": "string",
+                                  "value": "number"
+                                }
+                              ]
+                            ],
+                            "dst_ip": [
+                              "list",
+                              [
+                                "object",
+                                {
+                                  "key": "string",
+                                  "name": "string",
+                                  "value": "number"
+                                }
+                              ]
+                            ],
+                            "dst_port": [
+                              "list",
+                              [
+                                "object",
+                                {
+                                  "key": "string",
+                                  "name": "string",
+                                  "value": "number"
+                                }
+                              ]
+                            ],
+                            "src_ip": [
+                              "list",
+                              [
+                                "object",
+                                {
+                                  "key": "string",
+                                  "name": "string",
+                                  "value": "number"
+                                }
+                              ]
+                            ]
+                          }
+                        ]
+                      ],
+                      "out2in": [
+                        "list",
+                        [
+                          "object",
+                          {
+                            "dst_ip": [
+                              "list",
+                              [
+                                "object",
+                                {
+                                  "key": "string",
+                                  "name": "string",
+                                  "value": "number"
+                                }
+                              ]
+                            ],
+                            "dst_port": [
+                              "list",
+                              [
+                                "object",
+                                {
+                                  "key": "string",
+                                  "name": "string",
+                                  "value": "number"
+                                }
+                              ]
+                            ],
+                            "src_ip": [
+                              "list",
+                              [
+                                "object",
+                                {
+                                  "key": "string",
+                                  "name": "string",
+                                  "value": "number"
+                                }
+                              ]
+                            ]
+                          }
+                        ]
+                      ],
+                      "overview": [
+                        "list",
+                        [
+                          "object",
+                          {
+                            "access_policies": [
+                              "list",
+                              [
+                                "object",
+                                {
+                                  "changed": "number",
+                                  "eip": "number",
+                                  "nat": "number",
+                                  "total": "number"
+                                }
+                              ]
+                            ],
+                            "assets": [
+                              "list",
+                              [
+                                "object",
+                                {
+                                  "changed": "number",
+                                  "total": "number",
+                                  "value": "number"
+                                }
+                              ]
+                            ],
+                            "attack_event": [
+                              "list",
+                              [
+                                "object",
+                                {
+                                  "changed": "number",
+                                  "deny": "number",
+                                  "total": "number"
+                                }
+                              ]
+                            ],
+                            "traffic_peak": [
+                              "list",
+                              [
+                                "object",
+                                {
+                                  "agg_time": "number",
+                                  "bps": "number",
+                                  "deny": "number",
+                                  "in_bps": "number",
+                                  "out_bps": "number",
+                                  "permit": "number"
+                                }
+                              ]
+                            ]
+                          }
+                        ]
+                      ],
+                      "traffic_trend": [
+                        "list",
+                        [
+                          "object",
+                          {
+                            "agg_time": "number",
+                            "bps": "number",
+                            "deny": "number",
+                            "in_bps": "number",
+                            "out_bps": "number",
+                            "permit": "number"
+                          }
+                        ]
+                      ]
+                    }
+                  ]
+                ],
+                "computed": true
+              },
+              "region": {
+                "type": "string",
+                "computed": true
+              },
+              "report_id": {
+                "type": "string",
+                "required": true
+              },
+              "report_profile_id": {
+                "type": "string",
+                "required": true
+              },
+              "send_time": {
+                "type": "number",
+                "computed": true
+              },
+              "statistic_period": {
+                "type": [
+                  "list",
+                  [
+                    "object",
+                    {
+                      "end_time": "number",
+                      "start_time": "number"
+                    }
+                  ]
+                ],
+                "computed": true
+              },
+              "vpc_firewall": {
+                "type": [
+                  "list",
+                  [
+                    "object",
+                    {
+                      "app": [
+                        "list",
+                        [
+                          "object",
+                          {
+                            "key": "string",
+                            "name": "string",
+                            "value": "number"
+                          }
+                        ]
+                      ],
+                      "dst_ip": [
+                        "list",
+                        [
+                          "object",
+                          {
+                            "key": "string",
+                            "name": "string",
+                            "value": "number"
+                          }
+                        ]
+                      ],
+                      "overview": [
+                        "list",
+                        [
+                          "object",
+                          {
+                            "access_policies": [
+                              "list",
+                              [
+                                "object",
+                                {
+                                  "changed": "number",
+                                  "eip": "number",
+                                  "nat": "number",
+                                  "total": "number"
+                                }
+                              ]
+                            ],
+                            "assets": [
+                              "list",
+                              [
+                                "object",
+                                {
+                                  "changed": "number",
+                                  "total": "number",
+                                  "value": "number"
+                                }
+                              ]
+                            ],
+                            "attack_event": [
+                              "list",
+                              [
+                                "object",
+                                {
+                                  "changed": "number",
+                                  "deny": "number",
+                                  "total": "number"
+                                }
+                              ]
+                            ],
+                            "traffic_peak": [
+                              "list",
+                              [
+                                "object",
+                                {
+                                  "agg_time": "number",
+                                  "bps": "number",
+                                  "deny": "number",
+                                  "in_bps": "number",
+                                  "out_bps": "number",
+                                  "permit": "number"
+                                }
+                              ]
+                            ]
+                          }
+                        ]
+                      ],
+                      "src_ip": [
+                        "list",
+                        [
+                          "object",
+                          {
+                            "key": "string",
+                            "name": "string",
+                            "value": "number"
+                          }
+                        ]
+                      ],
+                      "traffic_trend": [
+                        "list",
+                        [
+                          "object",
+                          {
+                            "agg_time": "number",
+                            "bps": "number",
+                            "deny": "number",
+                            "in_bps": "number",
+                            "out_bps": "number",
+                            "permit": "number"
+                          }
+                        ]
+                      ],
+                      "vpc": [
+                        "list",
+                        [
+                          "object",
+                          {
+                            "protected": [
+                              "list",
+                              [
+                                "object",
+                                {
+                                  "changed": "number",
+                                  "total": "number",
+                                  "value": "number"
+                                }
+                              ]
+                            ],
+                            "total": "number"
+                          }
+                        ]
+                      ]
+                    }
+                  ]
+                ],
+                "computed": true
+              }
+            }
+          },
+          "product": {
+            "short": "CFW",
+            "name": "Cloud Firewall",
+            "catalog": "Security & Compliance",
+            "name_cn": "云防火墙",
+            "catalog_cn": "安全与合规"
+          }
+        }
+      }
+    }
+  }
+}

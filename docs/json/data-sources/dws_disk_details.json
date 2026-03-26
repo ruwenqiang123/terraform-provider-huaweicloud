@@ -1,0 +1,71 @@
+{
+  "provider_schemas": {
+    "huaweicloud/huaweicloud": {
+      "data_source_schemas": {
+        "huaweicloud_dws_disk_details": {
+          "block": {
+            "attributes": {
+              "cluster_id": {
+                "type": "string",
+                "description": "The cluster ID.",
+                "optional": true
+              },
+              "disk_details": {
+                "type": [
+                  "list",
+                  [
+                    "object",
+                    {
+                      "available": "number",
+                      "await": "number",
+                      "disk_name": "string",
+                      "disk_type": "string",
+                      "host_name": "string",
+                      "instance_id": "string",
+                      "instance_name": "string",
+                      "read_rate": "number",
+                      "svctm": "number",
+                      "total": "number",
+                      "used": "number",
+                      "used_percentage": "number",
+                      "util": "number",
+                      "write_rate": "number"
+                    }
+                  ]
+                ],
+                "description": "The list of disk details that matched filter parameters.",
+                "computed": true
+              },
+              "id": {
+                "type": "string",
+                "computed": true
+              },
+              "instance_id": {
+                "type": "string",
+                "description": "The instance ID.",
+                "optional": true
+              },
+              "instance_name": {
+                "type": "string",
+                "description": "The instance name.",
+                "optional": true
+              },
+              "region": {
+                "type": "string",
+                "description": "The region where the disk details are located.",
+                "computed": true
+              }
+            }
+          },
+          "product": {
+            "short": "DWS",
+            "name": "Data Warehouse Service",
+            "catalog": "Analytics",
+            "name_cn": "数据仓库服务",
+            "catalog_cn": "大数据"
+          }
+        }
+      }
+    }
+  }
+}

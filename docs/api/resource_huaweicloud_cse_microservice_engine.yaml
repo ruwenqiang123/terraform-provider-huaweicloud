@@ -6,16 +6,30 @@ schemes:
     - https
 host: huaweicloud.com
 tags:
-    - name: CSE
+    - name: VPC
 paths:
+    /v1/{project_id}/subnets/{subnet_id}:
+        GET:
+            tag: VPC
+    /v1/{project_id}/vpcs/{vpc_id}:
+        GET:
+            tag: VPC
+    /v2/{project_id}/{resource_type}/{resource_id}/tags/create:
+        POST:
+            tag: CSE
+    /v2/{project_id}/{resource_type}/{resource_id}/tags/delete:
+        DELETE:
+            tag: CSE
     /v2/{project_id}/enginemgr/engines:
         POST:
             tag: CSE
-    /v2/{project_id}/enginemgr/engines/{engineId}:
+    /v2/{project_id}/enginemgr/engines/{engine_id}:
         DELETE:
             tag: CSE
         GET:
             tag: CSE
-    /v2/{project_id}/enginemgr/engines/{engineId}/jobs/{jobId}:
+        PUT:
+            tag: CSE
+    /v2/{project_id}/enginemgr/engines/{engine_id}/jobs/{job_id}:
         GET:
             tag: CSE

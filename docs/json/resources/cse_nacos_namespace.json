@@ -10,6 +10,12 @@
                 "description": "The ID of the Nacos microservice engine to which the namespace belongs.",
                 "required": true
               },
+              "enterprise_project_id": {
+                "type": "string",
+                "description": "The ID of the enterprise project to which the Nacos namespace belongs.",
+                "optional": true,
+                "computed": true
+              },
               "id": {
                 "type": "string",
                 "computed": true

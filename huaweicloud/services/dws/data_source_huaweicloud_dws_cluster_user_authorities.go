@@ -47,63 +47,13 @@ func DataSourceClusterUserAuthorities() *schema.Resource {
 				Type:        schema.TypeList,
 				Computed:    true,
 				Description: `The list of user or role authorities.`,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-						"type": {
-							Type:        schema.TypeString,
-							Computed:    true,
-							Description: `The authority type.`,
-						},
-						"database": {
-							Type:        schema.TypeString,
-							Computed:    true,
-							Description: `The database name.`,
-						},
-						"schema_name": {
-							Type:        schema.TypeString,
-							Computed:    true,
-							Description: `The schema name.`,
-						},
-						"object_name": {
-							Type:        schema.TypeString,
-							Computed:    true,
-							Description: `The object name.`,
-						},
-						"all_object": {
-							Type:        schema.TypeBool,
-							Computed:    true,
-							Description: `Whether all objects are effective.`,
-						},
-						"future": {
-							Type:        schema.TypeBool,
-							Computed:    true,
-							Description: `Whether future objects are effective.`,
-						},
-						"future_object_owners": {
-							Type:        schema.TypeString,
-							Computed:    true,
-							Description: `The owners of future objects.`,
-						},
-						"column_names": {
-							Type:        schema.TypeList,
-							Computed:    true,
-							Elem:        &schema.Schema{Type: schema.TypeString},
-							Description: `The list of column names.`,
-						},
-						"privileges": {
-							Type:        schema.TypeList,
-							Computed:    true,
-							Elem:        clusterUserAuthorityPrivilegeSchema(),
-							Description: `The privilege list under this authority record.`,
-						},
-					},
-				},
+				Elem:        clusterUserAuthoritiesElemSchema(),
 			},
 		},
 	}
 }
 
-func clusterUserAuthorityPrivilegeSchema() *schema.Resource {
+func dataClusterUserAuthorityPrivilegeSchema() *schema.Resource {
 	return &schema.Resource{
 		Schema: map[string]*schema.Schema{
 			"permission": {
@@ -115,6 +65,60 @@ func clusterUserAuthorityPrivilegeSchema() *schema.Resource {
 				Type:        schema.TypeBool,
 				Computed:    true,
 				Description: `Whether the grant option is included.`,
+			},
+		},
+	}
+}
+
+func clusterUserAuthoritiesElemSchema() *schema.Resource {
+	return &schema.Resource{
+		Schema: map[string]*schema.Schema{
+			"type": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: `The authority type.`,
+			},
+			"database": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: `The database name.`,
+			},
+			"schema_name": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: `The schema name.`,
+			},
+			"object_name": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: `The object name.`,
+			},
+			"all_object": {
+				Type:        schema.TypeBool,
+				Computed:    true,
+				Description: `Whether all objects are effective.`,
+			},
+			"future": {
+				Type:        schema.TypeBool,
+				Computed:    true,
+				Description: `Whether future objects are effective.`,
+			},
+			"future_object_owners": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: `The owners of future objects.`,
+			},
+			"column_names": {
+				Type:        schema.TypeList,
+				Computed:    true,
+				Elem:        &schema.Schema{Type: schema.TypeString},
+				Description: `The list of column names.`,
+			},
+			"privileges": {
+				Type:        schema.TypeList,
+				Computed:    true,
+				Elem:        dataClusterUserAuthorityPrivilegeSchema(),
+				Description: `The privilege list under this authority record.`,
 			},
 		},
 	}
@@ -164,7 +168,7 @@ func listClusterUserAuthorities(client *golangsdk.ServiceClient, clusterId, name
 	return result, nil
 }
 
-func flattenClusterUserAuthorityPrivileges(privileges []interface{}) []map[string]interface{} {
+func flattenDataClusterUserAuthorityPrivileges(privileges []interface{}) []map[string]interface{} {
 	if len(privileges) < 1 {
 		return nil
 	}
@@ -180,7 +184,7 @@ func flattenClusterUserAuthorityPrivileges(privileges []interface{}) []map[strin
 	return result
 }
 
-func flattenClusterUserAuthorities(authorities []interface{}) []map[string]interface{} {
+func flattenDataClusterUserAuthorities(authorities []interface{}) []map[string]interface{} {
 	if len(authorities) < 1 {
 		return nil
 	}
@@ -196,7 +200,7 @@ func flattenClusterUserAuthorities(authorities []interface{}) []map[string]inter
 			"future":               utils.PathSearch("future", authority, false),
 			"future_object_owners": utils.PathSearch("future_object_owners", authority, nil),
 			"column_names":         utils.PathSearch("column_name", authority, make([]interface{}, 0)),
-			"privileges": flattenClusterUserAuthorityPrivileges(utils.PathSearch("privileges", authority,
+			"privileges": flattenDataClusterUserAuthorityPrivileges(utils.PathSearch("privileges", authority,
 				make([]interface{}, 0)).([]interface{})),
 		})
 	}
@@ -230,7 +234,7 @@ func dataSourceClusterUserAuthoritiesRead(_ context.Context, d *schema.ResourceD
 
 	mErr := multierror.Append(
 		d.Set("region", region),
-		d.Set("authorities", flattenClusterUserAuthorities(authorities)),
+		d.Set("authorities", flattenDataClusterUserAuthorities(authorities)),
 	)
 
 	return diag.FromErr(mErr.ErrorOrNil())

@@ -715,6 +715,9 @@ var (
 	HW_DWS_LOGICAL_MODE_CLUSTER_ID = os.Getenv("HW_DWS_LOGICAL_MODE_CLUSTER_ID")
 	HW_DWS_LOGICAL_CLUSTER_NAME    = os.Getenv("HW_DWS_LOGICAL_CLUSTER_NAME")
 	HW_DWS_SNAPSHOT_POLICY_NAME    = os.Getenv("HW_DWS_SNAPSHOT_POLICY_NAME")
+	HW_DWS_GRANT_DATABASE_NAME     = os.Getenv("HW_DWS_GRANT_DATABASE_NAME")
+	HW_DWS_GRANT_SCHEMA_NAME       = os.Getenv("HW_DWS_GRANT_SCHEMA_NAME")
+	HW_DWS_GRANT_OBJECT_NAME       = os.Getenv("HW_DWS_GRANT_OBJECT_NAME")
 	// The list of the user names under specified DWS cluster. Using commas (,) to separate multiple names.
 	HW_DWS_ASSOCIATE_USER_NAMES  = os.Getenv("HW_DWS_ASSOCIATE_USER_NAMES")
 	HW_DWS_AUTOMATED_SNAPSHOT_ID = os.Getenv("HW_DWS_AUTOMATED_SNAPSHOT_ID")
@@ -3990,6 +3993,19 @@ func TestAccPreCheckDwsLogicalClusterName(t *testing.T) {
 func TestAccPreCheckDwsSnapshotPolicyName(t *testing.T) {
 	if HW_DWS_SNAPSHOT_POLICY_NAME == "" {
 		t.Skip("HW_DWS_SNAPSHOT_POLICY_NAME must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckDwsGrantTargets(t *testing.T) {
+	if HW_DWS_GRANT_DATABASE_NAME == "" {
+		t.Skip("HW_DWS_GRANT_DATABASE_NAME must be set for the acceptance test")
+	}
+	if HW_DWS_GRANT_SCHEMA_NAME == "" {
+		t.Skip("HW_DWS_GRANT_SCHEMA_NAME must be set for the acceptance test")
+	}
+	if HW_DWS_GRANT_OBJECT_NAME == "" {
+		t.Skip("HW_DWS_GRANT_OBJECT_NAME must be set for the acceptance test")
 	}
 }
 

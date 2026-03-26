@@ -37,3 +37,6 @@ paths:
     /v1/organizations/entities:
         GET:
             tag: Organizations
+    /v2/organizations/accounts:
+        POST:
+            tag: Organizations

@@ -1,0 +1,93 @@
+{
+  "provider_schemas": {
+    "huaweicloud/huaweicloud": {
+      "resource_schemas": {
+        "huaweicloud_cfw_report_profile": {
+          "block": {
+            "attributes": {
+              "category": {
+                "type": "string",
+                "required": true
+              },
+              "description": {
+                "type": "string",
+                "optional": true
+              },
+              "fw_instance_id": {
+                "type": "string",
+                "required": true
+              },
+              "id": {
+                "type": "string",
+                "computed": true
+              },
+              "name": {
+                "type": "string",
+                "required": true
+              },
+              "region": {
+                "type": "string",
+                "computed": true
+              },
+              "send_period": {
+                "type": "string",
+                "optional": true,
+                "computed": true
+              },
+              "send_week_day": {
+                "type": "string",
+                "optional": true,
+                "computed": true
+              },
+              "status": {
+                "type": "string",
+                "optional": true,
+                "computed": true
+              },
+              "subscription_type": {
+                "type": "string",
+                "optional": true,
+                "computed": true
+              },
+              "topic_name": {
+                "type": "string",
+                "computed": true
+              },
+              "topic_urn": {
+                "type": "string",
+                "required": true
+              }
+            },
+            "block_types": {
+              "statistic_period": {
+                "block": {
+                  "attributes": {
+                    "end_time": {
+                      "type": "number",
+                      "optional": true,
+                      "computed": true
+                    },
+                    "start_time": {
+                      "type": "number",
+                      "optional": true,
+                      "computed": true
+                    }
+                  }
+                },
+                "nesting_mode": "list",
+                "max_items": 1
+              }
+            }
+          },
+          "product": {
+            "short": "CFW",
+            "name": "Cloud Firewall",
+            "catalog": "Security & Compliance",
+            "name_cn": "云防火墙",
+            "catalog_cn": "安全与合规"
+          }
+        }
+      }
+    }
+  }
+}

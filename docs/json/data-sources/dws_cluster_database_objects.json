@@ -1,0 +1,78 @@
+{
+  "provider_schemas": {
+    "huaweicloud/huaweicloud": {
+      "data_source_schemas": {
+        "huaweicloud_dws_cluster_database_objects": {
+          "block": {
+            "attributes": {
+              "cluster_id": {
+                "type": "string",
+                "description": "The ID of the cluster.",
+                "required": true
+              },
+              "database": {
+                "type": "string",
+                "description": "The name of the database.",
+                "optional": true
+              },
+              "id": {
+                "type": "string",
+                "computed": true
+              },
+              "is_fine_grained_disaster": {
+                "type": "string",
+                "description": "Whether fine-grained disaster recovery is enabled.",
+                "optional": true
+              },
+              "name": {
+                "type": "string",
+                "description": "The name of the database object.",
+                "optional": true
+              },
+              "objects": {
+                "type": [
+                  "list",
+                  [
+                    "object",
+                    {
+                      "name": "string"
+                    }
+                  ]
+                ],
+                "description": "The list of the database objects that matched filter parameters.",
+                "computed": true
+              },
+              "region": {
+                "type": "string",
+                "description": "The region where the database objects are located.",
+                "computed": true
+              },
+              "schema": {
+                "type": "string",
+                "description": "The name of the schema.",
+                "optional": true
+              },
+              "table": {
+                "type": "string",
+                "description": "The name of the table.",
+                "optional": true
+              },
+              "type": {
+                "type": "string",
+                "description": "The type of the database object.",
+                "required": true
+              }
+            }
+          },
+          "product": {
+            "short": "DWS",
+            "name": "Data Warehouse Service",
+            "catalog": "Analytics",
+            "name_cn": "数据仓库服务",
+            "catalog_cn": "大数据"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,161 @@
+{
+  "provider_schemas": {
+    "huaweicloud/huaweicloud": {
+      "data_source_schemas": {
+        "huaweicloud_mapreduce_cluster_nodes": {
+          "block": {
+            "attributes": {
+              "cluster_id": {
+                "type": "string",
+                "description": "The ID of the cluster.",
+                "required": true
+              },
+              "id": {
+                "type": "string",
+                "computed": true
+              },
+              "internal_ip": {
+                "type": "string",
+                "description": "The internal IP address of the node.",
+                "optional": true
+              },
+              "node_group": {
+                "type": "string",
+                "description": "The name of the node group to which the node belongs.",
+                "optional": true
+              },
+              "node_name": {
+                "type": "string",
+                "description": "The name of the node.",
+                "optional": true
+              },
+              "nodes": {
+                "type": [
+                  "list",
+                  [
+                    "object",
+                    {
+                      "charging_mode": "string",
+                      "component_infos": [
+                        "list",
+                        [
+                          "object",
+                          {
+                            "config_status": "string",
+                            "ha_status": "string",
+                            "id": "string",
+                            "instance_group_name": "string",
+                            "name": "string",
+                            "pair_name": "string",
+                            "relation_pairs": "string",
+                            "role_name": "string",
+                            "role_short_name": "string",
+                            "role_type": "string",
+                            "running_status": "string",
+                            "service_name": "string",
+                            "support_collect_stack_info": "string",
+                            "support_decom": "string",
+                            "support_reinstall": "string"
+                          }
+                        ]
+                      ],
+                      "deployment_type": "string",
+                      "node_detail": [
+                        "list",
+                        [
+                          "object",
+                          {
+                            "available_hard_disk_space": "string",
+                            "available_memory": "string",
+                            "cpu_usage": "string",
+                            "disk_usage": "string",
+                            "memory_usage": "string",
+                            "network_read": "string",
+                            "network_write": "string",
+                            "running_status": "string",
+                            "total_hard_disk_space": "string",
+                            "total_memory": "string"
+                          }
+                        ]
+                      ],
+                      "node_group_name": "string",
+                      "node_name": "string",
+                      "node_status": "string",
+                      "node_type": "string",
+                      "resource_id": "string",
+                      "server_info": [
+                        "list",
+                        [
+                          "object",
+                          {
+                            "cpu": "string",
+                            "cpu_type": "string",
+                            "data_volumes": [
+                              "list",
+                              [
+                                "object",
+                                {
+                                  "count": "number",
+                                  "size": "number",
+                                  "type": "string"
+                                }
+                              ]
+                            ],
+                            "internal_ip": "string",
+                            "mem": "string",
+                            "root_volume": [
+                              "list",
+                              [
+                                "object",
+                                {
+                                  "count": "number",
+                                  "size": "number",
+                                  "type": "string"
+                                }
+                              ]
+                            ],
+                            "server_id": "string",
+                            "server_name": "string",
+                            "server_type": "string"
+                          }
+                        ]
+                      ],
+                      "tags": [
+                        "map",
+                        "string"
+                      ]
+                    }
+                  ]
+                ],
+                "description": "The list of nodes that match the filter parameters.",
+                "computed": true
+              },
+              "query_ecs_detail": {
+                "type": "bool",
+                "description": "Whether to query ECS detail.",
+                "optional": true
+              },
+              "query_node_detail": {
+                "type": "bool",
+                "description": "Whether to query node detail.",
+                "optional": true
+              },
+              "region": {
+                "type": "string",
+                "description": "The region where the nodes are located.",
+                "computed": true
+              }
+            }
+          },
+          "product": {
+            "short": "MRS",
+            "name": "MapReduce Service",
+            "catalog": "Analytics",
+            "name_cn": "MapReduce服务",
+            "catalog_cn": "大数据"
+          }
+        }
+      }
+    }
+  }
+}

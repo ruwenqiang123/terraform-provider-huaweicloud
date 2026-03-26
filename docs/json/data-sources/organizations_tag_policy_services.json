@@ -11,7 +11,7 @@
               },
               "region": {
                 "type": "string",
-                "description": "Specifies the region in which to query the resource. If omitted, the provider-level region will be used.",
+                "description": "The region where the tag policy services are located.",
                 "computed": true
               },
               "services": {
@@ -29,7 +29,7 @@
                     }
                   ]
                 ],
-                "description": "Indicates the services that support enforcement with tag policies.",
+                "description": "The list of services that support enforcement with tag policies.",
                 "computed": true
               }
             }

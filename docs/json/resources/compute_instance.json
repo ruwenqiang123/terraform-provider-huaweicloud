@@ -103,14 +103,12 @@
               "image_id": {
                 "type": "string",
                 "optional": true,
-                "computed": true,
-                "forcenew": true
+                "computed": true
               },
               "image_name": {
                 "type": "string",
                 "optional": true,
-                "computed": true,
-                "forcenew": true
+                "computed": true
               },
               "include_data_disks_on_update": {
                 "type": "bool",
@@ -219,8 +217,7 @@
               "system_disk_kms_key_id": {
                 "type": "string",
                 "optional": true,
-                "computed": true,
-                "forcenew": true
+                "computed": true
               },
               "system_disk_size": {
                 "type": "number",
@@ -237,6 +234,11 @@
                 "type": "string",
                 "optional": true,
                 "computed": true,
+                "forcenew": true
+              },
+              "system_pass_through": {
+                "type": "string",
+                "optional": true,
                 "forcenew": true
               },
               "tags": {
@@ -267,7 +269,10 @@
                     "object",
                     {
                       "boot_index": "number",
+                      "data_image_id": "string",
+                      "delete_on_termination": "string",
                       "kms_key_id": "string",
+                      "pass_through": "string",
                       "pci_address": "string",
                       "size": "number",
                       "type": "string",
@@ -319,6 +324,16 @@
               "data_disks": {
                 "block": {
                   "attributes": {
+                    "data_image_id": {
+                      "type": "string",
+                      "optional": true,
+                      "forcenew": true
+                    },
+                    "delete_on_termination": {
+                      "type": "string",
+                      "optional": true,
+                      "forcenew": true
+                    },
                     "dss_pool_id": {
                       "type": "string",
                       "optional": true,
@@ -330,6 +345,11 @@
                       "forcenew": true
                     },
                     "kms_key_id": {
+                      "type": "string",
+                      "optional": true,
+                      "forcenew": true
+                    },
+                    "pass_through": {
                       "type": "string",
                       "optional": true,
                       "forcenew": true

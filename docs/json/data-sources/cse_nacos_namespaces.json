@@ -10,6 +10,12 @@
                 "description": "The ID of the Nacos microservice engine to which the namespaces belong.",
                 "required": true
               },
+              "enterprise_project_id": {
+                "type": "string",
+                "description": "The ID of the enterprise project to which the Nacos namespaces belong.",
+                "optional": true,
+                "computed": true
+              },
               "id": {
                 "type": "string",
                 "computed": true
@@ -25,7 +31,7 @@
                     }
                   ]
                 ],
-                "description": "All queried Nacos namespaces.",
+                "description": "All queried Nacos namespaces that match the filter parameters.",
                 "computed": true
               },
               "region": {
