@@ -2447,6 +2447,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_dws_disk_details":                    dws.DataSourceDiskDetails(),
 			"huaweicloud_dws_event_subscriptions":             dws.DataSourceEventSubscriptions(),
 			"huaweicloud_dws_flavors":                         dws.DataSourceDwsFlavors(),
+			"huaweicloud_dws_host_nets":                       dws.DataSourceHostNets(),
 			"huaweicloud_dws_logical_cluster_rings":           dws.DataSourceLogicalClusterRings(),
 			"huaweicloud_dws_logical_cluster_volumes":         dws.DataSourceDwsLogicalClusterVolumes(),
 			"huaweicloud_dws_logical_clusters":                dws.DataSourceDwsLogicalClusters(),
