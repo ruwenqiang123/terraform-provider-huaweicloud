@@ -146,6 +146,7 @@ var (
 
 	HW_ELB_CERT_ID         = os.Getenv("HW_ELB_CERT_ID")
 	HW_ELB_LOADBALANCER_ID = os.Getenv("HW_ELB_LOADBALANCER_ID")
+	HW_ELB_LISTENER_ID     = os.Getenv("HW_ELB_LISTENER_ID")
 
 	HW_DBSS_INSATNCE_ID = os.Getenv("HW_DBSS_INSATNCE_ID")
 
@@ -1558,6 +1559,13 @@ func TestAccPreCheckElbCertID(t *testing.T) {
 func TestAccPreCheckElbLoadbalancerID(t *testing.T) {
 	if HW_ELB_LOADBALANCER_ID == "" {
 		t.Skip("HW_ELB_LOADBALANCER_ID must be set for this acceptance test")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckElbListenerId(t *testing.T) {
+	if HW_ELB_LISTENER_ID == "" {
+		t.Skip("HW_ELB_LISTENER_ID must be set for this acceptance test")
 	}
 }
 
