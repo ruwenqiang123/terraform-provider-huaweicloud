@@ -3,7 +3,6 @@ package dataarts
 import (
 	"context"
 	"fmt"
-	"net/http"
 	"strings"
 	"time"
 
@@ -19,7 +18,16 @@ import (
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/utils"
 )
 
-var actionResourceNotFoundCodes = "DLF.0819" // The workspace ID does not exist.
+var (
+	actionResourceNotFoundCodes = []string{
+		"DLF.0819", // The workspace ID does not exist.
+	}
+	jobActionNonUpdatableParams = []string{
+		"job_name",
+		"process_type",
+		"workspace_id",
+	}
+)
 
 // @API DataArtsStudio POST /v1/{project_id}/jobs/{job_name}/start
 // @API DataArtsStudio POST /v1/{project_id}/jobs/{job_name}/stop
@@ -30,6 +38,9 @@ func ResourceFactoryJobAction() *schema.Resource {
 		ReadContext:   resourceFactoryJobActionRead,
 		UpdateContext: resourceFactoryJobActionUpdate,
 		DeleteContext: resourceFactoryJobActionDelete,
+
+		CustomizeDiff: config.FlexibleForceNew(jobActionNonUpdatableParams),
+
 		Timeouts: &schema.ResourceTimeout{
 			Create: schema.DefaultTimeout(20 * time.Minute),
 			Update: schema.DefaultTimeout(20 * time.Minute),
@@ -37,34 +48,72 @@ func ResourceFactoryJobAction() *schema.Resource {
 
 		Schema: map[string]*schema.Schema{
 			"region": {
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
-				ForceNew: true,
-			},
-			"workspace_id": {
 				Type:        schema.TypeString,
 				Optional:    true,
+				Computed:    true,
 				ForceNew:    true,
-				Description: `Specified the ID of the workspace.`,
+				Description: `The region where the job is located.`,
 			},
+
+			// Required parameters.
 			"job_name": {
 				Type:        schema.TypeString,
 				Required:    true,
-				ForceNew:    true,
-				Description: `Specified the name of the job.`,
+				Description: `The name of the job to be performed.`,
 			},
 			"process_type": {
 				Type:        schema.TypeString,
 				Required:    true,
-				ForceNew:    true,
-				Description: `Specified the type of the job.`,
+				Description: `The type of the job to be performed.`,
 			},
 			"action": {
 				Type:        schema.TypeString,
 				Required:    true,
-				Description: `Specified the action type of the job.`,
+				Description: `The action type of the job to be performed.`,
 			},
+
+			// Optional parameters.
+			"workspace_id": {
+				Type:        schema.TypeString,
+				Optional:    true,
+				Description: `The ID of the workspace to which the job belongs.`,
+			},
+			"job_params": {
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"name": {
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: `The name of the job parameter.`,
+						},
+						"value": {
+							Type:        schema.TypeString,
+							Required:    true,
+							Description: `The value of the job parameter.`,
+						},
+						"type": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Description: `The type of the job parameter.`,
+						},
+					},
+				},
+				Description: `The parameters of the job action.`,
+			},
+			"start_date": {
+				Type:        schema.TypeInt,
+				Optional:    true,
+				Description: `The start date of the job action when start job.`,
+			},
+			"ignore_first_self_dep": {
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Description: `Whether to ignore the first self dependence when start job.`,
+			},
+
+			// Attribute.
 			"status": {
 				Type:        schema.TypeString,
 				Computed:    true,
@@ -74,75 +123,86 @@ func ResourceFactoryJobAction() *schema.Resource {
 	}
 }
 
-func resourceFactoryJobActionCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	cfg := meta.(*config.Config)
-	client, err := cfg.NewServiceClient("dataarts-dlf", cfg.GetRegion(d))
-	if err != nil {
-		return diag.Errorf("error creating DataArts client: %s", err)
+func buildFactoryRequestMoreHeaders(workspaceId string) map[string]string {
+	results := map[string]string{
+		"Content-Type": "application/json",
 	}
 
-	jobName := d.Get("job_name").(string)
-	workspaceId := d.Get("workspace_id").(string)
-	_, err = doActionJob(client, workspaceId, jobName, d.Get("action").(string))
-	if err != nil {
-		return diag.Errorf("unable to operate status of the job (%s): %s", jobName, err)
+	if workspaceId != "" {
+		results["workspace"] = workspaceId
 	}
 
-	d.SetId(jobName)
-
-	stateConf := &resource.StateChangeConf{
-		Pending:      []string{"PENDING"},
-		Target:       []string{"COMPLETED"},
-		Refresh:      jobStateRefreshFunc(client, workspaceId, jobName, d.Get("process_type").(string)),
-		Timeout:      d.Timeout(schema.TimeoutCreate),
-		Delay:        10 * time.Second,
-		PollInterval: 20 * time.Second,
-	}
-	_, err = stateConf.WaitForStateContext(ctx)
-	if err != nil {
-		return diag.Errorf("error waiting for the status of job (%s) to become running: %s", jobName, err)
-	}
-	return resourceFactoryJobActionRead(ctx, d, meta)
+	return results
 }
 
-func doActionJob(client *golangsdk.ServiceClient, workspaceId, jobName, action string) (*http.Response, error) {
-	httpUrl := "v1/{project_id}/jobs/{job_name}/{action}"
+func buildStartJobJobParams(jobParams []interface{}) []interface{} {
+	if len(jobParams) < 1 {
+		return nil
+	}
+
+	result := make([]interface{}, 0, len(jobParams))
+	for _, jobParam := range jobParams {
+		result = append(result, map[string]interface{}{
+			// Required parameters.
+			"name":  utils.PathSearch("name", jobParam, nil),
+			"value": utils.PathSearch("value", jobParam, nil),
+			// Optional parameters.
+			"paramType": utils.ValueIgnoreEmpty(utils.PathSearch("type", jobParam, nil)),
+		})
+	}
+	return result
+}
+
+func buildStartJobBodyParams(d *schema.ResourceData) map[string]interface{} {
+	return map[string]interface{}{
+		// Optional parameters.
+		"jobParams":                    utils.ValueIgnoreEmpty(buildStartJobJobParams(d.Get("job_params").([]interface{}))),
+		"start_date":                   utils.ValueIgnoreEmpty(d.Get("start_date").(int)),
+		"ignore_first_self_dependence": utils.ValueIgnoreEmpty(d.Get("ignore_first_self_dep").(bool)),
+	}
+}
+
+func startJob(client *golangsdk.ServiceClient, d *schema.ResourceData) error {
+	var (
+		httpUrl     = "v1/{project_id}/jobs/{job_name}/start"
+		workspaceId = d.Get("workspace_id").(string)
+		jobName     = d.Get("job_name").(string)
+	)
+
 	actionPath := client.Endpoint + httpUrl
 	actionPath = strings.ReplaceAll(actionPath, "{project_id}", client.ProjectID)
 	actionPath = strings.ReplaceAll(actionPath, "{job_name}", jobName)
-	actionPath = strings.ReplaceAll(actionPath, "{action}", action)
 
 	actionOpts := golangsdk.RequestOpts{
 		KeepResponseBody: true,
-		MoreHeaders: map[string]string{
-			"workspace": workspaceId,
-		},
-		OkCodes: []int{
-			204,
-		},
+		MoreHeaders:      buildFactoryRequestMoreHeaders(workspaceId),
+		JSONBody:         utils.RemoveNil(buildStartJobBodyParams(d)),
+		OkCodes:          []int{204},
 	}
 
-	return client.Request("POST", actionPath, &actionOpts)
+	_, err := client.Request("POST", actionPath, &actionOpts)
+	return err
 }
 
-func jobStateRefreshFunc(client *golangsdk.ServiceClient, workspaceId, jobName, jobType string) resource.StateRefreshFunc {
-	return func() (interface{}, string, error) {
-		respBody, err := getJobByName(client, workspaceId, jobName, jobType)
-		if err != nil {
-			return respBody, "ERROR", err
-		}
+func stopJob(client *golangsdk.ServiceClient, d *schema.ResourceData) error {
+	var (
+		httpUrl     = "v1/{project_id}/jobs/{job_name}/stop"
+		workspaceId = d.Get("workspace_id").(string)
+		jobName     = d.Get("job_name").(string)
+	)
 
-		statusResp := utils.PathSearch("status", respBody, "").(string)
-		if utils.StrSliceContains([]string{"EXCEPTION"}, statusResp) {
-			return respBody, "ERROR", fmt.Errorf("unexpect status (%s)", statusResp)
-		}
+	actionPath := client.Endpoint + httpUrl
+	actionPath = strings.ReplaceAll(actionPath, "{project_id}", client.ProjectID)
+	actionPath = strings.ReplaceAll(actionPath, "{job_name}", jobName)
 
-		if utils.StrSliceContains([]string{"NORMAL", "STOPPED", "SCHEDULING"}, statusResp) {
-			return respBody, "COMPLETED", nil
-		}
-		// Intermediate state: "STARTING" "STOPPING"
-		return respBody, "PENDING", nil
+	actionOpts := golangsdk.RequestOpts{
+		KeepResponseBody: true,
+		MoreHeaders:      buildFactoryRequestMoreHeaders(workspaceId),
+		OkCodes:          []int{204},
 	}
+
+	_, err := client.Request("POST", actionPath, &actionOpts)
+	return err
 }
 
 func getJobByName(client *golangsdk.ServiceClient, workspaceId, jobName, jobType string) (interface{}, error) {
@@ -185,22 +245,119 @@ func getJobByName(client *golangsdk.ServiceClient, workspaceId, jobName, jobType
 		offset += len(jobs)
 	}
 
-	return nil, golangsdk.ErrDefault404{}
+	return nil, golangsdk.ErrDefault404{
+		ErrUnexpectedResponseCode: golangsdk.ErrUnexpectedResponseCode{
+			Method:    "GET",
+			URL:       "/v1/{project_id}/jobs",
+			RequestId: "NONE",
+			Body:      []byte(fmt.Sprintf("the job (%s) is not found", jobName)),
+		},
+	}
+}
+
+func jobStateRefreshFunc(client *golangsdk.ServiceClient, workspaceId, jobName, jobType string,
+	targets []string) resource.StateRefreshFunc {
+	return func() (interface{}, string, error) {
+		respBody, err := getJobByName(client, workspaceId, jobName, jobType)
+		if err != nil {
+			return respBody, "ERROR", err
+		}
+
+		var (
+			jobStatus           = utils.PathSearch("status", respBody, "").(string)
+			unexpectedJobStatus = []string{"EXCEPTION"}
+		)
+		if utils.StrSliceContains(unexpectedJobStatus, jobStatus) {
+			return respBody, "ERROR", fmt.Errorf("unexpected job status (%s)", jobStatus)
+		}
+
+		if utils.StrSliceContains(targets, jobStatus) {
+			return respBody, "COMPLETED", nil
+		}
+
+		return respBody, "PENDING", nil
+	}
+}
+
+func doActionJob(ctx context.Context, client *golangsdk.ServiceClient, d *schema.ResourceData, timeout time.Duration) error {
+	var (
+		workspaceId = d.Get("workspace_id").(string)
+		jobName     = d.Get("job_name").(string)
+		processType = d.Get("process_type").(string)
+		actionType  = d.Get("action").(string)
+		err         error
+		targets     []string
+	)
+
+	switch actionType {
+	case "start":
+		err = startJob(client, d)
+		targets = []string{"NORMAL", "SCHEDULING"}
+	case "stop":
+		err = stopJob(client, d)
+		targets = []string{"STOPPED", "PAUSED"}
+	default:
+		return fmt.Errorf("invalid action type (%s)", actionType)
+	}
+
+	if err != nil {
+		return err
+	}
+
+	stateConf := &resource.StateChangeConf{
+		Pending:      []string{"PENDING"},
+		Target:       []string{"COMPLETED"},
+		Refresh:      jobStateRefreshFunc(client, workspaceId, jobName, processType, targets),
+		Timeout:      timeout,
+		Delay:        10 * time.Second,
+		PollInterval: 20 * time.Second,
+	}
+	_, err = stateConf.WaitForStateContext(ctx)
+	if err != nil {
+		return fmt.Errorf("error waiting for the job (%s) action to become completed: %s", jobName, err)
+	}
+	return nil
+}
+
+func resourceFactoryJobActionCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+	var (
+		cfg     = meta.(*config.Config)
+		region  = cfg.GetRegion(d)
+		jobName = d.Get("job_name").(string)
+	)
+	client, err := cfg.NewServiceClient("dataarts-dlf", region)
+	if err != nil {
+		return diag.Errorf("error creating DataArts client: %s", err)
+	}
+
+	err = doActionJob(ctx, client, d, d.Timeout(schema.TimeoutCreate))
+	if err != nil {
+		return diag.Errorf("unable to operate status of the job (%s): %s", jobName, err)
+	}
+
+	d.SetId(jobName)
+
+	return resourceFactoryJobActionRead(ctx, d, meta)
 }
 
 func resourceFactoryJobActionRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	cfg := meta.(*config.Config)
-	region := cfg.GetRegion(d)
+	var (
+		cfg         = meta.(*config.Config)
+		region      = cfg.GetRegion(d)
+		workspaceId = d.Get("workspace_id").(string)
+		jobName     = d.Get("job_name").(string)
+		jobType     = d.Get("process_type").(string)
+		actionType  = d.Get("action").(string)
+	)
 
 	client, err := cfg.NewServiceClient("dataarts-dlf", region)
 	if err != nil {
 		return diag.Errorf("error creating DataArts client: %s", err)
 	}
 
-	jobName := d.Get("job_name").(string)
-	job, err := getJobByName(client, d.Get("workspace_id").(string), jobName, d.Get("process_type").(string))
+	job, err := getJobByName(client, workspaceId, jobName, jobType)
 	if err != nil {
-		return common.CheckDeletedDiag(d, common.ConvertExpected400ErrInto404Err(err, "error_code", actionResourceNotFoundCodes),
+		return common.CheckDeletedDiag(d, common.ConvertExpected400ErrInto404Err(err, "error_code", actionResourceNotFoundCodes...),
 			fmt.Sprintf("job (%s) not found: %s", jobName, err))
 	}
 
@@ -208,19 +365,12 @@ func resourceFactoryJobActionRead(_ context.Context, d *schema.ResourceData, met
 		d.Set("region", region),
 		d.Set("job_name", utils.PathSearch("name", job, nil)),
 		d.Set("status", utils.PathSearch("status", job, nil)),
-		d.Set("action", paserAction(utils.PathSearch("status", job, "").(string))),
+		d.Set("action", actionType),
 	)
 	if err = mErr.ErrorOrNil(); err != nil {
 		return diag.Errorf("error saving the fields of the job action: %s", err)
 	}
 	return nil
-}
-
-func paserAction(action string) string {
-	if utils.StrSliceContains([]string{"NORMAL", "SCHEDULING"}, action) {
-		return "start"
-	}
-	return "stop"
 }
 
 func resourceFactoryJobActionUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
@@ -232,25 +382,12 @@ func resourceFactoryJobActionUpdate(ctx context.Context, d *schema.ResourceData,
 
 	if d.HasChange("action") {
 		jobName := d.Get("job_name").(string)
-		workspaceId := d.Get("workspace_id").(string)
-		_, err = doActionJob(client, workspaceId, jobName, d.Get("action").(string))
+		err = doActionJob(ctx, client, d, d.Timeout(schema.TimeoutUpdate))
 		if err != nil {
 			return diag.Errorf("error updating DataArts job (%s) status: %s", jobName, err)
 		}
-
-		stateConf := &resource.StateChangeConf{
-			Pending:      []string{"PENDING"},
-			Target:       []string{"COMPLETED"},
-			Refresh:      jobStateRefreshFunc(client, workspaceId, jobName, d.Get("process_type").(string)),
-			Timeout:      d.Timeout(schema.TimeoutUpdate),
-			Delay:        10 * time.Second,
-			PollInterval: 20 * time.Second,
-		}
-		_, err = stateConf.WaitForStateContext(ctx)
-		if err != nil {
-			return diag.Errorf("error waiting for the status of job (%s) to become running: %s", jobName, err)
-		}
 	}
+
 	return resourceFactoryJobActionRead(ctx, d, meta)
 }
 
