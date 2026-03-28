@@ -3721,6 +3721,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_dataarts_factory_job":        dataarts.ResourceFactoryJob(),
 			"huaweicloud_dataarts_factory_job_action": dataarts.ResourceFactoryJobAction(),
 			"huaweicloud_dataarts_factory_job_export": dataarts.ResourceFactoryJobExport(),
+			"huaweicloud_dataarts_factory_job_import": dataarts.ResourceFactoryJobImport(),
 			"huaweicloud_dataarts_factory_resource":   dataarts.ResourceFactoryResource(),
 			"huaweicloud_dataarts_factory_script":     dataarts.ResourceDataArtsFactoryScript(),
 			// DataArts Security

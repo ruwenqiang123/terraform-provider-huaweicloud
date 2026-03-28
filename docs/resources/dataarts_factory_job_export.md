@@ -3,12 +3,12 @@ subcategory: "DataArts Studio"
 layout: "huaweicloud"
 page_title: "HuaweiCloud: huaweicloud_dataarts_factory_job_export"
 description: |-
-  Manages a one-time resource to export a specified DataArts Factory job within HuaweiCloud.
+  Use this resource to export a DataArts Factory job to a specified OBS storage path within HuaweiCloud.
 ---
 
 # huaweicloud_dataarts_factory_job_export
 
-Manages a one-time resource to export a specified DataArts Factory job within HuaweiCloud.
+Use this resource to export a DataArts Factory job to a specified OBS storage path within HuaweiCloud.
 
 -> This resource is a one-time action resource used to export a job package to a specified OBS storage path. Deleting
    this resource will not clear the export task, but will only remove the resource information from the tfstate file.
