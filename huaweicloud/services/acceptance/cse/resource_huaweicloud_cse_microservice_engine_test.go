@@ -94,6 +94,7 @@ func TestAccMicroserviceEngine_basic(t *testing.T) {
 				ImportStateVerifyIgnore: []string{
 					"admin_pass",
 					"extend_params",
+					"max_retries",
 				},
 				ImportStateIdFunc: testAccMicroserviceEngineImportStateFunc(resourceName),
 			},
@@ -162,6 +163,8 @@ resource "huaweicloud_cse_microservice_engine" "test" {
     foo = "bar"
     key = "value"
   }
+
+  max_retries = 2
 }
 `, testAccMicroserviceEngine_base(name), name)
 }
@@ -186,6 +189,8 @@ resource "huaweicloud_cse_microservice_engine" "test" {
     foo   = "baar"
     owner = "terraform"
   }
+
+  max_retries = 3
 }
 `, testAccMicroserviceEngine_base(name), name)
 }
