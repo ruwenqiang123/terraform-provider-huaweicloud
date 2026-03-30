@@ -1831,6 +1831,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_elb_flavors":                             elb.DataSourceElbFlavorsV3(),
 			"huaweicloud_elb_pools":                               elb.DataSourcePools(),
 			"huaweicloud_elb_active_standby_pools":                elb.DataSourceActiveStandbyPools(),
+			"huaweicloud_elb_listeners_by_tags":                   elb.DataSourceListenersByTags(),
 			"huaweicloud_elb_loadbalancers":                       elb.DataSourceElbLoadbalances(),
 			"huaweicloud_elb_loadbalancer_ports":                  elb.DataSourceElbLoadBalancerPorts(),
 			"huaweicloud_elb_loadbalancer_status":                 elb.DataSourceElbLoadBalancerStatus(),
