@@ -4027,6 +4027,16 @@ func TestAccPreCheckDwsGrantTargets(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckDwsSchemaAdjust(t *testing.T) {
+	if HW_DWS_GRANT_DATABASE_NAME == "" {
+		t.Skip("HW_DWS_GRANT_DATABASE_NAME must be set for the acceptance test")
+	}
+	if HW_DWS_GRANT_SCHEMA_NAME == "" {
+		t.Skip("HW_DWS_GRANT_SCHEMA_NAME must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckDwsClusterUserNames(t *testing.T) {
 	userNames := strings.Split(HW_DWS_ASSOCIATE_USER_NAMES, ",")
 	// One is used to associate to the queue, and the other is used to update the user associated with the queue.
