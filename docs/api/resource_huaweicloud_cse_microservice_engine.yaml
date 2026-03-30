@@ -30,6 +30,9 @@ paths:
             tag: CSE
         PUT:
             tag: CSE
+    /v2/{project_id}/enginemgr/engines/{engine_id}/actions:
+        PUT:
+            tag: CSE
     /v2/{project_id}/enginemgr/engines/{engine_id}/jobs/{job_id}:
         GET:
             tag: CSE

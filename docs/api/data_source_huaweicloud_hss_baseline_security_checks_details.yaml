@@ -8,6 +8,6 @@ host: huaweicloud.com
 tags:
     - name: HSS
 paths:
-    /v5/{project_id}/baseline/security-checks/policy-detail:
+    /v5/{project_id}/baseline/security-checks/default-policy/details:
         GET:
             tag: HSS

@@ -84,6 +84,9 @@ paths:
     /v1.0/{project_id}/clusters/{cluster_id}/sg/change:
         POST:
             tag: CSS
+    /v1.0/{project_id}/clusters/{cluster_id}/subnet/change:
+        POST:
+            tag: CSS
     /v1.0/{project_id}/clusters/{cluster_id}/type/{type}/independent:
         POST:
             tag: CSS
