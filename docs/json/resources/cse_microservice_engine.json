@@ -79,6 +79,11 @@
                 "description": "The maximum number of the microservice instance resources.",
                 "computed": true
               },
+              "max_retries": {
+                "type": "number",
+                "description": "The maximum number of retries for the microservice engine creation.",
+                "optional": true
+              },
               "name": {
                 "type": "string",
                 "description": "The name of the microservice engine.",

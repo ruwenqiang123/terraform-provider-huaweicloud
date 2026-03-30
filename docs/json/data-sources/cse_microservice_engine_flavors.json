@@ -8,7 +8,8 @@
               "enterprise_project_id": {
                 "type": "string",
                 "description": "The enterprise project ID to which the microservice engine flavors belong.",
-                "optional": true
+                "optional": true,
+                "computed": true
               },
               "flavors": {
                 "type": [
