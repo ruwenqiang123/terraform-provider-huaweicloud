@@ -3,6 +3,7 @@ package dataarts
 import (
 	"context"
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
 
@@ -31,6 +32,7 @@ var (
 
 // @API DataArtsStudio POST /v1/{project_id}/jobs/{job_name}/start
 // @API DataArtsStudio POST /v1/{project_id}/jobs/{job_name}/stop
+// @API DataArtsStudio POST /v1/{project_id}/jobs/{job_name}/run-immediate
 // @API DataArtsStudio GET /v1/{project_id}/jobs
 func ResourceFactoryJobAction() *schema.Resource {
 	return &schema.Resource{
@@ -112,12 +114,22 @@ func ResourceFactoryJobAction() *schema.Resource {
 				Optional:    true,
 				Description: `Whether to ignore the first self dependence when start job.`,
 			},
+			"use_execution_user": {
+				Type:        schema.TypeString,
+				Optional:    true,
+				Description: `Whether to use the execution user to execute the job when start job immediately.`,
+			},
 
 			// Attribute.
 			"status": {
 				Type:        schema.TypeString,
 				Computed:    true,
 				Description: `The current status of the job.`,
+			},
+			"instance_status": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: `The instance status after starting the job immediately.`,
 			},
 		},
 	}
@@ -205,6 +217,56 @@ func stopJob(client *golangsdk.ServiceClient, d *schema.ResourceData) error {
 	return err
 }
 
+func buildStartJobImmediatelyJobParams(jobParams []interface{}) []interface{} {
+	if len(jobParams) < 1 {
+		return nil
+	}
+
+	result := make([]interface{}, 0, len(jobParams))
+	for _, jobParam := range jobParams {
+		result = append(result, map[string]interface{}{
+			// Required parameters.
+			"name":  utils.PathSearch("name", jobParam, nil),
+			"value": utils.PathSearch("value", jobParam, nil),
+			// Optional parameters.
+			"type": utils.ValueIgnoreEmpty(utils.PathSearch("type", jobParam, nil)),
+		})
+	}
+	return result
+}
+
+func buildStartJobImmediatelyBodyParams(d *schema.ResourceData) map[string]interface{} {
+	return map[string]interface{}{
+		// Optional parameters.
+		"jobParams":        buildStartJobImmediatelyJobParams(d.Get("job_params").([]interface{})),
+		"useExecutionUser": utils.ValueIgnoreEmpty(d.Get("use_execution_user").(string)),
+	}
+}
+
+func startJobImmediately(client *golangsdk.ServiceClient, d *schema.ResourceData) (interface{}, error) {
+	var (
+		httpUrl     = "v1/{project_id}/jobs/{job_name}/run-immediate"
+		workspaceId = d.Get("workspace_id").(string)
+		jobName     = d.Get("job_name").(string)
+	)
+
+	actionPath := client.Endpoint + httpUrl
+	actionPath = strings.ReplaceAll(actionPath, "{project_id}", client.ProjectID)
+	actionPath = strings.ReplaceAll(actionPath, "{job_name}", jobName)
+
+	actionOpts := golangsdk.RequestOpts{
+		KeepResponseBody: true,
+		MoreHeaders:      buildFactoryRequestMoreHeaders(workspaceId),
+		JSONBody:         utils.RemoveNil(buildStartJobImmediatelyBodyParams(d)),
+	}
+
+	requestBody, err := client.Request("POST", actionPath, &actionOpts)
+	if err != nil {
+		return nil, err
+	}
+	return utils.FlattenResponse(requestBody)
+}
+
 func getJobByName(client *golangsdk.ServiceClient, workspaceId, jobName, jobType string) (interface{}, error) {
 	// The maximum value of limit is 100.
 	httpUrl := "v1/{project_id}/jobs?limit=100"
@@ -279,6 +341,49 @@ func jobStateRefreshFunc(client *golangsdk.ServiceClient, workspaceId, jobName, 
 	}
 }
 
+func getJobInstanceById(client *golangsdk.ServiceClient, workspaceId, jobName, instanceId string) (interface{}, error) {
+	httpUrl := "v1/{project_id}/jobs/{job_name}/instances/{instance_id}"
+	getPath := client.Endpoint + httpUrl
+	getPath = strings.ReplaceAll(getPath, "{project_id}", client.ProjectID)
+	getPath = strings.ReplaceAll(getPath, "{job_name}", jobName)
+	getPath = strings.ReplaceAll(getPath, "{instance_id}", instanceId)
+
+	getOpts := golangsdk.RequestOpts{
+		KeepResponseBody: true,
+		MoreHeaders:      buildFactoryRequestMoreHeaders(workspaceId),
+	}
+
+	requestBody, err := client.Request("GET", getPath, &getOpts)
+	if err != nil {
+		return nil, err
+	}
+	return utils.FlattenResponse(requestBody)
+}
+
+func jobInstanceStateRefreshFunc(client *golangsdk.ServiceClient, workspaceId, jobName, jobType string,
+	targets []string) resource.StateRefreshFunc {
+	return func() (interface{}, string, error) {
+		respBody, err := getJobInstanceById(client, workspaceId, jobName, jobType)
+		if err != nil {
+			return respBody, "ERROR", err
+		}
+
+		var (
+			jobStatus           = utils.PathSearch("status", respBody, "").(string)
+			unexpectedJobStatus = []string{"running-exception"}
+		)
+		if utils.StrSliceContains(unexpectedJobStatus, jobStatus) {
+			return respBody, "ERROR", fmt.Errorf("unexpected job status (%s)", jobStatus)
+		}
+
+		if utils.StrSliceContains(targets, jobStatus) {
+			return respBody, "COMPLETED", nil
+		}
+
+		return respBody, "PENDING", nil
+	}
+}
+
 func doActionJob(ctx context.Context, client *golangsdk.ServiceClient, d *schema.ResourceData, timeout time.Duration) error {
 	var (
 		workspaceId = d.Get("workspace_id").(string)
@@ -296,6 +401,30 @@ func doActionJob(ctx context.Context, client *golangsdk.ServiceClient, d *schema
 	case "stop":
 		err = stopJob(client, d)
 		targets = []string{"STOPPED", "PAUSED"}
+	case "run-immediate":
+		respBody, err := startJobImmediately(client, d)
+		if err != nil {
+			return err
+		}
+		// Immediate execution will not affect the current state, but it will generate an execution instance, whose
+		// state needs to be monitored separately.
+		instanceId := strconv.FormatFloat(utils.PathSearch("instanceId", respBody, float64(0)).(float64), 'f', -1, 64)
+		instanceStateConf := &resource.StateChangeConf{
+			Pending: []string{"PENDING"},
+			Target:  []string{"COMPLETED"},
+			// For the test run, failure is also a final status.
+			Refresh:      jobInstanceStateRefreshFunc(client, workspaceId, jobName, instanceId, []string{"success", "fail"}),
+			Timeout:      timeout,
+			Delay:        10 * time.Second,
+			PollInterval: 20 * time.Second,
+		}
+		respBody, err = instanceStateConf.WaitForStateContext(ctx)
+		if err != nil {
+			return fmt.Errorf("error waiting for the job (%s) action to become completed: %s", jobName, err)
+		}
+		// Set the instance status to the state file and skip the state refresh of the job (run immediately test just
+		// checks the instance status).
+		return d.Set("instance_status", utils.PathSearch("status", respBody, ""))
 	default:
 		return fmt.Errorf("invalid action type (%s)", actionType)
 	}
@@ -330,12 +459,12 @@ func resourceFactoryJobActionCreate(ctx context.Context, d *schema.ResourceData,
 		return diag.Errorf("error creating DataArts client: %s", err)
 	}
 
+	d.SetId(jobName)
+
 	err = doActionJob(ctx, client, d, d.Timeout(schema.TimeoutCreate))
 	if err != nil {
 		return diag.Errorf("unable to operate status of the job (%s): %s", jobName, err)
 	}
-
-	d.SetId(jobName)
 
 	return resourceFactoryJobActionRead(ctx, d, meta)
 }

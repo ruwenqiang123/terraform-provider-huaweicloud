@@ -2,6 +2,7 @@ package dataarts
 
 import (
 	"fmt"
+	"regexp"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
@@ -226,8 +227,11 @@ func TestAccFactoryJobAction_batchJob(t *testing.T) {
 		startWithoutParams   = "huaweicloud_dataarts_factory_job_action.start_without_params"
 		rcStartWithoutParams = acceptance.InitResourceCheck(startWithoutParams, &obj, getFactoryJobResourceFunc)
 
-		stop   = "huaweicloud_dataarts_factory_job_action.stop"
-		rcStop = acceptance.InitResourceCheck(stop, &obj, getFactoryJobResourceFunc)
+		startImmediately   = "huaweicloud_dataarts_factory_job_action.start_immediately"
+		rcStartImmediately = acceptance.InitResourceCheck(startImmediately, &obj, getFactoryJobResourceFunc)
+
+		stopStart   = "huaweicloud_dataarts_factory_job_action.stop"
+		rcStopStart = acceptance.InitResourceCheck(stopStart, &obj, getFactoryJobResourceFunc)
 	)
 
 	resource.ParallelTest(t, resource.TestCase{
@@ -240,7 +244,8 @@ func TestAccFactoryJobAction_batchJob(t *testing.T) {
 		CheckDestroy: resource.ComposeTestCheckFunc(
 			rcActionWithSequence.CheckResourceDestroy(),
 			rcStartWithoutParams.CheckResourceDestroy(),
-			rcStop.CheckResourceDestroy(),
+			rcStartImmediately.CheckResourceDestroy(),
+			rcStopStart.CheckResourceDestroy(),
 		),
 		Steps: []resource.TestStep{
 			{
@@ -258,6 +263,12 @@ func TestAccFactoryJobAction_batchJob(t *testing.T) {
 					resource.TestCheckResourceAttr(startWithoutParams, "process_type", "BATCH"),
 					resource.TestCheckResourceAttr(startWithoutParams, "action", "start"),
 					resource.TestCheckResourceAttr(startWithoutParams, "status", "SCHEDULING"),
+					// Check the the test of third job is started successfully (immediately).
+					rcStartImmediately.CheckResourceExists(),
+					resource.TestCheckResourceAttrPair(startImmediately, "job_name", "huaweicloud_dataarts_factory_job.test.2", "name"),
+					resource.TestCheckResourceAttr(startImmediately, "process_type", "BATCH"),
+					resource.TestCheckResourceAttr(startImmediately, "action", "run-immediate"),
+					resource.TestMatchResourceAttr(startImmediately, "instance_status", regexp.MustCompile("^(success|fail)$")),
 				),
 			},
 			{
@@ -272,11 +283,11 @@ func TestAccFactoryJobAction_batchJob(t *testing.T) {
 					// Check if the one-time resource used to start the second job exists.
 					rcStartWithoutParams.CheckResourceExists(),
 					// Check the second job is stopped successfully.
-					rcStop.CheckResourceExists(),
-					resource.TestCheckResourceAttrPair(stop, "job_name", "huaweicloud_dataarts_factory_job.test.1", "name"),
-					resource.TestCheckResourceAttr(stop, "process_type", "BATCH"),
-					resource.TestCheckResourceAttr(stop, "action", "stop"),
-					resource.TestCheckResourceAttr(stop, "status", "STOPPED"),
+					rcStopStart.CheckResourceExists(),
+					resource.TestCheckResourceAttrPair(stopStart, "job_name", "huaweicloud_dataarts_factory_job.test.1", "name"),
+					resource.TestCheckResourceAttr(stopStart, "process_type", "BATCH"),
+					resource.TestCheckResourceAttr(stopStart, "action", "stop"),
+					resource.TestCheckResourceAttr(stopStart, "status", "STOPPED"),
 				),
 			},
 		},
@@ -286,7 +297,7 @@ func TestAccFactoryJobAction_batchJob(t *testing.T) {
 func testFactoryJobAction_batchPinelineJob_base(name string) string {
 	return fmt.Sprintf(`
 resource "huaweicloud_dataarts_factory_job" "test" {
-  count = 2
+  count = 3
 
   name         = "%[1]s_${count.index}"
   workspace_id = "%[2]s"
@@ -390,6 +401,28 @@ resource "huaweicloud_dataarts_factory_job_action" "start_without_params" {
   job_name     = huaweicloud_dataarts_factory_job.test[1].name
   process_type = huaweicloud_dataarts_factory_job.test[1].process_type
 }
+
+# Create a new one-time action resource to start the third job immediately.
+resource "huaweicloud_dataarts_factory_job_action" "start_immediately" {
+  depends_on = [
+    huaweicloud_dataarts_factory_job.test,
+  ]
+
+  workspace_id       = "%[2]s"
+  action             = "run-immediate"
+  job_name           = huaweicloud_dataarts_factory_job.test[2].name
+  process_type       = huaweicloud_dataarts_factory_job.test[2].process_type
+  use_execution_user = "true"
+
+  dynamic "job_params" {
+    for_each = try(huaweicloud_dataarts_factory_job.test[0].nodes[0].properties, [])
+
+    content {
+      name  = job_params.value.name
+      value = job_params.value.value
+    }
+  }
+}
 `, testFactoryJobAction_batchPinelineJob_base(name), acceptance.HW_DATAARTS_WORKSPACE_ID)
 }
 
@@ -431,6 +464,28 @@ resource "huaweicloud_dataarts_factory_job_action" "stop" {
   action       = "stop"
   job_name     = huaweicloud_dataarts_factory_job.test[1].name
   process_type = huaweicloud_dataarts_factory_job.test[1].process_type
+}
+
+# Retain this one-time action resource.
+resource "huaweicloud_dataarts_factory_job_action" "start_immediately" {
+  depends_on = [
+    huaweicloud_dataarts_factory_job.test,
+  ]
+
+  workspace_id       = "%[2]s"
+  action             = "run-immediate"
+  job_name           = huaweicloud_dataarts_factory_job.test[2].name
+  process_type       = huaweicloud_dataarts_factory_job.test[2].process_type
+  use_execution_user = "true"
+
+  dynamic "job_params" {
+    for_each = try(huaweicloud_dataarts_factory_job.test[0].nodes[0].properties, [])
+
+    content {
+      name  = job_params.value.name
+      value = job_params.value.value
+    }
+  }
 }
 `, testFactoryJobAction_batchPinelineJob_base(name), acceptance.HW_DATAARTS_WORKSPACE_ID)
 }
