@@ -1,0 +1,13 @@
+info:
+    version: ""
+    title: resource_huaweicloud_dataarts_factory_job_import
+    description: ""
+schemes:
+    - https
+host: huaweicloud.com
+tags:
+    - name: DataArtsStudio
+paths:
+    /v1/{project_id}/jobs/import:
+        POST:
+            tag: DataArtsStudio

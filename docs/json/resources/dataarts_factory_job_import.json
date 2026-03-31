@@ -1,0 +1,51 @@
+{
+  "provider_schemas": {
+    "huaweicloud/huaweicloud": {
+      "resource_schemas": {
+        "huaweicloud_dataarts_factory_job_import": {
+          "block": {
+            "attributes": {
+              "id": {
+                "type": "string",
+                "computed": true
+              },
+              "path": {
+                "type": "string",
+                "description": "The OBS path where the job package is stored.",
+                "required": true
+              },
+              "region": {
+                "type": "string",
+                "description": "The region where the job is located.",
+                "computed": true
+              },
+              "same_name_policy": {
+                "type": "string",
+                "description": "The duplicate name handling policy.",
+                "optional": true
+              },
+              "target_status": {
+                "type": "string",
+                "description": "The target status of imported jobs.",
+                "optional": true
+              },
+              "workspace_id": {
+                "type": "string",
+                "description": "The workspace ID to which the imported jobs belong.",
+                "optional": true,
+                "computed": true
+              }
+            }
+          },
+          "product": {
+            "short": "DataArtsStudio",
+            "name": "DataArts Studio",
+            "catalog": "Analytics",
+            "name_cn": "数据治理中心",
+            "catalog_cn": "大数据"
+          }
+        }
+      }
+    }
+  }
+}

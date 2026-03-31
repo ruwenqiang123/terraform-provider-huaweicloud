@@ -1,0 +1,218 @@
+{
+  "provider_schemas": {
+    "huaweicloud/huaweicloud": {
+      "resource_schemas": {
+        "huaweicloud_dws_cluster_user": {
+          "block": {
+            "attributes": {
+              "audit_admin": {
+                "type": "bool",
+                "description": "Whether to grant the audit administrator permission.",
+                "optional": true,
+                "computed": true
+              },
+              "cascade": {
+                "type": "bool",
+                "description": "Whether to cascade delete the dependencies when deleting the user or role.",
+                "optional": true,
+                "default": true
+              },
+              "cluster_id": {
+                "type": "string",
+                "description": "The ID of the DWS cluster.",
+                "required": true
+              },
+              "conn_limit": {
+                "type": "number",
+                "description": "The maximum number of concurrent connections.",
+                "optional": true,
+                "computed": true
+              },
+              "create_db": {
+                "type": "bool",
+                "description": "Whether to grant the permission to create databases.",
+                "optional": true,
+                "computed": true
+              },
+              "create_role": {
+                "type": "bool",
+                "description": "Whether to grant the permission to create roles.",
+                "optional": true,
+                "computed": true
+              },
+              "description": {
+                "type": "string",
+                "description": "The description of the user or role.",
+                "optional": true
+              },
+              "id": {
+                "type": "string",
+                "computed": true
+              },
+              "inherit": {
+                "type": "bool",
+                "description": "Whether to inherit permissions from roles.",
+                "optional": true,
+                "computed": true
+              },
+              "lock": {
+                "type": "bool",
+                "description": "Whether the user is locked.",
+                "optional": true,
+                "computed": true
+              },
+              "logical_cluster": {
+                "type": "string",
+                "description": "The logical cluster name.",
+                "optional": true
+              },
+              "login": {
+                "type": "bool",
+                "description": "Whether to allow the user to log in.",
+                "optional": true,
+                "computed": true
+              },
+              "name": {
+                "type": "string",
+                "description": "The name of the cluster user or role.",
+                "required": true
+              },
+              "password": {
+                "type": "string",
+                "description": "The password of the user.",
+                "optional": true,
+                "sensitive": true
+              },
+              "password_disable": {
+                "type": "bool",
+                "description": "Whether to disable password authentication.",
+                "optional": true
+              },
+              "region": {
+                "type": "string",
+                "description": "The region where the cluster user is located.",
+                "computed": true
+              },
+              "replication": {
+                "type": "bool",
+                "description": "Whether to grant the replication permission.",
+                "optional": true,
+                "computed": true
+              },
+              "system_admin": {
+                "type": "bool",
+                "description": "Whether to grant the system administrator permission.",
+                "optional": true,
+                "computed": true
+              },
+              "type": {
+                "type": "string",
+                "description": "The object type.",
+                "required": true
+              },
+              "use_ft": {
+                "type": "bool",
+                "description": "Whether to grant the external table permission.",
+                "optional": true,
+                "computed": true
+              },
+              "valid_begin": {
+                "type": "string",
+                "description": "The valid begin time.",
+                "optional": true,
+                "computed": true
+              },
+              "valid_until": {
+                "type": "string",
+                "description": "The valid until time.",
+                "optional": true,
+                "computed": true
+              }
+            },
+            "block_types": {
+              "grant_list": {
+                "block": {
+                  "attributes": {
+                    "all_object": {
+                      "type": "bool",
+                      "description": "Whether all objects are included.",
+                      "optional": true
+                    },
+                    "column_names": {
+                      "type": [
+                        "set",
+                        "string"
+                      ],
+                      "description": "The list of column names.",
+                      "optional": true
+                    },
+                    "database": {
+                      "type": "string",
+                      "description": "The database name.",
+                      "optional": true
+                    },
+                    "future": {
+                      "type": "bool",
+                      "description": "Whether to grant privileges on future objects.",
+                      "optional": true
+                    },
+                    "future_object_owners": {
+                      "type": "string",
+                      "description": "The owners of the future objects.",
+                      "optional": true
+                    },
+                    "object_name": {
+                      "type": "string",
+                      "description": "The object name.",
+                      "optional": true
+                    },
+                    "schema_name": {
+                      "type": "string",
+                      "description": "The schema name.",
+                      "optional": true
+                    },
+                    "type": {
+                      "type": "string",
+                      "description": "The object type.",
+                      "required": true
+                    }
+                  },
+                  "block_types": {
+                    "privileges": {
+                      "block": {
+                        "attributes": {
+                          "grant_with": {
+                            "type": "bool",
+                            "description": "Whether the grant option is included.",
+                            "required": true
+                          },
+                          "permission": {
+                            "type": "string",
+                            "description": "The privilege name.",
+                            "required": true
+                          }
+                        },
+                        "description": "The list of privileges."
+                      },
+                      "nesting_mode": "set",
+                      "min_items": 1
+                    }
+                  },
+                  "description": "The list of grants."
+                },
+                "nesting_mode": "set"
+              }
+            }
+          },
+          "product": {
+            "short": "DWS",
+            "name": "Data Warehouse Service",
+            "catalog": "Analytics",
+            "name_cn": "数据仓库服务",
+            "catalog_cn": "大数据"
+          }
+        }
+      }
+    }
+  }
+}

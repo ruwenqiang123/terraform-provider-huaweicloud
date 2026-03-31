@@ -1,0 +1,23 @@
+info:
+    version: ""
+    title: resource_huaweicloud_dws_cluster_user
+    description: ""
+schemes:
+    - https
+host: huaweicloud.com
+tags:
+    - name: DWS
+paths:
+    /v1/{project_id}/clusters/{cluster_id}/db-manager/users:
+        POST:
+            tag: DWS
+    /v1/{project_id}/clusters/{cluster_id}/db-manager/users/{name}:
+        DELETE:
+            tag: DWS
+        GET:
+            tag: DWS
+        POST:
+            tag: DWS
+    /v1/{project_id}/clusters/{cluster_id}/db-manager/users/{name}/authority:
+        GET:
+            tag: DWS

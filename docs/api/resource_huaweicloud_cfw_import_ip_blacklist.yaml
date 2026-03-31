@@ -1,0 +1,13 @@
+info:
+    version: ""
+    title: resource_huaweicloud_cfw_import_ip_blacklist
+    description: ""
+schemes:
+    - https
+host: huaweicloud.com
+tags:
+    - name: CFW
+paths:
+    /v1/{project_id}/ptf/ip-blacklist/import:
+        POST:
+            tag: CFW

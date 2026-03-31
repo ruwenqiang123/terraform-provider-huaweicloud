@@ -1,0 +1,99 @@
+{
+  "provider_schemas": {
+    "huaweicloud/huaweicloud": {
+      "resource_schemas": {
+        "huaweicloud_ddm_instance_group": {
+          "block": {
+            "attributes": {
+              "architecture": {
+                "type": "string",
+                "computed": true
+              },
+              "cpu_num_per_node": {
+                "type": "number",
+                "computed": true
+              },
+              "endpoint": {
+                "type": "string",
+                "computed": true
+              },
+              "flavor_id": {
+                "type": "string",
+                "required": true
+              },
+              "id": {
+                "type": "string",
+                "computed": true
+              },
+              "instance_id": {
+                "type": "string",
+                "required": true
+              },
+              "ipv6_endpoint": {
+                "type": "string",
+                "computed": true
+              },
+              "is_default_group": {
+                "type": "bool",
+                "computed": true
+              },
+              "is_load_balance": {
+                "type": "bool",
+                "computed": true
+              },
+              "mem_num_per_node": {
+                "type": "number",
+                "computed": true
+              },
+              "name": {
+                "type": "string",
+                "required": true
+              },
+              "region": {
+                "type": "string",
+                "computed": true
+              },
+              "type": {
+                "type": "string",
+                "required": true
+              }
+            },
+            "block_types": {
+              "nodes": {
+                "block": {
+                  "attributes": {
+                    "available_zone": {
+                      "type": "string",
+                      "required": true
+                    },
+                    "id": {
+                      "type": "string",
+                      "computed": true
+                    },
+                    "name": {
+                      "type": "string",
+                      "computed": true
+                    },
+                    "subnet_id": {
+                      "type": "string",
+                      "required": true
+                    }
+                  }
+                },
+                "nesting_mode": "list",
+                "min_items": 1
+              }
+            }
+          },
+          "product": {
+            "short": "DDM",
+            "name": "Distributed Database Middleware",
+            "catalog": "Databases",
+            "name_cn": "分布式数据库中间件",
+            "catalog_cn": "数据库"
+          }
+        }
+      }
+    }
+  }
+}

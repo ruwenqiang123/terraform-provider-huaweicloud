@@ -124,6 +124,9 @@ The following arguments are supported:
 
 * `tags` - (Optional, Map) Specifies the key/value pairs to associate with the microservice engine.
 
+* `max_retries` - (Optional, Int) Specifies the maximum number of retries for the microservice engine creation.
+  Defaults to `0`.
+
 ## Attribute Reference
 
 In addition to all arguments above, the following attributes are exported:
@@ -172,7 +175,7 @@ $ terraform import huaweicloud_cse_microservice_engine.test <id>
 ```
 
 Note that the imported state may not be identical to your resource definition, due to some attributes missing from the
-API response, security or some other reason. The missing attributes are `admin_pass` and `extend_params`.
+API response, security or some other reason. The missing attributes are `admin_pass`, `extend_params` and `max_retries`.
 It is generally recommended running `terraform plan` after importing an instance.
 You can then decide if changes should be applied to the instance, or the resource definition should be updated to
 align with the instance. Also you can ignore changes as below.
@@ -185,6 +188,7 @@ resource "huaweicloud_cse_microservice_engine" "test" {
     ignore_changes = [
       admin_pass,
       extend_params,
+      max_retries,
     ]
   }
 }

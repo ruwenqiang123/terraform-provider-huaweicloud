@@ -50,6 +50,7 @@ var (
 // @API VPC GET /v1/{project_id}/subnets/{subnet_id}
 // @API VPC GET /v1/{project_id}/vpcs/{vpc_id}
 // @API CSE POST /v2/{project_id}/enginemgr/engines
+// @API CSE PUT /v2/{project_id}/enginemgr/engines/{engine_id}/actions
 // @API CSE GET /v2/{project_id}/enginemgr/engines/{engine_id}/jobs/{job_id}
 // @API CSE POST /v2/{project_id}/{resource_type}/{resource_id}/tags/create
 // @API CSE GET /v2/{project_id}/enginemgr/engines/{engine_id}
@@ -201,6 +202,11 @@ func ResourceMicroserviceEngine() *schema.Resource {
 					},
 				},
 				Description: `The config center addresses of the microservice engine.`,
+			},
+			"max_retries": {
+				Type:        schema.TypeInt,
+				Optional:    true,
+				Description: `The maximum number of retries for the microservice engine creation.`,
 			},
 
 			// Internal parameters.
@@ -469,11 +475,37 @@ func updateMicroserviceEngineTags(client *golangsdk.ServiceClient, d *schema.Res
 	return nil
 }
 
+func buildRetryMicroserviceEngineBodyParams() map[string]interface{} {
+	return map[string]interface{}{
+		"action": "Retry",
+	}
+}
+
+func retryMicroserviceEngine(client *golangsdk.ServiceClient, engineId, enterpriseProjectId string) error {
+	var (
+		httpUrl = "v2/{project_id}/enginemgr/engines/{engine_id}/actions"
+	)
+
+	retryPath := client.Endpoint + httpUrl
+	retryPath = strings.ReplaceAll(retryPath, "{project_id}", client.ProjectID)
+	retryPath = strings.ReplaceAll(retryPath, "{engine_id}", engineId)
+
+	retryOpts := golangsdk.RequestOpts{
+		KeepResponseBody: true,
+		MoreHeaders:      buildRequestMoreHeaders(enterpriseProjectId),
+		JSONBody:         utils.RemoveNil(buildRetryMicroserviceEngineBodyParams()),
+	}
+
+	_, err := client.Request("PUT", retryPath, &retryOpts)
+	return err
+}
+
 func resourceMicroserviceEngineCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	var (
 		cfg                 = meta.(*config.Config)
 		region              = cfg.GetRegion(d)
 		enterpriseProjectId = cfg.GetEnterpriseProjectID(d)
+		retryCount          = 0
 	)
 
 	cseClient, err := cfg.NewServiceClient("cse", region)
@@ -496,19 +528,31 @@ func resourceMicroserviceEngineCreate(ctx context.Context, d *schema.ResourceDat
 	}
 	d.SetId(engineId)
 
-	log.Printf("[DEBUG] Waiting for the microservice engine to become running, the engine ID is %s", engineId)
-	stateConf := &resource.StateChangeConf{
-		Pending: []string{"PENDING"},
-		Target:  []string{"COMPLETED"},
-		Refresh: refreshMicroserviceEngineJobFunc(cseClient, engineId,
-			strconv.Itoa(int(utils.PathSearch("jobId", createOpts, float64(0)).(float64))), enterpriseProjectId, []string{"Finished"}),
-		Timeout:      d.Timeout(schema.TimeoutCreate),
-		Delay:        3 * time.Minute,
-		PollInterval: 15 * time.Second,
-	}
-	_, err = stateConf.WaitForStateContext(ctx)
-	if err != nil {
-		return diag.Errorf("error waiting for the creation of microservice engine (%s) to complete: %s", engineId, err)
+	jobId := strconv.Itoa(int(utils.PathSearch("jobId", createOpts, float64(0)).(float64)))
+	for {
+		log.Printf("[DEBUG] Waiting for the microservice engine to become running, the engine ID is %s", engineId)
+		stateConf := &resource.StateChangeConf{
+			Pending:      []string{"PENDING"},
+			Target:       []string{"COMPLETED"},
+			Refresh:      refreshMicroserviceEngineJobFunc(cseClient, engineId, jobId, enterpriseProjectId, []string{"Finished"}),
+			Timeout:      d.Timeout(schema.TimeoutCreate),
+			Delay:        3 * time.Minute,
+			PollInterval: 15 * time.Second,
+		}
+		_, err = stateConf.WaitForStateContext(ctx)
+		if err != nil {
+			if retryCount < d.Get("max_retries").(int) {
+				retryCount++
+				log.Printf("[DEBUG] Prepare to retry the failed task of microservice engine (%s), retry count: %d", engineId, retryCount)
+				err = retryMicroserviceEngine(cseClient, engineId, enterpriseProjectId)
+				if err != nil {
+					return diag.Errorf("error retrying failed task of microservice engine: %s", err)
+				}
+				continue
+			}
+			return diag.Errorf("error waiting for the creation of microservice engine (%s) to complete: %s", engineId, err)
+		}
+		break
 	}
 
 	if d.HasChange("tags") {

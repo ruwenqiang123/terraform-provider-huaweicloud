@@ -7,39 +7,82 @@
             "attributes": {
               "action": {
                 "type": "string",
-                "description": "Specified the action type of the job.",
+                "description": "The action type of the job to be performed.",
                 "required": true
               },
               "id": {
                 "type": "string",
                 "computed": true
               },
+              "ignore_first_self_dep": {
+                "type": "bool",
+                "description": "Whether to ignore the first self dependence when start job.",
+                "optional": true
+              },
+              "instance_status": {
+                "type": "string",
+                "description": "The instance status after starting the job immediately.",
+                "computed": true
+              },
               "job_name": {
                 "type": "string",
-                "description": "Specified the name of the job.",
-                "required": true,
-                "forcenew": true
+                "description": "The name of the job to be performed.",
+                "required": true
               },
               "process_type": {
                 "type": "string",
-                "description": "Specified the type of the job.",
-                "required": true,
-                "forcenew": true
+                "description": "The type of the job to be performed.",
+                "required": true
               },
               "region": {
                 "type": "string",
+                "description": "The region where the job is located.",
                 "computed": true
+              },
+              "start_date": {
+                "type": "number",
+                "description": "The start date of the job action when start job.",
+                "optional": true
               },
               "status": {
                 "type": "string",
                 "description": "The current status of the job.",
                 "computed": true
               },
+              "use_execution_user": {
+                "type": "string",
+                "description": "Whether to use the execution user to execute the job when start job immediately.",
+                "optional": true
+              },
               "workspace_id": {
                 "type": "string",
-                "description": "Specified the ID of the workspace.",
-                "optional": true,
-                "forcenew": true
+                "description": "The ID of the workspace to which the job belongs.",
+                "optional": true
+              }
+            },
+            "block_types": {
+              "job_params": {
+                "block": {
+                  "attributes": {
+                    "name": {
+                      "type": "string",
+                      "description": "The name of the job parameter.",
+                      "required": true
+                    },
+                    "type": {
+                      "type": "string",
+                      "description": "The type of the job parameter.",
+                      "optional": true
+                    },
+                    "value": {
+                      "type": "string",
+                      "description": "The value of the job parameter.",
+                      "required": true
+                    }
+                  },
+                  "description": "The parameters of the job action."
+                },
+                "nesting_mode": "list"
               }
             }
           },

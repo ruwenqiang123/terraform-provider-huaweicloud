@@ -112,10 +112,11 @@ var (
 	HW_CNAD_ENABLE_FLAG       = os.Getenv("HW_CNAD_ENABLE_FLAG")
 	HW_CNAD_PROJECT_OBJECT_ID = os.Getenv("HW_CNAD_PROJECT_OBJECT_ID")
 
-	HW_OBS_DESTINATION_BUCKET = os.Getenv("HW_OBS_DESTINATION_BUCKET")
-	HW_OBS_USER_DOMAIN_NAME1  = os.Getenv("HW_OBS_USER_DOMAIN_NAME1")
-	HW_OBS_USER_DOMAIN_NAME2  = os.Getenv("HW_OBS_USER_DOMAIN_NAME2")
-	HW_OBS_ENDPOINT           = os.Getenv("HW_OBS_ENDPOINT")
+	HW_OBS_DESTINATION_BUCKET  = os.Getenv("HW_OBS_DESTINATION_BUCKET")
+	HW_OBS_ENDPOINT            = os.Getenv("HW_OBS_ENDPOINT")
+	HW_OBS_OBJECT_STORAGE_PATH = os.Getenv("HW_OBS_OBJECT_STORAGE_PATH")
+	HW_OBS_USER_DOMAIN_NAME1   = os.Getenv("HW_OBS_USER_DOMAIN_NAME1")
+	HW_OBS_USER_DOMAIN_NAME2   = os.Getenv("HW_OBS_USER_DOMAIN_NAME2")
 
 	HW_OMS_ENABLE_FLAG     = os.Getenv("HW_OMS_ENABLE_FLAG")
 	HW_OMS_SYNC_TASK_ID    = os.Getenv("HW_OMS_SYNC_TASK_ID")
@@ -147,6 +148,7 @@ var (
 
 	HW_ELB_CERT_ID         = os.Getenv("HW_ELB_CERT_ID")
 	HW_ELB_LOADBALANCER_ID = os.Getenv("HW_ELB_LOADBALANCER_ID")
+	HW_ELB_LISTENER_ID     = os.Getenv("HW_ELB_LISTENER_ID")
 
 	HW_DBSS_INSATNCE_ID = os.Getenv("HW_DBSS_INSATNCE_ID")
 
@@ -820,6 +822,7 @@ var (
 	HW_RDS_FIXED_IP                        = os.Getenv("HW_RDS_FIXED_IP")
 	HW_RDS_INSTANT_JOB_ID                  = os.Getenv("HW_RDS_INSTANT_JOB_ID")
 	HW_RDS_SUBSCRIBER_INSTANCE_ID          = os.Getenv("HW_RDS_SUBSCRIBER_INSTANCE_ID")
+	HW_RDS_NODE_ID                         = os.Getenv("HW_RDS_NODE_ID")
 
 	HW_DMS_KAFKA_INSTANCE_ID         = os.Getenv("HW_DMS_KAFKA_INSTANCE_ID")
 	HW_DMS_KAFKA_TOPIC_NAME          = os.Getenv("HW_DMS_KAFKA_TOPIC_NAME")
@@ -1570,6 +1573,13 @@ func TestAccPreCheckElbLoadbalancerID(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckElbListenerId(t *testing.T) {
+	if HW_ELB_LISTENER_ID == "" {
+		t.Skip("HW_ELB_LISTENER_ID must be set for this acceptance test")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckCbhInstanceID(t *testing.T) {
 	if HW_CBH_INSTANCE_ID == "" {
 		t.Skip("HW_CBH_INSTANCE_ID must be set for this acceptance test")
@@ -1745,16 +1755,23 @@ func TestAccPreCheckOBSDestinationBucket(t *testing.T) {
 }
 
 // lintignore:AT003
-func TestAccPreCheckOBSUserDomainNames(t *testing.T) {
-	if HW_OBS_USER_DOMAIN_NAME1 == "" || HW_OBS_USER_DOMAIN_NAME2 == "" {
-		t.Skip("HW_OBS_USER_DOMAIN_NAME1 and HW_OBS_USER_DOMAIN_NAME2 must be set for OBS user domain name tests")
+func TestAccPreCheckOBSEndpoint(t *testing.T) {
+	if HW_OBS_ENDPOINT == "" {
+		t.Skip("HW_OBS_ENDPOINT must be set for the acceptance test")
 	}
 }
 
 // lintignore:AT003
-func TestAccPreCheckOBSEndpoint(t *testing.T) {
-	if HW_OBS_ENDPOINT == "" {
-		t.Skip("HW_OBS_ENDPOINT must be set for the acceptance test")
+func TestAccPreCheckOBSObjectStoragePath(t *testing.T) {
+	if HW_OBS_OBJECT_STORAGE_PATH == "" {
+		t.Skip("HW_OBS_OBJECT_STORAGE_PATH must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckOBSUserDomainNames(t *testing.T) {
+	if HW_OBS_USER_DOMAIN_NAME1 == "" || HW_OBS_USER_DOMAIN_NAME2 == "" {
+		t.Skip("HW_OBS_USER_DOMAIN_NAME1 and HW_OBS_USER_DOMAIN_NAME2 must be set for OBS user domain name tests")
 	}
 }
 
@@ -4018,6 +4035,16 @@ func TestAccPreCheckDwsGrantTargets(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckDwsSchemaAdjust(t *testing.T) {
+	if HW_DWS_GRANT_DATABASE_NAME == "" {
+		t.Skip("HW_DWS_GRANT_DATABASE_NAME must be set for the acceptance test")
+	}
+	if HW_DWS_GRANT_SCHEMA_NAME == "" {
+		t.Skip("HW_DWS_GRANT_SCHEMA_NAME must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckDwsClusterUserNames(t *testing.T) {
 	userNames := strings.Split(HW_DWS_ASSOCIATE_USER_NAMES, ",")
 	// One is used to associate to the queue, and the other is used to update the user associated with the queue.
@@ -4412,6 +4439,13 @@ func TestAccPreCheckRdsInstantJobId(t *testing.T) {
 func TestAccPreCheckRdsSubscriberInstanceId(t *testing.T) {
 	if HW_RDS_SUBSCRIBER_INSTANCE_ID == "" {
 		t.Skip("HW_RDS_SUBSCRIBER_INSTANCE_ID must be set for RDS acceptance tests")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckRdsNodeId(t *testing.T) {
+	if HW_RDS_NODE_ID == "" {
+		t.Skip("HW_RDS_NODE_ID must be set for RDS acceptance tests")
 	}
 }
 

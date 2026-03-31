@@ -24,3 +24,6 @@ paths:
             tag: NAT
         PUT:
             tag: NAT
+    /v2/{project_id}/nat_gateways/{nat_gateway_id}/change_to_period:
+        POST:
+            tag: NAT

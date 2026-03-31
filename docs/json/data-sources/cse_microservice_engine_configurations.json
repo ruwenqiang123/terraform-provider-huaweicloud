@@ -54,7 +54,8 @@
               "enterprise_project_id": {
                 "type": "string",
                 "description": "The enterprise project ID to which the microservice engine configurations belong.",
-                "optional": true
+                "optional": true,
+                "computed": true
               },
               "id": {
                 "type": "string",

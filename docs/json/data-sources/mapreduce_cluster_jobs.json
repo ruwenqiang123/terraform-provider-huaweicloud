@@ -1,0 +1,109 @@
+{
+  "provider_schemas": {
+    "huaweicloud/huaweicloud": {
+      "data_source_schemas": {
+        "huaweicloud_mapreduce_cluster_jobs": {
+          "block": {
+            "attributes": {
+              "cluster_id": {
+                "type": "string",
+                "description": "The ID of the cluster.",
+                "required": true
+              },
+              "id": {
+                "type": "string",
+                "computed": true
+              },
+              "job_id": {
+                "type": "string",
+                "description": "The ID of the job.",
+                "optional": true
+              },
+              "job_name": {
+                "type": "string",
+                "description": "The name of the job.",
+                "optional": true
+              },
+              "job_result": {
+                "type": "string",
+                "description": "The execution result of the job.",
+                "optional": true
+              },
+              "job_state": {
+                "type": "string",
+                "description": "The execution status of the job.",
+                "optional": true
+              },
+              "job_type": {
+                "type": "string",
+                "description": "The type of the job.",
+                "optional": true
+              },
+              "jobs": {
+                "type": [
+                  "list",
+                  [
+                    "object",
+                    {
+                      "app_id": "string",
+                      "arguments": "string",
+                      "elapsed_time": "number",
+                      "finished_time": "string",
+                      "job_id": "string",
+                      "job_name": "string",
+                      "job_progress": "number",
+                      "job_result": "string",
+                      "job_state": "string",
+                      "job_type": "string",
+                      "launcher_id": "string",
+                      "properties": "string",
+                      "queue": "string",
+                      "started_time": "string",
+                      "submitted_time": "string",
+                      "tracking_url": "string",
+                      "user": "string"
+                    }
+                  ]
+                ],
+                "description": "The list of jobs that match the filter parameters.",
+                "computed": true
+              },
+              "queue": {
+                "type": "string",
+                "description": "The resource queue name of the job.",
+                "optional": true
+              },
+              "region": {
+                "type": "string",
+                "description": "The region where the cluster jobs are located.",
+                "computed": true
+              },
+              "submitted_time_begin": {
+                "type": "string",
+                "description": "The begin time of the submitted jobs, in RFC3339 format.",
+                "optional": true
+              },
+              "submitted_time_end": {
+                "type": "string",
+                "description": "The end time of the submitted jobs, in RFC3339 format.",
+                "optional": true
+              },
+              "user": {
+                "type": "string",
+                "description": "The user name of the job submitter.",
+                "optional": true
+              }
+            }
+          },
+          "product": {
+            "short": "MRS",
+            "name": "MapReduce Service",
+            "catalog": "Analytics",
+            "name_cn": "MapReduce服务",
+            "catalog_cn": "大数据"
+          }
+        }
+      }
+    }
+  }
+}

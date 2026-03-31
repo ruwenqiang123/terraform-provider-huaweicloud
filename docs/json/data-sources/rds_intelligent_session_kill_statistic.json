@@ -1,0 +1,61 @@
+{
+  "provider_schemas": {
+    "huaweicloud/huaweicloud": {
+      "data_source_schemas": {
+        "huaweicloud_rds_intelligent_session_kill_statistic": {
+          "block": {
+            "attributes": {
+              "id": {
+                "type": "string",
+                "computed": true
+              },
+              "instance_id": {
+                "type": "string",
+                "required": true
+              },
+              "node_id": {
+                "type": "string",
+                "optional": true
+              },
+              "region": {
+                "type": "string",
+                "computed": true
+              },
+              "statistics": {
+                "type": [
+                  "list",
+                  [
+                    "object",
+                    {
+                      "advice_concurrency": "number",
+                      "avg_time": "number",
+                      "count": "number",
+                      "ids": [
+                        "list",
+                        "number"
+                      ],
+                      "keyword": "string",
+                      "max_time": "number",
+                      "raw_sql_text": "string",
+                      "strategy": "string",
+                      "total_time": "number",
+                      "type": "string"
+                    }
+                  ]
+                ],
+                "computed": true
+              }
+            }
+          },
+          "product": {
+            "short": "RDS",
+            "name": "Relational Database Service",
+            "catalog": "Databases",
+            "name_cn": "云数据库",
+            "catalog_cn": "数据库"
+          }
+        }
+      }
+    }
+  }
+}

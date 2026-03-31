@@ -1,0 +1,46 @@
+{
+  "provider_schemas": {
+    "huaweicloud/huaweicloud": {
+      "data_source_schemas": {
+        "huaweicloud_dws_monitor_indicators": {
+          "block": {
+            "attributes": {
+              "id": {
+                "type": "string",
+                "computed": true
+              },
+              "indicators": {
+                "type": [
+                  "list",
+                  [
+                    "object",
+                    {
+                      "default_collect_rate": "string",
+                      "indicator_name": "string",
+                      "plugin_name": "string",
+                      "support_datastore_version": "string"
+                    }
+                  ]
+                ],
+                "description": "The list of monitor indicators.",
+                "computed": true
+              },
+              "region": {
+                "type": "string",
+                "description": "The region where the monitor indicators are located.",
+                "computed": true
+              }
+            }
+          },
+          "product": {
+            "short": "DWS",
+            "name": "Data Warehouse Service",
+            "catalog": "Analytics",
+            "name_cn": "数据仓库服务",
+            "catalog_cn": "大数据"
+          }
+        }
+      }
+    }
+  }
+}
