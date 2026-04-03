@@ -3320,6 +3320,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_dws_cluster_restart":               dws.ResourceClusterRestart(),
 			"huaweicloud_dws_cluster_user":                  dws.ResourceClusterUser(),
 			"huaweicloud_dws_cluster":                       dws.ResourceDwsCluster(),
+			"huaweicloud_dws_cluster_exception_rule":        dws.ResourceClusterExceptionRule(),
 			"huaweicloud_dws_database_schema_adjust_action": dws.ResourceDatabaseSchemaAdjustAction(),
 			"huaweicloud_dws_disaster_recovery_task":        dws.ResourceDwsDisasterRecoveryTask(),
 			"huaweicloud_dws_event_subscription":            dws.ResourceDwsEventSubs(),
