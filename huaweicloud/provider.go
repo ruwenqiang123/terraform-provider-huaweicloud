@@ -1801,6 +1801,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_lts_structuring_custom_templates": lts.DataSourceCustomTemplates(),
 			"huaweicloud_lts_transfers":                    lts.DataSourceLtsTransfers(),
 
+			"huaweicloud_elb_all_l7rules":                         elb.DataSourceAllL7Rules(),
 			"huaweicloud_elb_availability_zones":                  elb.DataSourceAvailabilityZones(),
 			"huaweicloud_elb_certificate":                         elb.DataSourceELBCertificateV3(),
 			"huaweicloud_elb_certificates":                        elb.DataSourceElbCertificates(),
