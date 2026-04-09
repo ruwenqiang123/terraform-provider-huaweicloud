@@ -1812,6 +1812,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_elb_loadbalancer_ports":                  elb.DataSourceElbLoadBalancerPorts(),
 			"huaweicloud_elb_loadbalancer_status":                 elb.DataSourceElbLoadBalancerStatus(),
 			"huaweicloud_elb_loadbalancer_tags":                   elb.DataSourceLoadbalancerTags(),
+			"huaweicloud_elb_loadbalancer_topology":               elb.DataSourceElbLoadBalancerTopology(),
 			"huaweicloud_elb_listeners":                           elb.DataSourceElbListeners(),
 			"huaweicloud_elb_listener_tags":                       elb.DataSourceListenerTags(),
 			"huaweicloud_elb_members":                             elb.DataSourceElbMembers(),
