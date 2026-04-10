@@ -1,0 +1,13 @@
+info:
+    version: ""
+    title: resource_huaweicloud_cfw_eip_all_protection_switch
+    description: ""
+schemes:
+    - https
+host: huaweicloud.com
+tags:
+    - name: CFW
+paths:
+    /v1/{project_id}/eip/protect/all/{fw_instance_id}/operation:
+        POST:
+            tag: CFW

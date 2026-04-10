@@ -51,6 +51,9 @@ paths:
     /v2/{project_id}/instances/{instance_id}/resize:
         POST:
             tag: DCS
+    /v2/{project_id}/instances/{instance_id}/resources/subnet:
+        POST:
+            tag: DCS
     /v2/{project_id}/instances/{instance_id}/scan-expire-keys/autoscan-config:
         GET:
             tag: DCS

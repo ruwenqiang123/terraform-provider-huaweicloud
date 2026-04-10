@@ -1,6 +1,6 @@
 info:
     version: ""
-    title: resource_huaweicloud_dws_event_subscription
+    title: resource_huaweicloud_dws_cluster_elb_associate
     description: ""
 schemes:
     - https
@@ -8,13 +8,11 @@ host: huaweicloud.com
 tags:
     - name: DWS
 paths:
-    /v2/{project_id}/event-subs:
+    /v1.0/{project_id}/clusters/{cluster_id}:
         GET:
             tag: DWS
-        POST:
-            tag: DWS
-    /v2/{project_id}/event-subs/{event_sub_id}:
+    /v2/{project_id}/clusters/{cluster_id}/elbs/{elb_id}:
         DELETE:
             tag: DWS
-        PUT:
+        POST:
             tag: DWS

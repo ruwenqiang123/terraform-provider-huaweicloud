@@ -1,0 +1,16 @@
+info:
+    version: ""
+    title: resource_huaweicloud_cfw_eip_alarm_whitelist
+    description: ""
+schemes:
+    - https
+host: huaweicloud.com
+tags:
+    - name: CFW
+paths:
+    /v1/{project_id}/eip/alarm-whitelist:
+        POST:
+            tag: CFW
+    /v1/{project_id}/eip/alarm-whitelist/{fw_instance_id}:
+        GET:
+            tag: CFW

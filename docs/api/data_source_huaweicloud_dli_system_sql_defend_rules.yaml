@@ -1,0 +1,13 @@
+info:
+    version: ""
+    title: data_source_huaweicloud_dli_system_sql_defend_rules
+    description: ""
+schemes:
+    - https
+host: huaweicloud.com
+tags:
+    - name: DLI
+paths:
+    /v1/{project_id}/sql-defend-sys-rules:
+        GET:
+            tag: DLI

@@ -1,6 +1,6 @@
 info:
     version: ""
-    title: resource_huaweicloud_dws_event_subscription
+    title: resource_huaweicloud_dws_cluster_eip_associate
     description: ""
 schemes:
     - https
@@ -8,13 +8,11 @@ host: huaweicloud.com
 tags:
     - name: DWS
 paths:
-    /v2/{project_id}/event-subs:
+    /v1/{project_id}/clusters/{cluster_id}/endpoints:
         GET:
             tag: DWS
-        POST:
-            tag: DWS
-    /v2/{project_id}/event-subs/{event_sub_id}:
+    /v2/{project_id}/clusters/{cluster_id}/eips/{eip_id}:
         DELETE:
             tag: DWS
-        PUT:
+        POST:
             tag: DWS
