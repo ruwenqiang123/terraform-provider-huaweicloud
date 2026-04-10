@@ -27,6 +27,11 @@
                 "description": "The custom line name.",
                 "required": true
               },
+              "region": {
+                "type": "string",
+                "description": "The region where the custom line is located.",
+                "computed": true
+              },
               "status": {
                 "type": "string",
                 "description": "The resource status.",

@@ -1,0 +1,45 @@
+{
+  "provider_schemas": {
+    "huaweicloud/huaweicloud": {
+      "data_source_schemas": {
+        "huaweicloud_mapreduce_tags_quota": {
+          "block": {
+            "attributes": {
+              "available_quota": {
+                "type": "number",
+                "description": "The available quota of tags.",
+                "computed": true
+              },
+              "cluster_id": {
+                "type": "string",
+                "description": "The ID of the cluster.",
+                "required": true
+              },
+              "id": {
+                "type": "string",
+                "computed": true
+              },
+              "region": {
+                "type": "string",
+                "description": "The region where the tags quota is located.",
+                "computed": true
+              },
+              "total_quota": {
+                "type": "number",
+                "description": "The total quota of tags.",
+                "computed": true
+              }
+            }
+          },
+          "product": {
+            "short": "MRS",
+            "name": "MapReduce Service",
+            "catalog": "Analytics",
+            "name_cn": "MapReduce服务",
+            "catalog_cn": "大数据"
+          }
+        }
+      }
+    }
+  }
+}

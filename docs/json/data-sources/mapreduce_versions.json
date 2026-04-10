@@ -11,6 +11,7 @@
               },
               "region": {
                 "type": "string",
+                "description": "The region where the cluster versions are located.",
                 "computed": true
               },
               "versions": {
@@ -18,7 +19,7 @@
                   "list",
                   "string"
                 ],
-                "description": "List of available cluster versions",
+                "description": "The list of available cluster versions.",
                 "computed": true
               }
             }

@@ -1,0 +1,58 @@
+{
+  "provider_schemas": {
+    "huaweicloud/huaweicloud": {
+      "data_source_schemas": {
+        "huaweicloud_taurusdb_proxy_flavors": {
+          "block": {
+            "attributes": {
+              "flavor_groups": {
+                "type": [
+                  "list",
+                  [
+                    "object",
+                    {
+                      "flavors": [
+                        "list",
+                        [
+                          "object",
+                          {
+                            "az_status": [
+                              "map",
+                              "string"
+                            ],
+                            "db_type": "string",
+                            "id": "string",
+                            "ram": "string",
+                            "spec_code": "string",
+                            "vcpus": "string"
+                          }
+                        ]
+                      ],
+                      "type": "string"
+                    }
+                  ]
+                ],
+                "description": "Indicates the list of flavor groups.",
+                "computed": true
+              },
+              "id": {
+                "type": "string",
+                "computed": true
+              },
+              "instance_id": {
+                "type": "string",
+                "description": "Specifies the ID of TaurusDB Instance.",
+                "required": true
+              },
+              "region": {
+                "type": "string",
+                "description": "Specifies the region in which to query the resource. If omitted, the provider-level region will be used.",
+                "computed": true
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

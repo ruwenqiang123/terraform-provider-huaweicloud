@@ -41,6 +41,12 @@
                 ],
                 "optional": true
               },
+              "execution_agency_urn": {
+                "type": "string",
+                "optional": true,
+                "computed": true,
+                "forcenew": true
+              },
               "flink_version": {
                 "type": "string",
                 "optional": true

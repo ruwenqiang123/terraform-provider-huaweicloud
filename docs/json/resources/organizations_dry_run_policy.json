@@ -1,0 +1,64 @@
+{
+  "provider_schemas": {
+    "huaweicloud/huaweicloud": {
+      "resource_schemas": {
+        "huaweicloud_organizations_dry_run_policy": {
+          "block": {
+            "attributes": {
+              "content": {
+                "type": "string",
+                "description": "The content of the dry-run policy, in JSON format.",
+                "required": true
+              },
+              "description": {
+                "type": "string",
+                "description": "The description of the dry-run policy.",
+                "optional": true
+              },
+              "id": {
+                "type": "string",
+                "computed": true
+              },
+              "is_builtin": {
+                "type": "bool",
+                "description": "Whether the dry-run policy is a built-in policy.",
+                "computed": true
+              },
+              "name": {
+                "type": "string",
+                "description": "The name of the dry-run policy.",
+                "required": true
+              },
+              "tags": {
+                "type": [
+                  "map",
+                  "string"
+                ],
+                "description": "The key/value pairs associated with the dry-run policy.",
+                "optional": true,
+                "computed": true
+              },
+              "type": {
+                "type": "string",
+                "description": "The type of the dry-run policy.",
+                "required": true
+              },
+              "urn": {
+                "type": "string",
+                "description": "The uniform resource name of the dry-run policy.",
+                "computed": true
+              }
+            }
+          },
+          "product": {
+            "short": "Organizations",
+            "name": "Organizations",
+            "catalog": "Management & Governance",
+            "name_cn": "组织",
+            "catalog_cn": "管理与监管"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "provider_schemas": {
+    "huaweicloud/huaweicloud": {
+      "data_source_schemas": {
+        "huaweicloud_mapreduce_cluster_files": {
+          "block": {
+            "attributes": {
+              "cluster_id": {
+                "type": "string",
+                "description": "The ID of the cluster.",
+                "required": true
+              },
+              "files": {
+                "type": [
+                  "list",
+                  [
+                    "object",
+                    {
+                      "access_time": "string",
+                      "block_size": "number",
+                      "children_num": "number",
+                      "group": "string",
+                      "length": "number",
+                      "modification_time": "string",
+                      "owner": "string",
+                      "path_suffix": "string",
+                      "permission": "string",
+                      "replication": "number",
+                      "type": "string"
+                    }
+                  ]
+                ],
+                "description": "The list of files under the specified path.",
+                "computed": true
+              },
+              "id": {
+                "type": "string",
+                "computed": true
+              },
+              "path": {
+                "type": "string",
+                "description": "The directory path of the file.",
+                "required": true
+              },
+              "region": {
+                "type": "string",
+                "description": "The region where the cluster files are located.",
+                "computed": true
+              }
+            }
+          },
+          "product": {
+            "short": "MRS",
+            "name": "MapReduce Service",
+            "catalog": "Analytics",
+            "name_cn": "MapReduce服务",
+            "catalog_cn": "大数据"
+          }
+        }
+      }
+    }
+  }
+}

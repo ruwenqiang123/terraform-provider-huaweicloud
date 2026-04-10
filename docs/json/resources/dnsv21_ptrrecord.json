@@ -40,6 +40,7 @@
               },
               "region": {
                 "type": "string",
+                "description": "The region where the PTR record is located.",
                 "computed": true
               },
               "status": {

@@ -1,0 +1,40 @@
+{
+  "provider_schemas": {
+    "huaweicloud/huaweicloud": {
+      "resource_schemas": {
+        "huaweicloud_dli_flinksql_job_savepoint_import": {
+          "block": {
+            "attributes": {
+              "id": {
+                "type": "string",
+                "computed": true
+              },
+              "job_id": {
+                "type": "string",
+                "description": "The ID of the Flink SQL job.",
+                "required": true
+              },
+              "region": {
+                "type": "string",
+                "description": "The region where the Flink SQL job savepoint is located.",
+                "computed": true
+              },
+              "savepoint_path": {
+                "type": "string",
+                "description": "The OBS bucket path of the savepoint.",
+                "required": true
+              }
+            }
+          },
+          "product": {
+            "short": "DLI",
+            "name": "Data Lake Insight",
+            "catalog": "Analytics",
+            "name_cn": "数据湖探索",
+            "catalog_cn": "大数据"
+          }
+        }
+      }
+    }
+  }
+}
