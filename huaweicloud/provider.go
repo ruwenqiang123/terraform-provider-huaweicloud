@@ -3334,6 +3334,7 @@ func Provider() *schema.Provider {
 
 			"huaweicloud_dws_alarm_subscription":              dws.ResourceDwsAlarmSubs(),
 			"huaweicloud_dws_cluster":                         dws.ResourceDwsCluster(),
+			"huaweicloud_dws_cluster_action":                  dws.ResourceClusterAction(),
 			"huaweicloud_dws_cluster_eip_associate":           dws.ResourceClusterEipAssociate(),
 			"huaweicloud_dws_cluster_elb_associate":           dws.ResourceClusterElbAssociate(),
 			"huaweicloud_dws_cluster_exception_rule":          dws.ResourceClusterExceptionRule(),
