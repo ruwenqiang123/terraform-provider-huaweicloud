@@ -84,8 +84,11 @@ func ResourceFactoryResource() *schema.Resource {
 }
 
 func resourceFactoryResourceCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	cfg := meta.(*config.Config)
-	region := cfg.GetRegion(d)
+	var (
+		cfg         = meta.(*config.Config)
+		region      = cfg.GetRegion(d)
+		workspaceId = d.Get("workspace_id").(string)
+	)
 
 	createResourceHttpUrl := "v1/{project_id}/resources"
 	createResourceProduct := "dataarts-dlf"
@@ -99,7 +102,7 @@ func resourceFactoryResourceCreate(ctx context.Context, d *schema.ResourceData, 
 
 	createResourceOpt := golangsdk.RequestOpts{
 		KeepResponseBody: true,
-		MoreHeaders:      map[string]string{"workspace": d.Get("workspace_id").(string)},
+		MoreHeaders:      buildFactoryMoreHeaders(workspaceId),
 	}
 	createResourceOpt.JSONBody = utils.RemoveNil(buildCreateOrUpdateResourceBodyParams(d))
 	createResourceResp, err := createResourceClient.Request("POST", createResourcePath, &createResourceOpt)
@@ -150,11 +153,12 @@ func buildDependPackagesParams(d *schema.ResourceData) []map[string]string {
 }
 
 func resourceFactoryResourceRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	cfg := meta.(*config.Config)
-	region := cfg.GetRegion(d)
-	workspaceID := d.Get("workspace_id").(string)
-
-	var mErr *multierror.Error
+	var (
+		cfg         = meta.(*config.Config)
+		region      = cfg.GetRegion(d)
+		workspaceId = d.Get("workspace_id").(string)
+		mErr        *multierror.Error
+	)
 
 	getResourceHttpUrl := "v1/{project_id}/resources/{resource_id}"
 	getResourceProduct := "dataarts-dlf"
@@ -169,7 +173,7 @@ func resourceFactoryResourceRead(_ context.Context, d *schema.ResourceData, meta
 
 	getResourceOpt := golangsdk.RequestOpts{
 		KeepResponseBody: true,
-		MoreHeaders:      map[string]string{"workspace": workspaceID},
+		MoreHeaders:      buildFactoryMoreHeaders(workspaceId),
 	}
 	getResourceResp, err := getResourceClient.Request("GET", getResourcePath, &getResourceOpt)
 	if err != nil {
@@ -184,7 +188,7 @@ func resourceFactoryResourceRead(_ context.Context, d *schema.ResourceData, meta
 	mErr = multierror.Append(
 		mErr,
 		d.Set("region", region),
-		d.Set("workspace_id", workspaceID),
+		d.Set("workspace_id", workspaceId),
 		d.Set("name", utils.PathSearch("name", getResourceRespBody, nil)),
 		d.Set("type", utils.PathSearch("type", getResourceRespBody, nil)),
 		d.Set("location", utils.PathSearch("location", getResourceRespBody, nil)),
@@ -215,8 +219,11 @@ func flattenDependPackagesInGetResourceResponseBody(getResourceRespBody interfac
 }
 
 func resourceFactoryResourceUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	cfg := meta.(*config.Config)
-	region := cfg.GetRegion(d)
+	var (
+		cfg         = meta.(*config.Config)
+		region      = cfg.GetRegion(d)
+		workspaceId = d.Get("workspace_id").(string)
+	)
 
 	updateResourceHttpUrl := "v1/{project_id}/resources/{resource_id}"
 	updateResourceProduct := "dataarts-dlf"
@@ -231,7 +238,7 @@ func resourceFactoryResourceUpdate(ctx context.Context, d *schema.ResourceData, 
 
 	updateResourceOpt := golangsdk.RequestOpts{
 		KeepResponseBody: true,
-		MoreHeaders:      map[string]string{"workspace": d.Get("workspace_id").(string)},
+		MoreHeaders:      buildFactoryMoreHeaders(workspaceId),
 		OkCodes: []int{
 			204,
 		},
@@ -246,8 +253,11 @@ func resourceFactoryResourceUpdate(ctx context.Context, d *schema.ResourceData, 
 }
 
 func resourceFactoryResourceDelete(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	cfg := meta.(*config.Config)
-	region := cfg.GetRegion(d)
+	var (
+		cfg         = meta.(*config.Config)
+		region      = cfg.GetRegion(d)
+		workspaceId = d.Get("workspace_id").(string)
+	)
 
 	deleteResourceHttpUrl := "v1/{project_id}/resources/{resource_id}"
 	deleteResourceProduct := "dataarts-dlf"
@@ -262,7 +272,7 @@ func resourceFactoryResourceDelete(_ context.Context, d *schema.ResourceData, me
 
 	deleteResourceOpt := golangsdk.RequestOpts{
 		KeepResponseBody: true,
-		MoreHeaders:      map[string]string{"workspace": d.Get("workspace_id").(string)},
+		MoreHeaders:      buildFactoryMoreHeaders(workspaceId),
 	}
 	_, err = deleteResourceClient.Request("DELETE", deleteResourcePath, &deleteResourceOpt)
 	if err != nil {
