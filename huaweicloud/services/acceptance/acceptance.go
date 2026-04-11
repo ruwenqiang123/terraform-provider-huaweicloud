@@ -846,6 +846,7 @@ var (
 	HW_SFS_TURBO_AD_DOMAIN_PW            = os.Getenv("HW_SFS_TURBO_AD_DOMAIN_PW")
 	HW_SFS_TURBO_AD_DOMAIN_DNS_SERVER_IP = os.Getenv("HW_SFS_TURBO_AD_DOMAIN_DNS_SERVER_IP")
 
+	HW_SMN_FLAG                 = os.Getenv("HW_SMN_FLAG")
 	HW_SMN_SUBSCRIBED_TOPIC_URN = os.Getenv("HW_SMN_SUBSCRIBED_TOPIC_URN")
 	HW_SMN_SUBSCRIBE_ID         = os.Getenv("HW_SMN_SUBSCRIBE_ID")
 
@@ -4906,6 +4907,13 @@ func TestAccPrecheckCphAdbObjectPath(t *testing.T) {
 func TestAccPrecheckCphObsBucketName(t *testing.T) {
 	if HW_CPH_OBS_BUCKET_NAME == "" {
 		t.Skip("HW_CPH_OBS_BUCKET_NAME must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
+func TestAccPrecheckSmnFlag(t *testing.T) {
+	if HW_SMN_FLAG == "" {
+		t.Skip("HW_SMN_FLAG must be set for the acceptance test")
 	}
 }
 
