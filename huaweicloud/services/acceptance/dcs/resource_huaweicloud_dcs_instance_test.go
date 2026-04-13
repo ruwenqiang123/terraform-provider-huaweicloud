@@ -1051,6 +1051,90 @@ func TestAccDcsInstances_ssl(t *testing.T) {
 	})
 }
 
+func TestAccDcsInstances_subnet(t *testing.T) {
+	var instance interface{}
+
+	var instanceName = acceptance.RandomAccResourceName()
+	rName := "huaweicloud_dcs_instance.test"
+
+	rc := acceptance.InitResourceCheck(
+		rName,
+		&instance,
+		getDcsResourceFunc,
+	)
+
+	resource.ParallelTest(t, resource.TestCase{
+		PreCheck:          func() { acceptance.TestAccPreCheck(t) },
+		ProviderFactories: acceptance.TestAccProviderFactories,
+		CheckDestroy:      rc.CheckResourceDestroy(),
+		Steps: []resource.TestStep{
+			{
+				Config: testAccDcsV1Instance_subnet(instanceName),
+				Check: resource.ComposeTestCheckFunc(
+					rc.CheckResourceExists(),
+					resource.TestCheckResourceAttrPair(rName, "vpc_id",
+						"huaweicloud_vpc.test", "id"),
+					resource.TestCheckResourceAttrPair(rName, "subnet_id",
+						"huaweicloud_vpc_subnet.test.0", "id"),
+				),
+			},
+			{
+				Config: testAccDcsV1Instance_subnet_update(instanceName),
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttrPair(rName, "vpc_id",
+						"huaweicloud_vpc.test", "id"),
+					resource.TestCheckResourceAttrPair(rName, "subnet_id",
+						"huaweicloud_vpc_subnet.test.1", "id"),
+				),
+			},
+		},
+	})
+}
+
+func TestAccDcsInstances_auto_scaling(t *testing.T) {
+	var instance interface{}
+
+	var instanceName = acceptance.RandomAccResourceName()
+	rName := "huaweicloud_dcs_instance.test"
+
+	rc := acceptance.InitResourceCheck(
+		rName,
+		&instance,
+		getDcsResourceFunc,
+	)
+
+	resource.ParallelTest(t, resource.TestCase{
+		PreCheck:          func() { acceptance.TestAccPreCheck(t) },
+		ProviderFactories: acceptance.TestAccProviderFactories,
+		CheckDestroy:      rc.CheckResourceDestroy(),
+		Steps: []resource.TestStep{
+			{
+				Config: testAccDcsV1Instance_auto_scaling(instanceName),
+				Check: resource.ComposeTestCheckFunc(
+					rc.CheckResourceExists(),
+					resource.TestCheckResourceAttr(rName, "auto_scaling.0.window_size", "5"),
+					resource.TestCheckResourceAttr(rName, "auto_scaling.0.bandwidth_usage_upper_threshold", "70"),
+					resource.TestCheckResourceAttr(rName, "auto_scaling.0.scale_out_cooldown", "0"),
+				),
+			},
+			{
+				Config: testAccDcsV1Instance_auto_scaling_update_1(instanceName),
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr(rName, "auto_scaling.0.window_size", "10"),
+					resource.TestCheckResourceAttr(rName, "auto_scaling.0.bandwidth_usage_upper_threshold", "60"),
+					resource.TestCheckResourceAttr(rName, "auto_scaling.0.scale_out_cooldown", "100"),
+				),
+			},
+			{
+				Config: testAccDcsV1Instance_auto_scaling_update_2(instanceName),
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr(rName, "auto_scaling.#", "0"),
+				),
+			},
+		},
+	})
+}
+
 func testAccDcsV1Instance_basic(instanceName string) string {
 	firstScanTime := time.Now().UTC().Add(1 * time.Hour)
 	firstScanTimeString := firstScanTime.Format("2006-01-02T15:04:05.000z")
@@ -2095,6 +2179,184 @@ data "huaweicloud_dcs_flavors" "test" {
 
 resource "huaweicloud_dcs_instance" "test" {
   name               = "%s"
+  engine_version     = "6.0"
+  engine             = "Redis"
+  capacity           = 2
+  vpc_id             = data.huaweicloud_vpc.test.id
+  subnet_id          = data.huaweicloud_vpc_subnet.test.id
+  availability_zones = [data.huaweicloud_availability_zones.test.names[0]]
+  flavor             = data.huaweicloud_dcs_flavors.test.flavors[0].name
+  ssl_enable         = false
+}`, instanceName)
+}
+
+func testAccDcsV1Instance_subnet(instanceName string) string {
+	return fmt.Sprintf(`
+data "huaweicloud_availability_zones" "test" {}
+
+data "huaweicloud_dcs_flavors" "test" {
+  cache_mode     = "ha"
+  capacity       = 2
+  engine_version = "6.0"
+}
+
+resource "huaweicloud_vpc" "test" {
+  name = "%[1]s"
+  cidr = "192.168.0.0/16"
+}
+
+resource "huaweicloud_vpc_subnet" "test" {
+  count = 2
+
+  vpc_id     = huaweicloud_vpc.test.id
+  name       = "%[1]s-target-${count.index}"
+  cidr       = cidrsubnet(huaweicloud_vpc.test.cidr, 4, count.index)
+  gateway_ip = cidrhost(cidrsubnet(huaweicloud_vpc.test.cidr, 4, count.index), 1)
+}
+
+resource "huaweicloud_dcs_instance" "test" {
+  name               = "%[1]s"
+  engine_version     = "6.0"
+  engine             = "Redis"
+  capacity           = 2
+  vpc_id             = huaweicloud_vpc.test.id
+  subnet_id          = huaweicloud_vpc_subnet.test[0].id
+  availability_zones = [data.huaweicloud_availability_zones.test.names[0]]
+  flavor             = data.huaweicloud_dcs_flavors.test.flavors[0].name
+  ssl_enable         = true
+}`, instanceName)
+}
+
+func testAccDcsV1Instance_subnet_update(instanceName string) string {
+	return fmt.Sprintf(`
+data "huaweicloud_availability_zones" "test" {}
+
+data "huaweicloud_dcs_flavors" "test" {
+  cache_mode     = "ha"
+  capacity       = 2
+  engine_version = "6.0"
+}
+
+resource "huaweicloud_vpc" "test" {
+  name = "%[1]s"
+  cidr = "192.168.0.0/16"
+}
+
+resource "huaweicloud_vpc_subnet" "test" {
+  count = 2
+
+  vpc_id     = huaweicloud_vpc.test.id
+  name       = "%[1]s-target-${count.index}"
+  cidr       = cidrsubnet(huaweicloud_vpc.test.cidr, 4, count.index)
+  gateway_ip = cidrhost(cidrsubnet(huaweicloud_vpc.test.cidr, 4, count.index), 1)
+}
+
+resource "huaweicloud_dcs_instance" "test" {
+  name               = "%[1]s"
+  engine_version     = "6.0"
+  engine             = "Redis"
+  capacity           = 2
+  vpc_id             = huaweicloud_vpc.test.id
+  subnet_id          = huaweicloud_vpc_subnet.test[1].id
+  availability_zones = [data.huaweicloud_availability_zones.test.names[0]]
+  flavor             = data.huaweicloud_dcs_flavors.test.flavors[0].name
+  ssl_enable         = false
+}`, instanceName)
+}
+
+func testAccDcsV1Instance_auto_scaling(instanceName string) string {
+	return fmt.Sprintf(`
+data "huaweicloud_availability_zones" "test" {}
+
+data "huaweicloud_vpc" "test" {
+  name = "vpc-default"
+}
+
+data "huaweicloud_vpc_subnet" "test" {
+  name = "subnet-default"
+}
+
+data "huaweicloud_dcs_flavors" "test" {
+  cache_mode     = "ha"
+  capacity       = 2
+  engine_version = "6.0"
+}
+
+resource "huaweicloud_dcs_instance" "test" {
+  name               = "%[1]s"
+  engine_version     = "6.0"
+  engine             = "Redis"
+  capacity           = 2
+  vpc_id             = data.huaweicloud_vpc.test.id
+  subnet_id          = data.huaweicloud_vpc_subnet.test.id
+  availability_zones = [data.huaweicloud_availability_zones.test.names[0]]
+  flavor             = data.huaweicloud_dcs_flavors.test.flavors[0].name
+  ssl_enable         = true
+
+  auto_scaling {
+    window_size                     = 5
+    bandwidth_usage_upper_threshold = 70
+    scale_out_cooldown              = 0
+  }
+}`, instanceName)
+}
+
+func testAccDcsV1Instance_auto_scaling_update_1(instanceName string) string {
+	return fmt.Sprintf(`
+data "huaweicloud_availability_zones" "test" {}
+
+data "huaweicloud_vpc" "test" {
+  name = "vpc-default"
+}
+
+data "huaweicloud_vpc_subnet" "test" {
+  name = "subnet-default"
+}
+
+data "huaweicloud_dcs_flavors" "test" {
+  cache_mode     = "ha"
+  capacity       = 2
+  engine_version = "6.0"
+}
+
+resource "huaweicloud_dcs_instance" "test" {
+  name               = "%[1]s"
+  engine_version     = "6.0"
+  engine             = "Redis"
+  capacity           = 2
+  vpc_id             = data.huaweicloud_vpc.test.id
+  subnet_id          = data.huaweicloud_vpc_subnet.test.id
+  availability_zones = [data.huaweicloud_availability_zones.test.names[0]]
+  flavor             = data.huaweicloud_dcs_flavors.test.flavors[0].name
+  ssl_enable         = false
+
+  auto_scaling {
+    window_size                     = 10
+    bandwidth_usage_upper_threshold = 60
+    scale_out_cooldown              = 100
+  }
+}`, instanceName)
+}
+
+func testAccDcsV1Instance_auto_scaling_update_2(instanceName string) string {
+	return fmt.Sprintf(`
+data "huaweicloud_availability_zones" "test" {}
+
+data "huaweicloud_vpc" "test" {
+  name = "vpc-default"
+}
+
+data "huaweicloud_vpc_subnet" "test" {
+  name = "subnet-default"
+}
+
+data "huaweicloud_dcs_flavors" "test" {
+  cache_mode     = "ha"
+  capacity       = 2
+  engine_version = "6.0"
+}
+resource "huaweicloud_dcs_instance" "test" {
+  name               = "%[1]s"
   engine_version     = "6.0"
   engine             = "Redis"
   capacity           = 2

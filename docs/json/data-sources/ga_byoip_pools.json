@@ -1,0 +1,44 @@
+{
+  "provider_schemas": {
+    "huaweicloud/huaweicloud": {
+      "data_source_schemas": {
+        "huaweicloud_ga_byoip_pools": {
+          "block": {
+            "attributes": {
+              "byoip_pools": {
+                "type": [
+                  "list",
+                  [
+                    "object",
+                    {
+                      "area": "string",
+                      "cidr": "string",
+                      "created_at": "string",
+                      "domain_id": "string",
+                      "id": "string",
+                      "ip_type": "string",
+                      "updated_at": "string"
+                    }
+                  ]
+                ],
+                "description": "The list of BYOIP pools.",
+                "computed": true
+              },
+              "id": {
+                "type": "string",
+                "computed": true
+              }
+            }
+          },
+          "product": {
+            "short": "GA",
+            "name": "Global Accelerator",
+            "catalog": "Networking",
+            "name_cn": "全球加速",
+            "catalog_cn": "网络"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "provider_schemas": {
+    "huaweicloud/huaweicloud": {
+      "data_source_schemas": {
+        "huaweicloud_ga_quotas": {
+          "block": {
+            "attributes": {
+              "id": {
+                "type": "string",
+                "computed": true
+              },
+              "quotas": {
+                "type": [
+                  "list",
+                  [
+                    "object",
+                    {
+                      "max": "number",
+                      "min": "number",
+                      "quota": "number",
+                      "type": "string"
+                    }
+                  ]
+                ],
+                "description": "The list of quotas.",
+                "computed": true
+              }
+            }
+          },
+          "product": {
+            "short": "GA",
+            "name": "Global Accelerator",
+            "catalog": "Networking",
+            "name_cn": "全球加速",
+            "catalog_cn": "网络"
+          }
+        }
+      }
+    }
+  }
+}

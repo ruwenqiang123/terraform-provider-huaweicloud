@@ -1,0 +1,211 @@
+{
+  "provider_schemas": {
+    "huaweicloud/huaweicloud": {
+      "data_source_schemas": {
+        "huaweicloud_cfw_access_log_statistic": {
+          "block": {
+            "attributes": {
+              "data": {
+                "type": [
+                  "list",
+                  [
+                    "object",
+                    {
+                      "deny_count": "number",
+                      "deny_top_one_acl_id": "string",
+                      "deny_top_one_acl_name": "string",
+                      "hit_count": "number",
+                      "in2out_deny_dst_ip_list": [
+                        "list",
+                        [
+                          "object",
+                          {
+                            "count": "string",
+                            "item": "string",
+                            "name": "string"
+                          }
+                        ]
+                      ],
+                      "in2out_deny_dst_port_list": [
+                        "list",
+                        [
+                          "object",
+                          {
+                            "count": "string",
+                            "item": "string",
+                            "name": "string"
+                          }
+                        ]
+                      ],
+                      "in2out_deny_dst_region_list": [
+                        "list",
+                        [
+                          "object",
+                          {
+                            "count": "string",
+                            "item": "string",
+                            "name": "string"
+                          }
+                        ]
+                      ],
+                      "in2out_deny_src_ip_list": [
+                        "list",
+                        [
+                          "object",
+                          {
+                            "count": "string",
+                            "item": "string",
+                            "name": "string"
+                          }
+                        ]
+                      ],
+                      "out2in_deny_dst_ip_list": [
+                        "list",
+                        [
+                          "object",
+                          {
+                            "count": "string",
+                            "item": "string",
+                            "name": "string"
+                          }
+                        ]
+                      ],
+                      "out2in_deny_dst_port_list": [
+                        "list",
+                        [
+                          "object",
+                          {
+                            "count": "string",
+                            "item": "string",
+                            "name": "string"
+                          }
+                        ]
+                      ],
+                      "out2in_deny_src_ip_list": [
+                        "list",
+                        [
+                          "object",
+                          {
+                            "count": "string",
+                            "item": "string",
+                            "name": "string"
+                          }
+                        ]
+                      ],
+                      "out2in_deny_src_port_list": [
+                        "list",
+                        [
+                          "object",
+                          {
+                            "count": "string",
+                            "item": "string",
+                            "name": "string"
+                          }
+                        ]
+                      ],
+                      "out2in_deny_src_region_list": [
+                        "list",
+                        [
+                          "object",
+                          {
+                            "count": "string",
+                            "item": "string",
+                            "name": "string"
+                          }
+                        ]
+                      ],
+                      "permit_count": "number",
+                      "permit_top_one_acl_id": "string",
+                      "permit_top_one_acl_name": "string",
+                      "records": [
+                        "list",
+                        [
+                          "object",
+                          {
+                            "agg_time": "number",
+                            "deny_access_top_counts": "number",
+                            "permit_access_top_counts": "number",
+                            "total_access_top_counts": "number"
+                          }
+                        ]
+                      ],
+                      "top_deny_rule_list": [
+                        "list",
+                        [
+                          "object",
+                          {
+                            "count": "string",
+                            "item": "string",
+                            "name": "string"
+                          }
+                        ]
+                      ]
+                    }
+                  ]
+                ],
+                "computed": true
+              },
+              "direction": {
+                "type": "string",
+                "optional": true
+              },
+              "end_time": {
+                "type": "number",
+                "optional": true
+              },
+              "fw_instance_id": {
+                "type": "string",
+                "required": true
+              },
+              "id": {
+                "type": "string",
+                "computed": true
+              },
+              "item": {
+                "type": "string",
+                "required": true
+              },
+              "log_type": {
+                "type": "string",
+                "optional": true
+              },
+              "range": {
+                "type": "string",
+                "optional": true
+              },
+              "region": {
+                "type": "string",
+                "computed": true
+              },
+              "rule_id": {
+                "type": [
+                  "list",
+                  "string"
+                ],
+                "optional": true
+              },
+              "start_time": {
+                "type": "number",
+                "optional": true
+              },
+              "vgw_id": {
+                "type": [
+                  "list",
+                  "string"
+                ],
+                "optional": true
+              }
+            }
+          },
+          "product": {
+            "short": "CFW",
+            "name": "Cloud Firewall",
+            "catalog": "Security & Compliance",
+            "name_cn": "云防火墙",
+            "catalog_cn": "安全与合规"
+          }
+        }
+      }
+    }
+  }
+}

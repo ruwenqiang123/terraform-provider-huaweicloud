@@ -455,6 +455,7 @@ var (
 
 	// The CFW instance ID
 	HW_CFW_INSTANCE_ID               = os.Getenv("HW_CFW_INSTANCE_ID")
+	HW_CFW_SERVER_IP                 = os.Getenv("HW_CFW_SERVER_IP")
 	HW_CFW_REPORT_PROFILE_ID         = os.Getenv("HW_CFW_REPORT_PROFILE_ID")
 	HW_CFW_REPORT_ID                 = os.Getenv("HW_CFW_REPORT_ID")
 	HW_CFW_EAST_WEST_FIREWALL        = os.Getenv("HW_CFW_EAST_WEST_FIREWALL")
@@ -464,8 +465,10 @@ var (
 	HW_CFW_PREDEFINED_SERVICE_GROUP2 = os.Getenv("HW_CFW_PREDEFINED_SERVICE_GROUP2")
 	HW_CFW_PREDEFINED_ADDRESS_GROUP1 = os.Getenv("HW_CFW_PREDEFINED_ADDRESS_GROUP1")
 	HW_CFW_PREDEFINED_ADDRESS_GROUP2 = os.Getenv("HW_CFW_PREDEFINED_ADDRESS_GROUP2")
+	HW_CFW_IPS_ADVANCED_RULE_ID      = os.Getenv("HW_CFW_IPS_ADVANCED_RULE_ID")
 	HW_CFW_IPS_CUSTOM_RULE           = os.Getenv("HW_CFW_IPS_CUSTOM_RULE")
 	HW_CFW_ACL_RULE_ID               = os.Getenv("HW_CFW_ACL_RULE_ID")
+	HW_CFW_DOMAIN_SET_ID             = os.Getenv("HW_CFW_DOMAIN_SET_ID")
 	HW_CFW_IP_BLACKLIST_NAME         = os.Getenv("HW_CFW_IP_BLACKLIST_NAME")
 
 	HW_CTS_START_TIME = os.Getenv("HW_CTS_START_TIME")
@@ -846,6 +849,7 @@ var (
 	HW_SFS_TURBO_AD_DOMAIN_PW            = os.Getenv("HW_SFS_TURBO_AD_DOMAIN_PW")
 	HW_SFS_TURBO_AD_DOMAIN_DNS_SERVER_IP = os.Getenv("HW_SFS_TURBO_AD_DOMAIN_DNS_SERVER_IP")
 
+	HW_SMN_FLAG                 = os.Getenv("HW_SMN_FLAG")
 	HW_SMN_SUBSCRIBED_TOPIC_URN = os.Getenv("HW_SMN_SUBSCRIBED_TOPIC_URN")
 	HW_SMN_SUBSCRIBE_ID         = os.Getenv("HW_SMN_SUBSCRIBE_ID")
 
@@ -2829,6 +2833,13 @@ func TestAccPreCheckCfw(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckCfwServerIp(t *testing.T) {
+	if HW_CFW_SERVER_IP == "" {
+		t.Skip("HW_CFW_SERVER_IP must be set for CFW acceptance tests")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckCfwReportProfile(t *testing.T) {
 	if HW_CFW_REPORT_PROFILE_ID == "" {
 		t.Skip("HW_CFW_REPORT_PROFILE_ID must be set for CFW acceptance tests")
@@ -2871,9 +2882,23 @@ func TestAccPreCheckCfwPredefinedAddressGroup(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckCfwIpsAdvancedRuleID(t *testing.T) {
+	if HW_CFW_IPS_ADVANCED_RULE_ID == "" {
+		t.Skip("HW_CFW_IPS_ADVANCED_RULE_ID must be set for CFW IPS acceptance tests")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckCfwIpsCustomRule(t *testing.T) {
 	if HW_CFW_IPS_CUSTOM_RULE == "" {
 		t.Skip("HW_CFW_IPS_CUSTOM_RULE must be set for CFW IPS acceptance tests")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckCfwDomainSetId(t *testing.T) {
+	if HW_CFW_DOMAIN_SET_ID == "" {
+		t.Skip("HW_CFW_DOMAIN_SET_ID must be set for CFW acceptance tests")
 	}
 }
 
@@ -4906,6 +4931,13 @@ func TestAccPrecheckCphAdbObjectPath(t *testing.T) {
 func TestAccPrecheckCphObsBucketName(t *testing.T) {
 	if HW_CPH_OBS_BUCKET_NAME == "" {
 		t.Skip("HW_CPH_OBS_BUCKET_NAME must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
+func TestAccPrecheckSmnFlag(t *testing.T) {
+	if HW_SMN_FLAG == "" {
+		t.Skip("HW_SMN_FLAG must be set for the acceptance test")
 	}
 }
 

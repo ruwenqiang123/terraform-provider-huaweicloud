@@ -1,0 +1,126 @@
+{
+  "provider_schemas": {
+    "huaweicloud/huaweicloud": {
+      "data_source_schemas": {
+        "huaweicloud_secmaster_tasks": {
+          "block": {
+            "attributes": {
+              "business_type": {
+                "type": "string",
+                "optional": true
+              },
+              "creator_name": {
+                "type": "string",
+                "optional": true
+              },
+              "from_date": {
+                "type": "string",
+                "optional": true
+              },
+              "id": {
+                "type": "string",
+                "computed": true
+              },
+              "name": {
+                "type": "string",
+                "optional": true
+              },
+              "note": {
+                "type": "string",
+                "optional": true
+              },
+              "query_type": {
+                "type": "string",
+                "optional": true
+              },
+              "region": {
+                "type": "string",
+                "computed": true
+              },
+              "sort_dir": {
+                "type": "string",
+                "optional": true
+              },
+              "sort_key": {
+                "type": "string",
+                "optional": true
+              },
+              "tasks": {
+                "type": [
+                  "list",
+                  [
+                    "object",
+                    {
+                      "action_id": "string",
+                      "action_instance_id": "string",
+                      "action_version_id": "string",
+                      "aopengine_task_id": "string",
+                      "approver": "string",
+                      "approveuser_id": "string",
+                      "approveuser_name": "string",
+                      "attachment_id_list": [
+                        "list",
+                        "string"
+                      ],
+                      "business_type": "string",
+                      "comments": [
+                        "list",
+                        [
+                          "object",
+                          {
+                            "id": "string",
+                            "message": "string",
+                            "time": "number",
+                            "user_id": "string",
+                            "user_name": "string"
+                          }
+                        ]
+                      ],
+                      "create_time": "string",
+                      "creator_id": "string",
+                      "creator_name": "string",
+                      "definition_key": "string",
+                      "description": "string",
+                      "due_date": "string",
+                      "due_handle": "string",
+                      "handle_parameters": "string",
+                      "id": "string",
+                      "modifier_id": "string",
+                      "modifier_name": "string",
+                      "name": "string",
+                      "note": "string",
+                      "notes": "string",
+                      "project_id": "string",
+                      "related_object": "string",
+                      "review_comments": "string",
+                      "status": "string",
+                      "update_time": "string",
+                      "view_parameters": "string",
+                      "workspace_id": "string"
+                    }
+                  ]
+                ],
+                "computed": true
+              },
+              "to_date": {
+                "type": "string",
+                "optional": true
+              },
+              "workspace_id": {
+                "type": "string",
+                "required": true
+              }
+            }
+          },
+          "product": {
+            "short": "SecMaster",
+            "name": "SecMaster",
+            "catalog": "Security & Compliance",
+            "name_cn": "安全云脑",
+            "catalog_cn": "安全与合规"
+          }
+        }
+      }
+    }
+  }
+}

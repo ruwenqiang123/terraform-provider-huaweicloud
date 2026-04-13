@@ -43,6 +43,8 @@ var (
 // @API DCS GET /v2/{project_id}/instance/{instance_id}/whitelist
 // @API DCS PUT /v2/{project_id}/instances/{instance_id}/async-configs
 // @API DCS PUT /v2/{project_id}/{instance_id}/client-ip-transparent-transmission
+// @API DCS PUT /v2/{project_id}/instances/{instance_id}/autoscaling-policy/bandwidth
+// @API DCS DELETE /v2/{project_id}/instances/{instance_id}/autoscaling-policy/bandwidth
 // @API DCS GET /v2/{project_id}/jobs/{job_id}
 // @API DCS PUT /v2/{project_id}/instances/{instance_id}/bigkey/autoscan
 // @API DCS PUT /v2/{project_id}/instances/{instance_id}/hotkey/autoscan
@@ -51,6 +53,7 @@ var (
 // @API DCS PUT /v2/{project_id}/instances/{instance_id}/scan-expire-keys/autoscan-config
 // @API DCS GET /v2/{project_id}/instances/{instance_id}/scan-expire-keys/autoscan-config
 // @API DCS GET /v2/{project_id}/instances/{instance_id}/configs
+// @API DCS GET /v2/{project_id}/instances/{instance_id}/autoscaling-policy/bandwidth
 // @API DCS PUT /v2/{project_id}/instances/status
 // @API DCS PUT /v2/{project_id}/instances/{instance_id}/ssl
 // @API DCS GET /v2/{project_id}/instances/{instance_id}/ssl
@@ -59,6 +62,7 @@ var (
 // @API DCS POST /v2/{project_id}/instances/{instance_id}/password/reset
 // @API DCS POST /v2/{project_id}/instances/{instance_id}/resize
 // @API DCS POST /v3/{project_id}/instances/{instance_id}/tags/action
+// @API DCS POST /v2/{project_id}/instances/{instance_id}/resources/subnet
 // @API EPS POST /v1.0/enterprise-projects/{enterprise_project_id}/resources-migrat
 // @API DCS DELETE /v2/{project_id}/instances/{instance_id}
 // @API BSS GET /v2/orders/customer-orders/details/{order_id}
@@ -135,7 +139,6 @@ func ResourceDcsInstance() *schema.Resource {
 			"subnet_id": {
 				Type:     schema.TypeString,
 				Required: true,
-				ForceNew: true,
 			},
 			"security_group_id": {
 				Type:          schema.TypeString,
@@ -327,6 +330,12 @@ func ResourceDcsInstance() *schema.Resource {
 				Optional:     true,
 				Computed:     true,
 				ValidateFunc: validation.StringInSlice([]string{"true", "false"}, false),
+			},
+			"auto_scaling": {
+				Type:     schema.TypeList,
+				Optional: true,
+				MaxItems: 1,
+				Elem:     autoScalingSchema(),
 			},
 			"charging_mode": common.SchemaChargingMode(nil),
 			"period_unit":   common.SchemaPeriodUnit(nil),
@@ -561,6 +570,25 @@ func bandwidthSchema() *schema.Resource {
 	return &sc
 }
 
+func autoScalingSchema() *schema.Resource {
+	return &schema.Resource{
+		Schema: map[string]*schema.Schema{
+			"window_size": {
+				Type:     schema.TypeInt,
+				Required: true,
+			},
+			"bandwidth_usage_upper_threshold": {
+				Type:     schema.TypeInt,
+				Required: true,
+			},
+			"scale_out_cooldown": {
+				Type:     schema.TypeInt,
+				Required: true,
+			},
+		},
+	}
+}
+
 func resourceDcsInstancesCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	cfg := meta.(*config.Config)
 	region := cfg.GetRegion(d)
@@ -682,6 +710,13 @@ func resourceDcsInstancesCreate(ctx context.Context, d *schema.ResourceData, met
 
 	if v, ok := d.GetOk("transparent_client_ip_enable"); ok && v.(string) == "false" {
 		err = updateTransparentClientIpEnable(ctx, d, client)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+	}
+
+	if _, ok = d.GetOk("auto_scaling"); ok {
+		err = updateAutoScaling(ctx, d, client)
 		if err != nil {
 			return diag.FromErr(err)
 		}
@@ -986,6 +1021,7 @@ func resourceDcsInstancesRead(ctx context.Context, d *schema.ResourceData, meta 
 	mErr = multierror.Append(mErr, setDcsInstanceBigKeyAutoScan(d, client)...)
 	mErr = multierror.Append(mErr, setDcsInstanceHotKeyAutoScan(d, client)...)
 	mErr = multierror.Append(mErr, setDcsInstanceExpireKeyAutoScan(d, client)...)
+	mErr = multierror.Append(mErr, setDcsInstanceAutoScaling(d, client))
 
 	diagErr := setDcsInstanceParameters(ctx, d, client, d.Id())
 	return append(diagErr, diag.FromErr(mErr.ErrorOrNil())...)
@@ -1172,6 +1208,31 @@ func setDcsInstanceExpireKeyAutoScan(d *schema.ResourceData, client *golangsdk.S
 	return errs
 }
 
+func setDcsInstanceAutoScaling(d *schema.ResourceData, client *golangsdk.ServiceClient) error {
+	getRespBody, err := getInstanceField(client, getInstanceFieldParams{
+		httpUrl:    "v2/{project_id}/instances/{instance_id}/autoscaling-policy/bandwidth",
+		httpMethod: "GET",
+		pathParams: map[string]string{"instance_id": d.Id()},
+	})
+	if err != nil {
+		log.Printf("[WARN] error fetching DCS instance(%s) auto scaling: %s", d.Id(), err)
+		return nil
+	}
+	if len(getRespBody.(map[string]interface{})) == 0 {
+		return d.Set("auto_scaling", nil)
+	}
+
+	autoScaling := []interface{}{
+		map[string]interface{}{
+			"window_size":                     utils.PathSearch("window_size", getRespBody, nil),
+			"bandwidth_usage_upper_threshold": utils.PathSearch("bandwidth_usage_upper_threshold", getRespBody, nil),
+			"scale_out_cooldown":              utils.PathSearch("scale_out_cooldown", getRespBody, nil),
+		},
+	}
+
+	return d.Set("auto_scaling", autoScaling)
+}
+
 func setDcsInstanceParameters(ctx context.Context, d *schema.ResourceData, client *golangsdk.ServiceClient,
 	instanceID string) diag.Diagnostics {
 	params, needStartParams, err := getParameters(client, instanceID, d.Get("parameters").(*schema.Set).List())
@@ -1303,6 +1364,20 @@ func resourceDcsInstancesUpdate(ctx context.Context, d *schema.ResourceData, met
 
 	if d.HasChange("transparent_client_ip_enable") {
 		err = updateTransparentClientIpEnable(ctx, d, client)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+	}
+
+	if d.HasChange("subnet_id") {
+		err = updateSubnetId(ctx, d, client)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+	}
+
+	if d.HasChange("auto_scaling") {
+		err = updateAutoScaling(ctx, d, client)
 		if err != nil {
 			return diag.FromErr(err)
 		}
@@ -1755,6 +1830,81 @@ func buildUpdateTransparentClientIpEnableBodyParams(d *schema.ResourceData) map[
 		"transparent_client_ip_enable": transparentClientIpEnable,
 	}
 	return bodyParams
+}
+
+func updateSubnetId(ctx context.Context, d *schema.ResourceData, client *golangsdk.ServiceClient) error {
+	_, err := updateDcsInstanceField(ctx, d, client, updateInstanceFieldParams{
+		httpUrl:             "v2/{project_id}/instances/{instance_id}/resources/subnet",
+		httpMethod:          "POST",
+		pathParams:          map[string]string{"instance_id": d.Id()},
+		updateBodyParams:    buildUpdateSubnetIdBodyParams(d),
+		isRetry:             true,
+		isWaitInstanceReady: true,
+	})
+	if err != nil {
+		return fmt.Errorf("error updating instance subnet ID: %s", err)
+	}
+	return nil
+}
+
+func buildUpdateSubnetIdBodyParams(d *schema.ResourceData) map[string]interface{} {
+	bodyParams := map[string]interface{}{
+		"action":    "switch",
+		"vpc_id":    d.Get("vpc_id"),
+		"subnet_id": d.Get("subnet_id"),
+	}
+	return bodyParams
+}
+
+func updateAutoScaling(ctx context.Context, d *schema.ResourceData, client *golangsdk.ServiceClient) error {
+	rawParams := d.Get("auto_scaling").([]interface{})
+	if len(rawParams) == 0 {
+		return deleteAutoScaling(d, client)
+	}
+	return setAutoScaling(ctx, d, client)
+}
+
+func setAutoScaling(ctx context.Context, d *schema.ResourceData, client *golangsdk.ServiceClient) error {
+	_, err := updateDcsInstanceField(ctx, d, client, updateInstanceFieldParams{
+		httpUrl:          "v2/{project_id}/instances/{instance_id}/autoscaling-policy/bandwidth",
+		httpMethod:       "PUT",
+		pathParams:       map[string]string{"instance_id": d.Id()},
+		updateBodyParams: buildSetAutoScalingBodyParams(d),
+	})
+	if err != nil {
+		return fmt.Errorf("error setting instance auto scaling: %s", err)
+	}
+	return nil
+}
+
+func buildSetAutoScalingBodyParams(d *schema.ResourceData) map[string]interface{} {
+	rawParams := d.Get("auto_scaling").([]interface{})
+	if len(rawParams) == 0 {
+		return nil
+	}
+	autoScaling := rawParams[0].(map[string]interface{})
+	bodyParams := map[string]interface{}{
+		"window_size":                     autoScaling["window_size"],
+		"bandwidth_usage_upper_threshold": autoScaling["bandwidth_usage_upper_threshold"],
+		"scale_out_cooldown":              autoScaling["scale_out_cooldown"],
+	}
+	return bodyParams
+}
+
+func deleteAutoScaling(d *schema.ResourceData, client *golangsdk.ServiceClient) error {
+	httpUrl := "v2/{project_id}/instances/{instance_id}/autoscaling-policy/bandwidth"
+	deletePath := client.Endpoint + httpUrl
+	deletePath = strings.ReplaceAll(deletePath, "{project_id}", client.ProjectID)
+	deletePath = strings.ReplaceAll(deletePath, "{instance_id}", d.Id())
+	deleteOpt := golangsdk.RequestOpts{
+		KeepResponseBody: true,
+		MoreHeaders:      map[string]string{"Content-Type": "application/json"},
+	}
+	_, err := client.Request("DELETE", deletePath, &deleteOpt)
+	if err != nil {
+		return fmt.Errorf("error deleting instance auto scaling: %s", err)
+	}
+	return nil
 }
 
 func resourceDcsInstancesDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {

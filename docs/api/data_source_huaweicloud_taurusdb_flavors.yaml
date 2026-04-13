@@ -1,0 +1,13 @@
+info:
+    version: ""
+    title: data_source_huaweicloud_taurusdb_flavors
+    description: ""
+schemes:
+    - https
+host: huaweicloud.com
+tags:
+    - name: TaurusDB
+paths:
+    /v3/{project_id}/flavors/{database_name}:
+        GET:
+            tag: TaurusDB

@@ -27,6 +27,7 @@
               },
               "region": {
                 "type": "string",
+                "description": "The region where the endpoint is located.",
                 "computed": true
               },
               "status": {

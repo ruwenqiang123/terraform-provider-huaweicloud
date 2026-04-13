@@ -1,0 +1,65 @@
+{
+  "provider_schemas": {
+    "huaweicloud/huaweicloud": {
+      "data_source_schemas": {
+        "huaweicloud_cfw_domain_resolve_ip_list": {
+          "block": {
+            "attributes": {
+              "address_type": {
+                "type": "number",
+                "description": "Specifies the address type.",
+                "optional": true
+              },
+              "data": {
+                "type": [
+                  "list",
+                  [
+                    "object",
+                    {
+                      "excess_ip": [
+                        "list",
+                        "string"
+                      ],
+                      "parsed_success_ip": [
+                        "list",
+                        "string"
+                      ]
+                    }
+                  ]
+                ],
+                "description": "The data of domain resolve IP list.",
+                "computed": true
+              },
+              "domain_address_id": {
+                "type": "string",
+                "description": "Specifies the domain address ID.",
+                "required": true
+              },
+              "fw_instance_id": {
+                "type": "string",
+                "description": "Specifies the firewall instance ID.",
+                "required": true
+              },
+              "id": {
+                "type": "string",
+                "computed": true
+              },
+              "region": {
+                "type": "string",
+                "description": "Specifies the region in which to query the resource. If omitted, the provider-level region will be used.",
+                "computed": true
+              }
+            }
+          },
+          "product": {
+            "short": "CFW",
+            "name": "Cloud Firewall",
+            "catalog": "Security & Compliance",
+            "name_cn": "云防火墙",
+            "catalog_cn": "安全与合规"
+          }
+        }
+      }
+    }
+  }
+}

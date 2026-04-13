@@ -17,4 +17,4 @@ paths:
         DELETE:
             tag: DWS
         PUT:
-            tag: AWS
+            tag: DWS

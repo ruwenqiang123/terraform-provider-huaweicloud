@@ -7,13 +7,12 @@
             "attributes": {
               "cluster_id": {
                 "type": "string",
-                "description": "Specifies the DWS cluster ID to which the public domain name to be associated belongs.",
-                "required": true,
-                "forcenew": true
+                "description": "The ID of the DWS cluster.",
+                "required": true
               },
               "domain_name": {
                 "type": "string",
-                "description": "Specifies the public domain name.",
+                "description": "The public domain name.",
                 "required": true
               },
               "id": {
@@ -22,12 +21,14 @@
               },
               "region": {
                 "type": "string",
+                "description": "The region where the cluster (to which the public domain belongs) is located.",
                 "computed": true
               },
               "ttl": {
                 "type": "number",
-                "description": "Specifies cache period of the SOA record set, in seconds.",
-                "optional": true
+                "description": "The cache period of the SOA record set, in seconds.",
+                "optional": true,
+                "computed": true
               }
             }
           },

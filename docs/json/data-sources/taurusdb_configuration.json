@@ -1,0 +1,39 @@
+{
+  "provider_schemas": {
+    "huaweicloud/huaweicloud": {
+      "data_source_schemas": {
+        "huaweicloud_taurusdb_configuration": {
+          "block": {
+            "attributes": {
+              "datastore_name": {
+                "type": "string",
+                "computed": true
+              },
+              "datastore_version": {
+                "type": "string",
+                "computed": true
+              },
+              "description": {
+                "type": "string",
+                "computed": true
+              },
+              "id": {
+                "type": "string",
+                "computed": true
+              },
+              "name": {
+                "type": "string",
+                "optional": true,
+                "computed": true
+              },
+              "region": {
+                "type": "string",
+                "computed": true
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

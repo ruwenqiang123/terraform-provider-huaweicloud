@@ -1,0 +1,88 @@
+{
+  "provider_schemas": {
+    "huaweicloud/huaweicloud": {
+      "data_source_schemas": {
+        "huaweicloud_cfw_vpcs_protection": {
+          "block": {
+            "attributes": {
+              "data": {
+                "type": [
+                  "list",
+                  [
+                    "object",
+                    {
+                      "other_protect_vpcs": [
+                        "list",
+                        [
+                          "object",
+                          {
+                            "vpc_id": "string"
+                          }
+                        ]
+                      ],
+                      "other_total": "number",
+                      "protect_vpcs": [
+                        "list",
+                        [
+                          "object",
+                          {
+                            "vpc_id": "string"
+                          }
+                        ]
+                      ],
+                      "self_protect_vpcs": [
+                        "list",
+                        [
+                          "object",
+                          {
+                            "vpc_id": "string"
+                          }
+                        ]
+                      ],
+                      "self_total": "number",
+                      "total": "number",
+                      "total_assets": "number"
+                    }
+                  ]
+                ],
+                "description": "The data of VPC protection information.",
+                "computed": true
+              },
+              "enterprise_project_id": {
+                "type": "string",
+                "description": "Specifies the enterprise project ID.",
+                "optional": true
+              },
+              "fw_instance_id": {
+                "type": "string",
+                "description": "Specifies the firewall instance ID.",
+                "optional": true
+              },
+              "id": {
+                "type": "string",
+                "computed": true
+              },
+              "object_id": {
+                "type": "string",
+                "description": "Specifies the protected object ID.",
+                "required": true
+              },
+              "region": {
+                "type": "string",
+                "description": "Specifies the region in which to query the resource. If omitted, the provider-level region will be used.",
+                "computed": true
+              }
+            }
+          },
+          "product": {
+            "short": "CFW",
+            "name": "Cloud Firewall",
+            "catalog": "Security & Compliance",
+            "name_cn": "云防火墙",
+            "catalog_cn": "安全与合规"
+          }
+        }
+      }
+    }
+  }
+}

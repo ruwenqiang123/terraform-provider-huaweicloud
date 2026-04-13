@@ -6,11 +6,11 @@ schemes:
     - https
 host: huaweicloud.com
 tags:
-    - name: DDM
+    - name: DWS
 paths:
     /v1.0/{project_id}/clusters/{cluster_id}:
         GET:
             tag: DWS
     /v1.0/{project_id}/clusters/{cluster_id}/restart:
         POST:
-            tag: DDM
+            tag: DWS

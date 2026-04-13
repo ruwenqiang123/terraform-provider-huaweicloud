@@ -32,7 +32,7 @@
               },
               "instance_id": {
                 "type": "string",
-                "description": "Specifies the ID of the GaussDB MySQL instance.",
+                "description": "Specifies the ID of the TaurusDB instance.",
                 "required": true
               },
               "level": {
@@ -42,7 +42,7 @@
               },
               "node_id": {
                 "type": "string",
-                "description": "Specifies the ID of the GaussDB MySQL instance node.",
+                "description": "Specifies the ID of the TaurusDB instance node.",
                 "required": true
               },
               "region": {

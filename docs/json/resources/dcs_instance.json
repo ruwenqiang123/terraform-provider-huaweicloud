@@ -277,8 +277,7 @@
               },
               "subnet_id": {
                 "type": "string",
-                "required": true,
-                "forcenew": true
+                "required": true
               },
               "subnet_name": {
                 "type": "string",

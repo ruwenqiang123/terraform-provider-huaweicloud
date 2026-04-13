@@ -1,0 +1,100 @@
+{
+  "provider_schemas": {
+    "huaweicloud/huaweicloud": {
+      "data_source_schemas": {
+        "huaweicloud_ga_resources_by_tags": {
+          "block": {
+            "attributes": {
+              "id": {
+                "type": "string",
+                "computed": true
+              },
+              "resource_type": {
+                "type": "string",
+                "description": "Specifies the resource type.",
+                "required": true
+              },
+              "resources": {
+                "type": [
+                  "list",
+                  [
+                    "object",
+                    {
+                      "resource_id": "string",
+                      "resource_name": "string",
+                      "tags": [
+                        "list",
+                        [
+                          "object",
+                          {
+                            "key": "string",
+                            "value": "string"
+                          }
+                        ]
+                      ]
+                    }
+                  ]
+                ],
+                "description": "The list of target resources that matched filter parameters.",
+                "computed": true
+              },
+              "total_count": {
+                "type": "number",
+                "description": "The total count of the resources.",
+                "computed": true
+              }
+            },
+            "block_types": {
+              "matches": {
+                "block": {
+                  "attributes": {
+                    "key": {
+                      "type": "string",
+                      "description": "Specifies the key for matching a resource instance.",
+                      "required": true
+                    },
+                    "value": {
+                      "type": "string",
+                      "description": "Specifies the value for matching a resource instance.",
+                      "required": true
+                    }
+                  },
+                  "description": "Specifies the list of matches."
+                },
+                "nesting_mode": "list"
+              },
+              "tags": {
+                "block": {
+                  "attributes": {
+                    "key": {
+                      "type": "string",
+                      "description": "Specifies the key of the tag.",
+                      "required": true
+                    },
+                    "values": {
+                      "type": [
+                        "list",
+                        "string"
+                      ],
+                      "description": "Specifies the list of the tag values.",
+                      "required": true
+                    }
+                  },
+                  "description": "Specifies the list of tags."
+                },
+                "nesting_mode": "list"
+              }
+            }
+          },
+          "product": {
+            "short": "GA",
+            "name": "Global Accelerator",
+            "catalog": "Networking",
+            "name_cn": "全球加速",
+            "catalog_cn": "网络"
+          }
+        }
+      }
+    }
+  }
+}
