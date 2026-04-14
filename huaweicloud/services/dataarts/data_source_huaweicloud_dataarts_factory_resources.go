@@ -85,10 +85,16 @@ func DataSourceFactoryResources() *schema.Resource {
 	}
 }
 
-func buildFactoryMoreHeaders(workspaceId string) map[string]string {
+func buildFactoryMoreHeaders(workspaceId string, isExclusive ...bool) map[string]string {
 	result := map[string]string{
 		"Content-Type": "application/json",
 		"Dlm-Type":     "EXCLUSIVE",
+	}
+
+	// By default, the DLM type is set to 'EXCLUSIVE'. If the isExclusive parameter is set to 'false', the DLM type is
+	// not set.
+	if len(isExclusive) > 0 && !isExclusive[0] {
+		delete(result, "Dlm-Type")
 	}
 
 	if workspaceId != "" {
