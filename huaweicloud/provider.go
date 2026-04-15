@@ -1067,7 +1067,8 @@ func Provider() *schema.Provider {
 			"huaweicloud_css_snapshots":                 css.DataSourceCssSnapshots(),
 			"huaweicloud_css_vpcep_connections":         css.DataSourceVpcepserviceConnections(),
 
-			"huaweicloud_dataarts_studio_data_connections": dataarts.DataSourceDataConnections(),
+			// DataArts Studio Management Center
+			"huaweicloud_dataarts_studio_data_connections": dataarts.DataSourceStudioDataConnections(),
 			"huaweicloud_dataarts_studio_workspaces":       dataarts.DataSourceDataArtsStudioWorkspaces(),
 			// DataArts Architecture
 			"huaweicloud_dataarts_architecture_ds_template_optionals": dataarts.DataSourceTemplateOptionalFields(),

@@ -3,52 +3,63 @@ package dataarts
 import (
 	"context"
 	"fmt"
+	"log"
+	"strconv"
+	"strings"
 
 	"github.com/hashicorp/go-multierror"
 	"github.com/hashicorp/go-uuid"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
-	"github.com/chnsz/golangsdk/openstack/dayu/v1/connections"
+	"github.com/chnsz/golangsdk"
 
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/config"
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/utils"
 )
 
 // @API DataArtsStudio GET /v1/{project_id}/data-connections
-func DataSourceDataConnections() *schema.Resource {
+func DataSourceStudioDataConnections() *schema.Resource {
 	return &schema.Resource{
-		ReadContext: resourceDataConnectionsRead,
+		ReadContext: resourceStudioDataConnectionsRead,
+
 		Schema: map[string]*schema.Schema{
 			"region": {
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
+				Type:        schema.TypeString,
+				Optional:    true,
+				Computed:    true,
+				Description: `The region where the data connections are located.`,
 			},
+
+			// Required parameters.
 			"workspace_id": {
 				Type:        schema.TypeString,
 				Required:    true,
-				Description: `Specifies the ID of the workspace to which the data connection belongs.`,
+				Description: `The ID of the workspace to which the data connections belong.`,
 			},
+
+			// Optional parameters.
 			"connection_id": {
 				Type:        schema.TypeString,
 				Optional:    true,
-				Description: `Specifies the ID of the data connection.`,
+				Description: `The ID of the data connection to be queried.`,
 			},
 			"name": {
 				Type:        schema.TypeString,
 				Optional:    true,
-				Description: `Specifies the name of the data connection.`,
+				Description: `The name of the data connection to be queried.`,
 			},
 			"type": {
 				Type:        schema.TypeString,
 				Optional:    true,
-				Description: `Specifies the type of the data connection.`,
+				Description: `The type of the data connection to be queried.`,
 			},
+
+			// Attributes.
 			"connections": {
 				Type:        schema.TypeList,
 				Computed:    true,
-				Description: `The list of the data connections.`,
+				Description: `The list of the data connections that matched filter parameters.`,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"id": {
@@ -84,7 +95,12 @@ func DataSourceDataConnections() *schema.Resource {
 						"created_at": {
 							Type:        schema.TypeString,
 							Computed:    true,
-							Description: `The creation time of the data connection.`,
+							Description: `The creation time of the data connection, in RFC3339 format.`,
+						},
+						"create_timestamp": {
+							Type:        schema.TypeInt,
+							Computed:    true,
+							Description: `The creation timestamp of the data connection.`,
 						},
 					},
 				},
@@ -93,26 +109,123 @@ func DataSourceDataConnections() *schema.Resource {
 	}
 }
 
-func resourceDataConnectionsRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	cfg := meta.(*config.Config)
-	region := cfg.GetRegion(d)
-	client, err := cfg.DataArtsV1Client(region)
+func buildStudioDataConnectionsQueryParams(d *schema.ResourceData) string {
+	res := ""
+	if v, ok := d.GetOk("name"); ok {
+		res = fmt.Sprintf("%s&name=%v", res, v)
+	}
+	if v, ok := d.GetOk("type"); ok {
+		res = fmt.Sprintf("%s&type=%v", res, v)
+	}
+
+	if res != "" {
+		return res[1:]
+	}
+	return res
+}
+
+func buildStudioMoreHeaders(workspaceId string) map[string]string {
+	result := map[string]string{
+		"Content-Type": "application/json",
+	}
+
+	if workspaceId != "" {
+		result["workspace"] = workspaceId
+	}
+
+	return result
+}
+
+func listStudioDataConnections(client *golangsdk.ServiceClient, workspaceId string, queryParams ...string) ([]interface{}, error) {
+	var (
+		httpUrl = "v1/{project_id}/data-connections?limit={limit}"
+		limit   = 100
+		offset  = 0
+		result  = make([]interface{}, 0)
+	)
+
+	listPath := client.Endpoint + httpUrl
+	listPath = strings.ReplaceAll(listPath, "{project_id}", client.ProjectID)
+	listPath = strings.ReplaceAll(listPath, "{limit}", strconv.Itoa(limit))
+	if len(queryParams) > 0 {
+		listPath = fmt.Sprintf("%s&%s", listPath, queryParams[0])
+	}
+
+	opt := golangsdk.RequestOpts{
+		KeepResponseBody: true,
+		MoreHeaders:      buildStudioMoreHeaders(workspaceId),
+	}
+
+	for {
+		listPathWithOffset := fmt.Sprintf("%s&offset=%d", listPath, offset)
+		requestResp, err := client.Request("GET", listPathWithOffset, &opt)
+		if err != nil {
+			return nil, err
+		}
+		respBody, err := utils.FlattenResponse(requestResp)
+		if err != nil {
+			return nil, err
+		}
+
+		connections := utils.PathSearch("data_connection_lists", respBody, make([]interface{}, 0)).([]interface{})
+		result = append(result, connections...)
+		if len(connections) < limit {
+			break
+		}
+		offset += len(connections)
+	}
+
+	return result, nil
+}
+
+func filterByConnectionId(connections []interface{}, connectionId string) []interface{} {
+	if connectionId == "" {
+		return connections
+	}
+
+	return utils.PathSearch(fmt.Sprintf("[?dw_id == '%s']", connectionId), connections, make([]interface{}, 0)).([]interface{})
+}
+
+func flattenConnections(connections []interface{}) []map[string]interface{} {
+	if len(connections) == 0 {
+		return nil
+	}
+
+	result := make([]map[string]interface{}, 0, len(connections))
+	for _, connection := range connections {
+		result = append(result, map[string]interface{}{
+			"id":               utils.PathSearch("dw_id", connection, nil),
+			"name":             utils.PathSearch("dw_name", connection, nil),
+			"type":             utils.PathSearch("dw_type", connection, nil),
+			"agent_id":         utils.PathSearch("agent_id", connection, nil),
+			"qualified_name":   utils.PathSearch("qualified_name", connection, nil),
+			"created_by":       utils.PathSearch("create_user", connection, nil),
+			"created_at":       utils.FormatTimeStampRFC3339(int64(utils.PathSearch("create_time", connection, float64(0)).(float64))/1000, false),
+			"create_timestamp": int(utils.PathSearch("create_time", connection, float64(0)).(float64)),
+		})
+	}
+
+	return result
+}
+
+func resourceStudioDataConnectionsRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+	var (
+		cfg          = meta.(*config.Config)
+		region       = cfg.GetRegion(d)
+		workspaceId  = d.Get("workspace_id").(string)
+		connectionId = d.Get("connection_id").(string)
+	)
+
+	client, err := cfg.NewServiceClient("dataarts", region)
 	if err != nil {
-		return diag.Errorf("error creating DataArts Studio v1 client: %s", err)
+		return diag.Errorf("error creating DataArts Studio client: %s", err)
 	}
 
-	// When limit and offset are used together, limit cannot be equal to the total number of connections.
-	// If limit is not specified, all connections are queried by default. A maximum of 200 data connections can be created.
-	opts := connections.ListOpts{
-		WorkspaceId: d.Get("workspace_id").(string),
-		Name:        d.Get("name").(string),
-		Type:        d.Get("type").(string),
-	}
-
-	resp, err := connections.List(client, opts)
+	connections, err := listStudioDataConnections(client, workspaceId, buildStudioDataConnectionsQueryParams(d))
 	if err != nil {
 		return diag.Errorf("error retrieving data connections: %s", err)
 	}
+	log.Printf("[Lance] The list response is: %v", connections)
 
 	randUUID, err := uuid.GenerateUUID()
 	if err != nil {
@@ -120,46 +233,10 @@ func resourceDataConnectionsRead(_ context.Context, d *schema.ResourceData, meta
 	}
 	d.SetId(randUUID)
 
-	mErr := multierror.Append(
-		nil,
+	mErr := multierror.Append(nil,
 		d.Set("region", region),
-		d.Set("connections", filterByConnectionId(flattenConnections(resp), d.Get("connection_id").(string))),
+		d.Set("connections", flattenConnections(filterByConnectionId(connections, connectionId))),
 	)
 
 	return diag.FromErr(mErr.ErrorOrNil())
-}
-
-func flattenConnections(resp []connections.Connection) []map[string]interface{} {
-	if len(resp) == 0 {
-		return nil
-	}
-
-	result := make([]map[string]interface{}, len(resp))
-	for i, connection := range resp {
-		result[i] = map[string]interface{}{
-			"id":             connection.DwId,
-			"name":           connection.DwName,
-			"type":           connection.DwType,
-			"agent_id":       connection.AgentId,
-			"qualified_name": connection.QualifiedName,
-			"created_by":     connection.CreateUser,
-			"created_at":     utils.FormatTimeStampRFC3339(int64(connection.CreateTime), false),
-		}
-	}
-	return result
-}
-
-func filterByConnectionId(all []map[string]interface{}, connectionId string) []map[string]interface{} {
-	if connectionId == "" {
-		return all
-	}
-
-	rst := make([]map[string]interface{}, 0, len(all))
-	for _, v := range all {
-		if connectionId == fmt.Sprint(utils.PathSearch("id", v, nil)) {
-			rst = append(rst, v)
-			return rst
-		}
-	}
-	return rst
 }
