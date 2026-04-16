@@ -42,62 +42,61 @@ resource "huaweicloud_dataarts_security_permission_set_privilege" "test" {
 
 The following arguments are supported:
 
-* `region` - (Optional, String, ForceNew) Specifies the region in which to create the resource.
-  If omitted, the provider-level region will be used.
-  Changing this creates a new resource.
+* `region` - (Optional, String, ForceNew) Specifies the region in which to the permission set to be granted privilege
+  is located.  
+  If omitted, the provider-level region will be used. Changing this creates a new resource.
 
-* `workspace_id` - (Required, String, ForceNew) Specifies the ID of the workspace to which the permission set belongs.
-  Changing this creates a new resource.
+* `workspace_id` - (Required, String, NonUpdatable) Specifies the ID of the workspace to which the permission set
+  belongs.
 
-* `permission_set_id` - (Required, String, ForceNew) Specifies the ID of the permission set to be granted.
-  Changing this creates a new resource.
+* `permission_set_id` - (Required, String, NonUpdatable) Specifies the ID of the permission set to be granted.
 
-* `datasource_type` - (Required, String, ForceNew) Specifies the type of granted data source.
-  The valid values are **HIVE**, **DWS** and **DLI**.
-  Changing this creates a new resource.
-  
-* `type` - (Required, String, ForceNew) Specifies the type of permission to be configured.
+* `datasource_type` - (Required, String, NonUpdatable) Specifies the type of granted data source.  
+  The valid values are as follows:
+  + **HIVE**
+  + **DWS**
+  + **DLI**
+
+* `type` - (Required, String, NonUpdatable) Specifies the type of permission to be configured.  
   Currently, only **ALLOW** is supported.
-  Changing this creates a new resource.
 
-* `actions` - (Required, List) Specifies the list of granted permissions. The valid length is limited from `1` to `32`,
+* `actions` - (Required, List) Specifies the list of granted permissions.  
+  The valid length is limited from `1` to `32`.  
   The valid [permissions](#permissions_for_permission_set) are documented below.
 
-* `cluster_name` - (Required, String, ForceNew) Specifies the cluster name corresponding to the granted data source.
-  The valid ranges from `1` to `128`.
-  Changing this creates a new resource.
-  If `datasource_type` is set to `DLI`, the parameter is set to `*`.
+* `cluster_name` - (Required, String, NonUpdatable) Specifies the cluster name corresponding to the granted data
+  source.  
+  The valid ranges from `1` to `128`.  
+  If `datasource_type` is set to **DLI**, the parameter is set to `*`.
 
-* `cluster_id` - (Optional, String, ForceNew) Specifies the cluster ID corresponding to the granted data source.
-  It is required when `datasource_type` is `HIVE` or `DWS`.
-  Changing this creates a new resource.
+* `cluster_id` - (Optional, String, NonUpdatable) Specifies the cluster ID corresponding to the granted data source.  
+  It is required when `datasource_type` is **HIVE** or **DWS**.
 
 * `connection_id` - (Optional, String) Specifies the data connection ID corresponding to the granted data source.
 
-* `database_url` - (Optional, String, ForceNew) Specifies the URL of the database corresponding to the granted data source.
-  Changing this creates a new resource.
-  This parameter is only valid when `datasource_type` is set to `HIVE`.
-  This parameter is conflict with `database_name`, `table_name` and `column_name`.
+* `database_url` - (Optional, String, NonUpdatable) Specifies the URL of the database corresponding to the granted  
+  data source.  
+  This parameter is only valid when `datasource_type` is set to **HIVE**.  
+  This parameter is conflict with **database_name**, **table_name** and **column_name**.
 
-* `database_name` - (Optional, String, ForceNew) Specifies the name of the database corresponding to the granted data source.
-  Changing this creates a new resource.
-  It is required when `datasource_type` is `DWS` or `DLI`.
+* `database_name` - (Optional, String, NonUpdatable) Specifies the name of the database corresponding to the granted  
+  data source.  
+  It is required when `datasource_type` is **DWS** or **DLI**.
 
-* `table_name` - (Optional, String, ForceNew) Specifies the name of the data table corresponding to the granted data source.
-  Changing this creates a new resource.
+* `table_name` - (Optional, String, NonUpdatable) Specifies the name of the data table corresponding to the granted  
+  data source.
 
-* `column_name` - (Optional, String, ForceNew) Specifies the name of column corresponding to the granted data source.
-  Changing this creates a new resource.
+* `column_name` - (Optional, String, NonUpdatable) Specifies the name of column corresponding to the granted data  
+  source.
 
   -> 1. For `database_name`, `table_name` and `column_name` parameters, the valid length is limited from `1` to `128`,
      only letters, digits, underscores (_) and asterisk (*) are allowed.<br/>2. The permissions of databases, tables,
      and columns are managed by layer.
      For example, a user who has been granted database permissions does not have the permissions of tables and columns.
      Table and column permissions must be granted separately.
-  
-* `schema_name` - (Optional, String, ForceNew) Specifies the schema name corresponding to the DWS data source.
-  Changing this creates a new resource.
-  This parameter is only valid when `datasource_type` is set to `DWS`.
+
+* `schema_name` - (Optional, String, NonUpdatable) Specifies the schema name corresponding to the DWS data source.  
+  This parameter is only valid when `datasource_type` is set to **DWS**.
 
 ## Attribute Reference
 
