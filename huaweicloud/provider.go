@@ -3831,6 +3831,8 @@ func Provider() *schema.Provider {
 			"huaweicloud_dataarts_architecture_reviewer":               dataarts.ResourceDataArtsArchitectureReviewer(),
 			"huaweicloud_dataarts_architecture_subject":                dataarts.ResourceArchitectureSubject(),
 			"huaweicloud_dataarts_architecture_table_model":            dataarts.ResourceArchitectureTableModel(),
+			// DataAtrs Catalog
+			"huaweicloud_dataarts_catalog_metadata_task": dataarts.ResourceCatalogMetadataTask(),
 			// DataArts Factory
 			"huaweicloud_dataarts_factory_job":            dataarts.ResourceFactoryJob(),
 			"huaweicloud_dataarts_factory_job_action":     dataarts.ResourceFactoryJobAction(),
