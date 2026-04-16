@@ -285,6 +285,7 @@ func resourceHostGroupDelete(_ context.Context, d *schema.ResourceData, meta int
 		KeepResponseBody: true,
 		OkCodes: []int{
 			200,
+			204,
 		},
 	}
 

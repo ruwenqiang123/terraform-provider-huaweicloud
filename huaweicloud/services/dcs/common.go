@@ -46,6 +46,8 @@ var (
 		"DCS.4120": {},
 		// reset password
 		"DCS.4121": {},
+		// offline key analysis is running
+		"DCS.4231": {},
 		// creating/restarting
 		"DCS.4975": {},
 	}
@@ -255,6 +257,10 @@ func refreshDcsInstanceState(client *golangsdk.ServiceClient, id string) resourc
 		failStatus := []string{"CREATEFAILED", "ERROR", "FROZEN"}
 		if utils.StrSliceContains(failStatus, status) {
 			return instance, status, fmt.Errorf("unexpect status: %s", status)
+		}
+		task := utils.PathSearch("task", instance, nil)
+		if task != nil {
+			return instance, "PENDING", nil
 		}
 		if status == "RUNNING" {
 			return instance, status, nil

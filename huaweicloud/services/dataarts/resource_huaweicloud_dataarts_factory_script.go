@@ -115,10 +115,11 @@ func ResourceDataArtsFactoryScript() *schema.Resource {
 
 func resourceScriptCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	var (
-		cfg     = meta.(*config.Config)
-		region  = cfg.GetRegion(d)
-		httpUrl = "v1/{project_id}/scripts"
-		product = "dataarts-dlf"
+		cfg         = meta.(*config.Config)
+		region      = cfg.GetRegion(d)
+		httpUrl     = "v1/{project_id}/scripts"
+		product     = "dataarts-dlf"
+		workspaceId = d.Get("workspace_id").(string)
 	)
 	client, err := cfg.NewServiceClient(product, region)
 	if err != nil {
@@ -128,7 +129,7 @@ func resourceScriptCreate(ctx context.Context, d *schema.ResourceData, meta inte
 	createPath = strings.ReplaceAll(createPath, "{project_id}", client.ProjectID)
 	createOpt := golangsdk.RequestOpts{
 		KeepResponseBody: true,
-		MoreHeaders:      map[string]string{"workspace": d.Get("workspace_id").(string)},
+		MoreHeaders:      buildFactoryMoreHeaders(workspaceId),
 		JSONBody:         utils.RemoveNil(buildCreateOrUpdateScriptBodyParams(d)),
 		OkCodes:          []int{204},
 	}
@@ -138,7 +139,7 @@ func resourceScriptCreate(ctx context.Context, d *schema.ResourceData, meta inte
 		return diag.Errorf("error creating DataArts script: %s", err)
 	}
 
-	d.SetId(fmt.Sprintf("%s/%s", d.Get("workspace_id"), d.Get("name").(string)))
+	d.SetId(fmt.Sprintf("%s/%s", workspaceId, d.Get("name").(string)))
 	return resourceScriptRead(ctx, d, meta)
 }
 
@@ -149,6 +150,7 @@ func resourceScriptRead(_ context.Context, d *schema.ResourceData, meta interfac
 		mErr                     *multierror.Error
 		httpUrl                  = "v1/{project_id}/scripts/{script_name}"
 		product                  = "dataarts-dlf"
+		workspaceId              = d.Get("workspace_id").(string)
 		resourceNotFoundErrCodes = []string{"DLF.0819", "DLF.6201"}
 	)
 	client, err := cfg.NewServiceClient(product, region)
@@ -161,7 +163,7 @@ func resourceScriptRead(_ context.Context, d *schema.ResourceData, meta interfac
 	getPath = strings.ReplaceAll(getPath, "{script_name}", d.Get("name").(string))
 	getOpt := golangsdk.RequestOpts{
 		KeepResponseBody: true,
-		MoreHeaders:      map[string]string{"workspace": d.Get("workspace_id").(string)},
+		MoreHeaders:      buildFactoryMoreHeaders(workspaceId),
 	}
 	getResp, err := client.Request("GET", getPath, &getOpt)
 	if err != nil {
@@ -195,10 +197,11 @@ func resourceScriptRead(_ context.Context, d *schema.ResourceData, meta interfac
 
 func resourceScriptUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	var (
-		cfg     = meta.(*config.Config)
-		region  = cfg.GetRegion(d)
-		httpUrl = "v1/{project_id}/scripts/{script_name}"
-		product = "dataarts-dlf"
+		cfg         = meta.(*config.Config)
+		region      = cfg.GetRegion(d)
+		httpUrl     = "v1/{project_id}/scripts/{script_name}"
+		product     = "dataarts-dlf"
+		workspaceId = d.Get("workspace_id").(string)
 	)
 	client, err := cfg.NewServiceClient(product, region)
 	if err != nil {
@@ -211,7 +214,7 @@ func resourceScriptUpdate(ctx context.Context, d *schema.ResourceData, meta inte
 
 	updateOpt := golangsdk.RequestOpts{
 		KeepResponseBody: true,
-		MoreHeaders:      map[string]string{"workspace": d.Get("workspace_id").(string)},
+		MoreHeaders:      buildFactoryMoreHeaders(workspaceId),
 		JSONBody:         utils.RemoveNil(buildCreateOrUpdateScriptBodyParams(d)),
 		OkCodes:          []int{204},
 	}
@@ -221,16 +224,16 @@ func resourceScriptUpdate(ctx context.Context, d *schema.ResourceData, meta inte
 		return diag.Errorf("error updating DataArts script: %s", err)
 	}
 
-	d.SetId(fmt.Sprintf("%s/%s", d.Get("workspace_id"), d.Get("name").(string)))
 	return resourceScriptRead(ctx, d, meta)
 }
 
 func resourceScriptDelete(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	var (
-		cfg     = meta.(*config.Config)
-		region  = cfg.GetRegion(d)
-		httpUrl = "v1/{project_id}/scripts/{script_name}"
-		product = "dataarts-dlf"
+		cfg         = meta.(*config.Config)
+		region      = cfg.GetRegion(d)
+		httpUrl     = "v1/{project_id}/scripts/{script_name}"
+		product     = "dataarts-dlf"
+		workspaceId = d.Get("workspace_id").(string)
 	)
 	client, err := cfg.NewServiceClient(product, region)
 	if err != nil {
@@ -242,7 +245,7 @@ func resourceScriptDelete(_ context.Context, d *schema.ResourceData, meta interf
 	deletePath = strings.ReplaceAll(deletePath, "{script_name}", d.Get("name").(string))
 	deleteOpt := golangsdk.RequestOpts{
 		KeepResponseBody: true,
-		MoreHeaders:      map[string]string{"workspace": d.Get("workspace_id").(string)},
+		MoreHeaders:      buildFactoryMoreHeaders(workspaceId),
 	}
 
 	_, err = client.Request("DELETE", deletePath, &deleteOpt)

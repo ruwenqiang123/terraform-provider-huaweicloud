@@ -27,14 +27,14 @@ The following arguments are supported:
 * `region` - (Optional, String) Specifies the region in which to query the data source.
   If omitted, the provider-level region will be used.
 
-* `workspace_id` - (Required, String) Specifies the ID of the workspace to which the data connection belongs.
+* `workspace_id` - (Required, String) Specifies the ID of the workspace to which the data connections belong.
 
-* `connection_id` - (Optional, String) Specifies the ID of the data connection.
+* `connection_id` - (Optional, String) Specifies the ID of the data connection to be queried.
 
-* `name` - (Optional, String) Specifies the name of the data connection.
+* `name` - (Optional, String) Specifies the name of the data connection to be queried.  
   Supports fuzzy search.
 
-* `type` - (Optional, String) Specifies the type of the data connection.
+* `type` - (Optional, String) Specifies the type of the data connection to be queried.
 
 ## Attribute Reference
 
@@ -60,4 +60,6 @@ The `connections` block supports:
 
 * `created_by` - The creator of the data connection.
 
-* `created_at` - The creation time of the data connection.
+* `created_at` - The creation time of the data connection, in RFC3339 format.
+
+* `create_timestamp` - The creation timestamp of the data connection.

@@ -470,6 +470,11 @@ var (
 	HW_CFW_ACL_RULE_ID               = os.Getenv("HW_CFW_ACL_RULE_ID")
 	HW_CFW_DOMAIN_SET_ID             = os.Getenv("HW_CFW_DOMAIN_SET_ID")
 	HW_CFW_IP_BLACKLIST_NAME         = os.Getenv("HW_CFW_IP_BLACKLIST_NAME")
+	HW_CFW_IPS_CUSTOM_RULE_ID        = os.Getenv("HW_CFW_IPS_CUSTOM_RULE_ID")
+	HW_CFW_ADDRESS_GROUP_ID          = os.Getenv("HW_CFW_ADDRESS_GROUP_ID")
+	HW_CFW_ADDRESS_GROUP_MEMBER_ID   = os.Getenv("HW_CFW_ADDRESS_GROUP_MEMBER_ID")
+	HW_CFW_SERVICE_GROUP_ID          = os.Getenv("HW_CFW_SERVICE_GROUP_ID")
+	HW_CFW_SERVICE_GROUP_MEMBER_ID   = os.Getenv("HW_CFW_SERVICE_GROUP_MEMBER_ID")
 
 	HW_CTS_START_TIME = os.Getenv("HW_CTS_START_TIME")
 	HW_CTS_END_TIME   = os.Getenv("HW_CTS_END_TIME")
@@ -2098,18 +2103,16 @@ func TestAccPreCheckDliOwner(t *testing.T) {
 }
 
 // lintignore:AT003
-func TestAccPreCheckDliElasticResourcePoolName(t *testing.T) {
+func TestAccPreCheckDliElasticResourcePoolName(t *testing.T, min int) {
 	// Elastic resource pools for associating DLI datasource enhanced connection.
 	// Therefore, two elastic resource pools are provided, one for initial binding and the other for updating binding.
 	// Using commas (,) to separate two elastic resource pools.
 	// The CU of the latter must be large and can be associated with multiple queues.
 	// In the test case, the HW_DLI_SQL_QUEUE_NAME and HW_DLI_GENERAL_QUEUE_NAME belong to the latter resource pool.
-	names := strings.Split(HW_DLI_ELASTIC_RESOURCE_POOL_NAMES, ",")
-	if len(names) < 2 {
-		t.Skip("Before running acceptance tests related to elastic resource pool, " +
-			"please ensure +the 'HW_DLI_ELASTIC_RESOURCE_POOL_NAMES' has been configured")
+	if HW_DLI_ELASTIC_RESOURCE_POOL_NAMES == "" || len(strings.Split(HW_DLI_ELASTIC_RESOURCE_POOL_NAMES, ",")) < min {
+		t.Skipf("At least %d elastic resource pool IDs must be supported during the "+
+			"HW_DLI_ELASTIC_RESOURCE_POOL_NAMES, separated by commas (,).", min)
 	}
-
 }
 
 // lintignore:AT003
@@ -2120,7 +2123,7 @@ func TestAccPreCheckDliSQLQueueName(t *testing.T) {
 }
 
 // lintignore:AT003
-func TestAccPreCheckDliGenaralQueueName(t *testing.T) {
+func TestAccPreCheckDliGeneralQueueName(t *testing.T) {
 	if HW_DLI_GENERAL_QUEUE_NAME == "" {
 		t.Skip("HW_DLI_GENERAL_QUEUE_NAME must be set for DLI acceptance tests.")
 	}
@@ -2910,9 +2913,44 @@ func TestAccPreCheckCfwAclRuleId(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckCfwIpsCustomRuleId(t *testing.T) {
+	if HW_CFW_IPS_CUSTOM_RULE_ID == "" {
+		t.Skip("HW_CFW_IPS_CUSTOM_RULE_ID must be set for CFW acceptance tests")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckCfwIpBlacklistName(t *testing.T) {
 	if HW_CFW_IP_BLACKLIST_NAME == "" {
 		t.Skip("HW_CFW_IP_BLACKLIST_NAME must be set for CFW acceptance tests")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckCfwAddressGroupId(t *testing.T) {
+	if HW_CFW_ADDRESS_GROUP_ID == "" {
+		t.Skip("HW_CFW_ADDRESS_GROUP_ID must be set for CFW acceptance tests")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckCfwAddressGroupMemberId(t *testing.T) {
+	if HW_CFW_ADDRESS_GROUP_MEMBER_ID == "" {
+		t.Skip("HW_CFW_ADDRESS_GROUP_MEMBER_ID must be set for CFW acceptance tests")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckCfwServiceGroupId(t *testing.T) {
+	if HW_CFW_SERVICE_GROUP_ID == "" {
+		t.Skip("HW_CFW_SERVICE_GROUP_ID must be set for CFW acceptance tests")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckCfwServiceGroupMemberId(t *testing.T) {
+	if HW_CFW_SERVICE_GROUP_MEMBER_ID == "" {
+		t.Skip("HW_CFW_SERVICE_GROUP_MEMBER_ID must be set for CFW acceptance tests")
 	}
 }
 
