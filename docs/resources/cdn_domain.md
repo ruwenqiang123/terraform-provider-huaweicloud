@@ -953,10 +953,18 @@ The `error_code_redirect_rules` block support:
 * `error_code` - (Required, Int) Specifies the redirect unique error code. Valid values are: **400**, **403**, **404**,
   **405**, **414**, **416**, **451**, **500**, **501**, **502**, **503**, and **504**.
 
-* `target_code` - (Required, Int) Specifies the redirect status code. The value can be **301** or **302**.
-
 * `target_link` - (Required, String) Specifies the destination URL. The value must start with **http://** or **https://**.
   For example: `http://www.example.com`.
+
+* `execution_mode` - (Required, String) Specifies the execution mode of the error code redirect rule.  
+  The valid values are as follows:
+  + **redirect**
+  + **break**
+
+* `target_code` - (Optional, Int) Specifies the redirect status code.  
+  The valid values are as follows:
+  + **301**
+  + **302**
 
 <a name="hsts_object"></a>
 The `hsts` block support:

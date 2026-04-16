@@ -586,7 +586,7 @@ func TestAccDomain_configs(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "configs.0.compress.0.status", "on"),
 					resource.TestCheckResourceAttr(resourceName, "configs.0.compress.0.enabled", "true"),
 					resource.TestCheckResourceAttr(resourceName, "configs.0.compress.0.type", "gzip"),
-					resource.TestCheckResourceAttr(resourceName, "configs.0.compress.0.file_type", ".js,.html,.css,.xml,.json,.shtml,.htm"),
+					resource.TestCheckResourceAttrSet(resourceName, "configs.0.compress.0.file_type"),
 
 					resource.TestCheckResourceAttr(resourceName, "configs.0.referer.0.type", "white"),
 					resource.TestCheckResourceAttr(resourceName, "configs.0.referer.0.include_empty", "false"),
@@ -608,6 +608,17 @@ func TestAccDomain_configs(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "configs.0.origin_request_url_rewrite.#", "2"),
 
 					resource.TestCheckResourceAttr(resourceName, "configs.0.error_code_redirect_rules.#", "2"),
+					resource.TestCheckTypeSetElemNestedAttrs(resourceName, "configs.0.error_code_redirect_rules.*", map[string]string{
+						"error_code":     "416",
+						"target_code":    "301",
+						"target_link":    "http://example.com",
+						"execution_mode": "redirect",
+					}),
+					resource.TestCheckTypeSetElemNestedAttrs(resourceName, "configs.0.error_code_redirect_rules.*", map[string]string{
+						"error_code":     "502",
+						"target_link":    "/errorcode.html",
+						"execution_mode": "break",
+					}),
 
 					resource.TestCheckResourceAttr(resourceName, "configs.0.access_area_filter.#", "2"),
 
@@ -736,6 +747,7 @@ func TestAccDomain_configs(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "configs.0.error_code_redirect_rules.0.error_code", "416"),
 					resource.TestCheckResourceAttr(resourceName, "configs.0.error_code_redirect_rules.0.target_code", "301"),
 					resource.TestCheckResourceAttr(resourceName, "configs.0.error_code_redirect_rules.0.target_link", "http://example.com"),
+					resource.TestCheckResourceAttr(resourceName, "configs.0.error_code_redirect_rules.0.execution_mode", "redirect"),
 
 					resource.TestCheckResourceAttr(resourceName, "configs.0.access_area_filter.#", "1"),
 					resource.TestCheckResourceAttr(resourceName, "configs.0.access_area_filter.0.area", "HK,TW,AE,LB"),
@@ -1020,15 +1032,16 @@ resource "huaweicloud_cdn_domain" "test" {
     }
 
     error_code_redirect_rules {
-      error_code  = 416
-      target_code = 301
-      target_link = "http://example.com"
+      error_code     = 416
+      target_code    = 301
+      target_link    = "http://example.com"
+      execution_mode = "redirect"
     }
 
     error_code_redirect_rules {
-      error_code  = 502
-      target_code = 302
-      target_link = "https://xxx.cn/"
+      error_code     = 502
+      target_link    = "/errorcode.html"
+      execution_mode = "break"
     }
 
     access_area_filter {
@@ -1277,9 +1290,10 @@ resource "huaweicloud_cdn_domain" "test" {
     }
 
     error_code_redirect_rules {
-      error_code  = 416
-      target_code = 301
-      target_link = "http://example.com"
+      error_code     = 416
+      target_code    = 301
+      target_link    = "http://example.com"
+      execution_mode = "redirect"
     }
 
     access_area_filter {

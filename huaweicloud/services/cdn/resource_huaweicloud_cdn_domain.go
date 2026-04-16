@@ -689,13 +689,25 @@ var errorCodeRedirectRules = schema.Schema{
 				Type:     schema.TypeInt,
 				Required: true,
 			},
-			"target_code": {
-				Type:     schema.TypeInt,
-				Required: true,
-			},
 			"target_link": {
 				Type:     schema.TypeString,
 				Required: true,
+			},
+			"execution_mode": {
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+				Description: utils.SchemaDesc(
+					`The execution mode of the error code redirect rule.`,
+					utils.SchemaDescInput{
+						Required: true,
+					},
+				),
+			},
+			"target_code": {
+				Type:     schema.TypeInt,
+				Optional: true,
+				Computed: true,
 			},
 		},
 	},
@@ -1982,9 +1994,10 @@ func flattenErrorCodeRedirectRulesAttributes(configResp interface{}) []interface
 	for _, v := range curArray {
 		rawMap := v.(map[string]interface{})
 		rst = append(rst, map[string]interface{}{
-			"error_code":  rawMap["error_code"],
-			"target_code": rawMap["target_code"],
-			"target_link": rawMap["target_link"],
+			"error_code":     rawMap["error_code"],
+			"target_code":    rawMap["target_code"],
+			"target_link":    rawMap["target_link"],
+			"execution_mode": rawMap["execution_mode"],
 		})
 	}
 	return rst
@@ -2667,11 +2680,12 @@ func buildCdnDomainErrorCodeRedirectRules(errorCodeRedirectRules []interface{}) 
 	rst := make([]interface{}, 0, len(errorCodeRedirectRules))
 	for _, v := range errorCodeRedirectRules {
 		rawMap := v.(map[string]interface{})
-		rst = append(rst, map[string]interface{}{
-			"error_code":  rawMap["error_code"],
-			"target_code": rawMap["target_code"],
-			"target_link": rawMap["target_link"],
-		})
+		rst = append(rst, utils.RemoveNil(map[string]interface{}{
+			"error_code":     rawMap["error_code"],
+			"target_link":    rawMap["target_link"],
+			"target_code":    utils.ValueIgnoreEmpty(rawMap["target_code"]),
+			"execution_mode": utils.ValueIgnoreEmpty(rawMap["execution_mode"]),
+		}))
 	}
 	return rst
 }
