@@ -157,6 +157,122 @@ func logicalRingHostsSchema() *schema.Resource {
 	return &sc
 }
 
+func buildLogicalRingHostsRequestBody(rawParams interface{}) []map[string]interface{} {
+	if rawSet, ok := rawParams.(*schema.Set); ok && rawSet.Len() > 0 {
+		rst := make([]map[string]interface{}, 0, rawSet.Len())
+		for _, v := range rawSet.List() {
+			raw, isMap := v.(map[string]interface{})
+			if !isMap {
+				continue
+			}
+
+			rst = append(rst, map[string]interface{}{
+				"host_name": raw["host_name"],
+				"back_ip":   raw["back_ip"],
+				"cpu_cores": raw["cpu_cores"],
+				"memory":    raw["memory"],
+				"disk_size": raw["disk_size"],
+			})
+		}
+		return rst
+	}
+	return nil
+}
+
+func buildLogicalClusterRingsRequestBody(rawParams interface{}) []map[string]interface{} {
+	if rawSet, ok := rawParams.(*schema.Set); ok && rawSet.Len() > 0 {
+		rst := make([]map[string]interface{}, 0, rawSet.Len())
+		for _, v := range rawSet.List() {
+			raw, isMap := v.(map[string]interface{})
+			if !isMap {
+				continue
+			}
+
+			rst = append(rst, map[string]interface{}{
+				"ring_hosts": buildLogicalRingHostsRequestBody(raw["ring_hosts"]),
+			})
+		}
+		return rst
+	}
+	return nil
+}
+
+func buildCreateLogicalClusterBodyParams(d *schema.ResourceData) map[string]interface{} {
+	return map[string]interface{}{
+		"logical_cluster": map[string]interface{}{
+			"logical_cluster_name": d.Get("logical_cluster_name"),
+			"cluster_rings":        buildLogicalClusterRingsRequestBody(d.Get("cluster_rings")),
+		},
+	}
+}
+
+// When an error occurs when calling the API, the creation is considered failed and there is no need to retry.
+// When the `error_code` is equal to `DWS.0000`, it means the creation is successful.
+// When the "error_code" is not equal to "DWS.0000", it means that the creation failed and needs to be retried.
+func buildCreateRetryFunc(client *golangsdk.ServiceClient, createPath string, createOpt *golangsdk.RequestOpts) common.RetryFunc {
+	retryFunc := func() (interface{}, bool, error) {
+		createResp, err := client.Request("POST", createPath, createOpt)
+		if err != nil {
+			return nil, false, fmt.Errorf("error creating DWS logical cluster: %s", err)
+		}
+
+		createRespBody, err := utils.FlattenResponse(createResp)
+		if err != nil {
+			return nil, false, err
+		}
+
+		errCode := utils.PathSearch("error_code", createRespBody, "").(string)
+		if errCode == "DWS.0000" {
+			return nil, false, nil
+		}
+
+		errMsg := utils.PathSearch("error_msg", createRespBody, "").(string)
+		// Stop retrying create operations when names are duplicated
+		if errMsg == createDuplicateNameMsg {
+			return nil, false, fmt.Errorf("error creating DWS logical cluster: %s", errMsg)
+		}
+
+		return nil, true, fmt.Errorf("error creating DWS logical cluster: error code: %s, error message: %s", errCode, errMsg)
+	}
+	return retryFunc
+}
+
+func waitingForStateCompleted(ctx context.Context, client *golangsdk.ServiceClient, d *schema.ResourceData,
+	timeout time.Duration) (interface{}, error) {
+	clusterName := d.Get("logical_cluster_name").(string)
+	expression := fmt.Sprintf("logical_clusters[?logical_cluster_name=='%s']|[0]", clusterName)
+	stateConf := &resource.StateChangeConf{
+		Pending: []string{"PENDING"},
+		Target:  []string{"COMPLETED"},
+		Refresh: func() (interface{}, string, error) {
+			clusterRespBody, err := readLogicalClusters(client, d)
+			if err != nil {
+				return nil, "ERROR", err
+			}
+
+			cluster := utils.PathSearch(expression, clusterRespBody, nil)
+			if cluster == nil {
+				return nil, "ERROR", golangsdk.ErrDefault404{}
+			}
+
+			completed := utils.PathSearch("action_info.completed", cluster, false).(bool)
+			result := utils.PathSearch("action_info.result", cluster, "").(string)
+			if completed && result == "success" {
+				return cluster, "COMPLETED", nil
+			}
+
+			if completed && result == "failed" {
+				return cluster, "ERROR", fmt.Errorf("the DWS logical cluster (%s) is failed", clusterName)
+			}
+			return cluster, "PENDING", nil
+		},
+		Timeout:      timeout,
+		Delay:        30 * time.Second,
+		PollInterval: 30 * time.Second,
+	}
+	return stateConf.WaitForStateContext(ctx)
+}
+
 func resourceLogicalClusterCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	var (
 		cfg         = meta.(*config.Config)
@@ -213,120 +329,19 @@ func resourceLogicalClusterCreate(ctx context.Context, d *schema.ResourceData, m
 	return resourceLogicalClusterRead(ctx, d, meta)
 }
 
-// When an error occurs when calling the API, the creation is considered failed and there is no need to retry.
-// When the `error_code` is equal to `DWS.0000`, it means the creation is successful.
-// When the "error_code" is not equal to "DWS.0000", it means that the creation failed and needs to be retried.
-func buildCreateRetryFunc(client *golangsdk.ServiceClient, createPath string, createOpt *golangsdk.RequestOpts) common.RetryFunc {
-	retryFunc := func() (interface{}, bool, error) {
-		createResp, err := client.Request("POST", createPath, createOpt)
-		if err != nil {
-			return nil, false, fmt.Errorf("error creating DWS logical cluster: %s", err)
-		}
-
-		createRespBody, err := utils.FlattenResponse(createResp)
-		if err != nil {
-			return nil, false, err
-		}
-
-		errCode := utils.PathSearch("error_code", createRespBody, "").(string)
-		if errCode == "DWS.0000" {
-			return nil, false, nil
-		}
-
-		errMsg := utils.PathSearch("error_msg", createRespBody, "").(string)
-		// Stop retrying create operations when names are duplicated
-		if errMsg == createDuplicateNameMsg {
-			return nil, false, fmt.Errorf("error creating DWS logical cluster: %s", errMsg)
-		}
-
-		return nil, true, fmt.Errorf("error creating DWS logical cluster: error code: %s, error message: %s", errCode, errMsg)
+func flattenResponseBodyClusterRings(resp interface{}) []interface{} {
+	if resp == nil {
+		return nil
 	}
-	return retryFunc
-}
-
-func buildCreateLogicalClusterBodyParams(d *schema.ResourceData) map[string]interface{} {
-	return map[string]interface{}{
-		"logical_cluster": map[string]interface{}{
-			"logical_cluster_name": d.Get("logical_cluster_name"),
-			"cluster_rings":        buildLogicalClusterRingsRequestBody(d.Get("cluster_rings")),
-		},
-	}
-}
-
-func buildLogicalClusterRingsRequestBody(rawParams interface{}) []map[string]interface{} {
-	if rawSet, ok := rawParams.(*schema.Set); ok && rawSet.Len() > 0 {
-		rst := make([]map[string]interface{}, 0, rawSet.Len())
-		for _, v := range rawSet.List() {
-			raw, isMap := v.(map[string]interface{})
-			if !isMap {
-				continue
-			}
-
-			rst = append(rst, map[string]interface{}{
-				"ring_hosts": buildLogicalRingHostsRequestBody(raw["ring_hosts"]),
-			})
+	curJson := utils.PathSearch("cluster_rings", resp, make([]interface{}, 0))
+	curArray := curJson.([]interface{})
+	rst := make([]interface{}, len(curArray))
+	for i, v := range curArray {
+		rst[i] = map[string]interface{}{
+			"ring_hosts": flattenRingHosts(v),
 		}
-		return rst
 	}
-	return nil
-}
-
-func buildLogicalRingHostsRequestBody(rawParams interface{}) []map[string]interface{} {
-	if rawSet, ok := rawParams.(*schema.Set); ok && rawSet.Len() > 0 {
-		rst := make([]map[string]interface{}, 0, rawSet.Len())
-		for _, v := range rawSet.List() {
-			raw, isMap := v.(map[string]interface{})
-			if !isMap {
-				continue
-			}
-
-			rst = append(rst, map[string]interface{}{
-				"host_name": raw["host_name"],
-				"back_ip":   raw["back_ip"],
-				"cpu_cores": raw["cpu_cores"],
-				"memory":    raw["memory"],
-				"disk_size": raw["disk_size"],
-			})
-		}
-		return rst
-	}
-	return nil
-}
-
-func waitingForStateCompleted(ctx context.Context, client *golangsdk.ServiceClient, d *schema.ResourceData,
-	timeout time.Duration) (interface{}, error) {
-	clusterName := d.Get("logical_cluster_name").(string)
-	expression := fmt.Sprintf("logical_clusters[?logical_cluster_name=='%s']|[0]", clusterName)
-	stateConf := &resource.StateChangeConf{
-		Pending: []string{"PENDING"},
-		Target:  []string{"COMPLETED"},
-		Refresh: func() (interface{}, string, error) {
-			clusterRespBody, err := readLogicalClusters(client, d)
-			if err != nil {
-				return nil, "ERROR", err
-			}
-
-			cluster := utils.PathSearch(expression, clusterRespBody, nil)
-			if cluster == nil {
-				return nil, "ERROR", golangsdk.ErrDefault404{}
-			}
-
-			completed := utils.PathSearch("action_info.completed", cluster, false).(bool)
-			result := utils.PathSearch("action_info.result", cluster, "").(string)
-			if completed && result == "success" {
-				return cluster, "COMPLETED", nil
-			}
-
-			if completed && result == "failed" {
-				return cluster, "ERROR", fmt.Errorf("the DWS logical cluster (%s) is failed", clusterName)
-			}
-			return cluster, "PENDING", nil
-		},
-		Timeout:      timeout,
-		Delay:        30 * time.Second,
-		PollInterval: 30 * time.Second,
-	}
-	return stateConf.WaitForStateContext(ctx)
+	return rst
 }
 
 func resourceLogicalClusterRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
@@ -367,21 +382,6 @@ func resourceLogicalClusterRead(_ context.Context, d *schema.ResourceData, meta 
 		d.Set("delete_enable", utils.PathSearch("delete_enable", cluster, nil)),
 	)
 	return diag.FromErr(mErr.ErrorOrNil())
-}
-
-func flattenResponseBodyClusterRings(resp interface{}) []interface{} {
-	if resp == nil {
-		return nil
-	}
-	curJson := utils.PathSearch("cluster_rings", resp, make([]interface{}, 0))
-	curArray := curJson.([]interface{})
-	rst := make([]interface{}, len(curArray))
-	for i, v := range curArray {
-		rst[i] = map[string]interface{}{
-			"ring_hosts": flattenRingHosts(v),
-		}
-	}
-	return rst
 }
 
 // waitingForDeleteStateEnable This method is used to wait for operable status before deleting.
@@ -429,6 +429,64 @@ func waitingForDeleteStateEnable(ctx context.Context, client *golangsdk.ServiceC
 		PollInterval: 30 * time.Second,
 	}
 	return stateConf.WaitForStateContext(ctx)
+}
+
+// When an error occurs when calling the API, the deletion is deemed to have failed and there is no need to retry.
+// When the "error_code" is equal to "DWS.0000", it means the deletion is successful.
+// When the "error_code" is not equal to "DWS.0000", we need to use "error_msg" to determine the next operation.
+func buildDeleteRetryFunc(client *golangsdk.ServiceClient, deletePath string, deleteOpt *golangsdk.RequestOpts) common.RetryFunc {
+	retryFunc := func() (interface{}, bool, error) {
+		deleteResp, err := client.Request("DELETE", deletePath, deleteOpt)
+		if err != nil {
+			return nil, false, fmt.Errorf("error deleting DWS logical cluster: %s", err)
+		}
+
+		deleteRespBody, err := utils.FlattenResponse(deleteResp)
+		if err != nil {
+			return nil, false, err
+		}
+
+		errCode := utils.PathSearch("error_code", deleteRespBody, "").(string)
+		if errCode == "DWS.0000" {
+			return nil, false, nil
+		}
+
+		errMsg := utils.PathSearch("error_msg", deleteRespBody, "").(string)
+		// Stop retrying deletion when the resource does not exist or the current resource is the first logical cluster.
+		if errMsg == deleteNotExistMsg || errMsg == deleteFirstLogicalClusterMsg {
+			return errMsg, false, nil
+		}
+		return nil, true, fmt.Errorf("error deleting DWS logical cluster: error code: %s, error message: %s", errCode, errMsg)
+	}
+	return retryFunc
+}
+
+// waitingForStateDeleted This method is used to wait for delete to complete.
+func waitingForStateDeleted(ctx context.Context, client *golangsdk.ServiceClient, d *schema.ResourceData,
+	timeout time.Duration) error {
+	expression := fmt.Sprintf("logical_clusters[?logical_cluster_id=='%s']|[0]", d.Id())
+	stateConf := &resource.StateChangeConf{
+		Pending: []string{"PENDING"},
+		Target:  []string{"COMPLETED"},
+		Refresh: func() (interface{}, string, error) {
+			clusterRespBody, err := readLogicalClusters(client, d)
+			if err != nil {
+				return nil, "ERROR", err
+			}
+
+			cluster := utils.PathSearch(expression, clusterRespBody, nil)
+			if cluster == nil {
+				obj := map[string]string{"code": "COMPLETED"}
+				return obj, "COMPLETED", nil
+			}
+			return cluster, "PENDING", nil
+		},
+		Timeout:      timeout,
+		Delay:        30 * time.Second,
+		PollInterval: 30 * time.Second,
+	}
+	_, err := stateConf.WaitForStateContext(ctx)
+	return err
 }
 
 func resourceLogicalClusterDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
@@ -511,64 +569,6 @@ func resourceLogicalClusterDelete(ctx context.Context, d *schema.ResourceData, m
 	}
 
 	return nil
-}
-
-// When an error occurs when calling the API, the deletion is deemed to have failed and there is no need to retry.
-// When the "error_code" is equal to "DWS.0000", it means the deletion is successful.
-// When the "error_code" is not equal to "DWS.0000", we need to use "error_msg" to determine the next operation.
-func buildDeleteRetryFunc(client *golangsdk.ServiceClient, deletePath string, deleteOpt *golangsdk.RequestOpts) common.RetryFunc {
-	retryFunc := func() (interface{}, bool, error) {
-		deleteResp, err := client.Request("DELETE", deletePath, deleteOpt)
-		if err != nil {
-			return nil, false, fmt.Errorf("error deleting DWS logical cluster: %s", err)
-		}
-
-		deleteRespBody, err := utils.FlattenResponse(deleteResp)
-		if err != nil {
-			return nil, false, err
-		}
-
-		errCode := utils.PathSearch("error_code", deleteRespBody, "").(string)
-		if errCode == "DWS.0000" {
-			return nil, false, nil
-		}
-
-		errMsg := utils.PathSearch("error_msg", deleteRespBody, "").(string)
-		// Stop retrying deletion when the resource does not exist or the current resource is the first logical cluster.
-		if errMsg == deleteNotExistMsg || errMsg == deleteFirstLogicalClusterMsg {
-			return errMsg, false, nil
-		}
-		return nil, true, fmt.Errorf("error deleting DWS logical cluster: error code: %s, error message: %s", errCode, errMsg)
-	}
-	return retryFunc
-}
-
-// waitingForStateDeleted This method is used to wait for delete to complete.
-func waitingForStateDeleted(ctx context.Context, client *golangsdk.ServiceClient, d *schema.ResourceData,
-	timeout time.Duration) error {
-	expression := fmt.Sprintf("logical_clusters[?logical_cluster_id=='%s']|[0]", d.Id())
-	stateConf := &resource.StateChangeConf{
-		Pending: []string{"PENDING"},
-		Target:  []string{"COMPLETED"},
-		Refresh: func() (interface{}, string, error) {
-			clusterRespBody, err := readLogicalClusters(client, d)
-			if err != nil {
-				return nil, "ERROR", err
-			}
-
-			cluster := utils.PathSearch(expression, clusterRespBody, nil)
-			if cluster == nil {
-				obj := map[string]string{"code": "COMPLETED"}
-				return obj, "COMPLETED", nil
-			}
-			return cluster, "PENDING", nil
-		},
-		Timeout:      timeout,
-		Delay:        30 * time.Second,
-		PollInterval: 30 * time.Second,
-	}
-	_, err := stateConf.WaitForStateContext(ctx)
-	return err
 }
 
 func resourceLogicalClusterImportState(_ context.Context, d *schema.ResourceData,
