@@ -2877,6 +2877,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_as_bandwidth_policy":        as.ResourceASBandWidthPolicy(),
 			"huaweicloud_as_planned_task":            as.ResourcePlannedTask(),
 			"huaweicloud_as_lifecycle_hook_callback": as.ResourceLifecycleHookCallBack(),
+			"huaweicloud_as_warm_pool":               as.ResourceAsWarmPool(),
 
 			"huaweicloud_asm_mesh": asm.ResourceAsmMesh(),
 
