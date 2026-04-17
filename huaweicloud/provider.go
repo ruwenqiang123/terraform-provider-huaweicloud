@@ -3402,6 +3402,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_eg_event_subscription_target":       eg.ResourceEventSubscriptionTarget(),
 
 			"huaweicloud_elb_certificate":                      elb.ResourceCertificateV3(),
+			"huaweicloud_elb_domain_address":                   elb.ResourceDomainAddress(),
 			"huaweicloud_elb_certificate_private_key_echo":     elb.ResourceCertificatePrivateKeyEcho(),
 			"huaweicloud_elb_l7policy":                         elb.ResourceL7PolicyV3(),
 			"huaweicloud_elb_l7rule":                           elb.ResourceL7RuleV3(),
