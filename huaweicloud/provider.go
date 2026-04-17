@@ -2019,6 +2019,7 @@ func Provider() *schema.Provider {
 
 			"huaweicloud_rfs_private_module_versions": rfs.DataSourcePrivateModuleVersions(),
 			"huaweicloud_rfs_private_modules":         rfs.DataSourcePrivateModules(),
+			"huaweicloud_rfs_private_hook_versions":   rfs.DataSourcePrivateHookVersions(),
 			"huaweicloud_rfs_stack_instances":         rfs.DataSourceStackInstances(),
 			"huaweicloud_rfs_private_providers":       rfs.DataSourcePrivateProviders(),
 			"huaweicloud_rfs_templates":               rfs.DataSourceRfsTemplates(),
