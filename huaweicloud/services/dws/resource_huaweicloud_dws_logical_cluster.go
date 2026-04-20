@@ -8,6 +8,8 @@ package dws
 import (
 	"context"
 	"fmt"
+	"log"
+	"strconv"
 	"strings"
 	"time"
 
@@ -35,6 +37,7 @@ var requestOpts = golangsdk.RequestOpts{
 
 // @API DWS POST /v2/{project_id}/clusters/{cluster_id}/logical-clusters
 // @API DWS GET /v2/{project_id}/clusters/{cluster_id}/logical-clusters
+// @API DWS GET /v2/{project_id}/clusters/{cluster_id}/logical-clusters/volumes
 // @API DWS DELETE /v2/{project_id}/clusters/{cluster_id}/logical-clusters/{logical_cluster_id}
 func ResourceLogicalCluster() *schema.Resource {
 	return &schema.Resource{
@@ -100,6 +103,12 @@ func ResourceLogicalCluster() *schema.Resource {
 				Computed:    true,
 				Description: `Whether deletion is allowed.`,
 			},
+			"volume_usage": {
+				Type:        schema.TypeList,
+				Computed:    true,
+				Elem:        logicalClusterVolumeUsageSchema(),
+				Description: `The volume usage information of the logical cluster.`,
+			},
 		},
 	}
 }
@@ -155,6 +164,28 @@ func logicalRingHostsSchema() *schema.Resource {
 		},
 	}
 	return &sc
+}
+
+func logicalClusterVolumeUsageSchema() *schema.Resource {
+	return &schema.Resource{
+		Schema: map[string]*schema.Schema{
+			"usage": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: `The disk usage of the logical cluster.`,
+			},
+			"total": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: `The total disk capacity of the logical cluster.`,
+			},
+			"percent": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: `The disk usage percentage of the logical cluster.`,
+			},
+		},
+	}
 }
 
 func buildLogicalRingHostsRequestBody(rawParams interface{}) []map[string]interface{} {
@@ -344,14 +375,70 @@ func flattenResponseBodyClusterRings(resp interface{}) []interface{} {
 	return rst
 }
 
+func listLogicalClusterVolumes(client *golangsdk.ServiceClient, clusterId string) ([]interface{}, error) {
+	var (
+		httpUrl = "v2/{project_id}/clusters/{cluster_id}/logical-clusters/volumes?limit={limit}"
+		limit   = 100
+		offset  = 0
+		result  = make([]interface{}, 0)
+	)
+
+	listPathWithLimit := client.Endpoint + httpUrl
+	listPathWithLimit = strings.ReplaceAll(listPathWithLimit, "{project_id}", client.ProjectID)
+	listPathWithLimit = strings.ReplaceAll(listPathWithLimit, "{cluster_id}", clusterId)
+	listPathWithLimit = strings.ReplaceAll(listPathWithLimit, "{limit}", strconv.Itoa(limit))
+
+	listOpts := golangsdk.RequestOpts{
+		MoreHeaders:      requestOpts.MoreHeaders,
+		KeepResponseBody: true,
+	}
+
+	for {
+		listPathWithOffset := listPathWithLimit + fmt.Sprintf("&offset=%d", offset)
+		requestResp, err := client.Request("GET", listPathWithOffset, &listOpts)
+		if err != nil {
+			return nil, err
+		}
+
+		respBody, err := utils.FlattenResponse(requestResp)
+		if err != nil {
+			return nil, err
+		}
+
+		volumes := utils.PathSearch("volumes", respBody, make([]interface{}, 0)).([]interface{})
+		result = append(result, volumes...)
+		if len(volumes) < limit {
+			break
+		}
+		offset += len(volumes)
+	}
+
+	return result, nil
+}
+
+func flattenVolumeUsage(volume interface{}) []map[string]interface{} {
+	if volume == nil {
+		return nil
+	}
+
+	return []map[string]interface{}{
+		{
+			"usage":   utils.PathSearch("usage", volume, nil),
+			"total":   utils.PathSearch("total", volume, nil),
+			"percent": utils.PathSearch("percent", volume, nil),
+		},
+	}
+}
+
 func resourceLogicalClusterRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	var (
-		mErr                     *multierror.Error
-		cfg                      = meta.(*config.Config)
-		region                   = cfg.GetRegion(d)
-		getLogicalClusterProduct = "dws"
+		mErr               *multierror.Error
+		cfg                = meta.(*config.Config)
+		region             = cfg.GetRegion(d)
+		clusterId          = d.Get("cluster_id").(string)
+		logicalClusterName = d.Get("logical_cluster_name").(string)
 	)
-	client, err := cfg.NewServiceClient(getLogicalClusterProduct, region)
+	client, err := cfg.NewServiceClient("dws", region)
 	if err != nil {
 		return diag.Errorf("error creating DWS client: %s", err)
 	}
@@ -370,16 +457,27 @@ func resourceLogicalClusterRead(_ context.Context, d *schema.ResourceData, meta 
 		return common.CheckDeletedDiag(d, golangsdk.ErrDefault404{}, "")
 	}
 
+	if logicalClusterName == "" {
+		logicalClusterName = utils.PathSearch("logical_cluster_name", cluster, "").(string)
+	}
+
+	volumes, err := listLogicalClusterVolumes(client, clusterId)
+	if err != nil {
+		log.Printf("[WARN] error retrieving volume usage: %s", err)
+	}
+	volumeUsage := utils.PathSearch(fmt.Sprintf("[?logical_cluster_name=='%s']|[0]", logicalClusterName), volumes, nil)
+
 	mErr = multierror.Append(
 		mErr,
 		d.Set("region", region),
-		d.Set("logical_cluster_name", utils.PathSearch("logical_cluster_name", cluster, nil)),
+		d.Set("logical_cluster_name", logicalClusterName),
 		d.Set("cluster_rings", flattenResponseBodyClusterRings(cluster)),
 		d.Set("status", utils.PathSearch("status", cluster, nil)),
 		d.Set("first_logical_cluster", utils.PathSearch("first_logical_cluster", cluster, nil)),
 		d.Set("edit_enable", utils.PathSearch("edit_enable", cluster, nil)),
 		d.Set("restart_enable", utils.PathSearch("restart_enable", cluster, nil)),
 		d.Set("delete_enable", utils.PathSearch("delete_enable", cluster, nil)),
+		d.Set("volume_usage", flattenVolumeUsage(volumeUsage)),
 	)
 	return diag.FromErr(mErr.ErrorOrNil())
 }
