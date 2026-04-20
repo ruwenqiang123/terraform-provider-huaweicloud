@@ -102,6 +102,18 @@ In addition to all arguments above, the following attributes are exported:
 
 * `delete_enable` - Whether deletion is allowed.
 
+* `volume_usage` - The volume usage information of the logical cluster.
+The [volume_usage](#dws_logical_cluster_volume_usage) structure is documented below.
+
+<a name="dws_logical_cluster_volume_usage"></a>
+The `volume_usage` block supports:
+
+* `usage` - The disk usage of the logical cluster.
+
+* `total` - The total disk capacity of the logical cluster.
+
+* `percent` - The disk usage percentage of the logical cluster.
+
 ## Timeouts
 
 This resource provides the following timeouts configuration options:

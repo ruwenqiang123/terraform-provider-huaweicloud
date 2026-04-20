@@ -505,6 +505,8 @@ var (
 	HW_SWR_REPOSITORY = os.Getenv("HW_SWR_REPOSITORY")
 	// The signature task is sign with image exist
 	HW_SWR_SIGNATURE_WITH_IAMGE_ENABLED = os.Getenv("HW_SWR_SIGNATURE_WITH_IAMGE_ENABLED")
+	HW_SWR_TAG                          = os.Getenv("HW_SWR_TAG")
+	HW_SWR_SIG_TAG                      = os.Getenv("HW_SWR_SIG_TAG")
 
 	HW_SCM_CERTIFICATE_ID          = os.Getenv("HW_SCM_CERTIFICATE_ID")
 	HW_SCM_CERTIFICATE_DOMAIN_NAME = os.Getenv("HW_SCM_CERTIFICATE_DOMAIN_NAME")
@@ -673,6 +675,7 @@ var (
 
 	// Common
 	HW_DATAARTS_WORKSPACE_ID                               = os.Getenv("HW_DATAARTS_WORKSPACE_ID")
+	HW_DATAARTS_INSTANCE_ID                                = os.Getenv("HW_DATAARTS_INSTANCE_ID")
 	HW_DATAARTS_CDM_NAME                                   = os.Getenv("HW_DATAARTS_CDM_NAME")
 	HW_DATAARTS_MANAGER_ID                                 = os.Getenv("HW_DATAARTS_MANAGER_ID")
 	HW_DATAARTS_BIZ_CATALOG_ID                             = os.Getenv("HW_DATAARTS_BIZ_CATALOG_ID")
@@ -835,9 +838,17 @@ var (
 	HW_RDS_SUBSCRIBER_INSTANCE_ID          = os.Getenv("HW_RDS_SUBSCRIBER_INSTANCE_ID")
 	HW_RDS_NODE_ID                         = os.Getenv("HW_RDS_NODE_ID")
 
+	HW_RFS_STACK_NAME             = os.Getenv("HW_RFS_STACK_NAME")
+	HW_RFS_STACK_SET_NAME         = os.Getenv("HW_RFS_STACK_SET_NAME")
+	HW_RFS_STACK_SET_OPERATION_ID = os.Getenv("HW_RFS_STACK_SET_OPERATION_ID")
+	HW_RFS_MODULE_NAME            = os.Getenv("HW_RFS_MODULE_NAME")
+
 	HW_DMS_KAFKA_INSTANCE_ID         = os.Getenv("HW_DMS_KAFKA_INSTANCE_ID")
 	HW_DMS_KAFKA_TOPIC_NAME          = os.Getenv("HW_DMS_KAFKA_TOPIC_NAME")
 	HW_DMS_KAFKA_CONSUMER_GROUP_NAME = os.Getenv("HW_DMS_KAFKA_CONSUMER_GROUP_NAME")
+
+	HW_DMS_RABBITMQ_INSTANCE_ID             = os.Getenv("HW_DMS_RABBITMQ_INSTANCE_ID")
+	HW_DMS_RABBITMQ_RECYCLE_BIN_INSTANCE_ID = os.Getenv("HW_DMS_RABBITMQ_RECYCLE_BIN_INSTANCE_ID")
 
 	HW_DMS_ROCKETMQ_INSTANCE_ID = os.Getenv("HW_DMS_ROCKETMQ_INSTANCE_ID")
 	HW_DMS_ROCKETMQ_TOPIC_NAME  = os.Getenv("HW_DMS_ROCKETMQ_TOPIC_NAME")
@@ -1913,6 +1924,22 @@ func TestAccPreCheckSWRDomian(t *testing.T) {
 func TestAccPreCheckSWRUser(t *testing.T) {
 	if HW_SWR_USER == "" {
 		t.Skip("HW_SWR_USER must be set for CCE autopilot addon tests")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckSWRSignedImageAssicatedTags(t *testing.T) {
+	if HW_SWR_ORGANIZATION == "" || HW_SWR_REPOSITORY == "" || HW_SWR_SIG_TAG == "" {
+		t.Skip("HW_SWR_ORGANIZATION, HW_SWR_REPOSITORY and HW_SWR_SIG_TAG must be set for " +
+			"swr signed image associated tags tests")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckSWRSignedImageAttachments(t *testing.T) {
+	if HW_SWR_ORGANIZATION == "" || HW_SWR_REPOSITORY == "" || HW_SWR_TAG == "" {
+		t.Skip("HW_SWR_ORGANIZATION, HW_SWR_REPOSITORY and HW_SWR_TAG must be set for " +
+			"swr signed image attachments tests")
 	}
 }
 
@@ -3909,6 +3936,13 @@ func TestAccPreCheckDataArtsWorkSpaceID(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckDataArtsInstanceID(t *testing.T) {
+	if HW_DATAARTS_INSTANCE_ID == "" {
+		t.Skip("HW_DATAARTS_INSTANCE_ID must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckDataArtsReviewerName(t *testing.T) {
 	if HW_DATAARTS_REVIEWER_NAME == "" {
 		t.Skip("HW_DATAARTS_REVIEWER_NAME must be set for DataService tests")
@@ -4538,6 +4572,34 @@ func TestAccPreCheckRdsNodeId(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckRfsStackName(t *testing.T) {
+	if HW_RFS_STACK_NAME == "" {
+		t.Skip("HW_RFS_STACK_NAME must be set for RFS acceptance tests")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckRfsStackSetName(t *testing.T) {
+	if HW_RFS_STACK_SET_NAME == "" {
+		t.Skip("HW_RFS_STACK_SET_NAME must be set for RFS acceptance tests")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckRfsStackSetOperationId(t *testing.T) {
+	if HW_RFS_STACK_SET_OPERATION_ID == "" {
+		t.Skip("HW_RFS_STACK_SET_OPERATION_ID must be set for RFS acceptance tests")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckRfsModuleName(t *testing.T) {
+	if HW_RFS_MODULE_NAME == "" {
+		t.Skip("HW_RFS_MODULE_NAME must be set for RFS acceptance tests")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckCssLowEngineVersion(t *testing.T) {
 	if HW_CSS_LOW_ENGINE_VERSION == "" {
 		t.Skip("HW_CSS_LOW_ENGINE_VERSION must be set for CSS acceptance tests")
@@ -4583,6 +4645,20 @@ func TestAccPreCheckDMSKafkaTopicName(t *testing.T) {
 func TestAccPreCheckDMSKafkaConsumerGroupName(t *testing.T) {
 	if HW_DMS_KAFKA_CONSUMER_GROUP_NAME == "" {
 		t.Skip("HW_DMS_KAFKA_CONSUMER_GROUP_NAME must be set for DMS acceptance tests")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckDMSRabbitMQInstanceId(t *testing.T) {
+	if HW_DMS_RABBITMQ_INSTANCE_ID == "" {
+		t.Skip("HW_DMS_RABBITMQ_INSTANCE_ID must be set for RabbitMQ acceptance tests")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckDMSRocketMQRecycleBinInstanceId(t *testing.T) {
+	if HW_DMS_RABBITMQ_RECYCLE_BIN_INSTANCE_ID == "" {
+		t.Skip("HW_DMS_RABBITMQ_RECYCLE_BIN_INSTANCE_ID must be set for restoring RabbitMQ recycle bin instance acceptance tests")
 	}
 }
 
