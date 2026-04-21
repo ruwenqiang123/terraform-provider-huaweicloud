@@ -3436,6 +3436,7 @@ func Provider() *schema.Provider {
 
 			"huaweicloud_elb_certificate":                      elb.ResourceCertificateV3(),
 			"huaweicloud_elb_certificate_private_key_echo":     elb.ResourceCertificatePrivateKeyEcho(),
+			"huaweicloud_elb_domain_resolution":                elb.ResourceDomainResolution(),
 			"huaweicloud_elb_l7policy":                         elb.ResourceL7PolicyV3(),
 			"huaweicloud_elb_l7rule":                           elb.ResourceL7RuleV3(),
 			"huaweicloud_elb_listener":                         elb.ResourceListenerV3(),
