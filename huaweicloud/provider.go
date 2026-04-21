@@ -2825,7 +2825,9 @@ func Provider() *schema.Provider {
 			"huaweicloud_rfs_template_analysis_variables": rfs.ResourceTemplateAnalysisVariables(),
 			"huaweicloud_rfs_template":                    rfs.ResourceRfsTemplate(),
 			"huaweicloud_rfs_private_provider":            rfs.ResourcePrivateProvider(),
+			"huaweicloud_rfs_private_provider_version":    rfs.ResourcePrivateProviderVersion(),
 			"huaweicloud_rfs_stack_rollback":              rfs.ResourceStackRollback(),
+			"huaweicloud_rfs_stack_set_deployment":        rfs.ResourceStackSetDeployment(),
 
 			"huaweicloud_api_gateway_api":         apigateway.ResourceAPI(),
 			"huaweicloud_api_gateway_environment": apigateway.ResourceEnvironment(),
@@ -3523,6 +3525,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_gaussdb_instance_upgrade":           gaussdb.ResourceGaussDbInstanceUpgrade(),
 			"huaweicloud_gaussdb_instance_node_startup":      gaussdb.ResourceGaussDbInstanceNodeStartup(),
 			"huaweicloud_gaussdb_instance_node_stop":         gaussdb.ResourceGaussDbInstanceNodeStop(),
+			"huaweicloud_gaussdb_client_auth_config":         gaussdb.ResourceGaussDbClientAuthConfig(),
 			"huaweicloud_gaussdb_database":                   gaussdb.ResourceGaussDbDatabase(),
 			"huaweicloud_gaussdb_schema":                     gaussdb.ResourceGaussDbSchema(),
 			"huaweicloud_gaussdb_backup":                     gaussdb.ResourceGaussDbBackup(),
@@ -3859,7 +3862,8 @@ func Provider() *schema.Provider {
 			"huaweicloud_dataarts_architecture_subject":                dataarts.ResourceArchitectureSubject(),
 			"huaweicloud_dataarts_architecture_table_model":            dataarts.ResourceArchitectureTableModel(),
 			// DataAtrs Catalog
-			"huaweicloud_dataarts_catalog_metadata_task": dataarts.ResourceCatalogMetadataTask(),
+			"huaweicloud_dataarts_catalog_metadata_task":        dataarts.ResourceCatalogMetadataTask(),
+			"huaweicloud_dataarts_catalog_metadata_task_action": dataarts.ResourceCatalogMetadataTaskAction(),
 			// DataArts Factory
 			"huaweicloud_dataarts_factory_job":            dataarts.ResourceFactoryJob(),
 			"huaweicloud_dataarts_factory_job_action":     dataarts.ResourceFactoryJobAction(),
@@ -4471,6 +4475,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_gaussdb_opengauss_instance_upgrade":           gaussdb.ResourceGaussDbInstanceUpgrade(),
 			"huaweicloud_gaussdb_opengauss_instance_node_startup":      gaussdb.ResourceGaussDbInstanceNodeStartup(),
 			"huaweicloud_gaussdb_opengauss_instance_node_stop":         gaussdb.ResourceGaussDbInstanceNodeStop(),
+			"huaweicloud_gaussdb_opengauss_client_auth_config":         gaussdb.ResourceGaussDbClientAuthConfig(),
 			"huaweicloud_gaussdb_opengauss_database":                   gaussdb.ResourceGaussDbDatabase(),
 			"huaweicloud_gaussdb_opengauss_schema":                     gaussdb.ResourceGaussDbSchema(),
 			"huaweicloud_gaussdb_opengauss_backup":                     gaussdb.ResourceGaussDbBackup(),
