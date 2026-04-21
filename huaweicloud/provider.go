@@ -3094,6 +3094,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_cfw_eip_all_protection_switch":          cfw.ResourceEipAllProtectionSwitch(),
 			"huaweicloud_cfw_ip_blacklist_retry":                 cfw.ResourceIpBlacklistRetry(),
 			"huaweicloud_cfw_ip_blacklist_switch":                cfw.ResourceIpBlacklistSwitch(),
+			"huaweicloud_cfw_batch_delete_address_groups":        cfw.ResourceBatchDeleteAddressGroups(),
 
 			"huaweicloud_cloudtable_cluster": cloudtable.ResourceCloudTableCluster(),
 
