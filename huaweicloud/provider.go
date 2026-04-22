@@ -1093,6 +1093,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_dataarts_factory_scripts":   dataarts.DataSourceFactoryScripts(),
 			// DataArts Security
 			"huaweicloud_dataarts_security_data_recognition_rules":      dataarts.DataSourceSecurityDataRecognitionRules(),
+			"huaweicloud_dataarts_security_permission_set_members":      dataarts.DataSourceSecurityPermissionSetMembers(),
 			"huaweicloud_dataarts_security_permission_set_privileges":   dataarts.DataSourceSecurityPermissionSetPrivileges(),
 			"huaweicloud_dataarts_security_workspace_associated_queues": dataarts.DataSourceSecurityWorkspaceAssociatedQueues(),
 
@@ -2031,9 +2032,11 @@ func Provider() *schema.Provider {
 
 			"huaweicloud_rfs_private_module_versions":      rfs.DataSourcePrivateModuleVersions(),
 			"huaweicloud_rfs_private_modules":              rfs.DataSourcePrivateModules(),
+			"huaweicloud_rfs_private_hooks":                rfs.DataSourceRfsPrivateHooks(),
 			"huaweicloud_rfs_private_hook_versions":        rfs.DataSourcePrivateHookVersions(),
 			"huaweicloud_rfs_stack_instances":              rfs.DataSourceStackInstances(),
 			"huaweicloud_rfs_stack_resources":              rfs.DataSourceStackResources(),
+			"huaweicloud_rfs_stacks":                       rfs.DataSourceStacks(),
 			"huaweicloud_rfs_stack_set_operation_metadata": rfs.DataSourceStackSetOperationMetadata(),
 			"huaweicloud_rfs_private_providers":            rfs.DataSourcePrivateProviders(),
 			"huaweicloud_rfs_private_provider_versions":    rfs.DataSourcePrivateProviderVersions(),
@@ -3885,11 +3888,12 @@ func Provider() *schema.Provider {
 			"huaweicloud_dataarts_factory_script":         dataarts.ResourceDataArtsFactoryScript(),
 			"huaweicloud_dataarts_factory_script_execute": dataarts.ResourceFactoryScriptExecute(),
 			// DataArts Security
-			"huaweicloud_dataarts_security_data_recognition_rule":    dataarts.ResourceSecurityRule(),
-			"huaweicloud_dataarts_security_data_secrecy_level":       dataarts.ResourceSecurityDataSecrecyLevel(),
-			"huaweicloud_dataarts_security_permission_set":           dataarts.ResourceSecurityPermissionSet(),
-			"huaweicloud_dataarts_security_permission_set_member":    dataarts.ResourceSecurityPermissionSetMember(),
-			"huaweicloud_dataarts_security_permission_set_privilege": dataarts.ResourceSecurityPermissionSetPrivilege(),
+			"huaweicloud_dataarts_security_data_recognition_rule":       dataarts.ResourceSecurityRule(),
+			"huaweicloud_dataarts_security_data_recognition_rule_group": dataarts.ResourceSecurityDataRecognitionRuleGroup(),
+			"huaweicloud_dataarts_security_data_secrecy_level":          dataarts.ResourceSecurityDataSecrecyLevel(),
+			"huaweicloud_dataarts_security_permission_set":              dataarts.ResourceSecurityPermissionSet(),
+			"huaweicloud_dataarts_security_permission_set_member":       dataarts.ResourceSecurityPermissionSetMember(),
+			"huaweicloud_dataarts_security_permission_set_privilege":    dataarts.ResourceSecurityPermissionSetPrivilege(),
 			// DataArts DataService
 			"huaweicloud_dataarts_dataservice_api":             dataarts.ResourceDataServiceApi(),
 			"huaweicloud_dataarts_dataservice_api_action":      dataarts.ResourceDataServiceApiAction(),
