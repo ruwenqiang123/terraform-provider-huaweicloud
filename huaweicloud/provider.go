@@ -4117,6 +4117,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_smn_topic_subscription":         smn.ResourceTopicSubscription(),
 			"huaweicloud_smn_subscription":               smn.ResourceSubscription(),
 			"huaweicloud_smn_message_template":           smn.ResourceSmnMessageTemplate(),
+			"huaweicloud_smn_topic_unsubscription":       smn.ResourceTopicUnsubscription(),
 			"huaweicloud_smn_logtank":                    smn.ResourceSmnLogtank(),
 			"huaweicloud_smn_message_detection":          smn.ResourceMessageDetection(),
 			"huaweicloud_smn_message_publish":            smn.ResourceMessagePublish(),
