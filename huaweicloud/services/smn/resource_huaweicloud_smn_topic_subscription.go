@@ -7,6 +7,7 @@ import (
 	"github.com/hashicorp/go-uuid"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 
 	"github.com/chnsz/golangsdk"
 
@@ -50,6 +51,12 @@ func ResourceTopicSubscription() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"enable_force_new": {
+				Type:         schema.TypeString,
+				Optional:     true,
+				ValidateFunc: validation.StringInSlice([]string{"true", "false"}, false),
+				Description:  utils.SchemaDesc("", utils.SchemaDescInput{Internal: true}),
+			},
 			"subscription_urn": {
 				Type:     schema.TypeString,
 				Computed: true,
@@ -88,6 +95,7 @@ func resourceTopicSubscriptionCreate(_ context.Context, d *schema.ResourceData, 
 	requestPath += buildTopicSubscriptionQueryParams(d)
 	requestOpt := golangsdk.RequestOpts{
 		KeepResponseBody: true,
+		MoreHeaders:      map[string]string{"Content-Type": "application/json;charset=UTF-8"},
 	}
 
 	resp, err := client.Request("GET", requestPath, &requestOpt)
