@@ -1098,6 +1098,8 @@ func Provider() *schema.Provider {
 			"huaweicloud_dataarts_security_permission_set_members":      dataarts.DataSourceSecurityPermissionSetMembers(),
 			"huaweicloud_dataarts_security_permission_set_privileges":   dataarts.DataSourceSecurityPermissionSetPrivileges(),
 			"huaweicloud_dataarts_security_workspace_associated_queues": dataarts.DataSourceSecurityWorkspaceAssociatedQueues(),
+			// DataArts Catalog
+			"huaweicloud_dataarts_catalog_metadata_tasks": dataarts.DataSourceCatalogMetadataTasks(),
 
 			"huaweicloud_dbss_audit_data_masking_rules":  dbss.DataSourceDbssAuditDataMaskingRules(),
 			"huaweicloud_dbss_audit_risk_rules":          dbss.DataSourceDbssAuditRiskRules(),
