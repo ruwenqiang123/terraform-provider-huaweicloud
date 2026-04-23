@@ -15,21 +15,19 @@ import (
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/utils"
 )
 
-var topicSubscriptionNonUpdatableParams = []string{
-	"token",
-	"topic_urn",
-	"endpoint",
+var topicUnsubscriptionNonUpdatableParams = []string{
+	"subscription_urn",
 }
 
-// @API SMN GET /v2/notifications/subscriptions/subscribe
-func ResourceTopicSubscription() *schema.Resource {
+// @API SMN GET /v2/notifications/subscriptions/unsubscribe
+func ResourceTopicUnsubscription() *schema.Resource {
 	return &schema.Resource{
-		CreateContext: resourceTopicSubscriptionCreate,
-		ReadContext:   resourceTopicSubscriptionRead,
-		UpdateContext: resourceTopicSubscriptionUpdate,
-		DeleteContext: resourceTopicSubscriptionDelete,
+		CreateContext: resourceTopicUnsubscriptionCreate,
+		ReadContext:   resourceTopicUnsubscriptionRead,
+		UpdateContext: resourceTopicUnsubscriptionUpdate,
+		DeleteContext: resourceTopicUnsubscriptionDelete,
 
-		CustomizeDiff: config.FlexibleForceNew(topicSubscriptionNonUpdatableParams),
+		CustomizeDiff: config.FlexibleForceNew(topicUnsubscriptionNonUpdatableParams),
 
 		Schema: map[string]*schema.Schema{
 			"region": {
@@ -37,19 +35,9 @@ func ResourceTopicSubscription() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
-			"token": {
-				Type:      schema.TypeString,
-				Required:  true,
-				Sensitive: true,
-			},
-			"topic_urn": {
-				Type:         schema.TypeString,
-				Optional:     true,
-				ExactlyOneOf: []string{"endpoint"},
-			},
-			"endpoint": {
+			"subscription_urn": {
 				Type:     schema.TypeString,
-				Optional: true,
+				Required: true,
 			},
 			"enable_force_new": {
 				Type:         schema.TypeString,
@@ -57,7 +45,7 @@ func ResourceTopicSubscription() *schema.Resource {
 				ValidateFunc: validation.StringInSlice([]string{"true", "false"}, false),
 				Description:  utils.SchemaDesc("", utils.SchemaDescInput{Internal: true}),
 			},
-			"subscription_urn": {
+			"message": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
@@ -65,25 +53,11 @@ func ResourceTopicSubscription() *schema.Resource {
 	}
 }
 
-func buildTopicSubscriptionQueryParams(d *schema.ResourceData) string {
-	queryParams := fmt.Sprintf("?token=%v", d.Get("token"))
-
-	if v, ok := d.GetOk("topic_urn"); ok {
-		queryParams = fmt.Sprintf("%s&topic_urn=%v", queryParams, v)
-	}
-
-	if v, ok := d.GetOk("endpoint"); ok {
-		queryParams = fmt.Sprintf("%s&endpoint=%v", queryParams, v)
-	}
-
-	return queryParams
-}
-
-func resourceTopicSubscriptionCreate(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceTopicUnsubscriptionCreate(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	var (
 		cfg     = meta.(*config.Config)
 		region  = cfg.GetRegion(d)
-		httpUrl = "v2/notifications/subscriptions/subscribe"
+		httpUrl = "v2/notifications/subscriptions/unsubscribe"
 	)
 
 	client, err := cfg.NewServiceClient("smn", region)
@@ -92,7 +66,7 @@ func resourceTopicSubscriptionCreate(_ context.Context, d *schema.ResourceData, 
 	}
 
 	requestPath := client.Endpoint + httpUrl
-	requestPath += buildTopicSubscriptionQueryParams(d)
+	requestPath = fmt.Sprintf("%s?subscription_urn=%s", requestPath, d.Get("subscription_urn").(string))
 	requestOpt := golangsdk.RequestOpts{
 		KeepResponseBody: true,
 		MoreHeaders:      map[string]string{"Content-Type": "application/json;charset=UTF-8"},
@@ -100,7 +74,7 @@ func resourceTopicSubscriptionCreate(_ context.Context, d *schema.ResourceData, 
 
 	resp, err := client.Request("GET", requestPath, &requestOpt)
 	if err != nil {
-		return diag.Errorf("error subscribing SMN topic: %s", err)
+		return diag.Errorf("error unsubscribing SMN topic: %s", err)
 	}
 
 	respBody, err := utils.FlattenResponse(resp)
@@ -115,21 +89,21 @@ func resourceTopicSubscriptionCreate(_ context.Context, d *schema.ResourceData, 
 
 	d.SetId(generateUUID)
 
-	return diag.FromErr(d.Set("subscription_urn", utils.PathSearch("subscription_urn", respBody, nil)))
+	return diag.FromErr(d.Set("message", utils.PathSearch("message", respBody, nil)))
 }
 
-func resourceTopicSubscriptionRead(_ context.Context, _ *schema.ResourceData, _ interface{}) diag.Diagnostics {
+func resourceTopicUnsubscriptionRead(_ context.Context, _ *schema.ResourceData, _ interface{}) diag.Diagnostics {
 	// No processing is performed in the 'Read()' method because the resource is a one-time action resource.
 	return nil
 }
 
-func resourceTopicSubscriptionUpdate(_ context.Context, _ *schema.ResourceData, _ interface{}) diag.Diagnostics {
+func resourceTopicUnsubscriptionUpdate(_ context.Context, _ *schema.ResourceData, _ interface{}) diag.Diagnostics {
 	// No processing is performed in the 'Update()' method because the resource is a one-time action resource.
 	return nil
 }
 
-func resourceTopicSubscriptionDelete(_ context.Context, _ *schema.ResourceData, _ interface{}) diag.Diagnostics {
-	errorMsg := "Deleting topic subscription resource is not supported. The resource is only removed from the " +
+func resourceTopicUnsubscriptionDelete(_ context.Context, _ *schema.ResourceData, _ interface{}) diag.Diagnostics {
+	errorMsg := "Deleting topic unsubscription resource is not supported. The resource is only removed from the " +
 		"state, the resource remains in the cloud."
 	return diag.Diagnostics{
 		diag.Diagnostic{
