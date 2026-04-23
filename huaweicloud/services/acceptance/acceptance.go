@@ -840,6 +840,7 @@ var (
 	HW_RFS_STACK_SET_NAME         = os.Getenv("HW_RFS_STACK_SET_NAME")
 	HW_RFS_STACK_SET_OPERATION_ID = os.Getenv("HW_RFS_STACK_SET_OPERATION_ID")
 	HW_RFS_MODULE_NAME            = os.Getenv("HW_RFS_MODULE_NAME")
+	HW_RFS_MODULE_URI             = os.Getenv("HW_RFS_MODULE_URI")
 
 	HW_DMS_KAFKA_INSTANCE_ID         = os.Getenv("HW_DMS_KAFKA_INSTANCE_ID")
 	HW_DMS_KAFKA_TOPIC_NAME          = os.Getenv("HW_DMS_KAFKA_TOPIC_NAME")
@@ -4591,6 +4592,13 @@ func TestAccPreCheckRfsStackSetOperationId(t *testing.T) {
 func TestAccPreCheckRfsModuleName(t *testing.T) {
 	if HW_RFS_MODULE_NAME == "" {
 		t.Skip("HW_RFS_MODULE_NAME must be set for RFS acceptance tests")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckRfsModuleURI(t *testing.T) {
+	if HW_RFS_MODULE_URI == "" {
+		t.Skip("HW_RFS_MODULE_URI must be set for RFS acceptance tests")
 	}
 }
 
