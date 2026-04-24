@@ -17,6 +17,7 @@ import (
 
 // ResourceIdentityv5ServiceLinkedAgency
 // @API IAM PUT /v5/service-linked-agencies
+// @API IAM GET /v5/agencies/{agency_id}
 func ResourceIdentityv5ServiceLinkedAgency() *schema.Resource {
 	return &schema.Resource{
 		CreateContext: resourceServiceLinkedAgencyCreate,
