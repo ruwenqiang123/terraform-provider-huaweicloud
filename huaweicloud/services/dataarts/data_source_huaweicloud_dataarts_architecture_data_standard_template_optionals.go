@@ -23,9 +23,9 @@ import (
 )
 
 // @API DataArtsStudio GET /v2/{project_id}/design/standards/templates
-func DataSourceTemplateOptionalFields() *schema.Resource {
+func DataSourceArchitectureDataStandardTemplateOptionals() *schema.Resource {
 	return &schema.Resource{
-		ReadContext: resourceTemplateOptionalFieldsRead,
+		ReadContext: resourceArchitectureDataStandardTemplateOptionalsRead,
 		Schema: map[string]*schema.Schema{
 			"region": {
 				Type:     schema.TypeString,
@@ -54,7 +54,7 @@ func DataSourceTemplateOptionalFields() *schema.Resource {
 			},
 			"optional_fields": {
 				Type:        schema.TypeList,
-				Elem:        templateOptionalFieldsOptionalFieldSchema(),
+				Elem:        dataStandardTemplateOptionalsOptionalFieldsElemSchema(),
 				Computed:    true,
 				Description: `Indicates the list of DataArts Architecture data standard template optional fields.`,
 			},
@@ -62,7 +62,7 @@ func DataSourceTemplateOptionalFields() *schema.Resource {
 	}
 }
 
-func templateOptionalFieldsOptionalFieldSchema() *schema.Resource {
+func dataStandardTemplateOptionalsOptionalFieldsElemSchema() *schema.Resource {
 	sc := schema.Resource{
 		Schema: map[string]*schema.Schema{
 			"fd_name": {
@@ -95,7 +95,47 @@ func templateOptionalFieldsOptionalFieldSchema() *schema.Resource {
 	return &sc
 }
 
-func resourceTemplateOptionalFieldsRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func flattenArchitectureDataStandardTemplateOptionals(resp interface{}) []interface{} {
+	if resp == nil {
+		return nil
+	}
+	curJson := utils.PathSearch("data.value.preFields_optional", resp, make([]interface{}, 0))
+	curArray := curJson.([]interface{})
+	rst := make([]interface{}, 0, len(curArray))
+	for _, v := range curArray {
+		rst = append(rst, map[string]interface{}{
+			"fd_name":        utils.PathSearch("fd_name", v, nil),
+			"description":    utils.PathSearch("description", v, nil),
+			"description_en": utils.PathSearch("descriptionEn", v, nil),
+			"required":       utils.PathSearch("required", v, nil),
+			"searchable":     utils.PathSearch("searchable", v, nil),
+		})
+	}
+	return rst
+}
+
+func filterArchitectureDataStandardTemplateOptionals(all []interface{}, d *schema.ResourceData) []interface{} {
+	rst := make([]interface{}, 0, len(all))
+	rawRequired, _ := d.GetOk("required")
+	rawSearchable, _ := d.GetOk("searchable")
+	for _, v := range all {
+		if param, ok := d.GetOk("fd_name"); ok &&
+			fmt.Sprint(param) != fmt.Sprint(utils.PathSearch("fd_name", v, nil)) {
+			continue
+		}
+		if fmt.Sprint(rawRequired) != fmt.Sprint(utils.PathSearch("required", v, nil)) {
+			continue
+		}
+		if fmt.Sprint(rawSearchable) != fmt.Sprint(utils.PathSearch("searchable", v, nil)) {
+			continue
+		}
+
+		rst = append(rst, v)
+	}
+	return rst
+}
+
+func resourceArchitectureDataStandardTemplateOptionalsRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	cfg := meta.(*config.Config)
 	region := cfg.GetRegion(d)
 
@@ -141,49 +181,9 @@ func resourceTemplateOptionalFieldsRead(_ context.Context, d *schema.ResourceDat
 	mErr = multierror.Append(
 		mErr,
 		d.Set("region", region),
-		d.Set("optional_fields", filterGetTemplateOptionalFieldsResponseBodyOptional(
-			flattenGetTemplateOptionalFieldsResponseBodyOptional(getTemplateOptionalFieldsRespBody), d)),
+		d.Set("optional_fields", filterArchitectureDataStandardTemplateOptionals(
+			flattenArchitectureDataStandardTemplateOptionals(getTemplateOptionalFieldsRespBody), d)),
 	)
 
 	return diag.FromErr(mErr.ErrorOrNil())
-}
-
-func flattenGetTemplateOptionalFieldsResponseBodyOptional(resp interface{}) []interface{} {
-	if resp == nil {
-		return nil
-	}
-	curJson := utils.PathSearch("data.value.preFields_optional", resp, make([]interface{}, 0))
-	curArray := curJson.([]interface{})
-	rst := make([]interface{}, 0, len(curArray))
-	for _, v := range curArray {
-		rst = append(rst, map[string]interface{}{
-			"fd_name":        utils.PathSearch("fd_name", v, nil),
-			"description":    utils.PathSearch("description", v, nil),
-			"description_en": utils.PathSearch("descriptionEn", v, nil),
-			"required":       utils.PathSearch("required", v, nil),
-			"searchable":     utils.PathSearch("searchable", v, nil),
-		})
-	}
-	return rst
-}
-
-func filterGetTemplateOptionalFieldsResponseBodyOptional(all []interface{}, d *schema.ResourceData) []interface{} {
-	rst := make([]interface{}, 0, len(all))
-	rawRequired, _ := d.GetOk("required")
-	rawSearchable, _ := d.GetOk("searchable")
-	for _, v := range all {
-		if param, ok := d.GetOk("fd_name"); ok &&
-			fmt.Sprint(param) != fmt.Sprint(utils.PathSearch("fd_name", v, nil)) {
-			continue
-		}
-		if fmt.Sprint(rawRequired) != fmt.Sprint(utils.PathSearch("required", v, nil)) {
-			continue
-		}
-		if fmt.Sprint(rawSearchable) != fmt.Sprint(utils.PathSearch("searchable", v, nil)) {
-			continue
-		}
-
-		rst = append(rst, v)
-	}
-	return rst
 }

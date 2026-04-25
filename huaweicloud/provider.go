@@ -1075,10 +1075,10 @@ func Provider() *schema.Provider {
 			"huaweicloud_dataarts_studio_workspace_users":      dataarts.DataSourceStudioWorkspaceUsers(),
 			"huaweicloud_dataarts_studio_workspace_user_roles": dataarts.DataSourceStudioWorkspaceUserRoles(),
 			// DataArts Architecture
-			"huaweicloud_dataarts_architecture_ds_template_optionals": dataarts.DataSourceTemplateOptionalFields(),
-			"huaweicloud_dataarts_architecture_model_statistic":       dataarts.DataSourceArchitectureModelStatistic(),
-			"huaweicloud_dataarts_architecture_processes":             dataarts.DataSourceArchitectureProcesses(),
-			"huaweicloud_dataarts_architecture_table_models":          dataarts.DataSourceArchitectureTableModels(),
+			"huaweicloud_dataarts_architecture_data_standard_template_optionals": dataarts.DataSourceArchitectureDataStandardTemplateOptionals(),
+			"huaweicloud_dataarts_architecture_model_statistic":                  dataarts.DataSourceArchitectureModelStatistic(),
+			"huaweicloud_dataarts_architecture_processes":                        dataarts.DataSourceArchitectureProcesses(),
+			"huaweicloud_dataarts_architecture_table_models":                     dataarts.DataSourceArchitectureTableModels(),
 			// DataArts DataService
 			"huaweicloud_dataarts_dataservice_api_authorized_apps": dataarts.DataSourceDataServiceApiAuthorizedApps(),
 			"huaweicloud_dataarts_dataservice_apis":                dataarts.DataSourceDataServiceApis(),
@@ -2638,6 +2638,8 @@ func Provider() *schema.Provider {
 			"huaweicloud_cce_cluster_v3": cce.DataSourceCCEClusterV3(),
 			"huaweicloud_cce_node_v3":    cce.DataSourceNode(),
 
+			// DataArts Architecture
+			"huaweicloud_dataarts_architecture_ds_template_optionals": dataarts.DataSourceArchitectureDataStandardTemplateOptionals(),
 			// DataArts DataService
 			"huaweicloud_dataarts_dataservice_authorized_apps": dataarts.DataSourceDataServiceApiAuthorizedApps(),
 
