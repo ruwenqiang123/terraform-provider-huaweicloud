@@ -2871,6 +2871,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_rfs_stack_rollback":              rfs.ResourceStackRollback(),
 			"huaweicloud_rfs_stack_set_deployment":        rfs.ResourceStackSetDeployment(),
 			"huaweicloud_rfs_private_module_version":      rfs.ResourcePrivateModuleVersion(),
+			"huaweicloud_rfs_stack_set":                   rfs.ResourceStackSet(),
 
 			"huaweicloud_api_gateway_api":         apigateway.ResourceAPI(),
 			"huaweicloud_api_gateway_environment": apigateway.ResourceEnvironment(),
