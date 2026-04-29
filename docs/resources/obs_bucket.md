@@ -169,14 +169,14 @@ resource "huaweicloud_obs_bucket" "bucket" {
 variable "kms_key_id" {}
 
 resource "huaweicloud_obs_bucket" "test" {
-  bucket              = "test-hang-3"
-  storage_class       = "STANDARD"
-  acl                 = "private"
-  parallel_fs         = true
-  encryption          = true
-  sse_algorithm       = "kms"
-  bucket_key_enabled  = "true"
-  kms_key_id          = var.kms_key_id
+  bucket             = "test-hang-3"
+  storage_class      = "STANDARD"
+  acl                = "private"
+  parallel_fs        = true
+  encryption         = true
+  sse_algorithm      = "kms"
+  bucket_key_enabled = "true"
+  kms_key_id         = var.kms_key_id
 
   tags = {
     foo = "bar"
