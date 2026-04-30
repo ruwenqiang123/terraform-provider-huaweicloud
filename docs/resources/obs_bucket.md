@@ -163,6 +163,28 @@ resource "huaweicloud_obs_bucket" "bucket" {
 }
 ```
 
+### using parallel file system with encryption
+
+```hcl
+variable "kms_key_id" {}
+
+resource "huaweicloud_obs_bucket" "test" {
+  bucket             = "test-hang-3"
+  storage_class      = "STANDARD"
+  acl                = "private"
+  parallel_fs        = true
+  encryption         = true
+  sse_algorithm      = "kms"
+  bucket_key_enabled = "true"
+  kms_key_id         = var.kms_key_id
+
+  tags = {
+    foo = "bar"
+    key = "value"
+  }
+}
+```
+
 ## Argument Reference
 
 The following arguments are supported:
@@ -221,6 +243,10 @@ The following arguments are supported:
 * `parallel_fs` - (Optional, Bool, ForceNew) Whether enable a bucket as a parallel file system. Changing this will
   create a new bucket.
 
+  -> Currently, the parallel file system only supports KMS mode encryption. When configuring encryption for a parallel
+  file system, the following fields must be configured simultaneously: `encryption`, `sse_algorithm`, `kms_key_id`, and
+  `bucket_key_enabled`.
+
 * `multi_az` - (Optional, Bool, ForceNew) Whether enable the multi-AZ mode for the bucket. When the multi-AZ mode is
   enabled, data in the bucket is duplicated and stored in multiple AZs.
 
@@ -228,19 +254,40 @@ The following arguments are supported:
   bucket, but the name of a deleted bucket can be reused for another bucket at least 30 minutes after the deletion.
   Exercise caution when changing this field.
 
-* `encryption` - (Optional, Bool) Whether to enable default server-side encryption of the bucket.
+* `encryption` - (Optional, Bool) Specifies whether to enable default server-side encryption of the bucket.
+
+  -> Fields `sse_algorithm`, `kms_key_id`, `kms_key_project_id`, `kms_data_encryption`, and `bucket_key_enabled` are
+  valid only when `encryption` is set to **true**.
 
 * `sse_algorithm` - (Optional, String) Specifies the mode of encryption algorithm. The valid values are:
-  + **kms**: Server-side encryption with keys hosted by KMS are used to encrypt your objects.
-  + **AES256**: Server-side encryption with keys managed by OBS are used to encrypt your objects.
+  + **kms**: SSE-KMS encryption and the AES256 algorithm are used. If you need to use the SM4 encryption algorithm, you
+    also need to configure `kms_data_encryption`.
+  + **AES256**: SSE-OBS encryption and the AES256 algorithm are used.
 
   Defaults to **kms**.
 
-* `kms_key_id` - (Optional, String) Specifies the ID of a KMS key. If omitted, the default master key will be used. This
-  field is used only when `sse_algorithm` value is **kms**.
+* `kms_key_id` - (Optional, String) Specifies the KMS master key ID used in SSE-KMS encryption.
+  This field is used only when `sse_algorithm` value is **kms**.
+  
+  -> 1. If this parameter is not specified, the default master key will be used.
+  <br/>2. If `kms_key_enabled` is set to **true**, the value of `kms_key_id` is the ID of the master key created on KMS.
 
-* `kms_key_project_id` - (Optional, String) Specifies the project ID to which the KMS key belongs. This field is valid
-  only when `kms_key_id` is specified.
+* `kms_key_project_id` - (Optional, String) Specifies the ID of the project where the KMS master key belongs when
+  SSE-KMS is used. This field is valid only when `kms_key_id` is specified.
+
+  -> 1. If the project is not the default one, you must use this parameter to specify the project ID.
+  <br/>2. If `kms_key_id` is not specified, do not set the project ID.
+  <br/>3. If a custom key in a non-default IAM project is used to encrypt objects, only the key owner can upload or
+  download the encrypted objects.
+
+* `kms_data_encryption` - (Optional, String) Specifies the data encryption algorithm under SSE-KMS encryption method.
+  Valid value is **SM4**, which means the Chinese national cryptographic algorithm SM4.
+
+* `bucket_key_enabled` - (Optional, String) Specifies whether to enable the OBS bucket key feature.
+  Valid values are **true** and **false**.
+
+  -> 1. This parameter is only supported when `sse_algorithm` is set to **kms**.
+  <br/>2. When configuring a POSIX bucket, this parameter should be set to **true**, and `kms_key_id` is required.
 
 * `enterprise_project_id` - (Optional, String) Specifies the enterprise project id of the OBS bucket.
   Defaults to `0`.

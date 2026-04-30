@@ -1,11 +1,11 @@
 ---
 subcategory: "DataArts Studio"
 layout: "huaweicloud"
-page_title: "HuaweiCloud: huaweicloud_dataarts_architecture_ds_template_optionals"
+page_title: "HuaweiCloud: huaweicloud_dataarts_architecture_data_standard_template_optionals"
 description: ""
 ---
 
-# huaweicloud_dataarts_architecture_ds_template_optionals
+# huaweicloud_dataarts_architecture_data_standard_template_optionals
 
 Use this data source to get the list of DataArts Architecture data standard template optionals.
 
@@ -14,7 +14,7 @@ Use this data source to get the list of DataArts Architecture data standard temp
 ```hcl
 variable "workspace_id" {}
 
-data "huaweicloud_dataarts_architecture_ds_template_optionals" "test" {
+data "huaweicloud_dataarts_architecture_data_standard_template_optionals" "test" {
   workspace_id = var.workspace_id
 }
 ```
