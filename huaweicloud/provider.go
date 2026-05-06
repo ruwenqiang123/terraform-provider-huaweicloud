@@ -1075,6 +1075,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_dataarts_studio_workspace_users":      dataarts.DataSourceStudioWorkspaceUsers(),
 			"huaweicloud_dataarts_studio_workspace_user_roles": dataarts.DataSourceStudioWorkspaceUserRoles(),
 			// DataArts Architecture
+			"huaweicloud_dataarts_architecture_approvals":                        dataarts.DataSourceArchitectureApprovals(),
 			"huaweicloud_dataarts_architecture_data_standard_template_customs":   dataarts.DataSourceArchitectureDataStandardTemplateCustoms(),
 			"huaweicloud_dataarts_architecture_data_standard_template_optionals": dataarts.DataSourceArchitectureDataStandardTemplateOptionals(),
 			"huaweicloud_dataarts_architecture_model_statistic":                  dataarts.DataSourceArchitectureModelStatistic(),
@@ -1412,6 +1413,9 @@ func Provider() *schema.Provider {
 			"huaweicloud_gaussdb_redis_instance":               geminidb.DataSourceGaussRedisInstance(),
 			"huaweicloud_gaussdb_redis_flavors":                geminidb.DataSourceGaussDBRedisFlavors(),
 			"huaweicloud_gaussdb_influx_instances":             geminidb.DataSourceGaussDBInfluxInstances(),
+
+			"huaweicloud_geminidb_flavors":  geminidb.DataSourceGeminiDBFlavors(),
+			"huaweicloud_geminidb_accounts": geminidb.DataSourceGeminiDbAccounts(),
 
 			"huaweicloud_gaussdb_storage_types":             gaussdb.DataSourceGaussDbStorageTypes(),
 			"huaweicloud_gaussdb_datastores":                gaussdb.DataSourceGaussDbDatastores(),
@@ -3285,6 +3289,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_dcs_instance_node_ip_remove":            dcs.ResourceDcsInstanceNodeIpRemove(),
 			"huaweicloud_dcs_instance_expired_key_scan":          dcs.ResourceDcsInstanceExpiredKeyScan(),
 			"huaweicloud_dcs_instance_expired_key_scan_task":     dcs.ResourceDcsInstanceExpiredKeyScanTask(),
+			"huaweicloud_dcs_login_web_cli":                      dcs.ResourceDcsLoginWebCli(),
 			"huaweicloud_dcs_master_standby_switch":              dcs.ResourceDcsMasterStandbySwitch(),
 			"huaweicloud_dcs_cluster_replica_switch":             dcs.ResourceDcsClusterReplicaSwitch(),
 			"huaweicloud_dcs_background_task_delete":             dcs.ResourceDcsBackgroundTaskDelete(),
@@ -3566,8 +3571,9 @@ func Provider() *schema.Provider {
 			"huaweicloud_ga_endpoint":       ga.ResourceEndpoint(),
 			"huaweicloud_ga_health_check":   ga.ResourceHealthCheck(),
 
-			"huaweicloud_geminidb_instance": geminidb.ResourceGeminiDbInstance(),
-			"huaweicloud_geminidb_account":  geminidb.ResourceGeminidbAccount(),
+			"huaweicloud_geminidb_instance":           geminidb.ResourceGeminiDbInstance(),
+			"huaweicloud_geminidb_account":            geminidb.ResourceGeminidbAccount(),
+			"huaweicloud_geminidb_database_operation": geminidb.ResourceGeminiDBDatabaseOperation(),
 
 			"huaweicloud_gaussdb_cassandra_instance":  geminidb.ResourceGeminiDBInstanceV3(),
 			"huaweicloud_gaussdb_redis_instance":      geminidb.ResourceGaussRedisInstanceV3(),
@@ -3903,6 +3909,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_dataarts_studio_instance":        dataarts.ResourceStudioInstance(),
 			"huaweicloud_dataarts_studio_workspace_user":  dataarts.ResourceStudioWorkspaceUser(),
 			// DataArts Architecture
+			"huaweicloud_dataarts_architecture_approvals_batch_action": dataarts.ResourceArchitectureApprovalsBatchAction(),
 			"huaweicloud_dataarts_architecture_batch_publish":          dataarts.ResourceArchitectureBatchPublish(),
 			"huaweicloud_dataarts_architecture_batch_publishment":      dataarts.ResourceArchitectureBatchPublishment(),
 			"huaweicloud_dataarts_architecture_batch_unpublish":        dataarts.ResourceArchitectureBatchUnpublish(),
@@ -4044,6 +4051,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_rds_publication":                     rds.ResourcePublication(),
 			"huaweicloud_rds_publication_snapshot_regenerate": rds.ResourceRdsPublicationSnapshotRegenerate(),
 			"huaweicloud_rds_subscription":                    rds.ResourceRdsSubscription(),
+			"huaweicloud_rds_subscription_regenerate":         rds.ResourceRdsSubscriptionRegenerate(),
 			"huaweicloud_rds_pub_and_sub_metadata_sync":       rds.ResourcePubAndSubMetadataSync(),
 			"huaweicloud_rds_intelligent_session_kill":        rds.ResourceIntelligentSessionKill(),
 
