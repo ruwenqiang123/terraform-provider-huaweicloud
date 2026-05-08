@@ -42,6 +42,10 @@ func ResourceDcsLoginWebCli() *schema.Resource {
 				Optional:  true,
 				Sensitive: true,
 			},
+			"client_id": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 			"enable_force_new": {
 				Type:         schema.TypeString,
 				Optional:     true,
@@ -82,11 +86,22 @@ func resourceDcsLoginWebCliCreate(_ context.Context, d *schema.ResourceData, met
 		MoreHeaders: map[string]string{
 			"Content-Type": "application/json",
 		},
+		KeepResponseBody: true,
 	}
 
-	_, err = client.Request("POST", createPath, &createOpt)
+	resp, err := client.Request("POST", createPath, &createOpt)
 	if err != nil {
 		return diag.Errorf("error creating DCS login web cli resource: %s", err)
+	}
+
+	respBody, err := utils.FlattenResponse(resp)
+	if err != nil {
+		return diag.Errorf("error parsing DCS login response: %s", err)
+	}
+
+	clientID := utils.PathSearch("client_id", respBody, "").(string)
+	if clientID == "" {
+		return diag.Errorf("client_id not found in login response")
 	}
 
 	generateUUID, err := uuid.GenerateUUID()
@@ -95,6 +110,10 @@ func resourceDcsLoginWebCliCreate(_ context.Context, d *schema.ResourceData, met
 	}
 
 	d.SetId(generateUUID)
+
+	if err := d.Set("client_id", clientID); err != nil {
+		return diag.Errorf("failed to set client_id: %s", err)
+	}
 
 	return nil
 }

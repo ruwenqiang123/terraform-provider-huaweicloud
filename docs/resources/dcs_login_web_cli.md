@@ -37,3 +37,5 @@ The following arguments are supported:
 In addition to all arguments above, the following attributes are exported:
 
 * `id` - The resource ID in UUID format.
+
+* `client_id` - The client ID returned by the WebCli authentication.
