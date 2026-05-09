@@ -273,6 +273,7 @@ var (
 
 	HW_TAURUSDB_INSTANCE_ID               = os.Getenv("HW_TAURUSDB_INSTANCE_ID")
 	HW_TAURUSDB_NODE_ID                   = os.Getenv("HW_TAURUSDB_NODE_ID")
+	HW_TAURUSDB_NODE_SESSION_ID           = os.Getenv("HW_TAURUSDB_NODE_SESSION_ID")
 	HW_TAURUSDB_DATABASE_NAME             = os.Getenv("HW_TAURUSDB_DATABASE_NAME")
 	HW_TAURUSDB_TABLE_NAME                = os.Getenv("HW_TAURUSDB_TABLE_NAME")
 	HW_TAURUSDB_INSTANCE_CONFIGURATION_ID = os.Getenv("HW_TAURUSDB_INSTANCE_CONFIGURATION_ID")
@@ -695,6 +696,8 @@ var (
 	HW_DATAARTS_ARCHITECTURE_TABLE_MODEL_TAGS = os.Getenv("HW_DATAARTS_ARCHITECTURE_TABLE_MODEL_TAGS")
 	HW_DATAARTS_ARCHITECTURE_USER_ID          = os.Getenv("HW_DATAARTS_ARCHITECTURE_USER_ID")
 	HW_DATAARTS_ARCHITECTURE_USER_NAME        = os.Getenv("HW_DATAARTS_ARCHITECTURE_USER_NAME")
+	// The secrecy level non-UUID format IDs, multiple IDs separated by commas (,).
+	HW_DATAARTS_ARCHITECTURE_SECRECY_LEVEL_IDS = os.Getenv("HW_DATAARTS_ARCHITECTURE_SECRECY_LEVEL_IDS")
 	// Management Center
 	HW_DATAARTS_CONNECTION_ID   = os.Getenv("HW_DATAARTS_CONNECTION_ID")
 	HW_DATAARTS_CONNECTION_NAME = os.Getenv("HW_DATAARTS_CONNECTION_NAME")
@@ -850,6 +853,7 @@ var (
 	HW_RDS_INSTANT_JOB_ID                  = os.Getenv("HW_RDS_INSTANT_JOB_ID")
 	HW_RDS_SUBSCRIBER_INSTANCE_ID          = os.Getenv("HW_RDS_SUBSCRIBER_INSTANCE_ID")
 	HW_RDS_NODE_ID                         = os.Getenv("HW_RDS_NODE_ID")
+	HW_RDS_AGENT_JOB_ID                    = os.Getenv("HW_RDS_AGENT_JOB_ID")
 
 	HW_RFS_STACK_NAME             = os.Getenv("HW_RFS_STACK_NAME")
 	HW_RFS_STACK_SET_NAME         = os.Getenv("HW_RFS_STACK_SET_NAME")
@@ -2267,6 +2271,13 @@ func TestAccPreCheckTaurusDBInstanceId(t *testing.T) {
 func TestAccPreCheckTaurusDBNodeId(t *testing.T) {
 	if HW_TAURUSDB_NODE_ID == "" {
 		t.Skip("HW_TAURUSDB_NODE_ID must be set for TaurusDB acceptance tests.")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckTaurusDBNodeSessionId(t *testing.T) {
+	if HW_TAURUSDB_NODE_SESSION_ID == "" {
+		t.Skip("HW_TAURUSDB_NODE_SESSION_ID must be set for TaurusDB acceptance tests.")
 	}
 }
 
@@ -4097,6 +4108,13 @@ func TestAccPreCheckDataArtsArchitectureReviewer(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckDataArtsArchitectureSecrecyLevelIds(t *testing.T, min int) {
+	if HW_DATAARTS_ARCHITECTURE_SECRECY_LEVEL_IDS == "" || len(strings.Split(HW_DATAARTS_ARCHITECTURE_SECRECY_LEVEL_IDS, ",")) < min {
+		t.Skipf("At lease %d secrecy level ID(s) for HW_DATAARTS_ARCHITECTURE_SECRECY_LEVEL_IDS must be set, separated by the comma (,)", min)
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckDataArtsSecurityPermissionSetMember(t *testing.T) {
 	if HW_DATAARTS_SECURITY_PERMISSSIONSET_MEMBER_OBJECT_ID == "" || HW_DATAARTS_SECURITY_PERMISSSIONSET_MEMBER_OBJECT_NAME == "" {
 		t.Skip("HW_DATAARTS_SECURITY_PERMISSSIONSET_MEMBER_OBJECT_ID and HW_DATAARTS_SECURITY_PERMISSSIONSET_MEMBER_OBJECT_NAME " +
@@ -4648,6 +4666,13 @@ func TestAccPreCheckRdsSubscriberInstanceId(t *testing.T) {
 func TestAccPreCheckRdsNodeId(t *testing.T) {
 	if HW_RDS_NODE_ID == "" {
 		t.Skip("HW_RDS_NODE_ID must be set for RDS acceptance tests")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckRdsAgentJobId(t *testing.T) {
+	if HW_RDS_AGENT_JOB_ID == "" {
+		t.Skip("HW_RDS_AGENT_JOB_ID must be set for RDS acceptance tests")
 	}
 }
 
