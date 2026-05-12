@@ -688,6 +688,7 @@ var (
 	HW_DATAARTS_INSTANCE_ID    = os.Getenv("HW_DATAARTS_INSTANCE_ID")
 	HW_DATAARTS_CDM_NAME       = os.Getenv("HW_DATAARTS_CDM_NAME")
 	HW_DATAARTS_MANAGER_ID     = os.Getenv("HW_DATAARTS_MANAGER_ID")
+	HW_DATAARTS_MODEL_ID       = os.Getenv("HW_DATAARTS_MODEL_ID")
 	HW_DATAARTS_BIZ_CATALOG_ID = os.Getenv("HW_DATAARTS_BIZ_CATALOG_ID")
 	HW_DATAARTS_SUBJECT_ID     = os.Getenv("HW_DATAARTS_SUBJECT_ID")
 	// Architecture
@@ -860,6 +861,7 @@ var (
 	HW_RFS_STACK_SET_OPERATION_ID = os.Getenv("HW_RFS_STACK_SET_OPERATION_ID")
 	HW_RFS_MODULE_NAME            = os.Getenv("HW_RFS_MODULE_NAME")
 	HW_RFS_MODULE_URI             = os.Getenv("HW_RFS_MODULE_URI")
+	HW_RFS_ENABLE_FLAG            = os.Getenv("HW_RFS_ENABLE_FLAG")
 
 	HW_DMS_KAFKA_INSTANCE_ID         = os.Getenv("HW_DMS_KAFKA_INSTANCE_ID")
 	HW_DMS_KAFKA_TOPIC_NAME          = os.Getenv("HW_DMS_KAFKA_TOPIC_NAME")
@@ -893,6 +895,8 @@ var (
 
 	HW_DNS_ZONE_NAMES          = os.Getenv("HW_DNS_ZONE_NAMES")
 	HW_DNS_ZONE_RETRIEVAL_NAME = os.Getenv("HW_DNS_ZONE_RETRIEVAL_NAME")
+
+	HW_GEMINIDB_INSATNCE_ID = os.Getenv("HW_GEMINIDB_INSATNCE_ID")
 )
 
 // TestAccProviders is a static map containing only the main provider instance.
@@ -4039,6 +4043,13 @@ func TestAccPreCheckDataArtsManagerID(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckDataArtsModelID(t *testing.T) {
+	if HW_DATAARTS_MODEL_ID == "" {
+		t.Skip("HW_DATAARTS_MODEL_ID must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckDataArtsBizCatalogID(t *testing.T) {
 	if HW_DATAARTS_BIZ_CATALOG_ID == "" {
 		t.Skip("HW_DATAARTS_BIZ_CATALOG_ID must be set for the acceptance test")
@@ -4712,6 +4723,13 @@ func TestAccPreCheckRfsModuleURI(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckRfsEnableFlag(t *testing.T) {
+	if HW_RFS_ENABLE_FLAG == "" {
+		t.Skip("HW_RFS_ENABLE_FLAG must be set for RFS acceptance tests")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckCssLowEngineVersion(t *testing.T) {
 	if HW_CSS_LOW_ENGINE_VERSION == "" {
 		t.Skip("HW_CSS_LOW_ENGINE_VERSION must be set for CSS acceptance tests")
@@ -5241,5 +5259,12 @@ func TestAccPreCheckDnsZoneRetrievalName(t *testing.T) {
 func TestAccPreCheckV3UserPassword(t *testing.T) {
 	if HW_IDENTITY_ORIGINAL_PASSWORD == "" || HW_IDENTITY_NEW_PASSWORD == "" {
 		t.Skipf("HW_IDENTITY_ORIGINAL_PASSWORD and HW_IDENTITY_NEW_PASSWORD must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
+func TestAccCheckGeminidbInstanceID(t *testing.T) {
+	if HW_GEMINIDB_INSATNCE_ID == "" {
+		t.Skip("HW_GEMINIDB_INSATNCE_ID must be set for this acceptance test")
 	}
 }
