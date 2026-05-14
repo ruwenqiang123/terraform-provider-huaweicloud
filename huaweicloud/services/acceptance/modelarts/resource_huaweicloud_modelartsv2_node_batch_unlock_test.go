@@ -16,7 +16,10 @@ func TestAccResourceV2NodeBatchUnlock_basic(t *testing.T) {
 	)
 
 	resource.ParallelTest(t, resource.TestCase{
-		PreCheck:          func() { acceptance.TestAccPreCheck(t) },
+		PreCheck: func() {
+			acceptance.TestAccPreCheck(t)
+			acceptance.TestAccPreCheckModelArtsResourcePoolIds(t, 1)
+		},
 		ProviderFactories: acceptance.TestAccProviderFactories,
 		// This resource is a one-time action resource and there is no logic in the delete method.
 		// lintignore:AT001
@@ -32,28 +35,38 @@ func TestAccResourceV2NodeBatchUnlock_basic(t *testing.T) {
 	})
 }
 
-func testAccResourceV2NodeBatchUnlock_basic() string {
+func testAccResourceV2NodeBatchUnlock_base() string {
 	return fmt.Sprintf(`
+locals {
+  resource_pood_ids = split(",", "%[1]s")
+}
+
 data "huaweicloud_modelartsv2_resource_pool_nodes" "test" {
-  resource_pool_name = "%[1]s"
+  resource_pool_name = local.resource_pood_ids[0]
 }
 
 locals {
   node_names = try(slice([for o in data.huaweicloud_modelartsv2_resource_pool_nodes.test.nodes:
     o.metadata[0].name], 0, 1), [])
 }
+`, acceptance.HW_MODELARTS_RESOURCE_POOL_IDS)
+}
+
+func testAccResourceV2NodeBatchUnlock_basic() string {
+	return fmt.Sprintf(`
+%[1]s
 
 resource "huaweicloud_modelartsv2_node_batch_lock" "test" {
-  pool_id    = "%[1]s"
+  pool_id    = local.resource_pood_ids[0]
   node_names = local.node_names
 }
 
 resource "huaweicloud_modelartsv2_node_batch_unlock" "test" {
-  pool_id    = "%[1]s"
+  pool_id    = local.resource_pood_ids[0]
   node_names = local.node_names
 
   depends_on = [
     huaweicloud_modelartsv2_node_batch_lock.test
   ]
-}`, acceptance.HW_MODELARTS_RESOURCE_POOL_ID)
+}`, testAccResourceV2NodeBatchUnlock_base())
 }

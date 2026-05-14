@@ -1305,11 +1305,13 @@ func Provider() *schema.Provider {
 			"huaweicloud_dnsv21_ptrrecords":                dns.DataSourceDNSV21PtrRecords(),
 
 			"huaweicloud_drs_availability_zones": drs.DataSourceAvailabilityZones(),
+			"huaweicloud_drs_job_configurations": drs.DataSourceDrsJobConfigurations(),
 			"huaweicloud_drs_job_links":          drs.DataSourceJobLinks(),
 			"huaweicloud_drs_job_monitor_data":   drs.DataSourceDrsJobMonitorData(),
+			"huaweicloud_drs_job_object_support": drs.DataSourceDrsJobObjectSupport(),
 			"huaweicloud_drs_node_types":         drs.DataSourceNodeTypes(),
 			"huaweicloud_drs_subscriptions":      drs.DataSourceDrsSubscriptions(),
-			"huaweicloud_drs_job_configurations": drs.DataSourceDrsJobConfigurations(),
+			"huaweicloud_drs_drivers":            drs.DataSourceDrsDrivers(),
 
 			// EventGrid
 			"huaweicloud_eg_connections":           eg.DataSourceConnections(),
@@ -1424,6 +1426,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_gaussdb_influx_instances":             geminidb.DataSourceGaussDBInfluxInstances(),
 
 			"huaweicloud_geminidb_accounts":          geminidb.DataSourceGeminiDbAccounts(),
+			"huaweicloud_geminidb_backups":           geminidb.DataSourceGeminiDBBackups(),
 			"huaweicloud_geminidb_database_versions": geminidb.DataSourceDatabaseVersions(),
 			"huaweicloud_geminidb_flavors":           geminidb.DataSourceGeminiDBFlavors(),
 			"huaweicloud_geminidb_quotas":            geminidb.DataSourceQuotas(),
@@ -1987,6 +1990,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_ram_resource_instances_filter":             ram.DataSourceResourceInstancesFilter(),
 			"huaweicloud_ram_resource_instances_count":              ram.DataSourceResourceInstancesCount(),
 
+			"huaweicloud_rds_flavors":                            rds.DataSourceRdsFlavors(),
 			"huaweicloud_rds_available_flavors":                  rds.DataSourceRdsAvailableFlavors(),
 			"huaweicloud_rds_available_upgrade_small_versions":   rds.DataSourceAvailableUpgradeSmallVersions(),
 			"huaweicloud_rds_engine_versions":                    rds.DataSourceRdsEngineVersionsV3(),
@@ -2434,6 +2438,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_global_eip_quotas":                  eip.DataSourceGlobalEipQuotas(),
 			"huaweicloud_global_eip_pools":                   eip.DataSourceGlobalEIPPools(),
 			"huaweicloud_global_eip_bindings":                eip.DataSourceGlobalEipBindings(),
+			"huaweicloud_global_eip_segments":                eip.DataSourceGlobalEipSegments(),
 			"huaweicloud_global_eip_segment_support_masks":   eip.DataSourceGlobalEipSegmentSupportMasks(),
 			"huaweicloud_global_eip_support_regions":         eip.DataSourceGlobalEipSupportRegions(),
 			"huaweicloud_global_eip_access_sites":            eip.DataSourceGlobalEIPAccessSites(),
@@ -3349,6 +3354,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_dcs_online_data_migration_task_restart": dcs.ResourceDcsOnlineDataMigrationTaskRestart(),
 			"huaweicloud_dcs_migration_task_exchange_ip":         dcs.ResourceDcsMigrationTaskExchangeIp(),
 			"huaweicloud_dcs_migration_task_rollback_ip":         dcs.ResourceDcsMigrationTaskRollbackIp(),
+			"huaweicloud_dcs_sessions_kill":                      dcs.ResourceDcsSessionsKill(),
 			"huaweicloud_dcs_sessions_query":                     dcs.ResourceDcsSessionsQuery(),
 			"huaweicloud_dcs_redis_run_log_collect":              dcs.ResourceDcsRedisRunLogCollect(),
 
@@ -3493,6 +3499,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_dns_zone_retrieval_verify":     dns.ResourceDNSZoneRetrievalVerify(),
 
 			"huaweicloud_drs_job":                            drs.ResourceDrsJob(),
+			"huaweicloud_drs_job_clone":                      drs.ResourceDrsJobClone(),
 			"huaweicloud_drs_job_primary_standby_switch":     drs.ResourceDRSPrimaryStandbySwitch(),
 			"huaweicloud_drs_download_batch_create_template": drs.ResourceDownloadBatchCreateTemplate(),
 			"huaweicloud_drs_stop_job":                       drs.ResourceStopJob(),
@@ -3938,7 +3945,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_modelarts_devserver":                       modelarts.ResourceDevServer(),
 			"huaweicloud_modelarts_devserver_action":                modelarts.ResourceDevServerAction(),
 			"huaweicloud_modelarts_model":                           modelarts.ResourceModelartsModel(),
-			"huaweicloud_modelarts_network":                         modelarts.ResourceModelartsNetwork(),
+			"huaweicloud_modelarts_network":                         modelarts.ResourceNetwork(),
 			"huaweicloud_modelarts_notebook":                        modelarts.ResourceNotebook(),
 			"huaweicloud_modelarts_notebook_mount_storage":          modelarts.ResourceNotebookMountStorage(),
 			"huaweicloud_modelarts_resource_pool":                   modelarts.ResourceModelartsResourcePool(),
@@ -3949,7 +3956,9 @@ func Provider() *schema.Provider {
 			// Resource management via V2 APIs.
 			"huaweicloud_modelartsv2_node_batch_delete":      modelarts.ResourceV2NodeBatchDelete(),
 			"huaweicloud_modelartsv2_node_batch_lock":        modelarts.ResourceV2NodeBatchLock(),
+			"huaweicloud_modelartsv2_node_batch_migrate":     modelarts.ResourceV2NodeBatchMigrate(),
 			"huaweicloud_modelartsv2_node_batch_reboot":      modelarts.ResourceV2NodeBatchReboot(),
+			"huaweicloud_modelartsv2_node_batch_reset":       modelarts.ResourceV2NodeBatchReset(),
 			"huaweicloud_modelartsv2_node_batch_unlock":      modelarts.ResourceV2NodeBatchUnlock(),
 			"huaweicloud_modelartsv2_node_batch_unsubscribe": modelarts.ResourceV2NodeBatchUnsubscribe(),
 			"huaweicloud_modelartsv2_service":                modelarts.ResourceV2Service(),
@@ -4328,9 +4337,11 @@ func Provider() *schema.Provider {
 			"huaweicloud_vpc_eipv3_associate":          eip.ResourceEipv3Associate(),
 			"huaweicloud_vpc_internet_gateway":         eip.ResourceVPCInternetGateway(),
 
-			"huaweicloud_global_internet_bandwidth": eip.ResourceGlobalInternetBandwidth(),
-			"huaweicloud_global_eip":                eip.ResourceGlobalEIP(),
-			"huaweicloud_global_eip_associate":      eip.ResourceGlobalEIPAssociate(),
+			"huaweicloud_global_internet_bandwidth":               eip.ResourceGlobalInternetBandwidth(),
+			"huaweicloud_global_eip":                              eip.ResourceGlobalEIP(),
+			"huaweicloud_global_eip_associate":                    eip.ResourceGlobalEIPAssociate(),
+			"huaweicloud_global_eip_internet_bandwidth_associate": eip.ResourceInternetBandwidthAssociate(),
+			"huaweicloud_global_eip_segment_bandwidth_associate":  eip.ResourceSegmentBandwidthAssociate(),
 
 			"huaweicloud_vpc_peering_connection":          vpc.ResourceVpcPeeringConnectionV2(),
 			"huaweicloud_vpc_peering_connection_accepter": vpc.ResourceVpcPeeringConnectionAccepterV2(),
