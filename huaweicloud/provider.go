@@ -1168,6 +1168,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_dcs_instance_expired_key_scan_histories": dcs.DataSourceDcsInstanceExpiredKeyScanHistories(),
 			"huaweicloud_dcs_center_tasks":                        dcs.DataSourceDcsCenterTasks(),
 			"huaweicloud_dcs_redis_run_logs":                      dcs.DataSourceDcsRedisRunLogs(),
+			"huaweicloud_dcs_secondary_dim_monitored_objects":     dcs.DataSourceDcsSecondaryDimMonitoredObjects(),
 			"huaweicloud_dcs_instance_parameter_modify_records":   dcs.DataSourceInstanceParameterModifyRecords(),
 
 			"huaweicloud_dds_quotas":                                  dds.DataSourceDdsQuotas(),
@@ -3642,6 +3643,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_geminidb_database_operation": geminidb.ResourceGeminiDBDatabaseOperation(),
 			"huaweicloud_geminidb_instance":           geminidb.ResourceGeminiDbInstance(),
 			"huaweicloud_geminidb_memory_mapping":     geminidb.ResourceMemoryMapping(),
+			"huaweicloud_geminidb_memory_rule":        geminidb.ResourceMemoryRule(),
 			"huaweicloud_geminidb_recycle_policy":     geminidb.ResourceGeminiDBRecyclePolicy(),
 
 			"huaweicloud_gaussdb_cassandra_instance":  geminidb.ResourceGeminiDBInstanceV3(),
@@ -4136,6 +4138,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_rds_agent_job_switch":                rds.ResourceAgentJobSwitch(),
 			"huaweicloud_rds_agent_job_restart":               rds.ResourceAgentJobRestart(),
 			"huaweicloud_rds_agent_job_modify":                rds.ResourceAgentJobModify(),
+			"huaweicloud_rds_event_operate":                   rds.ResourceEventOperate(),
 
 			"huaweicloud_rgc_account":                      rgc.ResourceAccount(),
 			"huaweicloud_rgc_account_enroll":               rgc.ResourceAccountEnroll(),
