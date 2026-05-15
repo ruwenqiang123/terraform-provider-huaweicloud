@@ -25,6 +25,7 @@ import (
 
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/common"
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/config"
+	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/cbc"
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/utils"
 )
 
@@ -65,6 +66,7 @@ const (
 // @API EIP POST /v2.0/{project_id}/publicips/{id}/tags/action
 // @API EIP GET /v1/{project_id}/bandwidths/{id}
 // @API EIP PUT /v1/{project_id}/bandwidths/{id}
+// @API EIP PUT /v3/{project_id}/eip/publicips/{publicip_id}
 // @API EIP PUT /v2.0/{project_id}/bandwidths/{ID}
 // @API EPS POST /v1.0/enterprise-projects/{enterprise_project_id}/resources-migrat
 // @API BSS GET /v2/orders/customer-orders/details/{order_id}
@@ -195,6 +197,11 @@ func ResourceVpcEIPV1() *schema.Resource {
 				Computed:    true,
 				Description: `The enterprise project ID to which the EIP belongs.`,
 			},
+			"description": {
+				Type:        schema.TypeString,
+				Optional:    true,
+				Description: `The description of the EIP.`,
+			},
 			"tags": common.TagsSchema(),
 
 			// charging_mode,  period_unit and period only support changing post-paid to pre-paid billing mode.
@@ -305,7 +312,7 @@ func buildVpcEipCreateOpts(cfg *config.Config, d *schema.ResourceData, isPrePaid
 			PeriodType:  d.Get("period_unit").(string),
 			PeriodNum:   d.Get("period").(int),
 			IsAutoRenew: d.Get("auto_renew").(string),
-			IsAutoPay:   common.GetAutoPay(d),
+			IsAutoPay:   cbc.GetAutoPay(d),
 		}
 	}
 	return result, nil
@@ -413,6 +420,18 @@ func resourceVpcEipCreate(ctx context.Context, d *schema.ResourceData, meta inte
 		taglist := utils.ExpandResourceTags(tagRaw)
 		if tagErr := tags.Create(vpcV2Client, "publicips", d.Id(), taglist).ExtractErr(); tagErr != nil {
 			return diag.Errorf("error setting tags of EIP (%s): %s", d.Id(), tagErr)
+		}
+	}
+
+	if _, ok := d.GetOk("description"); ok {
+		vpcV3Client, err := cfg.NewServiceClient("vpc", region)
+		if err != nil {
+			return diag.Errorf("error creating VPC v3 client: %s", err)
+		}
+
+		err = updateEipDescription(d, vpcV3Client)
+		if err != nil {
+			return diag.Errorf("error setting description of EIP (%s): %s", d.Id(), err)
 		}
 	}
 
@@ -532,12 +551,13 @@ func resourceVpcEipRead(_ context.Context, d *schema.ResourceData, meta interfac
 	if err != nil {
 		log.Printf("[WARN] failed to fetch the info for EIP (%s) from v3 API: %s", resourceId, err)
 	} else {
-		mErr = multierror.Append(nil,
+		mErr = multierror.Append(mErr,
 			d.Set("updated_at", resp.UpdatedAt),
 			d.Set("associate_type", resp.AssociateInstanceType),
 			d.Set("associate_id", resp.AssociateInstanceID),
 			d.Set("instance_type", resp.Vnic.IntsanceType),
 			d.Set("instance_id", resp.Vnic.IntsanceID),
+			d.Set("description", resp.Description),
 		)
 	}
 
@@ -605,6 +625,37 @@ func updateEipPortId(vpcV1Client *golangsdk.ServiceClient, d *schema.ResourceDat
 	return nil
 }
 
+func updateEipDescription(d *schema.ResourceData, client *golangsdk.ServiceClient) error {
+	requestPath := client.Endpoint + "v3/{project_id}/eip/publicips/{publicip_id}"
+	requestPath = strings.ReplaceAll(requestPath, "{project_id}", client.ProjectID)
+	requestPath = strings.ReplaceAll(requestPath, "{publicip_id}", d.Id())
+	requestOpt := golangsdk.RequestOpts{
+		MoreHeaders: map[string]string{
+			"Content-Type": "application/json",
+		},
+		KeepResponseBody: true,
+		JSONBody:         buildUpdatePublicipBodyParams(d),
+	}
+
+	_, err := client.Request("PUT", requestPath, &requestOpt)
+
+	if err != nil {
+		return fmt.Errorf("error updating EIP description: %s", err)
+	}
+
+	return nil
+}
+
+func buildUpdatePublicipBodyParams(d *schema.ResourceData) map[string]interface{} {
+	bodyParams := map[string]interface{}{
+		"publicip": map[string]interface{}{
+			"description": d.Get("description").(string),
+		},
+	}
+
+	return bodyParams
+}
+
 func updateEipBandwidth(vpcV1Client *golangsdk.ServiceClient, cfg *config.Config, d *schema.ResourceData) error {
 	old, new := d.GetChange("bandwidth")
 	oldRaw := old.([]interface{})
@@ -625,7 +676,7 @@ func updateEipBandwidth(vpcV1Client *golangsdk.ServiceClient, cfg *config.Config
 				Size: newMap["size"].(int),
 			},
 			ExtendParam: &bandwidthsv2.ExtendParam{
-				IsAutoPay: common.GetAutoPay(d),
+				IsAutoPay: cbc.GetAutoPay(d),
 			},
 		}
 		log.Printf("[DEBUG] Bandwidth Update Options: %#v", updateOpts)
@@ -731,7 +782,7 @@ func resourceVpcEipUpdate(ctx context.Context, d *schema.ResourceData, meta inte
 			return diag.FromErr(err)
 		}
 	} else if d.HasChange("auto_renew") {
-		if err = common.UpdateAutoRenew(bssClient, d.Get("auto_renew").(string), d.Id()); err != nil {
+		if err = cbc.UpdateAutoRenew(bssClient, d.Get("auto_renew").(string), d.Id()); err != nil {
 			return diag.Errorf("error updating the auto-renew of the EIP (%s): %s", d.Id(), err)
 		}
 	}
@@ -751,6 +802,18 @@ func resourceVpcEipUpdate(ctx context.Context, d *schema.ResourceData, meta inte
 			ProjectId:    cfg.GetProjectID(region),
 		}
 		if err := cfg.MigrateEnterpriseProject(ctx, d, migrateOpts); err != nil {
+			return diag.FromErr(err)
+		}
+	}
+
+	if d.HasChange("description") {
+		vpcV3Client, err := cfg.NewServiceClient("vpc", region)
+		if err != nil {
+			return diag.Errorf("error creating VPC v3 client: %s", err)
+		}
+
+		err = updateEipDescription(d, vpcV3Client)
+		if err != nil {
 			return diag.FromErr(err)
 		}
 	}
