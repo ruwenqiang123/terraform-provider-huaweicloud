@@ -483,13 +483,16 @@ var (
 	HW_CFW_SERVICE_GROUP_ID          = os.Getenv("HW_CFW_SERVICE_GROUP_ID")
 	HW_CFW_SERVICE_GROUP_MEMBER_ID   = os.Getenv("HW_CFW_SERVICE_GROUP_MEMBER_ID")
 
-	HW_DRS_JOB_ID = os.Getenv("HW_DRS_JOB_ID")
+	HW_DRS_JOB_ID  = os.Getenv("HW_DRS_JOB_ID")
+	HW_DRS_JOB_IDS = os.Getenv("HW_DRS_JOB_IDS")
 
 	HW_CTS_START_TIME = os.Getenv("HW_CTS_START_TIME")
 	HW_CTS_END_TIME   = os.Getenv("HW_CTS_END_TIME")
 
 	// The cluster ID of the CCE
 	HW_CCE_CLUSTER_ID = os.Getenv("HW_CCE_CLUSTER_ID")
+	// The service account token of the CCE cluster
+	HW_CCE_CLUSTER_SERVICE_ACCOUNT_TOKEN = os.Getenv("HW_CCE_CLUSTER_SERVICE_ACCOUNT_TOKEN")
 	// The absolute chart path of the CCE
 	HW_CCE_CHART_PATH = os.Getenv("HW_CCE_CHART_PATH")
 	// The cluster name of the CCE
@@ -900,6 +903,7 @@ var (
 	HW_DNS_ZONE_RETRIEVAL_NAME = os.Getenv("HW_DNS_ZONE_RETRIEVAL_NAME")
 
 	HW_GEMINIDB_INSATNCE_ID = os.Getenv("HW_GEMINIDB_INSATNCE_ID")
+	HW_GEMINIDB_BACKUP_ID   = os.Getenv("HW_GEMINIDB_BACKUP_ID")
 )
 
 // TestAccProviders is a static map containing only the main provider instance.
@@ -2931,6 +2935,13 @@ func TestAccPreCheckDrsJobId(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckDrsJobIds(t *testing.T) {
+	if HW_DRS_JOB_IDS == "" {
+		t.Skip("HW_DRS_JOB_IDS must be set for DRS acceptance tests")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckCfwServerIp(t *testing.T) {
 	if HW_CFW_SERVER_IP == "" {
 		t.Skip("HW_CFW_SERVER_IP must be set for CFW acceptance tests")
@@ -3067,6 +3078,13 @@ func TestAccPreCheckWorkloadName(t *testing.T) {
 func TestAccPreCheckCceClusterId(t *testing.T) {
 	if HW_CCE_CLUSTER_ID == "" {
 		t.Skip("HW_CCE_CLUSTER_ID must be set for this acceptance test")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckCceClusterServiceAccountToken(t *testing.T) {
+	if HW_CCE_CLUSTER_SERVICE_ACCOUNT_TOKEN == "" {
+		t.Skip("HW_CCE_CLUSTER_SERVICE_ACCOUNT_TOKEN must be set for this acceptance test")
 	}
 }
 
@@ -5291,5 +5309,12 @@ func TestAccPreCheckV3UserPassword(t *testing.T) {
 func TestAccCheckGeminidbInstanceID(t *testing.T) {
 	if HW_GEMINIDB_INSATNCE_ID == "" {
 		t.Skip("HW_GEMINIDB_INSATNCE_ID must be set for this acceptance test")
+	}
+}
+
+// lintignore:AT003
+func TestAccCheckGeminidbBackupID(t *testing.T) {
+	if HW_GEMINIDB_BACKUP_ID == "" {
+		t.Skip("HW_GEMINIDB_BACKUP_ID must be set for this acceptance test")
 	}
 }
