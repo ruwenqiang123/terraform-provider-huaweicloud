@@ -1434,12 +1434,13 @@ func Provider() *schema.Provider {
 			"huaweicloud_gaussdb_redis_flavors":                geminidb.DataSourceGaussDBRedisFlavors(),
 			"huaweicloud_gaussdb_influx_instances":             geminidb.DataSourceGaussDBInfluxInstances(),
 
-			"huaweicloud_geminidb_accounts":          geminidb.DataSourceGeminiDbAccounts(),
-			"huaweicloud_geminidb_backups":           geminidb.DataSourceGeminiDBBackups(),
-			"huaweicloud_geminidb_database_versions": geminidb.DataSourceDatabaseVersions(),
-			"huaweicloud_geminidb_flavors":           geminidb.DataSourceGeminiDBFlavors(),
-			"huaweicloud_geminidb_memory_rules":      geminidb.DataSourceMemoryRules(),
-			"huaweicloud_geminidb_quotas":            geminidb.DataSourceQuotas(),
+			"huaweicloud_geminidb_accounts":            geminidb.DataSourceGeminiDbAccounts(),
+			"huaweicloud_geminidb_backups":             geminidb.DataSourceGeminiDBBackups(),
+			"huaweicloud_geminidb_database_versions":   geminidb.DataSourceDatabaseVersions(),
+			"huaweicloud_geminidb_flavors":             geminidb.DataSourceGeminiDBFlavors(),
+			"huaweicloud_geminidb_memory_rules":        geminidb.DataSourceMemoryRules(),
+			"huaweicloud_geminidb_quotas":              geminidb.DataSourceQuotas(),
+			"huaweicloud_geminidb_recycling_instances": geminidb.DataSourceGeminiDBRecyclingInstances(),
 
 			"huaweicloud_gaussdb_storage_types":             gaussdb.DataSourceGaussDbStorageTypes(),
 			"huaweicloud_gaussdb_datastores":                gaussdb.DataSourceGaussDbDatastores(),
@@ -3082,6 +3083,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_cce_cluster_pod_identity_association":      cce.ResourceClusterPodIdentityAssociation(),
 			"huaweicloud_cce_node_pool_scale":                       cce.ResourceNodePoolScale(),
 			"huaweicloud_cce_cluster_certificate_rotatecredentials": cce.ResourceRotatecredentials(),
+			"huaweicloud_cce_nodes_certificate_rotatecredentials":   cce.ResourceRotateNodesCredentials(),
 			"huaweicloud_cce_nodes_remove":                          cce.ResourceNodesRemove(),
 			"huaweicloud_cce_release":                               cce.ResourceRelease(),
 
@@ -3647,7 +3649,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_geminidb_instance":           geminidb.ResourceGeminiDbInstance(),
 			"huaweicloud_geminidb_memory_mapping":     geminidb.ResourceMemoryMapping(),
 			"huaweicloud_geminidb_memory_rule":        geminidb.ResourceMemoryRule(),
-			"huaweicloud_geminidb_recycle_policy":     geminidb.ResourceGeminiDBRecyclePolicy(),
+			"huaweicloud_geminidb_recycling_policy":   geminidb.ResourceGeminiDBRecyclingPolicy(),
 
 			"huaweicloud_gaussdb_cassandra_instance":  geminidb.ResourceGeminiDBInstanceV3(),
 			"huaweicloud_gaussdb_redis_instance":      geminidb.ResourceGaussRedisInstanceV3(),
