@@ -21,9 +21,9 @@ import (
 )
 
 // @API ModelArts GET /v1/{project_id}/notebooks/{id}
-// @API ModelArts DELETE /v1/{project_id}/notebooks/{id}/storage/{storageId}
-// @API ModelArts GET /v1/{project_id}/notebooks/{id}/storage/{storageId}
-// @API ModelArts POST /v1/{project_id}/notebooks/{id}/storage
+// @API ModelArts DELETE /v1/{project_id}/notebooks/{instance_id}/storage/{storage_id}
+// @API ModelArts GET /v1/{project_id}/notebooks/{instance_id}/storage/{storage_id}
+// @API ModelArts POST /v1/{project_id}/notebooks/{instance_id}/storage
 func ResourceNotebookMountStorage() *schema.Resource {
 	return &schema.Resource{
 		CreateContext: resourceNotebookMountStorageCreate,
@@ -85,7 +85,7 @@ func resourceNotebookMountStorageCreate(ctx context.Context, d *schema.ResourceD
 	// check the notebook instance
 	notebookDetail, err := notebook.Get(client, notebookId)
 	if err != nil {
-		err = parseModlArtsErrorToError404(err)
+		err = common.ConvertExpected400ErrInto404Err(err, "error_code", notebookNotFoundErrCodes...)
 		if _, ok := err.(golangsdk.ErrDefault404); ok {
 			return diag.Errorf("the nodebook id=%s is not exist", notebookId)
 		}
@@ -134,7 +134,8 @@ func resourceNotebookMountStorageRead(_ context.Context, d *schema.ResourceData,
 
 	detail, err := notebook.GetMount(client, notebookId, mountId)
 	if err != nil {
-		return common.CheckDeletedDiag(d, parseModlArtsErrorToError404(err), "ModelArts notebook's mount storage")
+		return common.CheckDeletedDiag(d, common.ConvertExpected400ErrInto404Err(err, "error_code", notebookNotFoundErrCodes...),
+			"error retrieving ModelArts notebook's mount storage")
 	}
 
 	mErr := multierror.Append(
@@ -210,7 +211,7 @@ func waitingNotebookMountForDeleted(ctx context.Context, client *golangsdk.Servi
 		Refresh: func() (interface{}, string, error) {
 			resp, err := notebook.GetMount(client, notebookId, mountId)
 			if err != nil {
-				err = parseModlArtsErrorToError404(err)
+				err = common.ConvertExpected400ErrInto404Err(err, "error_code", notebookNotFoundErrCodes...)
 				if _, ok := err.(golangsdk.ErrDefault404); ok {
 					return resp, "UNMOUNTED", nil
 				}

@@ -54,6 +54,7 @@ import (
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/cse"
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/css"
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/cts"
+	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/das"
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/dataarts"
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/dbss"
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/dc"
@@ -1005,6 +1006,8 @@ func Provider() *schema.Provider {
 			"huaweicloud_cts_tags":                 cts.DataSourceCtsTags(),
 			"huaweicloud_cts_users":                cts.DataSourceCtsUsers(),
 
+			"huaweicloud_das_instance_groups": das.DataSourceInstanceGroups(),
+
 			"huaweicloud_cdm_clusters":              cdm.DataSourceCdmClusters(),
 			"huaweicloud_cdm_flavors":               cdm.DataSourceCdmFlavors(),
 			"huaweicloud_cdm_job_execution_records": cdm.DataSourceCdmJobExecutionRecords(),
@@ -1152,6 +1155,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_dcs_instance_nodes":                      dcs.DataSourceDcsInstanceNodes(),
 			"huaweicloud_dcs_batch_instance_nodes":                dcs.DataSourceDcsBatchInstanceNodes(),
 			"huaweicloud_dcs_templates":                           dcs.DataSourceTemplates(),
+			"huaweicloud_dcs_tags":                                dcs.DataSourceDcsTags(),
 			"huaweicloud_dcs_template_detail":                     dcs.DataSourceTemplateDetail(),
 			"huaweicloud_dcs_backup_file_links":                   dcs.DataSourceBackupFileLinks(),
 			"huaweicloud_dcs_backups":                             dcs.DataSourceBackups(),
@@ -1167,6 +1171,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_dcs_migration_task_logs":                 dcs.DataSourceDcsMigrationTaskLogs(),
 			"huaweicloud_dcs_instance_expired_key_scan_histories": dcs.DataSourceDcsInstanceExpiredKeyScanHistories(),
 			"huaweicloud_dcs_center_tasks":                        dcs.DataSourceDcsCenterTasks(),
+			"huaweicloud_dcs_redis_log_download_link":             dcs.DataSourceDcsRedisLogDownloadLink(),
 			"huaweicloud_dcs_redis_run_logs":                      dcs.DataSourceDcsRedisRunLogs(),
 			"huaweicloud_dcs_secondary_dim_monitored_objects":     dcs.DataSourceDcsSecondaryDimMonitoredObjects(),
 			"huaweicloud_dcs_instance_parameter_modify_records":   dcs.DataSourceInstanceParameterModifyRecords(),
@@ -1313,11 +1318,14 @@ func Provider() *schema.Provider {
 
 			"huaweicloud_drs_availability_zones": drs.DataSourceAvailabilityZones(),
 			"huaweicloud_drs_batch_get_params":   drs.DataSourceDrsBatchGetParams(),
+			"huaweicloud_drs_batch_progresses":   drs.DataSourceDrsBatchProgresses(),
 			"huaweicloud_drs_job_configurations": drs.DataSourceDrsJobConfigurations(),
 			"huaweicloud_drs_job_links":          drs.DataSourceJobLinks(),
+			"huaweicloud_drs_job_metering":       drs.DataSourceDrsJobMetering(),
 			"huaweicloud_drs_job_monitor_data":   drs.DataSourceDrsJobMonitorData(),
 			"huaweicloud_drs_job_object_support": drs.DataSourceDrsJobObjectSupport(),
 			"huaweicloud_drs_node_types":         drs.DataSourceNodeTypes(),
+			"huaweicloud_drs_object_mappings":    drs.DataSourceDrsObjectMappings(),
 			"huaweicloud_drs_subscriptions":      drs.DataSourceDrsSubscriptions(),
 			"huaweicloud_drs_tags":               drs.DataSourceDrsTags(),
 			"huaweicloud_drs_drivers":            drs.DataSourceDrsDrivers(),
@@ -1437,7 +1445,9 @@ func Provider() *schema.Provider {
 			"huaweicloud_geminidb_accounts":            geminidb.DataSourceGeminiDbAccounts(),
 			"huaweicloud_geminidb_backups":             geminidb.DataSourceGeminiDBBackups(),
 			"huaweicloud_geminidb_database_versions":   geminidb.DataSourceDatabaseVersions(),
+			"huaweicloud_geminidb_dedicated_resources": geminidb.DataSourceDedicatedResources(),
 			"huaweicloud_geminidb_flavors":             geminidb.DataSourceGeminiDBFlavors(),
+			"huaweicloud_geminidb_memory_mappings":     geminidb.DataSourceMemoryMappings(),
 			"huaweicloud_geminidb_memory_rules":        geminidb.DataSourceMemoryRules(),
 			"huaweicloud_geminidb_quotas":              geminidb.DataSourceQuotas(),
 			"huaweicloud_geminidb_recycling_instances": geminidb.DataSourceGeminiDBRecyclingInstances(),
@@ -2453,6 +2463,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_global_eip_segment_support_masks":     eip.DataSourceGlobalEipSegmentSupportMasks(),
 			"huaweicloud_global_eip_internet_bandwidth_limits": eip.DataSourceGlobalEipInternetBandwidthLimits(),
 			"huaweicloud_global_eip_support_regions":           eip.DataSourceGlobalEipSupportRegions(),
+			"huaweicloud_global_eip_tenant_support_regions":    eip.DataSourceGlobalEipTenantSupportRegions(),
 			"huaweicloud_global_eip_access_sites":              eip.DataSourceGlobalEIPAccessSites(),
 			"huaweicloud_global_internet_bandwidths":           eip.DataSourceGlobalInternetBandwidths(),
 			"huaweicloud_global_internet_bandwidth_tags":       eip.DataSourceGlobalInternetBandwidthTags(),
@@ -3513,11 +3524,13 @@ func Provider() *schema.Provider {
 			"huaweicloud_dns_zone_retrieval_verify":     dns.ResourceDNSZoneRetrievalVerify(),
 
 			"huaweicloud_drs_job":                            drs.ResourceDrsJob(),
+			"huaweicloud_drs_batch_pause_task":               drs.ResourceBatchPauseTask(),
 			"huaweicloud_drs_lts_config":                     drs.ResourceDrsLtsConfig(),
 			"huaweicloud_drs_job_clone":                      drs.ResourceDrsJobClone(),
 			"huaweicloud_drs_job_primary_standby_switch":     drs.ResourceDRSPrimaryStandbySwitch(),
 			"huaweicloud_drs_name_validation":                drs.ResourceDrsNameValidation(),
 			"huaweicloud_drs_download_batch_create_template": drs.ResourceDownloadBatchCreateTemplate(),
+			"huaweicloud_drs_job_configuration_update":       drs.ResourceJobConfigurationUpdate(),
 			"huaweicloud_drs_stop_job":                       drs.ResourceStopJob(),
 
 			"huaweicloud_dws_alarm_subscription":              dws.ResourceDwsAlarmSubs(),
