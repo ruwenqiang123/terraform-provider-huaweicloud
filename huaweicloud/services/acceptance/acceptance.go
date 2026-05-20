@@ -720,6 +720,8 @@ var (
 	HW_DATAARTS_SECURITY_PERMISSSIONSET_MEMBER_OBJECT_ID   = os.Getenv("HW_DATAARTS_SECURITY_PERMISSSIONSET_MEMBER_OBJECT_ID")
 	HW_DATAARTS_SECURITY_PERMISSSIONSET_MEMBER_OBJECT_NAME = os.Getenv("HW_DATAARTS_SECURITY_PERMISSSIONSET_MEMBER_OBJECT_NAME")
 
+	HW_DAS_INSTANCE_IDS = os.Getenv("HW_DAS_INSTANCE_IDS")
+
 	HW_ER_SHARED_INSTANCE_ID   = os.Getenv("HW_ER_SHARED_INSTANCE_ID")
 	HW_ER_SHARED_ATTACHMENT_ID = os.Getenv("HW_ER_SHARED_ATTACHMENT_ID")
 
@@ -775,6 +777,7 @@ var (
 
 	HW_GEMINIDB_MAPPING_ID = os.Getenv("HW_GEMINIDB_MAPPING_ID")
 	HW_GEMINIDB_NODE_ID    = os.Getenv("HW_GEMINIDB_NODE_ID")
+	HW_GEMINIDB_SESSION_ID = os.Getenv("HW_GEMINIDB_SESSION_ID")
 
 	HW_LTS_AGENCY_STREAM_NAME = os.Getenv("HW_LTS_AGENCY_STREAM_NAME")
 	HW_LTS_AGENCY_STREAM_ID   = os.Getenv("HW_LTS_AGENCY_STREAM_ID")
@@ -4188,6 +4191,15 @@ func TestAccPreCheckDataArtsSecurityPermissionSetMember(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckDasInstanceIds(t *testing.T, min int) {
+	// The instance supports RDS, GaussDB, TaurusDB, DDM, DDS
+	if HW_DAS_INSTANCE_IDS == "" || len(strings.Split(HW_DAS_INSTANCE_IDS, ",")) < min {
+		t.Skipf("At least %d Instance IDs must be supported during the HW_DAS_INSTANCE_IDS, "+
+			"separated by commas (,).", min)
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckAKAndSK(t *testing.T) {
 	if HW_ACCESS_KEY == "" || HW_SECRET_KEY == "" {
 		t.Skip("HW_ACCESS_KEY and HW_SECRET_KEY must be set for acceptance tests")
@@ -4400,6 +4412,13 @@ func TestAccPreCheckGeminiDBMappingId(t *testing.T) {
 func TestAccPreCheckGeminiDBNodeId(t *testing.T) {
 	if HW_GEMINIDB_NODE_ID == "" {
 		t.Skip("HW_GEMINIDB_NODE_ID must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckGeminiDBSessionId(t *testing.T) {
+	if HW_GEMINIDB_SESSION_ID == "" {
+		t.Skip("HW_GEMINIDB_SESSION_ID must be set for the acceptance test")
 	}
 }
 
