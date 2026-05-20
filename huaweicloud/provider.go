@@ -2409,6 +2409,8 @@ func Provider() *schema.Provider {
 			"huaweicloud_taurusdb_configurations":              taurusdb.DataSourceTaurusDBConfigurations(),
 			"huaweicloud_taurusdb_dedicated_resource":          taurusdb.DataSourceTaurusDBDehResource(),
 			"huaweicloud_taurusdb_flavors":                     taurusdb.DataSourceTaurusDBFlavors(),
+			"huaweicloud_taurusdb_htap_flavors":                taurusdb.DataSourceTaurusDBHtapFlavors(),
+			"huaweicloud_taurusdb_htap_storage_types":          taurusdb.DataSourceTaurusDBHtapStorageTypes(),
 			"huaweicloud_taurusdb_instance":                    taurusdb.DataSourceTaurusDBInstance(),
 			"huaweicloud_taurusdb_instances":                   taurusdb.DataSourceTaurusDBInstances(),
 			"huaweicloud_taurusdb_backups":                     taurusdb.DataSourceTaurusDBBackups(),
@@ -3671,6 +3673,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_geminidb_instance":           geminidb.ResourceGeminiDbInstance(),
 			"huaweicloud_geminidb_memory_mapping":     geminidb.ResourceMemoryMapping(),
 			"huaweicloud_geminidb_memory_rule":        geminidb.ResourceMemoryRule(),
+			"huaweicloud_geminidb_parameter_template": geminidb.ResourceGeminiDBParameterTemplate(),
 			"huaweicloud_geminidb_recycling_policy":   geminidb.ResourceGeminiDBRecyclingPolicy(),
 
 			"huaweicloud_gaussdb_cassandra_instance":  geminidb.ResourceGeminiDBInstanceV3(),
