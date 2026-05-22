@@ -284,11 +284,11 @@ var (
 	HW_TAURUSDB_START_TIME                = os.Getenv("HW_TAURUSDB_START_TIME")
 	HW_TAURUSDB_END_TIME                  = os.Getenv("HW_TAURUSDB_END_TIME")
 
-	HW_GAUSSDB_OPENGAUSS_PARAMETER_TEMPLATE_ID = os.Getenv("HW_GAUSSDB_OPENGAUSS_PARAMETER_TEMPLATE_ID")
-	HW_GAUSSDB_OPENGAUSS_JOB_ID                = os.Getenv("HW_GAUSSDB_OPENGAUSS_JOB_ID")
-	HW_GAUSSDB_OPENGAUSS_INSTANCE_ID           = os.Getenv("HW_GAUSSDB_OPENGAUSS_INSTANCE_ID")
-	HW_GAUSSDB_OPENGAUSS_START_TIME            = os.Getenv("HW_GAUSSDB_OPENGAUSS_START_TIME")
-	HW_GAUSSDB_OPENGAUSS_END_TIME              = os.Getenv("HW_GAUSSDB_OPENGAUSS_END_TIME")
+	HW_GAUSSDB_PARAMETER_TEMPLATE_ID = os.Getenv("HW_GAUSSDB_PARAMETER_TEMPLATE_ID")
+	HW_GAUSSDB_JOB_ID                = os.Getenv("HW_GAUSSDB_JOB_ID")
+	HW_GAUSSDB_INSTANCE_ID           = os.Getenv("HW_GAUSSDB_INSTANCE_ID")
+	HW_GAUSSDB_START_TIME            = os.Getenv("HW_GAUSSDB_START_TIME")
+	HW_GAUSSDB_END_TIME              = os.Getenv("HW_GAUSSDB_END_TIME")
 
 	HW_VOD_WATERMARK_FILE   = os.Getenv("HW_VOD_WATERMARK_FILE")
 	HW_VOD_MEDIA_ASSET_FILE = os.Getenv("HW_VOD_MEDIA_ASSET_FILE")
@@ -588,6 +588,9 @@ var (
 	HW_MODELARTS_RESOURCE_POOL_NAME                   = os.Getenv("HW_MODELARTS_RESOURCE_POOL_NAME")
 	HW_MODELARTS_RESOURCE_POOL_BATCH_RESIZE_NODE_NAME = os.Getenv("HW_MODELARTS_RESOURCE_POOL_BATCH_RESIZE_NODE_NAME")
 	HW_MODELARTS_WORKFLOW_ID                          = os.Getenv("HW_MODELARTS_WORKFLOW_ID")
+	HW_MODELARTS_ALGORITHM_ENGINE_ID                  = os.Getenv("HW_MODELARTS_ALGORITHM_ENGINE_ID")
+	HW_MODELARTS_ALGORITHM_ENGINE_NAME                = os.Getenv("HW_MODELARTS_ALGORITHM_ENGINE_NAME")
+	HW_MODELARTS_ALGORITHM_IMAGE_URL                  = os.Getenv("HW_MODELARTS_ALGORITHM_IMAGE_URL")
 
 	HW_AOM_ALARM_EVENT_SN                        = os.Getenv("HW_AOM_ALARM_EVENT_SN")
 	HW_AOM_INSTALLER_AGENT_ID                    = os.Getenv("HW_AOM_INSTALLER_AGENT_ID")
@@ -774,6 +777,7 @@ var (
 	HW_DCS_OBS_BUCKET_NAME    = os.Getenv("HW_DCS_OBS_BUCKET_NAME")
 	HW_DCS_BACKUP_ID          = os.Getenv("HW_DCS_BACKUP_ID")
 	HW_DCS_BACKGROUND_TASK_ID = os.Getenv("HW_DCS_BACKGROUND_TASK_ID")
+	HW_DCS_CENTER_TASK_ID     = os.Getenv("HW_DCS_CENTER_TASK_ID")
 
 	HW_ELB_GATEWAY_TYPE = os.Getenv("HW_ELB_GATEWAY_TYPE")
 
@@ -2359,31 +2363,30 @@ func TestAccPreCheckTaurusDBTimeRange(t *testing.T) {
 }
 
 // lintignore:AT003
-func TestAccPreCheckGaussDBOpenGaussParameterTemplateId(t *testing.T) {
-	if HW_GAUSSDB_OPENGAUSS_PARAMETER_TEMPLATE_ID == "" {
-		t.Skip("HW_GAUSSDB_OPENGAUSS_PARAMETER_TEMPLATE_ID must be set for GaussDB OpenGauss acceptance tests")
+func TestAccPreCheckGaussDBParameterTemplateId(t *testing.T) {
+	if HW_GAUSSDB_PARAMETER_TEMPLATE_ID == "" {
+		t.Skip("HW_GAUSSDB_PARAMETER_TEMPLATE_ID must be set for GaussDB acceptance tests")
 	}
 }
 
 // lintignore:AT003
-func TestAccPreCheckGaussDBOpenGaussJobId(t *testing.T) {
-	if HW_GAUSSDB_OPENGAUSS_JOB_ID == "" {
-		t.Skip("HW_GAUSSDB_OPENGAUSS_JOB_ID must be set for GaussDB OpenGauss acceptance tests")
+func TestAccPreCheckGaussDBJobId(t *testing.T) {
+	if HW_GAUSSDB_JOB_ID == "" {
+		t.Skip("HW_GAUSSDB_JOB_ID must be set for GaussDB acceptance tests")
 	}
 }
 
 // lintignore:AT003
-func TestAccPreCheckGaussDBOpenGaussInstanceId(t *testing.T) {
-	if HW_GAUSSDB_OPENGAUSS_INSTANCE_ID == "" {
-		t.Skip("HW_GAUSSDB_OPENGAUSS_INSTANCE_ID must be set for GaussDB OpenGauss acceptance tests")
+func TestAccPreCheckGaussDBInstanceId(t *testing.T) {
+	if HW_GAUSSDB_INSTANCE_ID == "" {
+		t.Skip("HW_GAUSSDB_INSTANCE_ID must be set for GaussDB acceptance tests")
 	}
 }
 
 // lintignore:AT003
-func TestAccPreCheckGaussDBOpenGaussTimeRange(t *testing.T) {
-	if HW_GAUSSDB_OPENGAUSS_START_TIME == "" || HW_GAUSSDB_OPENGAUSS_END_TIME == "" {
-		t.Skip("HW_GAUSSDB_OPENGAUSS_START_TIME and HW_GAUSSDB_OPENGAUSS_END_TIME must be set for GaussDB " +
-			"OpenGauss acceptance tests")
+func TestAccPreCheckGaussDBTimeRange(t *testing.T) {
+	if HW_GAUSSDB_START_TIME == "" || HW_GAUSSDB_END_TIME == "" {
+		t.Skip("HW_GAUSSDB_START_TIME and HW_GAUSSDB_END_TIME must be set for GaussDB acceptance tests")
 	}
 }
 
@@ -3509,6 +3512,14 @@ func TestAccPreCheckModelArtsWorkflowId(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckModelArtsAlgorithm(t *testing.T) {
+	if HW_MODELARTS_ALGORITHM_ENGINE_ID == "" || HW_MODELARTS_ALGORITHM_ENGINE_NAME == "" || HW_MODELARTS_ALGORITHM_IMAGE_URL == "" {
+		t.Skip("HW_MODELARTS_ALGORITHM_ENGINE_ID, HW_MODELARTS_ALGORITHM_ENGINE_NAME and HW_MODELARTS_ALGORITHM_IMAGE_URL must be set " +
+			"for ModelArts algorithm acceptance test")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckEG(t *testing.T) {
 	if HW_EG_TEST_ON == "" {
 		t.Skip("Skip all sub tests of the EG service.")
@@ -4401,6 +4412,13 @@ func TestAccPreCheckDcsObsBucketName(t *testing.T) {
 func TestAccPreCheckDcsBackgroundTaskId(t *testing.T) {
 	if HW_DCS_BACKGROUND_TASK_ID == "" {
 		t.Skip("HW_DCS_BACKGROUND_TASK_ID must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckDcsCenterTaskId(t *testing.T) {
+	if HW_DCS_CENTER_TASK_ID == "" {
+		t.Skip("HW_DCS_CENTER_TASK_ID must be set for the acceptance test")
 	}
 }
 

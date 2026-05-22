@@ -1,4 +1,4 @@
-package gaussdb
+package dcs
 
 import (
 	"fmt"
@@ -9,26 +9,26 @@ import (
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/acceptance"
 )
 
-func TestAccOpenGaussTaskDelete_basic(t *testing.T) {
+func TestAccDcsCenterTaskDelete_basic(t *testing.T) {
 	resource.ParallelTest(t, resource.TestCase{
 		PreCheck: func() {
 			acceptance.TestAccPreCheck(t)
-			acceptance.TestAccPreCheckGaussDBJobId(t)
+			acceptance.TestAccPreCheckDcsCenterTaskId(t)
 		},
 		ProviderFactories: acceptance.TestAccProviderFactories,
 		CheckDestroy:      nil,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccOpenGaussTaskDelete_basic(),
-				Check:  resource.ComposeTestCheckFunc(),
+				Config: testAccDcsCenterTaskDelete_basic(),
 			},
 		},
 	})
 }
 
-func testAccOpenGaussTaskDelete_basic() string {
+func testAccDcsCenterTaskDelete_basic() string {
 	return fmt.Sprintf(`
-resource "huaweicloud_gaussdb_task_delete" "test" {
-  job_id = "%[1]s"
-}`, acceptance.HW_GAUSSDB_JOB_ID)
+resource "huaweicloud_dcs_center_task_delete" "test" {
+  task_id = "%[1]s"
+}
+`, acceptance.HW_DCS_CENTER_TASK_ID)
 }
