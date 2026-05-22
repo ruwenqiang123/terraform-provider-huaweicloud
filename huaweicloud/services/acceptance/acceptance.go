@@ -272,6 +272,7 @@ var (
 	HW_BUILD_IMAGE_URL_UPDATED = os.Getenv("HW_BUILD_IMAGE_URL_UPDATED") // SWR Image URL for component deployment update
 
 	HW_TAURUSDB_INSTANCE_ID               = os.Getenv("HW_TAURUSDB_INSTANCE_ID")
+	HW_TAURUSDB_HTAP_INSTANCE_ID          = os.Getenv("HW_TAURUSDB_HTAP_INSTANCE_ID")
 	HW_TAURUSDB_NODE_ID                   = os.Getenv("HW_TAURUSDB_NODE_ID")
 	HW_TAURUSDB_NODE_SESSION_ID           = os.Getenv("HW_TAURUSDB_NODE_SESSION_ID")
 	HW_TAURUSDB_DATABASE_NAME             = os.Getenv("HW_TAURUSDB_DATABASE_NAME")
@@ -484,6 +485,7 @@ var (
 	HW_CFW_SERVICE_GROUP_MEMBER_ID   = os.Getenv("HW_CFW_SERVICE_GROUP_MEMBER_ID")
 
 	HW_DRS_COMPARE_JOB_ID = os.Getenv("HW_DRS_COMPARE_JOB_ID")
+	HW_DRS_DB_PASSWORD    = os.Getenv("HW_DRS_DB_PASSWORD")
 	HW_DRS_JOB_ID         = os.Getenv("HW_DRS_JOB_ID")
 	HW_DRS_JOB_IDS        = os.Getenv("HW_DRS_JOB_IDS")
 
@@ -899,6 +901,7 @@ var (
 	HW_SFS_TURBO_AD_DOMAIN_DNS_SERVER_IP = os.Getenv("HW_SFS_TURBO_AD_DOMAIN_DNS_SERVER_IP")
 
 	HW_SMN_FLAG                 = os.Getenv("HW_SMN_FLAG")
+	HW_SMN_SUBSCRIBED_TOPIC_ID  = os.Getenv("HW_SMN_SUBSCRIBED_TOPIC_ID")
 	HW_SMN_SUBSCRIBED_TOPIC_URN = os.Getenv("HW_SMN_SUBSCRIBED_TOPIC_URN")
 	HW_SMN_SUBSCRIBE_ID         = os.Getenv("HW_SMN_SUBSCRIBE_ID")
 	HW_SMN_SUBSCRIBE_TOKEN      = os.Getenv("HW_SMN_SUBSCRIBE_TOKEN")
@@ -2286,6 +2289,13 @@ func TestAccPreCheckTaurusDBInstanceId(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckTaurusDBHtapInstanceId(t *testing.T) {
+	if HW_TAURUSDB_HTAP_INSTANCE_ID == "" {
+		t.Skip("HW_TAURUSDB_HTAP_INSTANCE_ID must be set for TaurusDB Htap acceptance tests.")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckTaurusDBNodeId(t *testing.T) {
 	if HW_TAURUSDB_NODE_ID == "" {
 		t.Skip("HW_TAURUSDB_NODE_ID must be set for TaurusDB acceptance tests.")
@@ -2938,6 +2948,13 @@ func TestAccPreCheckCfw(t *testing.T) {
 func TestAccPreCheckDrsCompareJobId(t *testing.T) {
 	if HW_DRS_COMPARE_JOB_ID == "" {
 		t.Skip("HW_DRS_COMPARE_JOB_ID must be set for DRS acceptance tests")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckDrsDbPassword(t *testing.T) {
+	if HW_DRS_DB_PASSWORD == "" {
+		t.Skip("HW_DRS_DB_PASSWORD must be set for DRS acceptance tests")
 	}
 }
 
@@ -5283,6 +5300,13 @@ func TestAccPrecheckCphObsBucketName(t *testing.T) {
 func TestAccPrecheckSmnFlag(t *testing.T) {
 	if HW_SMN_FLAG == "" {
 		t.Skip("HW_SMN_FLAG must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
+func TestAccPrecheckSmnSubscribedTopicId(t *testing.T) {
+	if HW_SMN_SUBSCRIBED_TOPIC_ID == "" {
+		t.Skip("HW_SMN_SUBSCRIBED_TOPIC_ID must be set for the acceptance test")
 	}
 }
 
