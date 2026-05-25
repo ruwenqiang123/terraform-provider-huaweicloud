@@ -1006,6 +1006,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_cts_tags":                 cts.DataSourceCtsTags(),
 			"huaweicloud_cts_users":                cts.DataSourceCtsUsers(),
 
+			"huaweicloud_das_binlogs":         das.DataSourceBinlogs(),
 			"huaweicloud_das_database_users":  das.DataSourceDatabaseUsers(),
 			"huaweicloud_das_instance_groups": das.DataSourceInstanceGroups(),
 
@@ -1326,6 +1327,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_drs_batch_get_params":       drs.DataSourceDrsBatchGetParams(),
 			"huaweicloud_drs_batch_progresses":       drs.DataSourceDrsBatchProgresses(),
 			"huaweicloud_drs_compare_content_detail": drs.DataSourceDrsCompareContentDetail(),
+			"huaweicloud_drs_compare_line_overview":  drs.DataSourceDrsCompareLineOverview(),
 			"huaweicloud_drs_compare_policy":         drs.DataSourceDrsComparePolicy(),
 			"huaweicloud_drs_compare_progress":       drs.DataSourceDrsCompareProgress(),
 			"huaweicloud_drs_compare_result":         drs.DataSourceDrsCompareResult(),
@@ -1511,6 +1513,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_gaussdb_sql_templates":             gaussdb.DataSourceGaussDbSqlTemplates(),
 			"huaweicloud_gaussdb_sql_throttling_tasks":      gaussdb.DataSourceGaussDbSqlThrottlingTasks(),
 			"huaweicloud_gaussdb_plugins":                   gaussdb.DataSourceGaussDbPlugins(),
+			"huaweicloud_gaussdb_asp_collection_results":    gaussdb.DataSourceGaussDbAspCollectionResults(),
 
 			"huaweicloud_hss_agent_install_script":                       hss.DataSourceAgentInstallScript(),
 			"huaweicloud_hss_agent_versions":                             hss.DataSourceAgentVersions(),
