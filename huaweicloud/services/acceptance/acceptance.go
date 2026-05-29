@@ -488,6 +488,7 @@ var (
 
 	HW_DRS_COMPARE_JOB_ID = os.Getenv("HW_DRS_COMPARE_JOB_ID")
 	HW_DRS_DB_PASSWORD    = os.Getenv("HW_DRS_DB_PASSWORD")
+	HW_DRS_ENABLE_FLAG    = os.Getenv("HW_DRS_ENABLE_FLAG")
 	HW_DRS_JOB_ID         = os.Getenv("HW_DRS_JOB_ID")
 	HW_DRS_JOB_IDS        = os.Getenv("HW_DRS_JOB_IDS")
 
@@ -923,6 +924,7 @@ var (
 
 	HW_GEMINIDB_INSATNCE_ID = os.Getenv("HW_GEMINIDB_INSATNCE_ID")
 	HW_GEMINIDB_BACKUP_ID   = os.Getenv("HW_GEMINIDB_BACKUP_ID")
+	HW_GEMINIDB_CONFIG_ID   = os.Getenv("HW_GEMINIDB_CONFIG_ID")
 )
 
 // TestAccProviders is a static map containing only the main provider instance.
@@ -2977,6 +2979,13 @@ func TestAccPreCheckDrsCompareJobId(t *testing.T) {
 func TestAccPreCheckDrsDbPassword(t *testing.T) {
 	if HW_DRS_DB_PASSWORD == "" {
 		t.Skip("HW_DRS_DB_PASSWORD must be set for DRS acceptance tests")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckDRSEnableFlag(t *testing.T) {
+	if HW_DRS_ENABLE_FLAG == "" {
+		t.Skip("Skip the DRS acceptance tests.")
 	}
 }
 
@@ -5435,5 +5444,12 @@ func TestAccCheckGeminidbInstanceID(t *testing.T) {
 func TestAccCheckGeminidbBackupID(t *testing.T) {
 	if HW_GEMINIDB_BACKUP_ID == "" {
 		t.Skip("HW_GEMINIDB_BACKUP_ID must be set for this acceptance test")
+	}
+}
+
+// lintignore:AT003
+func TestAccCheckGeminidbConfigID(t *testing.T) {
+	if HW_GEMINIDB_CONFIG_ID == "" {
+		t.Skip("HW_GEMINIDB_CONFIG_ID must be set for this acceptance test")
 	}
 }
