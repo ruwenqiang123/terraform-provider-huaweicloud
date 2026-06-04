@@ -1023,6 +1023,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_das_instance_groups":                    das.DataSourceInstanceGroups(),
 			"huaweicloud_das_instance_metadata_locks":            das.DataSourceInstanceMetadataLocks(),
 			"huaweicloud_das_shared_connections":                 das.DataSourceSharedConnections(),
+			"huaweicloud_das_sql_execution_plans":                das.DataSourceSqlExecutionPlans(),
 
 			"huaweicloud_cdm_clusters":              cdm.DataSourceCdmClusters(),
 			"huaweicloud_cdm_flavors":               cdm.DataSourceCdmFlavors(),
@@ -3512,6 +3513,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_dds_instance_storage_space_update": dds.ResourceDdsInstanceStorageSpaceUpdate(),
 			"huaweicloud_dds_instance_node_num_update":      dds.ResourceDdsInstanceNodeNumUpdate(),
 			"huaweicloud_dds_backup":                        dds.ResourceDdsBackup(),
+			"huaweicloud_dds_bind_gateway":                  dds.ResourceBindGateway(),
 			"huaweicloud_dds_backup_download_policy":        dds.ResourceBackupDownloadPolicy(),
 			"huaweicloud_dds_backup_stop":                   dds.ResourceBackupStop(),
 			"huaweicloud_dds_parameter_template":            dds.ResourceDdsParameterTemplate(),
@@ -3796,6 +3798,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_geminidb_backup":                     geminidb.ResourceGeminiDBBackup(),
 			"huaweicloud_geminidb_backup_stop":                geminidb.ResourceGeminiDBBackupStop(),
 			"huaweicloud_geminidb_database_operation":         geminidb.ResourceGeminiDBDatabaseOperation(),
+			"huaweicloud_geminidb_database_upgrade":           geminidb.ResourceDatabaseUpgrade(),
 			"huaweicloud_geminidb_instance":                   geminidb.ResourceGeminiDbInstance(),
 			"huaweicloud_geminidb_instance_restart":           geminidb.ResourceInstanceRestart(),
 			"huaweicloud_geminidb_memory_mapping":             geminidb.ResourceMemoryMapping(),
@@ -3842,6 +3845,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_gaussdb_wdr_snapshot":               gaussdb.ResourceGaussDbWdrSnapshot(),
 			"huaweicloud_gaussdb_wdr_snapshot_collect":       gaussdb.ResourceGaussDbWdrSnapshotCollect(),
 			"huaweicloud_gaussdb_dr_configuration_reset":     gaussdb.ResourceGaussDbDrConfigurationReset(),
+			"huaweicloud_gaussdb_dr_relationship":            gaussdb.ResourceGaussDbDrRelationship(),
 
 			"huaweicloud_ges_graph":    ges.ResourceGesGraph(),
 			"huaweicloud_ges_metadata": ges.ResourceGesMetadata(),
