@@ -118,7 +118,7 @@ func isPublished(versionList []apis.ApiVersionInfo, versionId string) (*apis.Api
 }
 
 func isLatestVersion(versionList []apis.ApiVersionInfo, versionId string) (*apis.ApiVersionInfo, bool) {
-	if versionList[0].VersionId == versionId {
+	if len(versionList) > 0 && versionList[0].VersionId == versionId {
 		return &versionList[0], true
 	}
 	return nil, false
@@ -275,7 +275,7 @@ func getPublishIdByEnvId(client *golangsdk.ServiceClient, instanceId, apiId, env
 
 	for i, val := range envIds {
 		if val == envId {
-			if len(publishIds) < i {
+			if len(publishIds) <= i {
 				return "", fmt.Errorf("the length of publish ID list is not correct, want '%d', but '%d'",
 					len(envIds), len(publishIds))
 			}
@@ -288,7 +288,8 @@ func getPublishIdByEnvId(client *golangsdk.ServiceClient, instanceId, apiId, env
 // ResourceApiPublishmentRead is a method to obtain informations of API publishment and save to the local storage.
 func ResourceApiPublishmentRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	cfg := meta.(*config.Config)
-	client, err := cfg.ApigV2Client(cfg.GetRegion(d))
+	region := cfg.GetRegion(d)
+	client, err := cfg.ApigV2Client(region)
 	if err != nil {
 		return diag.Errorf("error creating APIG v2 client: %s", err)
 	}
@@ -308,6 +309,7 @@ func ResourceApiPublishmentRead(_ context.Context, d *schema.ResourceData, meta 
 		return diag.FromErr(err)
 	}
 	mErr := multierror.Append(nil,
+		d.Set("region", region),
 		d.Set("env_id", publishInfo.EnvId),
 		d.Set("api_id", publishInfo.ApiId),
 		d.Set("description", publishInfo.Description),

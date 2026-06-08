@@ -215,6 +215,7 @@ func resourceInstanceFeatureRead(_ context.Context, d *schema.ResourceData, meta
 	}
 
 	mErr := multierror.Append(nil,
+		d.Set("region", region),
 		d.Set("name", utils.PathSearch("name", feature, nil)),
 		d.Set("enabled", utils.PathSearch("enable", feature, false)),
 		d.Set("config", utils.PathSearch("config", feature, nil)),
@@ -234,9 +235,6 @@ func resourceInstanceFeatureUpdate(ctx context.Context, d *schema.ResourceData, 
 	}
 
 	_, err = updateFeatureConfiguration(ctx, client, d, instanceId, featureName)
-	if err != nil {
-		return diag.Errorf("error creating instance feature: %s", err)
-	}
 	if err != nil {
 		return diag.Errorf("error updating feature (%s) under specified instance (%s): %s", featureName, instanceId, err)
 	}

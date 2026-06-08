@@ -214,7 +214,11 @@ func resourceAclPolicyAssociateRead(_ context.Context, d *schema.ResourceData, m
 		return common.CheckDeletedDiag(d, golangsdk.ErrDefault404{}, "")
 	}
 
-	return diag.FromErr(d.Set("publish_ids", flattenApiPublishIdsForAclPolicy(resp)))
+	mErr := multierror.Append(nil,
+		d.Set("region", region),
+		d.Set("publish_ids", flattenApiPublishIdsForAclPolicy(resp)),
+	)
+	return diag.FromErr(mErr.ErrorOrNil())
 }
 
 func aclPolicyUnbindingRefreshFunc(client *golangsdk.ServiceClient, instanceId, policyId string,
@@ -354,7 +358,7 @@ func resourceAclPolicyAssociateUpdate(ctx context.Context, d *schema.ResourceDat
 			PolicyId:   policyId,
 			PublishIds: utils.ExpandToStringListBySet(addSet),
 		}
-		err = bindAclPolicyToApis(ctx, client, opt, d.Timeout(schema.TimeoutCreate))
+		err = bindAclPolicyToApis(ctx, client, opt, d.Timeout(schema.TimeoutUpdate))
 		if err != nil {
 			return diag.FromErr(err)
 		}
@@ -377,7 +381,7 @@ func resourceAclPolicyAssociateDelete(ctx context.Context, d *schema.ResourceDat
 		opt        = buildAclPolicyListOpts(instanceId, policyId)
 	)
 
-	if err = unbindAclPolicy(ctx, client, opt, publishIds, d.Timeout(schema.TimeoutUpdate)); err != nil {
+	if err = unbindAclPolicy(ctx, client, opt, publishIds, d.Timeout(schema.TimeoutDelete)); err != nil {
 		return common.CheckDeletedDiag(d, err, "error unbinding APIs from ACL policy")
 	}
 	return nil
