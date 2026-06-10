@@ -39,6 +39,9 @@ func TestAccObsBucketObjectDataSource_content(t *testing.T) {
 					testAccCheckObsObjectDataSourceExists(dataSourceName),
 					resource.TestCheckResourceAttr(dataSourceName, "content_type", "binary/octet-stream"),
 					resource.TestCheckResourceAttr(dataSourceName, "storage_class", "STANDARD"),
+					resource.TestCheckResourceAttr(dataSourceName, "tags.foo", "bar"),
+					resource.TestCheckResourceAttr(dataSourceName, "metadata.%", "1"),
+					resource.TestCheckResourceAttr(dataSourceName, "metadata.x-obs-meta-test", "meta test"),
 				),
 			},
 		},
@@ -176,6 +179,14 @@ resource "huaweicloud_obs_bucket_object" "object" {
   bucket  = huaweicloud_obs_bucket.object_bucket.bucket
   key     = "test-key-%d"
   content = "some_bucket_content"
+
+  tags = {
+    foo = "bar"
+  }
+
+  metadata = {
+    "x-obs-meta-test" = "meta test"
+  }
 }
 `, randInt, randInt)
 

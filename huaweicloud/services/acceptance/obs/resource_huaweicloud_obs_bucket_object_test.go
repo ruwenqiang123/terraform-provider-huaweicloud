@@ -3,9 +3,9 @@ package obs
 import (
 	"fmt"
 	"os"
+	"regexp"
 	"testing"
 
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 
@@ -16,8 +16,8 @@ import (
 )
 
 func TestAccObsBucketObject_source(t *testing.T) {
-	rInt := acctest.RandInt()
-	resourceName := "huaweicloud_obs_bucket_object.object"
+	name := acceptance.RandomAccResourceNameWithDash()
+	resourceName := "huaweicloud_obs_bucket_object.test"
 
 	tmpFile, err := os.CreateTemp("", "tf-acc-obs-obj-source")
 	if err != nil {
@@ -40,26 +40,42 @@ func TestAccObsBucketObject_source(t *testing.T) {
 		CheckDestroy:      testAccCheckObsBucketObjectDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccObsBucketObjectConfigSource(rInt, tmpFile.Name()),
+				Config: testAccBucketObject_source_step1(name, tmpFile.Name()),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckObsBucketObjectExists(resourceName),
-					resource.TestCheckResourceAttr(resourceName, "key", "test-key"),
+					resource.TestCheckResourceAttr(resourceName, "key", name),
 					resource.TestCheckResourceAttr(resourceName, "content_type", "binary/octet-stream"),
 					resource.TestCheckResourceAttr(resourceName, "storage_class", "STANDARD"),
+					resource.TestCheckResourceAttr(resourceName, "tags.%", "1"),
+					resource.TestCheckResourceAttr(resourceName, "tags.foo", "bar"),
+					resource.TestCheckResourceAttr(resourceName, "metadata.%", "1"),
+					resource.TestCheckResourceAttr(resourceName, "metadata.x-obs-meta-test1", "meta test1"),
 				),
 			},
 			{
 				// update with encryption
-				Config: testAccObsBucketObjectConfig_withSSE(rInt, tmpFile.Name()),
+				Config: testAccBucketObject_source_step2(name, tmpFile.Name()),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr(resourceName, "encryption", "true"),
+					resource.TestCheckResourceAttr(resourceName, "tags.%", "1"),
+					resource.TestCheckResourceAttr(resourceName, "tags.owner", "terraform"),
+					resource.TestCheckResourceAttr(resourceName, "metadata.%", "1"),
+					resource.TestCheckResourceAttr(resourceName, "metadata.x-obs-meta-test-update", "update meta test1"),
+				),
+			},
+			{
+				// update with encryption
+				Config: testAccBucketObject_source_step3(name, tmpFile.Name()),
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "tags.%", "0"),
+					resource.TestCheckResourceAttr(resourceName, "metadata.%", "0"),
 				),
 			},
 			{
 				ResourceName:      resourceName,
 				ImportState:       true,
 				ImportStateVerify: true,
-				ImportStateIdFunc: testAccObsBucketObjecImportStateIdFunc(),
+				ImportStateIdFunc: testAccBucketObjectImportStateIdFunc(),
 				ImportStateVerifyIgnore: []string{
 					"encryption", "source",
 				},
@@ -69,8 +85,8 @@ func TestAccObsBucketObject_source(t *testing.T) {
 }
 
 func TestAccObsBucketObject_content(t *testing.T) {
-	rInt := acctest.RandInt()
-	resourceName := "huaweicloud_obs_bucket_object.object"
+	name := acceptance.RandomAccResourceNameWithDash()
+	resourceName := "huaweicloud_obs_bucket_object.test"
 
 	resource.ParallelTest(t, resource.TestCase{
 		PreCheck: func() {
@@ -81,13 +97,43 @@ func TestAccObsBucketObject_content(t *testing.T) {
 		CheckDestroy:      testAccCheckObsBucketObjectDestroy,
 		Steps: []resource.TestStep{
 			{
-				PreConfig: func() {},
-				Config:    testAccObsBucketObjectConfigContent(rInt),
+				Config: testAccBucketObject_content_step1(name),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckObsBucketObjectExists(resourceName),
-					resource.TestCheckResourceAttr(resourceName, "key", "test-key"),
-					resource.TestCheckResourceAttr(resourceName, "size", "19"),
+					resource.TestCheckResourceAttr(resourceName, "key", name),
+					resource.TestMatchResourceAttr(resourceName, "size", regexp.MustCompile("^[1-9][0-9]*$")),
+					resource.TestCheckResourceAttr(resourceName, "tags.%", "0"),
+					resource.TestCheckResourceAttr(resourceName, "metadata.%", "0"),
 				),
+			},
+			{
+				Config: testAccBucketObject_content_step2(name),
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheckObsBucketObjectExists(resourceName),
+					resource.TestCheckResourceAttr(resourceName, "tags.%", "1"),
+					resource.TestCheckResourceAttr(resourceName, "tags.foo", "bar"),
+					resource.TestCheckResourceAttr(resourceName, "metadata.%", "1"),
+					resource.TestCheckResourceAttr(resourceName, "metadata.x-obs-meta-test", "tf_test"),
+				),
+			},
+			{
+				Config: testAccBucketObject_content_step3(name),
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheckObsBucketObjectExists(resourceName),
+					resource.TestCheckResourceAttr(resourceName, "tags.%", "1"),
+					resource.TestCheckResourceAttr(resourceName, "tags.owner", "terraform"),
+					resource.TestCheckResourceAttr(resourceName, "metadata.%", "1"),
+					resource.TestCheckResourceAttr(resourceName, "metadata.x-obs-meta-update", "tf_test_update"),
+				),
+			},
+			{
+				ResourceName:      resourceName,
+				ImportState:       true,
+				ImportStateVerify: true,
+				ImportStateIdFunc: testAccBucketObjectImportStateIdFunc(),
+				ImportStateVerifyIgnore: []string{
+					"content",
+				},
 			},
 		},
 	})
@@ -177,13 +223,13 @@ func testAccCheckObsBucketObjectExists(n string) resource.TestCheckFunc {
 	}
 }
 
-func testAccObsBucketObjecImportStateIdFunc() resource.ImportStateIdFunc {
+func testAccBucketObjectImportStateIdFunc() resource.ImportStateIdFunc {
 	return func(s *terraform.State) (string, error) {
-		bucket, ok := s.RootModule().Resources["huaweicloud_obs_bucket.object_bucket"]
+		bucket, ok := s.RootModule().Resources["huaweicloud_obs_bucket.test"]
 		if !ok {
 			return "", fmt.Errorf("Bucket not found: %s", bucket)
 		}
-		object, ok := s.RootModule().Resources["huaweicloud_obs_bucket_object.object"]
+		object, ok := s.RootModule().Resources["huaweicloud_obs_bucket_object.test"]
 		if !ok {
 			return "", fmt.Errorf("Object not found: %s", object)
 		}
@@ -194,47 +240,123 @@ func testAccObsBucketObjecImportStateIdFunc() resource.ImportStateIdFunc {
 	}
 }
 
-func testAccObsBucketObjectConfigSource(randInt int, source string) string {
+func testAccBucketObject_base(name string) string {
 	return fmt.Sprintf(`
-resource "huaweicloud_obs_bucket" "object_bucket" {
-  bucket = "tf-acc-test-bucket-%d"
+resource "huaweicloud_obs_bucket" "test" {
+  bucket        = "%[1]s"
+  acl           = "private"
+  force_destroy = true
+}
+`, name)
 }
 
-resource "huaweicloud_obs_bucket_object" "object" {
-  bucket       = huaweicloud_obs_bucket.object_bucket.bucket
-  key          = "test-key"
-  source       = "%s"
+func testAccBucketObject_source_step1(name, source string) string {
+	return fmt.Sprintf(`
+%[1]s
+
+resource "huaweicloud_obs_bucket_object" "test" {
+  bucket       = huaweicloud_obs_bucket.test.bucket
+  key          = "%[2]s"
+  source       = "%[3]s"
   content_type = "binary/octet-stream"
+
+  tags = {
+    foo = "bar"
+  }
+
+  metadata = {
+    "x-obs-meta-test1" = "meta test1"
+  }
 }
-`, randInt, source)
+`, testAccBucketObject_base(name), name, source)
 }
 
-func testAccObsBucketObjectConfigContent(randInt int) string {
+func testAccBucketObject_source_step2(name, source string) string {
 	return fmt.Sprintf(`
-resource "huaweicloud_obs_bucket" "object_bucket" {
-  bucket = "tf-acc-test-bucket-%d"
+%[1]s
+
+resource "huaweicloud_obs_bucket_object" "test" {
+  bucket       = huaweicloud_obs_bucket.test.bucket
+  key          = "%[2]s"
+  source       = "%[3]s"
+  content_type = "binary/octet-stream"
+  encryption   = true
+
+  tags = {
+    owner = "terraform"
+  }
+
+  metadata = {
+    "x-obs-meta-test-update" = "update meta test1"
+  }
+}
+`, testAccBucketObject_base(name), name, source)
 }
 
-resource "huaweicloud_obs_bucket_object" "object" {
-  bucket  = huaweicloud_obs_bucket.object_bucket.bucket
-  key     = "test-key"
+func testAccBucketObject_source_step3(name, source string) string {
+	return fmt.Sprintf(`
+%[1]s
+
+resource "huaweicloud_obs_bucket_object" "test" {
+  bucket       = huaweicloud_obs_bucket.test.bucket
+  key          = "%[2]s"
+  source       = "%[3]s"
+  content_type = "binary/octet-stream"
+  encryption   = true
+
+  tags = {}
+}
+`, testAccBucketObject_base(name), name, source)
+}
+
+func testAccBucketObject_content_step1(name string) string {
+	return fmt.Sprintf(`
+%[1]s
+
+resource "huaweicloud_obs_bucket_object" "test" {
+  bucket  = huaweicloud_obs_bucket.test.bucket
+  key     = "%[2]s"
   content = "some_bucket_content"
 }
-`, randInt)
+`, testAccBucketObject_base(name), name)
 }
 
-func testAccObsBucketObjectConfig_withSSE(randInt int, source string) string {
+func testAccBucketObject_content_step2(name string) string {
 	return fmt.Sprintf(`
-resource "huaweicloud_obs_bucket" "object_bucket" {
-  bucket = "tf-acc-test-bucket-%d"
+%[1]s
+
+resource "huaweicloud_obs_bucket_object" "test" {
+  bucket  = huaweicloud_obs_bucket.test.bucket
+  key     = "%[2]s"
+  content = "update_some_bucket_content"
+
+  tags = {
+    foo = "bar"
+  }
+
+  metadata = {
+    "x-obs-meta-test" = "tf_test"
+  }
+}
+`, testAccBucketObject_base(name), name)
 }
 
-resource "huaweicloud_obs_bucket_object" "object" {
-bucket       = huaweicloud_obs_bucket.object_bucket.bucket
-key          = "test-key"
-source       = "%s"
-content_type = "binary/octet-stream"
-encryption   = true
+func testAccBucketObject_content_step3(name string) string {
+	return fmt.Sprintf(`
+%[1]s
+
+resource "huaweicloud_obs_bucket_object" "test" {
+  bucket  = huaweicloud_obs_bucket.test.bucket
+  key     = "%[2]s"
+  content = "update_some_bucket_content"
+
+  tags = {
+    owner = "terraform"
+  }
+
+  metadata = {
+    "x-obs-meta-update" = "tf_test_update"
+  }
 }
-`, randInt, source)
+`, testAccBucketObject_base(name), name)
 }

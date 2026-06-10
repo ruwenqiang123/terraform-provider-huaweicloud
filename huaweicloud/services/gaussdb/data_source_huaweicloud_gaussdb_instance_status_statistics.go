@@ -73,7 +73,7 @@ func dataSourceInstanceStatusStatisticsRead(_ context.Context, d *schema.Resourc
 
 	requestResp, err := client.Request("GET", listPath, &opt)
 	if err != nil {
-		return diag.Errorf("error querying instance status statistics: %s", err)
+		return diag.Errorf("error querying GaussDB instance status statistics: %s", err)
 	}
 
 	resp, err := utils.FlattenResponse(requestResp)

@@ -114,8 +114,9 @@ var (
 	HW_CNAD_ENABLE_FLAG       = os.Getenv("HW_CNAD_ENABLE_FLAG")
 	HW_CNAD_PROJECT_OBJECT_ID = os.Getenv("HW_CNAD_PROJECT_OBJECT_ID")
 
-	HW_OBS_DESTINATION_BUCKET  = os.Getenv("HW_OBS_DESTINATION_BUCKET")
 	HW_OBS_AGENCY_NAME         = os.Getenv("HW_OBS_AGENCY_NAME")
+	HW_OBS_BUCKET_NAME         = os.Getenv("HW_OBS_BUCKET_NAME")
+	HW_OBS_DESTINATION_BUCKET  = os.Getenv("HW_OBS_DESTINATION_BUCKET")
 	HW_OBS_ENDPOINT            = os.Getenv("HW_OBS_ENDPOINT")
 	HW_OBS_OBJECT_STORAGE_PATH = os.Getenv("HW_OBS_OBJECT_STORAGE_PATH")
 	HW_OBS_USER_DOMAIN_NAME1   = os.Getenv("HW_OBS_USER_DOMAIN_NAME1")
@@ -279,6 +280,7 @@ var (
 	HW_TAURUSDB_DATABASE_NAME             = os.Getenv("HW_TAURUSDB_DATABASE_NAME")
 	HW_TAURUSDB_TABLE_NAME                = os.Getenv("HW_TAURUSDB_TABLE_NAME")
 	HW_TAURUSDB_INSTANCE_CONFIGURATION_ID = os.Getenv("HW_TAURUSDB_INSTANCE_CONFIGURATION_ID")
+	HW_TAURUSDB_BACKUP_ID                 = os.Getenv("HW_TAURUSDB_BACKUP_ID")
 	HW_TAURUSDB_BACKUP_BEGIN_TIME         = os.Getenv("HW_TAURUSDB_BACKUP_BEGIN_TIME")
 	HW_TAURUSDB_BACKUP_END_TIME           = os.Getenv("HW_TAURUSDB_BACKUP_END_TIME")
 	HW_TAURUSDB_JOB_ID                    = os.Getenv("HW_TAURUSDB_JOB_ID")
@@ -423,8 +425,11 @@ var (
 	HW_IDENTITY_ORIGINAL_PASSWORD = os.Getenv("HW_IDENTITY_ORIGINAL_PASSWORD")
 	HW_IDENTITY_NEW_PASSWORD      = os.Getenv("HW_IDENTITY_NEW_PASSWORD")
 
-	HW_ER_TEST_ON     = os.Getenv("HW_ER_TEST_ON")     // Whether to run the ER related tests.
-	HW_ER_INSTANCE_ID = os.Getenv("HW_ER_INSTANCE_ID") // Whether to run the ER related tests.
+	HW_ER_INSTANCE_ID          = os.Getenv("HW_ER_INSTANCE_ID") // Whether to run the ER related tests.
+	HW_ER_ROUTE_POLICY_IDS     = os.Getenv("HW_ER_ROUTE_POLICY_IDS")
+	HW_ER_SHARED_INSTANCE_ID   = os.Getenv("HW_ER_SHARED_INSTANCE_ID")
+	HW_ER_SHARED_ATTACHMENT_ID = os.Getenv("HW_ER_SHARED_ATTACHMENT_ID")
+	HW_ER_TEST_ON              = os.Getenv("HW_ER_TEST_ON") // Whether to run the ER related tests.
 
 	// The OBS address where the HCL/JSON template archive (No variables) is located.
 	HW_RF_TEMPLATE_ARCHIVE_NO_VARS_URI = os.Getenv("HW_RF_TEMPLATE_ARCHIVE_NO_VARS_URI")
@@ -736,9 +741,6 @@ var (
 	HW_DATAARTS_SECURITY_PERMISSSIONSET_MEMBER_OBJECT_NAME = os.Getenv("HW_DATAARTS_SECURITY_PERMISSSIONSET_MEMBER_OBJECT_NAME")
 
 	HW_DAS_INSTANCE_IDS = os.Getenv("HW_DAS_INSTANCE_IDS")
-
-	HW_ER_SHARED_INSTANCE_ID   = os.Getenv("HW_ER_SHARED_INSTANCE_ID")
-	HW_ER_SHARED_ATTACHMENT_ID = os.Getenv("HW_ER_SHARED_ATTACHMENT_ID")
 
 	HW_DEH_DEDICATED_HOST_ID = os.Getenv("HW_DEH_DEDICATED_HOST_ID")
 
@@ -1827,6 +1829,13 @@ func TestAccPreCheckOBS(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckOBSBucketName(t *testing.T) {
+	if HW_OBS_BUCKET_NAME == "" {
+		t.Skip("HW_OBS_BUCKET_NAME must be set for the acceptance tests")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckOBSDestinationBucket(t *testing.T) {
 	if HW_OBS_DESTINATION_BUCKET == "" {
 		t.Skip("HW_OBS_DESTINATION_BUCKET must be set for OBS destination tests")
@@ -1865,13 +1874,6 @@ func TestAccPreCheckOBSUserDomainNames(t *testing.T) {
 func TestAccPreCheckChargingMode(t *testing.T) {
 	if HW_CHARGING_MODE != "prePaid" {
 		t.Skip("This environment does not support prepaid tests")
-	}
-}
-
-// lintignore:AT003
-func TestAccPreCheckErSharedAttachmentAccepter(t *testing.T) {
-	if HW_ER_SHARED_INSTANCE_ID == "" || HW_ER_SHARED_ATTACHMENT_ID == "" {
-		t.Skip("HW_ER_SHARED_INSTANCE_ID and HW_ER_SHARED_ATTACHMENT_ID must be set for the acceptance test")
 	}
 }
 
@@ -2354,6 +2356,13 @@ func TestAccPreCheckTaurusDBInstanceConfigurationId(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckTaurusDBBackupId(t *testing.T) {
+	if HW_TAURUSDB_BACKUP_ID == "" {
+		t.Skip("HW_TAURUSDB_BACKUP_ID must be set for TaurusDB acceptance tests.")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckTaurusDBBackupBeginTime(t *testing.T) {
 	if HW_TAURUSDB_BACKUP_BEGIN_TIME == "" {
 		t.Skip("HW_TAURUSDB_BACKUP_BEGIN_TIME must be set for TaurusDB acceptance tests.")
@@ -2819,16 +2828,30 @@ func TestAccPreCheckWorkspaceAppFileName(t *testing.T) {
 }
 
 // lintignore:AT003
-func TestAccPreCheckER(t *testing.T) {
-	if HW_ER_TEST_ON == "" {
-		t.Skip("Skip all ER acceptance tests.")
+func TestAccPreCheckERInstanceID(t *testing.T) {
+	if HW_ER_INSTANCE_ID == "" {
+		t.Skip("HW_ER_INSTANCE_ID must be set for this acceptance test")
 	}
 }
 
 // lintignore:AT003
-func TestAccPreCheckERInstanceID(t *testing.T) {
-	if HW_ER_INSTANCE_ID == "" {
-		t.Skip("HW_ER_INSTANCE_ID must be set for this acceptance test")
+func TestAccPreCheckERRoutePolicyIDs(t *testing.T, min int) {
+	if HW_ER_ROUTE_POLICY_IDS == "" || len(strings.Split(HW_ER_ROUTE_POLICY_IDS, ",")) < min {
+		t.Skipf("At least %d route policy IDs must be supported during the HW_ER_ROUTE_POLICY_IDS, separated by commas (,).", min)
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckErSharedAttachmentAccepter(t *testing.T) {
+	if HW_ER_SHARED_INSTANCE_ID == "" || HW_ER_SHARED_ATTACHMENT_ID == "" {
+		t.Skip("HW_ER_SHARED_INSTANCE_ID and HW_ER_SHARED_ATTACHMENT_ID must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckER(t *testing.T) {
+	if HW_ER_TEST_ON == "" {
+		t.Skip("Skip all ER acceptance tests.")
 	}
 }
 
