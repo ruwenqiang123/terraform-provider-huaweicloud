@@ -558,12 +558,16 @@ var (
 	HW_SECMASTER_INDICATOR_TYPE_ID_UPDATE = os.Getenv("HW_SECMASTER_INDICATOR_TYPE_ID_UPDATE")
 	HW_SECMASTER_METRIC_ID                = os.Getenv("HW_SECMASTER_METRIC_ID")
 	HW_SECMASTER_COMPONENT_VERSION_ID     = os.Getenv("HW_SECMASTER_COMPONENT_VERSION_ID")
+	HW_SECMASTER_ATTACH_ID                = os.Getenv("HW_SECMASTER_ATTACH_ID")
 
 	// The SecMaster pipeline ID
 	HW_SECMASTER_PIPELINE_ID = os.Getenv("HW_SECMASTER_PIPELINE_ID")
 
 	// The SecMaster playbook instance ID
 	HW_SECMASTER_INSTANCE_ID = os.Getenv("HW_SECMASTER_INSTANCE_ID")
+
+	// The SecMaster collector channel ID
+	HW_SECMASTER_CHANNEL_ID = os.Getenv("HW_SECMASTER_CHANNEL_ID")
 
 	// The ID and product ID to create a SecMaster post paid order
 	HW_SECMASTER_ORDER_ID   = os.Getenv("HW_SECMASTER_ORDER_ID")
@@ -932,6 +936,7 @@ var (
 	HW_GEMINIDB_INSATNCE_ID = os.Getenv("HW_GEMINIDB_INSATNCE_ID")
 	HW_GEMINIDB_BACKUP_ID   = os.Getenv("HW_GEMINIDB_BACKUP_ID")
 	HW_GEMINIDB_CONFIG_ID   = os.Getenv("HW_GEMINIDB_CONFIG_ID")
+	HW_GEMINIDB_JOB_ID      = os.Getenv("HW_GEMINIDB_JOB_ID")
 )
 
 // TestAccProviders is a static map containing only the main provider instance.
@@ -3356,6 +3361,13 @@ func TestAccPreCheckSecMasterInstanceID(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckSecMasterChannelID(t *testing.T) {
+	if HW_SECMASTER_CHANNEL_ID == "" {
+		t.Skip("HW_SECMASTER_CHANNEL_ID must be set for SecMaster acceptance tests")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckSecMasterIndicatorTypeID(t *testing.T) {
 	if HW_SECMASTER_INDICATOR_TYPE_ID == "" {
 		t.Skip("HW_SECMASTER_INDICATOR_TYPE_ID must be set for SecMaster acceptance tests")
@@ -3417,6 +3429,13 @@ func TestAccPreCheckSecMasterWorkflowId(t *testing.T) {
 func TestAccPreCheckSecMasterFieldId(t *testing.T) {
 	if HW_SECMASTER_FIELD_ID == "" {
 		t.Skip("HW_SECMASTER_FIELD_ID must be set for SecMaster acceptance tests")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckSecMasterAttachID(t *testing.T) {
+	if HW_SECMASTER_ATTACH_ID == "" {
+		t.Skip("HW_SECMASTER_ATTACH_ID must be set for SecMaster acceptance tests")
 	}
 }
 
@@ -5527,5 +5546,12 @@ func TestAccCheckGeminidbBackupID(t *testing.T) {
 func TestAccCheckGeminidbConfigID(t *testing.T) {
 	if HW_GEMINIDB_CONFIG_ID == "" {
 		t.Skip("HW_GEMINIDB_CONFIG_ID must be set for this acceptance test")
+	}
+}
+
+// lintignore:AT003
+func TestAccCheckGeminidbJobID(t *testing.T) {
+	if HW_GEMINIDB_JOB_ID == "" {
+		t.Skip("HW_GEMINIDB_JOB_ID must be set for this acceptance test")
 	}
 }
