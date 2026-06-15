@@ -292,6 +292,7 @@ var (
 	HW_GAUSSDB_INSTANCE_ID           = os.Getenv("HW_GAUSSDB_INSTANCE_ID")
 	HW_GAUSSDB_START_TIME            = os.Getenv("HW_GAUSSDB_START_TIME")
 	HW_GAUSSDB_END_TIME              = os.Getenv("HW_GAUSSDB_END_TIME")
+	HW_GAUSSDB_HBA_HISTORY_ID        = os.Getenv("HW_GAUSSDB_HBA_HISTORY_ID")
 
 	HW_VOD_WATERMARK_FILE   = os.Getenv("HW_VOD_WATERMARK_FILE")
 	HW_VOD_MEDIA_ASSET_FILE = os.Getenv("HW_VOD_MEDIA_ASSET_FILE")
@@ -595,6 +596,9 @@ var (
 
 	// The SecMaster dataspace ID
 	HW_SECMASTER_DATASPACE_ID = os.Getenv("HW_SECMASTER_DATASPACE_ID")
+
+	// The SecMaster node ID
+	HW_SECMASTER_NODE_ID = os.Getenv("HW_SECMASTER_NODE_ID")
 
 	HW_MODELARTS_ALGORITHM_ENGINE_ID                         = os.Getenv("HW_MODELARTS_ALGORITHM_ENGINE_ID")
 	HW_MODELARTS_ALGORITHM_ENGINE_NAME                       = os.Getenv("HW_MODELARTS_ALGORITHM_ENGINE_NAME")
@@ -2424,6 +2428,13 @@ func TestAccPreCheckGaussDBTimeRange(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckGaussDBHbaHistoryId(t *testing.T) {
+	if HW_GAUSSDB_HBA_HISTORY_ID == "" {
+		t.Skip("HW_GAUSSDB_HBA_HISTORY_ID must be set for GaussDB acceptance tests.")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckVODWatermark(t *testing.T) {
 	if HW_VOD_WATERMARK_FILE == "" {
 		t.Skip("HW_VOD_WATERMARK_FILE must be set for VOD watermark template acceptance tests.")
@@ -3464,6 +3475,13 @@ func TestAccPreCheckSecMasterPipeId(t *testing.T) {
 func TestAccPreCheckSecMasterDataspaceId(t *testing.T) {
 	if HW_SECMASTER_DATASPACE_ID == "" {
 		t.Skip("HW_SECMASTER_DATASPACE_ID must be set for SecMaster acceptance tests")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckSecMasterNodeId(t *testing.T) {
+	if HW_SECMASTER_NODE_ID == "" {
+		t.Skip("HW_SECMASTER_NODE_ID must be set for SecMaster acceptance tests")
 	}
 }
 
