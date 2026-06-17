@@ -1026,6 +1026,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_das_instance_processes":                 das.DataSourceInstanceProcesses(),
 			"huaweicloud_das_shared_connections":                 das.DataSourceSharedConnections(),
 			"huaweicloud_das_slow_log_details":                   das.DataSourceSlowLogDetails(),
+			"huaweicloud_das_slow_log_exported_tasks":            das.DataSourceSlowLogExportedTasks(),
 			"huaweicloud_das_slow_log_templates":                 das.DataSourceSlowLogTemplates(),
 			"huaweicloud_das_sql_execution_plans":                das.DataSourceSqlExecutionPlans(),
 			"huaweicloud_das_sql_limit_rules":                    das.DataSourceSqlLimitRules(),
@@ -1141,6 +1142,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_dataarts_factory_scripts":       dataarts.DataSourceFactoryScripts(),
 			// DataArts Security
 			"huaweicloud_dataarts_security_datasource_permissions":       dataarts.DataSourceSecurityDatasourcePermissions(),
+			"huaweicloud_dataarts_security_datasource_urls":              dataarts.DataSourceSecurityDatasourceUrls(),
 			"huaweicloud_dataarts_security_data_categories":              dataarts.DataSourceSecurityDataCategories(),
 			"huaweicloud_dataarts_security_data_recognition_rules":       dataarts.DataSourceSecurityDataRecognitionRules(),
 			"huaweicloud_dataarts_security_data_recognition_rule_groups": dataarts.DataSourceSecurityDataRecognitionRuleGroups(),
@@ -1290,6 +1292,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_dms_kafka_maintainwindows":                  kafka.DataSourceMaintainWindows(),
 			"huaweicloud_dms_kafka_message_diagnosis_tasks":          kafka.DataSourceDmsKafkaMessageDiagnosisTasks(),
 			"huaweicloud_dms_kafka_messages":                         kafka.DataSourceDmsKafkaMessages(),
+			"huaweicloud_dms_kafka_recycle_instances":                kafka.DataSourceRecycleInstances(),
 			"huaweicloud_dms_kafka_smart_connect_tasks":              kafka.DataSourceDmsKafkaSmartConnectTasks(),
 			"huaweicloud_dms_kafkav2_smart_connect_tasks":            kafka.DataSourceDmsKafkav2SmartConnectTasks(),
 			"huaweicloud_dms_kafka_tags":                             kafka.DataSourceTags(),
@@ -1329,6 +1332,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_dms_rocketmq_message_traces":              rocketmq.DataSourceDmsRocketmqMessageTraces(),
 			"huaweicloud_dms_rocketmq_messages":                    rocketmq.DataSourceDmsRocketMQMessages(),
 			"huaweicloud_dms_rocketmq_migration_tasks":             rocketmq.DataSourceDmsRocketmqMigrationTasks(),
+			"huaweicloud_dms_rocketmq_recycle_instances":           rocketmq.DataSourceRocketmqRecycleInstances(),
 			"huaweicloud_dms_rocketmq_tags":                        rocketmq.DataSourceTags(),
 			"huaweicloud_dms_rocketmq_topic_access_users":          rocketmq.DataSourceDmsRocketmqTopicAccessUsers(),
 			"huaweicloud_dms_rocketmq_topic_consumer_groups":       rocketmq.DataSourceDmsRocketmqTopicConsumerGroups(),
@@ -1575,6 +1579,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_gaussdb_project_quotas":                  gaussdb.DataSourceGaussDbProjectQuotas(),
 			"huaweicloud_gaussdb_tasks":                           gaussdb.DataSourceGaussDbTasks(),
 			"huaweicloud_gaussdb_quotas":                          gaussdb.DataSourceGaussDbQuotas(),
+			"huaweicloud_gaussdb_remaining_quotas":                gaussdb.DataSourceGaussDbRemainingQuotas(),
 			"huaweicloud_gaussdb_upgrade_versions":                gaussdb.DataSourceGaussDbUpgradeVersions(),
 			"huaweicloud_gaussdb_tags":                            gaussdb.DataSourceGaussDbTags(),
 			"huaweicloud_gaussdb_predefined_tags":                 gaussdb.DataSourceGaussDbPredefinedTags(),
@@ -2386,8 +2391,10 @@ func Provider() *schema.Provider {
 			"huaweicloud_secmaster_reports_emails":                  secmaster.DataSourceReportsEmails(),
 			"huaweicloud_secmaster_retrieve_scripts":                secmaster.DataSourceRetrieveScripts(),
 			"huaweicloud_secmaster_search_conditions":               secmaster.DataSourceSearchConditions(),
+			"huaweicloud_secmaster_search_logs":                     secmaster.DataSourceSearchLogs(),
 			"huaweicloud_secmaster_security_reports":                secmaster.DataSourceSecurityReports(),
 			"huaweicloud_secmaster_siem_directories":                secmaster.DataSourceSiemDirectories(),
+			"huaweicloud_secmaster_siem_shipper_authorizations":     secmaster.DataSourceSiemShipperAuthorizations(),
 			"huaweicloud_secmaster_siem_shippers":                   secmaster.DataSourceSiemShippers(),
 			"huaweicloud_secmaster_platform_managed":                secmaster.DataSourcePlatformManaged(),
 			"huaweicloud_secmaster_component_history_configuration": secmaster.DataSourceComponentHistoryConfiguration(),
@@ -3657,6 +3664,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_dms_kafka_message_produce":                   kafka.ResourceDmsKafkaMessageProduce(),
 			"huaweicloud_dms_kafka_partition_reassign":                kafka.ResourceDmsKafkaPartitionReassign(),
 			"huaweicloud_dms_kafka_permissions":                       kafka.ResourceDmsKafkaPermissions(),
+			"huaweicloud_dms_kafka_recycle_instance_restore":          kafka.ResourceRecycleInstanceRestore(),
 			"huaweicloud_dms_kafka_smart_connect":                     kafka.ResourceDmsKafkaSmartConnect(),
 			"huaweicloud_dms_kafka_smart_connect_task":                kafka.ResourceDmsKafkaSmartConnectTask(),
 			"huaweicloud_dms_kafkav2_smart_connect_task":              kafka.ResourceDmsKafkav2SmartConnectTask(),
@@ -3864,6 +3872,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_ga_health_check":   ga.ResourceHealthCheck(),
 
 			"huaweicloud_geminidb_account":                     geminidb.ResourceGeminidbAccount(),
+			"huaweicloud_geminidb_sessions_close":              geminidb.ResourceGeminiDBSessionsClose(),
 			"huaweicloud_geminidb_backup":                      geminidb.ResourceGeminiDBBackup(),
 			"huaweicloud_geminidb_backup_stop":                 geminidb.ResourceGeminiDBBackupStop(),
 			"huaweicloud_geminidb_command_disable":             geminidb.ResourceCommandDisable(),
@@ -4266,7 +4275,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_dataarts_architecture_reviewer":                dataarts.ResourceArchitectureReviewer(),
 			"huaweicloud_dataarts_architecture_subject":                 dataarts.ResourceArchitectureSubject(),
 			"huaweicloud_dataarts_architecture_table_model":             dataarts.ResourceArchitectureTableModel(),
-			// DataAtrs Catalog
+			// DataArts Catalog
 			"huaweicloud_dataarts_catalog_metadata_task":        dataarts.ResourceCatalogMetadataTask(),
 			"huaweicloud_dataarts_catalog_metadata_task_action": dataarts.ResourceCatalogMetadataTaskAction(),
 			// DataArts Factory
@@ -4453,7 +4462,9 @@ func Provider() *schema.Provider {
 			"huaweicloud_secmaster_collect_config":              secmaster.ResourceCollectConfig(),
 			"huaweicloud_secmaster_collector_channel_group":     secmaster.ResourceCollectorChannelGroup(),
 			"huaweicloud_secmaster_collector_channel_operation": secmaster.ResourceCollectorChannelOperation(),
+			"huaweicloud_secmaster_collector_parser":            secmaster.ResourceCollectorParser(),
 			"huaweicloud_secmaster_component_template":          secmaster.ResourceComponentTemplate(),
+			"huaweicloud_secmaster_configuration_dictionary":    secmaster.ResourceConfigurationDictionary(),
 			"huaweicloud_secmaster_data_object_relations":       secmaster.ResourceDataObjectRelations(),
 			"huaweicloud_secmaster_dataspace":                   secmaster.ResourceDataspace(),
 			"huaweicloud_secmaster_delete_nodes":                secmaster.ResourceDeleteNodes(),
@@ -5207,6 +5218,7 @@ func init() {
 	}
 }
 
+// nolint:gocyclo
 func configureProvider(_ context.Context, d *schema.ResourceData, terraformVersion string) (interface{},
 	diag.Diagnostics) {
 	var tenantName, tenantID, delegatedProject, identityEndpoint string

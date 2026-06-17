@@ -1008,6 +1008,7 @@ func createKafkaInstanceWithFlavor(ctx context.Context, d *schema.ResourceData, 
 	return nil
 }
 
+// nolint:gocyclo
 func createKafkaInstanceWithProductID(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	cfg := meta.(*config.Config)
 	region := cfg.GetRegion(d)
@@ -1588,6 +1589,7 @@ func flattenKafkaSecurityConfig(kafkaSecurityConfig instances.PortProtocols) int
 	}
 }
 
+// nolint:gocyclo
 func resourceDmsKafkaInstanceUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	cfg := meta.(*config.Config)
 	client, err := cfg.DmsV2Client(cfg.GetRegion(d))
@@ -2040,7 +2042,7 @@ func updateInstancePortProtocol(ctx context.Context, client *golangsdk.ServiceCl
 
 	for _, item := range parsedPortProtocol {
 		err := switchInstancePortProtocol(ctx, client, d, utils.PathSearch("key", item, "").(string),
-			utils.PathSearch("value", item, "").(bool))
+			utils.PathSearch("value", item, false).(bool))
 		if err != nil {
 			return fmt.Errorf("error updating port protocol instance (%s), %s", d.Id(), err)
 		}

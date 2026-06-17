@@ -631,6 +631,7 @@ func updateRocketmqInstanceTLSMode(ctx context.Context, client *golangsdk.Servic
 	return waitForInstanceTaskStatusCompleted(ctx, client, instanceId, utils.PathSearch("job_id", respBody, "").(string), timeout)
 }
 
+// nolint:gocyclo
 func resourceDmsRocketMQInstanceUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	cfg := meta.(*config.Config)
 	region := cfg.GetRegion(d)
@@ -897,7 +898,7 @@ func resourceDmsRocketMQInstanceRead(_ context.Context, d *schema.ResourceData, 
 	}
 
 	var chargingMode = "postPaid"
-	if utils.PathSearch("charging_mode", getRocketmqInstanceRespBody, 1).(float64) == 0 {
+	if utils.PathSearch("charging_mode", getRocketmqInstanceRespBody, float64(1)).(float64) == 0 {
 		chargingMode = "prePaid"
 	}
 	epsID := "all_granted_eps"
