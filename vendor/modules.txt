@@ -2,8 +2,6 @@
 ## explicit
 github.com/GehirnInc/crypt
 github.com/GehirnInc/crypt/common
-github.com/GehirnInc/crypt/internal
-github.com/GehirnInc/crypt/sha512_crypt
 # github.com/agext/levenshtein v1.2.2
 ## explicit
 github.com/agext/levenshtein
@@ -270,7 +268,6 @@ github.com/chnsz/golangsdk/openstack/networking/v3/security/groups
 github.com/chnsz/golangsdk/openstack/networking/v3/security/rules
 github.com/chnsz/golangsdk/openstack/obs
 github.com/chnsz/golangsdk/openstack/opengauss/v3/instances
-github.com/chnsz/golangsdk/openstack/rds/v3/instances
 github.com/chnsz/golangsdk/openstack/rms/v1/policyassignments
 github.com/chnsz/golangsdk/openstack/scm/v3/certificates
 github.com/chnsz/golangsdk/openstack/sdrs/v1/attachreplication
@@ -350,8 +347,8 @@ github.com/golang/protobuf/ptypes/any
 github.com/golang/protobuf/ptypes/duration
 github.com/golang/protobuf/ptypes/empty
 github.com/golang/protobuf/ptypes/timestamp
-# github.com/google/go-cmp v0.6.0
-## explicit; go 1.13
+# github.com/google/go-cmp v0.7.0
+## explicit; go 1.21
 github.com/google/go-cmp/cmp
 github.com/google/go-cmp/cmp/internal/diff
 github.com/google/go-cmp/cmp/internal/flags
@@ -360,9 +357,6 @@ github.com/google/go-cmp/cmp/internal/value
 # github.com/google/uuid v1.6.0
 ## explicit
 github.com/google/uuid
-# github.com/hashicorp/errwrap v1.1.0
-## explicit
-github.com/hashicorp/errwrap
 # github.com/hashicorp/go-checkpoint v0.5.0
 ## explicit
 github.com/hashicorp/go-checkpoint
@@ -380,7 +374,7 @@ github.com/hashicorp/go-cty/cty/set
 # github.com/hashicorp/go-hclog v1.2.1
 ## explicit; go 1.13
 github.com/hashicorp/go-hclog
-# github.com/hashicorp/go-multierror v1.1.1
+# github.com/hashicorp/go-multierror v1.1.2-0.20250313123807-1ee6e1a1957a
 ## explicit; go 1.13
 github.com/hashicorp/go-multierror
 # github.com/hashicorp/go-plugin v1.4.4
