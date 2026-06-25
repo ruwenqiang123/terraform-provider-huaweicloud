@@ -60,6 +60,8 @@ var (
 	HW_ADMIN                               = os.Getenv("HW_ADMIN")
 	HW_IAM_V5                              = os.Getenv("HW_IAM_V5")
 	HW_IAM_SERVICE_LINKED_AGENCY_PRINCIPAL = os.Getenv("HW_IAM_SERVICE_LINKED_AGENCY_PRINCIPAL")
+	HW_PGP_PUBLIC_KEY                      = os.Getenv("HW_PGP_PUBLIC_KEY")
+	HW_PGP_PRIVATE_KEY                     = os.Getenv("HW_PGP_PRIVATE_KEY")
 	HW_RUNNER_PUBLIC_IPS                   = os.Getenv("HW_RUNNER_PUBLIC_IPS")
 
 	// CBR environment
@@ -869,6 +871,7 @@ var (
 	HW_DDS_SESSION_ID                      = os.Getenv("HW_DDS_SESSION_ID")
 
 	HW_RDS_CROSS_REGION_BACKUP_INSTANCE_ID = os.Getenv("HW_RDS_CROSS_REGION_BACKUP_INSTANCE_ID")
+	HW_RDS_INSTANCE_FLAVOR                 = os.Getenv("HW_RDS_INSTANCE_FLAVOR")
 	HW_RDS_INSTANCE_ID                     = os.Getenv("HW_RDS_INSTANCE_ID")
 	HW_RDS_TARGET_INSTANCE_ID              = os.Getenv("HW_RDS_TARGET_INSTANCE_ID")
 	HW_RDS_TARGET_PROJECT_ID               = os.Getenv("HW_RDS_TARGET_PROJECT_ID")
@@ -1765,6 +1768,27 @@ func TestAccPreCheckOmsDomain(t *testing.T) {
 func TestAccPreCheckAdminOnly(t *testing.T) {
 	if HW_ADMIN == "" {
 		t.Skip("Skipping test because it requires the admin privileges")
+	}
+}
+
+// TestAccPreCheckPGPKeys skips the test when PGP key environment variables are not set.
+// Generate a dedicated test key pair (no passphrase) and export binary key packets as base64:
+//
+//	export GNUPGHOME="$(mktemp -d)" && chmod 700 "$GNUPGHOME"
+//	gpg --batch --passphrase '' --quick-generate-key \
+//	  'Terraform Provider Test <test@terraform.local>' rsa4096 sign,encrypt
+//	KEY_ID="$(gpg --list-keys --with-colons | awk -F: '/^pub/ {print $5; exit}')"
+//	export HW_PGP_PUBLIC_KEY="$(gpg --export "$KEY_ID" | base64 -w0)"
+//	export HW_PGP_PRIVATE_KEY="$(gpg --export-secret "$KEY_ID" | base64 -w0)"
+//
+// On macOS, replace `base64 -w0` with `base64`. Use throwaway keys only; do not commit them.
+// lintignore:AT003
+func TestAccPreCheckPGPKeys(t *testing.T) {
+	if HW_PGP_PUBLIC_KEY == "" {
+		t.Skip("HW_PGP_PUBLIC_KEY must be set for this acceptance test")
+	}
+	if HW_PGP_PRIVATE_KEY == "" {
+		t.Skip("HW_PGP_PRIVATE_KEY must be set for this acceptance test")
 	}
 }
 

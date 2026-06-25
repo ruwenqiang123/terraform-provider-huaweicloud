@@ -22,6 +22,8 @@ import (
 	"github.com/chnsz/golangsdk"
 )
 
+var structJSONKeyRegexp = regexp.MustCompile(`"[a-z0-9A-Z_]+":`)
+
 // ConvertStructToMap converts an instance of struct to a map object, and
 // changes each key of fileds to the value of 'nameMap' if the key in it
 // or to its corresponding lowercase.
@@ -31,11 +33,7 @@ func ConvertStructToMap(obj interface{}, nameMap map[string]string) (map[string]
 		return nil, fmt.Errorf("Error converting struct to map, marshal failed:%v", err)
 	}
 
-	m, err := regexp.Compile(`"[a-z0-9A-Z_]+":`)
-	if err != nil {
-		return nil, fmt.Errorf("Error converting struct to map, compile regular express failed")
-	}
-	nb := m.ReplaceAllFunc(
+	nb := structJSONKeyRegexp.ReplaceAllFunc(
 		b,
 		func(src []byte) []byte {
 			k := string(src[1 : len(src)-2])
@@ -341,7 +339,10 @@ func IsResourceNotFound(err error) bool {
 // IsIPv4Address is used to check whether the addr string is IPv4 format
 func IsIPv4Address(addr string) bool {
 	pattern := "^((25[0-5]|2[0-4]\\d|(1\\d{2}|[1-9]?\\d))\\.){3}(25[0-5]|2[0-4]\\d|(1\\d{2}|[1-9]?\\d))$"
-	matched, _ := regexp.MatchString(pattern, addr)
+	matched, err := regexp.MatchString(pattern, addr)
+	if err != nil {
+		log.Printf("[ERROR] failed to match ipv4 address: %s", err)
+	}
 	return matched
 }
 
@@ -439,7 +440,10 @@ func RandomString(n int, allowedChars ...[]rune) (result string) {
 	}()
 	b := make([]rune, n)
 	for i := range b {
-		n, _ := rand.Int(rand.Reader, big.NewInt(int64(len(letters))))
+		n, err := rand.Int(rand.Reader, big.NewInt(int64(len(letters))))
+		if err != nil {
+			log.Printf("[ERROR] failed to generate random string: %s", err)
+		}
 		b[i] = letters[n.Int64()]
 	}
 
@@ -572,7 +576,10 @@ func ConvertMemoryUnit(memory interface{}, diffLevel int) int {
 func IsUUID(uuid string) bool {
 	// Using regular expressions to match UUID formats, with or without hyphens.
 	pattern := "[0-9a-fA-F]{8}(-?[0-9a-fA-F]{4}){3}-?[0-9a-fA-F]{12}"
-	match, _ := regexp.MatchString(pattern, uuid)
+	match, err := regexp.MatchString(pattern, uuid)
+	if err != nil {
+		log.Printf("[ERROR] failed to match UUID: %s", err)
+	}
 	return match
 }
 
@@ -580,7 +587,10 @@ func IsUUID(uuid string) bool {
 func IsUUIDWithHyphens(uuid string) bool {
 	// Use regular expression to match UUID format with hyphens.
 	pattern := "[0-9a-fA-F]{8}(-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}"
-	match, _ := regexp.MatchString(pattern, uuid)
+	match, err := regexp.MatchString(pattern, uuid)
+	if err != nil {
+		log.Printf("[ERROR] failed to match UUID with hyphens: %s", err)
+	}
 	return match
 }
 
