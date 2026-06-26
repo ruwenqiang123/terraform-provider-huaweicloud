@@ -3,6 +3,7 @@ package huaweicloud
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -1563,6 +1564,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_gaussdb_instances":                       gaussdb.DataSourceGaussDbInstances(),
 			"huaweicloud_gaussdb_instance_nodes":                  gaussdb.DataSourceGaussDbInstanceNodes(),
 			"huaweicloud_gaussdb_instance_coordinators":           gaussdb.DataSourceGaussDbInstanceCoordinators(),
+			"huaweicloud_gaussdb_instance_database_accounts":      gaussdb.DataSourceGaussDBInstanceDatabaseAccounts(),
 			"huaweicloud_gaussdb_instance_features":               gaussdb.DataSourceGaussDbInstanceFeatures(),
 			"huaweicloud_gaussdb_metric_group_metrics":            gaussdb.DataSourceGaussDbMetricGroupMetrics(),
 			"huaweicloud_gaussdb_instance_snapshot":               gaussdb.DataSourceGaussDbInstanceSnapshot(),
@@ -2569,10 +2571,13 @@ func Provider() *schema.Provider {
 			"huaweicloud_taurusdb_htap_starrocks_nodes":                     taurusdb.DataSourceTaurusDBHtapStarrocksNodes(),
 			"huaweicloud_taurusdb_htap_starrocks_parameters":                taurusdb.DataSourceTaurusDBHtapStarrocksParameters(),
 			"huaweicloud_taurusdb_htap_starrocks_replications":              taurusdb.DataSourceTaurusDBHtapStarrocksReplications(),
+			"huaweicloud_taurusdb_htap_starrocks_replication_config":        taurusdb.DataSourceTaurusDBHtapStarrocksReplicationConfig(),
+			"huaweicloud_taurusdb_htap_starrocks_db_replication_config":     taurusdb.DataSourceTaurusDBHtapStarrocksDbReplicationConfig(),
 			"huaweicloud_taurusdb_htap_starrocks_replication_db_parameters": taurusdb.DataSourceTaurusDBHtapStarrocksReplicationDBParameters(),
 			"huaweicloud_taurusdb_htap_starrocks_users":                     taurusdb.DataSourceTaurusDBHtapStarrocksUsers(),
 			"huaweicloud_taurusdb_htap_storage_types":                       taurusdb.DataSourceTaurusDBHtapStorageTypes(),
 			"huaweicloud_taurusdb_instance":                                 taurusdb.DataSourceTaurusDBInstance(),
+			"huaweicloud_taurusdb_instance_associated_eip":                  taurusdb.DataSourceTaurusDBInstanceAssociatedEip(),
 			"huaweicloud_taurusdb_instances":                                taurusdb.DataSourceTaurusDBInstances(),
 			"huaweicloud_taurusdb_backups":                                  taurusdb.DataSourceTaurusDBBackups(),
 			"huaweicloud_taurusdb_instance_backups":                         taurusdb.DataSourceTaurusDBInstanceBackups(),
@@ -2599,6 +2604,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_taurusdb_node_sessions":                            taurusdb.DataSourceTaurusDBNodeSessions(),
 			"huaweicloud_taurusdb_sql_auto_throttling_records":              taurusdb.DataSourceTaurusDBSqlAutoThrottlingRecords(),
 			"huaweicloud_taurusdb_sql_control_history_rules":                taurusdb.DataSourceSqlControlHistoryRules(),
+			"huaweicloud_taurusdb_tags":                                     taurusdb.DataSourceTaurusDBTags(),
 
 			"huaweicloud_tms_resource_types":      tms.DataSourceResourceTypes(),
 			"huaweicloud_tms_resource_instances":  tms.DataSourceResourceInstances(),
@@ -3927,6 +3933,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_gaussdb_instance_plugin_extensions_config": gaussdb.ResourceGaussDbInstancePluginExtensionsConfig(),
 			"huaweicloud_gaussdb_instance_plugin_license_config":    gaussdb.ResourceGaussDbPluginLicense(),
 			"huaweicloud_gaussdb_instance_upgrade":                  gaussdb.ResourceGaussDbInstanceUpgrade(),
+			"huaweicloud_gaussdb_instance_database_role":            gaussdb.ResourceGaussdbInstanceDatabaseRole(),
 			"huaweicloud_gaussdb_instance_lts_log_associate":        gaussdb.ResourceGaussdbInstanceLtsLogAssociate(),
 			"huaweicloud_gaussdb_instance_node_startup":             gaussdb.ResourceGaussDbInstanceNodeStartup(),
 			"huaweicloud_gaussdb_instance_node_stop":                gaussdb.ResourceGaussDbInstanceNodeStop(),
@@ -5380,7 +5387,7 @@ func configureProvider(_ context.Context, d *schema.ResourceData, terraformVersi
 	}
 
 	if conf.Region == "" {
-		return nil, diag.Errorf("region should be provided")
+		return nil, diag.FromErr(errors.New("region should be provided"))
 	}
 
 	cloud := getCloudDomain(d.Get("cloud").(string), conf.Region)
@@ -5572,11 +5579,11 @@ func readConfig(c *config.Config) error {
 	if providerConfig.Mode == "SSO" {
 		ssoAuth := providerConfig.SsoAuth
 		if (ssoAuth == config.SsoAuth{}) {
-			return fmt.Errorf("Error finding ssoAuth config when auth mode is SSO")
+			return errors.New("Error finding ssoAuth config when auth mode is SSO")
 		}
 		stsToken := ssoAuth.StsToken
 		if (stsToken == config.StsToken{}) {
-			return fmt.Errorf("Error finding ssoAuth.stsToken config when auth mode is SSO")
+			return errors.New("Error finding ssoAuth.stsToken config when auth mode is SSO")
 		}
 		c.AccessKey = stsToken.AccessKeyId
 		c.SecretKey = stsToken.SecretAccessKey
