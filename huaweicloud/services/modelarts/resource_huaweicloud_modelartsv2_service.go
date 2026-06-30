@@ -34,7 +34,7 @@ var v2ServiceNonUpdatableParams = []string{
 // @API ModelArts POST /v2/{project_id}/services/{service_id}/versions/switch
 // @API ModelArts PUT /v2/{project_id}/services/{service_id}
 // @API ModelArts POST /v2/{project_id}/modelarts-service-v2/{service_id}/tags/create
-// @API ModelArts DELETE /v2/{project_id}/modelarts-service-v2/{service_id}/tags/create
+// @API ModelArts DELETE /v2/{project_id}/modelarts-service-v2/{service_id}/tags/delete
 // @API ModelArts POST /v2/{project_id}/services/delete
 func ResourceV2Service() *schema.Resource {
 	return &schema.Resource{
@@ -245,6 +245,17 @@ func ResourceV2Service() *schema.Resource {
 					utils.SchemaDescInput{
 						Internal: true,
 					},
+				),
+			},
+
+			// Internal parameters.
+			"enable_force_new": {
+				Type:         schema.TypeString,
+				Optional:     true,
+				ValidateFunc: validation.StringInSlice([]string{"true", "false"}, false),
+				Description: utils.SchemaDesc(
+					`Whether to allow parameters that do not support changes to have their change-triggered behavior set to 'ForceNew'.`,
+					utils.SchemaDescInput{Internal: true},
 				),
 			},
 		},
