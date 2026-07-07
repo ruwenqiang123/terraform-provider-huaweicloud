@@ -1277,10 +1277,6 @@ func Provider() *schema.Provider {
 			"huaweicloud_dli_sql_templates":           dli.DataSourceDliSqlTemplates(),
 			"huaweicloud_dli_system_sql_defend_rules": dli.DataSourceSystemSQLDefendRules(),
 
-			"huaweicloud_dsc_database_instances":  dsc.DataSourceDatabaseInstances(),
-			"huaweicloud_dsc_multi_accounts":      dsc.DataSourceMultiAccounts(),
-			"huaweicloud_dsc_multi_organizations": dsc.DataSourceMultiOrganizations(),
-
 			"huaweicloud_dms_product":        dms.DataSourceDmsProduct(),
 			"huaweicloud_dms_maintainwindow": dms.DataSourceDmsMaintainWindow(),
 
@@ -1412,11 +1408,21 @@ func Provider() *schema.Provider {
 			"huaweicloud_drs_timelines":                drs.DataSourceDrsTimelines(),
 			"huaweicloud_drs_drivers":                  drs.DataSourceDrsDrivers(),
 
-			"huaweicloud_dsc_alarms":               dsc.DataSourceDscAlarms(),
-			"huaweicloud_dsc_alarm_handling_trend": dsc.DataSourceDscAlarmHandlingTrend(),
-			"huaweicloud_dsc_asset_overview":       dsc.DataSourceDscAssetOverview(),
-			"huaweicloud_dsc_event_overview":       dsc.DataSourceDscEventOverview(),
-			"huaweicloud_dsc_threat_trend":         dsc.DataSourceDscThreatTrend(),
+			"huaweicloud_dsc_alarms":                  dsc.DataSourceDscAlarms(),
+			"huaweicloud_dsc_alarm_handling_trend":    dsc.DataSourceDscAlarmHandlingTrend(),
+			"huaweicloud_dsc_asset_overview":          dsc.DataSourceDscAssetOverview(),
+			"huaweicloud_dsc_dashboard_score":         dsc.DataSourceDscDashboardScore(),
+			"huaweicloud_dsc_data_map_security_level": dsc.DataSourceDscDataMapSecurityLevel(),
+			"huaweicloud_dsc_event_overview":          dsc.DataSourceDscEventOverview(),
+			"huaweicloud_dsc_events":                  dsc.DataSourceDscEvents(),
+			"huaweicloud_dsc_threat_trend":            dsc.DataSourceDscThreatTrend(),
+			"huaweicloud_dsc_database_instances":      dsc.DataSourceDatabaseInstances(),
+			"huaweicloud_dsc_scan_jobs":               dsc.DataSourceScanJobs(),
+			"huaweicloud_dsc_multi_accounts":          dsc.DataSourceMultiAccounts(),
+			"huaweicloud_dsc_multi_account_assets":    dsc.DataSourceMultiAccountAssets(),
+			"huaweicloud_dsc_multi_organizations":     dsc.DataSourceMultiOrganizations(),
+			"huaweicloud_dsc_multi_organization_tree": dsc.DataSourceMultiOrganizationTree(),
+
 			// EventGrid
 			"huaweicloud_eg_connections":           eg.DataSourceConnections(),
 			"huaweicloud_eg_custom_event_channels": eg.DataSourceCustomEventChannels(),
@@ -1567,6 +1573,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_geminidb_table_restored_tables":         geminidb.DataSourceGeminiDBTableRestoredTables(),
 
 			"huaweicloud_gaussdb_alarms":                          gaussdb.DataSourceAlarms(),
+			"huaweicloud_gaussdb_backup_configurations":           gaussdb.DataSourceBackupConfigurations(),
 			"huaweicloud_gaussdb_instance_alarm_statistics":       gaussdb.DataSourceInstanceAlarmStatistics(),
 			"huaweicloud_gaussdb_sql_explorer_status_records":     gaussdb.DataSourceInstanceSqlExplorerStatusRecords(),
 			"huaweicloud_gaussdb_instance_status_statistics":      gaussdb.DataSourceInstanceStatusStatistics(),
@@ -1574,8 +1581,10 @@ func Provider() *schema.Provider {
 			"huaweicloud_gaussdb_instance_lts_log_configs":        gaussdb.DataSourceGaussDBInstanceLtsLogConfigs(),
 			"huaweicloud_gaussdb_instance_supported_plugins":      gaussdb.DataSourceSupportedPlugins(),
 			"huaweicloud_gaussdb_instance_plugin_extensions":      gaussdb.DataSourceInstancePluginExtensions(),
+			"huaweicloud_gaussdb_instance_real_time_sessions":     gaussdb.DataSourceGaussDBInstanceRealTimeSessions(),
 			"huaweicloud_gaussdb_instance_auto_enlarge_policy":    gaussdb.DataSourceGaussDBInstanceAutoEnlargePolicy(),
 			"huaweicloud_gaussdb_storage_types":                   gaussdb.DataSourceGaussDbStorageTypes(),
+			"huaweicloud_gaussdb_datastore_instances":             gaussdb.DataSourceDatastoreInstances(),
 			"huaweicloud_gaussdb_datastores":                      gaussdb.DataSourceGaussDbDatastores(),
 			"huaweicloud_gaussdb_flavors":                         gaussdb.DataSourceGaussDbFlavors(),
 			"huaweicloud_gaussdb_available_flavors":               gaussdb.DataSourceGaussDbAvailableFlavors(),
@@ -1637,6 +1646,8 @@ func Provider() *schema.Provider {
 			"huaweicloud_gaussdb_schemas_storage_usage":           gaussdb.DataSourceSchemasStorageUsage(),
 			"huaweicloud_gaussdb_tables_storage_usage":            gaussdb.DataSourceTablesStorageUsage(),
 			"huaweicloud_gaussdb_top_twenty_tables_storage_usage": gaussdb.DataSourceTopTwentyTablesStorageUsage(),
+
+			"huaweicloud_gaussdb_enterprise_project_remaining_quotas": gaussdb.DataSourceGaussDBEnterpriseProjectRemainingQuotas(),
 
 			"huaweicloud_hss_agent_install_script":                       hss.DataSourceAgentInstallScript(),
 			"huaweicloud_hss_agent_versions":                             hss.DataSourceAgentVersions(),
@@ -2619,6 +2630,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_taurusdb_database_character_set":                   taurusdb.DataSourceTaurusDBDatabaseCharacterSet(),
 			"huaweicloud_taurusdb_databases":                                taurusdb.DataSourceTaurusDBDatabases(),
 			"huaweicloud_taurusdb_proxy_flavors":                            taurusdb.DataSourceTaurusDBProxyFlavors(),
+			"huaweicloud_taurusdb_proxy_az_flavors":                         taurusdb.DataSourceTaurusDBProxyAzFlavors(),
 			"huaweicloud_taurusdb_proxies":                                  taurusdb.DataSourceTaurusDBProxies(),
 			"huaweicloud_taurusdb_pt_modify_records":                        taurusdb.DataSourceTaurusDBPtModifyRecords(),
 			"huaweicloud_taurusdb_pt_apply_records":                         taurusdb.DataSourceTaurusDBPtApplyRecords(),
