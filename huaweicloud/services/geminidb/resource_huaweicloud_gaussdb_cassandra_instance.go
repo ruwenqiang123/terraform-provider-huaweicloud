@@ -8,7 +8,7 @@ import (
 
 	"github.com/hashicorp/go-multierror"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/retry"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 
@@ -340,7 +340,7 @@ func resourceGeminiDBFlavor(d *schema.ResourceData) []instances.FlavorOpt {
 	return flavorList
 }
 
-func GeminiDBInstanceStateRefreshFunc(client *golangsdk.ServiceClient, instanceID string) resource.StateRefreshFunc {
+func InstanceStateRefreshFunc(client *golangsdk.ServiceClient, instanceID string) retry.StateRefreshFunc {
 	return func() (interface{}, string, error) {
 		instance, err := instances.GetInstanceByID(client, instanceID)
 
@@ -453,10 +453,10 @@ func resourceGeminiDBInstanceV3Create(ctx context.Context, d *schema.ResourceDat
 
 	d.SetId(instance.Id)
 	// waiting for the instance to become ready
-	stateConf := &resource.StateChangeConf{
+	stateConf := &retry.StateChangeConf{
 		Pending:      []string{"creating"},
 		Target:       []string{"normal"},
-		Refresh:      GeminiDBInstanceStateRefreshFunc(client, instance.Id),
+		Refresh:      InstanceStateRefreshFunc(client, instance.Id),
 		Timeout:      d.Timeout(schema.TimeoutCreate),
 		Delay:        120 * time.Second,
 		PollInterval: 20 * time.Second,
@@ -634,10 +634,10 @@ func resourceGeminiDBInstanceV3Delete(ctx context.Context, d *schema.ResourceDat
 		}
 	}
 
-	stateConf := &resource.StateChangeConf{
+	stateConf := &retry.StateChangeConf{
 		Pending:      []string{"normal", "abnormal", "creating", "createfail", "enlargefail", "data_disk_full"},
 		Target:       []string{"deleted"},
-		Refresh:      GeminiDBInstanceStateRefreshFunc(client, instanceId),
+		Refresh:      InstanceStateRefreshFunc(client, instanceId),
 		Timeout:      d.Timeout(schema.TimeoutDelete),
 		Delay:        15 * time.Second,
 		PollInterval: 10 * time.Second,
@@ -718,10 +718,10 @@ func resourceGeminiDBInstanceV3Update(ctx context.Context, d *schema.ResourceDat
 			return diag.Errorf("error updating configuration_id for gaussdb_%s_instance %s: %s", defaults.logName, instanceId, err)
 		}
 
-		stateConf := &resource.StateChangeConf{
+		stateConf := &retry.StateChangeConf{
 			Pending:    []string{"SET_CONFIGURATION"},
 			Target:     []string{"available"},
-			Refresh:    GeminiDBInstanceUpdateRefreshFunc(client, instanceId, "SET_CONFIGURATION"),
+			Refresh:    instanceUpdateRefreshFunc(client, instanceId, "SET_CONFIGURATION"),
 			Timeout:    d.Timeout(schema.TimeoutUpdate),
 			MinTimeout: 10 * time.Second,
 		}
@@ -777,10 +777,10 @@ func resourceGeminiDBInstanceV3Update(ctx context.Context, d *schema.ResourceDat
 		}
 
 		// 2. wait instance status
-		stateConf := &resource.StateChangeConf{
+		stateConf := &retry.StateChangeConf{
 			Pending:    []string{"RESIZE_VOLUME"},
 			Target:     []string{"available"},
-			Refresh:    GeminiDBInstanceUpdateRefreshFunc(client, instanceId, "RESIZE_VOLUME"),
+			Refresh:    instanceUpdateRefreshFunc(client, instanceId, "RESIZE_VOLUME"),
 			Timeout:    d.Timeout(schema.TimeoutUpdate),
 			MinTimeout: 10 * time.Second,
 		}
@@ -835,10 +835,10 @@ func resourceGeminiDBInstanceV3Update(ctx context.Context, d *schema.ResourceDat
 			}
 
 			// 2. wait instance status
-			stateConf := &resource.StateChangeConf{
+			stateConf := &retry.StateChangeConf{
 				Pending:      []string{"GROWING"},
 				Target:       []string{"available"},
-				Refresh:      GeminiDBInstanceUpdateRefreshFunc(client, instanceId, "GROWING"),
+				Refresh:      instanceUpdateRefreshFunc(client, instanceId, "GROWING"),
 				Timeout:      d.Timeout(schema.TimeoutUpdate),
 				Delay:        15 * time.Second,
 				PollInterval: 20 * time.Second,
@@ -901,10 +901,10 @@ func resourceGeminiDBInstanceV3Update(ctx context.Context, d *schema.ResourceDat
 				}
 
 				// 2. wait instance status
-				stateConf := &resource.StateChangeConf{
+				stateConf := &retry.StateChangeConf{
 					Pending:      []string{"REDUCING"},
 					Target:       []string{"available"},
-					Refresh:      GeminiDBInstanceUpdateRefreshFunc(client, instanceId, "REDUCING"),
+					Refresh:      instanceUpdateRefreshFunc(client, instanceId, "REDUCING"),
 					Timeout:      d.Timeout(schema.TimeoutUpdate),
 					Delay:        15 * time.Second,
 					PollInterval: 20 * time.Second,
@@ -930,10 +930,10 @@ func resourceGeminiDBInstanceV3Update(ctx context.Context, d *schema.ResourceDat
 		for _, action := range instance.Actions {
 			if action == "RESIZE_FLAVOR" {
 				// Wait here if the instance already in RESIZE_FLAVOR state
-				stateConf := &resource.StateChangeConf{
+				stateConf := &retry.StateChangeConf{
 					Pending:      []string{"RESIZE_FLAVOR"},
 					Target:       []string{"available"},
-					Refresh:      GeminiDBInstanceUpdateRefreshFunc(client, instanceId, "RESIZE_FLAVOR"),
+					Refresh:      instanceUpdateRefreshFunc(client, instanceId, "RESIZE_FLAVOR"),
 					Timeout:      d.Timeout(schema.TimeoutUpdate),
 					PollInterval: 20 * time.Second,
 				}
@@ -991,10 +991,10 @@ func resourceGeminiDBInstanceV3Update(ctx context.Context, d *schema.ResourceDat
 			}
 
 			// 2. wait for instance status.
-			stateConf := &resource.StateChangeConf{
+			stateConf := &retry.StateChangeConf{
 				Pending:      []string{"RESIZE_FLAVOR"},
 				Target:       []string{"available"},
-				Refresh:      GeminiDBInstanceUpdateRefreshFunc(client, instanceId, "RESIZE_FLAVOR"),
+				Refresh:      instanceUpdateRefreshFunc(client, instanceId, "RESIZE_FLAVOR"),
 				Timeout:      d.Timeout(schema.TimeoutUpdate),
 				PollInterval: 20 * time.Second,
 			}
@@ -1037,10 +1037,10 @@ func resourceGeminiDBInstanceV3Update(ctx context.Context, d *schema.ResourceDat
 			return diag.Errorf("error updating security group for gaussdb_%s_instance %s: %s", defaults.logName, instanceId, result.Err)
 		}
 
-		stateConf := &resource.StateChangeConf{
+		stateConf := &retry.StateChangeConf{
 			Pending:      []string{"MODIFY_SECURITYGROUP"},
 			Target:       []string{"available"},
-			Refresh:      GeminiDBInstanceUpdateRefreshFunc(client, instanceId, "MODIFY_SECURITYGROUP"),
+			Refresh:      instanceUpdateRefreshFunc(client, instanceId, "MODIFY_SECURITYGROUP"),
 			Timeout:      d.Timeout(schema.TimeoutUpdate),
 			PollInterval: 3 * time.Second,
 		}
@@ -1094,7 +1094,7 @@ func resourceGeminiDBInstanceV3Update(ctx context.Context, d *schema.ResourceDat
 	return resourceGeminiDBInstanceV3Read(ctx, d, meta)
 }
 
-func GeminiDBInstanceUpdateRefreshFunc(client *golangsdk.ServiceClient, instanceID, state string) resource.StateRefreshFunc {
+func instanceUpdateRefreshFunc(client *golangsdk.ServiceClient, instanceID, state string) retry.StateRefreshFunc {
 	return func() (interface{}, string, error) {
 		instance, err := instances.GetInstanceByID(client, instanceID)
 
