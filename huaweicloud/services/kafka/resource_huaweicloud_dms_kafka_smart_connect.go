@@ -9,7 +9,7 @@ import (
 
 	"github.com/hashicorp/go-multierror"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/retry"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
 	"github.com/chnsz/golangsdk"
@@ -99,13 +99,13 @@ func resourceDmsKafkaSmartConnectCreate(ctx context.Context, d *schema.ResourceD
 	retryFunc := func() (interface{}, bool, error) {
 		createKafkaSmartConnectResp, createErr := createKafkaSmartConnectClient.Request("POST",
 			createKafkaSmartConnectPath, &createKafkaSmartConnectOpt)
-		retry, err := handleMultiOperationsError(createErr)
-		return createKafkaSmartConnectResp, retry, err
+		shouldRetry, err := handleMultiOperationsError(createErr)
+		return createKafkaSmartConnectResp, shouldRetry, err
 	}
 	r, err := common.RetryContextWithWaitForState(&common.RetryContextWithWaitForStateParam{
 		Ctx:          ctx,
 		RetryFunc:    retryFunc,
-		WaitFunc:     KafkaInstanceStateRefreshFunc(createKafkaSmartConnectClient, instanceID),
+		WaitFunc:     InstanceStateRefreshFunc(createKafkaSmartConnectClient, instanceID),
 		WaitTarget:   []string{"RUNNING"},
 		Timeout:      d.Timeout(schema.TimeoutCreate),
 		DelayTimeout: 1 * time.Second,
@@ -128,10 +128,10 @@ func resourceDmsKafkaSmartConnectCreate(ctx context.Context, d *schema.ResourceD
 	d.SetId(connectorId.(string))
 
 	// enable smart connect, need to wait for the instance status to be RUNNING so that the job could be completed.
-	stateConf := &resource.StateChangeConf{
+	stateConf := &retry.StateChangeConf{
 		Pending:      []string{"EXTENDING"},
 		Target:       []string{"RUNNING"},
-		Refresh:      KafkaInstanceStateRefreshFunc(createKafkaSmartConnectClient, instanceID),
+		Refresh:      InstanceStateRefreshFunc(createKafkaSmartConnectClient, instanceID),
 		Timeout:      d.Timeout(schema.TimeoutCreate),
 		Delay:        5 * time.Second,
 		PollInterval: 5 * time.Second,
@@ -235,13 +235,13 @@ func resourceDmsKafkaSmartConnectDelete(ctx context.Context, d *schema.ResourceD
 	retryFunc := func() (interface{}, bool, error) {
 		deleteKafkaSmartConnectResp, deleteErr := deleteKafkaSmartConnectClient.Request("POST",
 			deleteKafkaSmartConnectPath, &deleteKafkaSmartConnectOpt)
-		retry, err := handleMultiOperationsError(deleteErr)
-		return deleteKafkaSmartConnectResp, retry, err
+		shouldRetry, err := handleMultiOperationsError(deleteErr)
+		return deleteKafkaSmartConnectResp, shouldRetry, err
 	}
 	_, retryErr := common.RetryContextWithWaitForState(&common.RetryContextWithWaitForStateParam{
 		Ctx:          ctx,
 		RetryFunc:    retryFunc,
-		WaitFunc:     KafkaInstanceStateRefreshFunc(deleteKafkaSmartConnectClient, instanceID),
+		WaitFunc:     InstanceStateRefreshFunc(deleteKafkaSmartConnectClient, instanceID),
 		WaitTarget:   []string{"RUNNING"},
 		Timeout:      d.Timeout(schema.TimeoutDelete),
 		DelayTimeout: 1 * time.Second,
@@ -253,10 +253,10 @@ func resourceDmsKafkaSmartConnectDelete(ctx context.Context, d *schema.ResourceD
 	}
 
 	// delete smart connect, need to wait for the instance status to be RUNNING so that the job could be completed.
-	stateConf := &resource.StateChangeConf{
+	stateConf := &retry.StateChangeConf{
 		Pending:      []string{"CONNECTOR_DELETING"},
 		Target:       []string{"RUNNING"},
-		Refresh:      KafkaInstanceStateRefreshFunc(deleteKafkaSmartConnectClient, instanceID),
+		Refresh:      InstanceStateRefreshFunc(deleteKafkaSmartConnectClient, instanceID),
 		Timeout:      d.Timeout(schema.TimeoutDelete),
 		Delay:        5 * time.Second,
 		PollInterval: 5 * time.Second,
