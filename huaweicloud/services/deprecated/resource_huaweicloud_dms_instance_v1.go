@@ -173,15 +173,15 @@ func ResourceDmsInstancesV1() *schema.Resource {
 }
 
 func resourceDmsInstancesV1Create(d *schema.ResourceData, meta interface{}) error {
-	config := meta.(*config.Config)
-	dmsV1Client, err := config.DmsV1Client(config.GetRegion(d))
+	cfg := meta.(*config.Config)
+	dmsV1Client, err := cfg.DmsV1Client(cfg.GetRegion(d))
 	if err != nil {
 		return fmt.Errorf("error creating DMS client: %s", err)
 	}
 
-	ssl_enable := false
+	sslEnable := false
 	if d.Get("access_user").(string) != "" || d.Get("password").(string) != "" {
-		ssl_enable = true
+		sslEnable = true
 	}
 	createOpts := &instances.CreateOps{
 		Name:            d.Get("name").(string),
@@ -200,7 +200,7 @@ func resourceDmsInstancesV1Create(d *schema.ResourceData, meta interface{}) erro
 		PartitionNum:    d.Get("partition_num").(int),
 		Specification:   d.Get("specification").(string),
 		StorageSpecCode: d.Get("storage_spec_code").(string),
-		SslEnable:       ssl_enable,
+		SslEnable:       sslEnable,
 	}
 
 	log.Printf("[DEBUG] Create Options: %#v", createOpts)
@@ -229,10 +229,10 @@ func resourceDmsInstancesV1Create(d *schema.ResourceData, meta interface{}) erro
 	// Store the instance ID now
 	d.SetId(v.InstanceID)
 
-	//set tags
+	// set tags
 	tagRaw := d.Get("tags").(map[string]interface{})
 	if len(tagRaw) > 0 {
-		dmsV2Client, err := config.DmsV2Client(config.GetRegion(d))
+		dmsV2Client, err := cfg.DmsV2Client(cfg.GetRegion(d))
 		if err != nil {
 			return fmt.Errorf("error creating DMS v2 client: %s", err)
 		}
@@ -248,9 +248,9 @@ func resourceDmsInstancesV1Create(d *schema.ResourceData, meta interface{}) erro
 }
 
 func resourceDmsInstancesV1Read(d *schema.ResourceData, meta interface{}) error {
-	config := meta.(*config.Config)
+	cfg := meta.(*config.Config)
 
-	dmsV1Client, err := config.DmsV1Client(config.GetRegion(d))
+	dmsV1Client, err := cfg.DmsV1Client(cfg.GetRegion(d))
 	if err != nil {
 		return fmt.Errorf("error creating DMS client: %s", err)
 	}
@@ -287,7 +287,7 @@ func resourceDmsInstancesV1Read(d *schema.ResourceData, meta interface{}) error 
 	d.Set("maintain_end", v.MaintainEnd)
 
 	// set tags
-	dmsV2Client, err := config.DmsV2Client(config.GetRegion(d))
+	dmsV2Client, err := cfg.DmsV2Client(cfg.GetRegion(d))
 	if err != nil {
 		return fmt.Errorf("error creating DMS instance v2 client: %s", err)
 	}
@@ -306,11 +306,11 @@ func resourceDmsInstancesV1Read(d *schema.ResourceData, meta interface{}) error 
 }
 
 func resourceDmsInstancesV1Update(d *schema.ResourceData, meta interface{}) error {
-	config := meta.(*config.Config)
+	cfg := meta.(*config.Config)
 
-	//lintignore:R019
+	// lintignore:R019
 	if d.HasChanges("name", "description", "maintain_begin", "maintain_end", "security_group_id") {
-		dmsV1Client, err := config.DmsV1Client(config.GetRegion(d))
+		dmsV1Client, err := cfg.DmsV1Client(cfg.GetRegion(d))
 		if err != nil {
 			return fmt.Errorf("error updating DMS instance client: %s", err)
 		}
@@ -324,16 +324,16 @@ func resourceDmsInstancesV1Update(d *schema.ResourceData, meta interface{}) erro
 			updateOpts.Description = &description
 		}
 		if d.HasChange("maintain_begin") {
-			maintain_begin := d.Get("maintain_begin").(string)
-			updateOpts.MaintainBegin = maintain_begin
+			maintainBegin := d.Get("maintain_begin").(string)
+			updateOpts.MaintainBegin = maintainBegin
 		}
 		if d.HasChange("maintain_end") {
-			maintain_end := d.Get("maintain_end").(string)
-			updateOpts.MaintainEnd = maintain_end
+			maintainEnd := d.Get("maintain_end").(string)
+			updateOpts.MaintainEnd = maintainEnd
 		}
 		if d.HasChange("security_group_id") {
-			security_group_id := d.Get("security_group_id").(string)
-			updateOpts.SecurityGroupID = security_group_id
+			securityGroupId := d.Get("security_group_id").(string)
+			updateOpts.SecurityGroupID = securityGroupId
 		}
 
 		err = instances.Update(dmsV1Client, d.Id(), updateOpts).Err
@@ -343,7 +343,7 @@ func resourceDmsInstancesV1Update(d *schema.ResourceData, meta interface{}) erro
 	}
 
 	if d.HasChange("tags") {
-		dmsV2Client, err := config.DmsV2Client(config.GetRegion(d))
+		dmsV2Client, err := cfg.DmsV2Client(cfg.GetRegion(d))
 		if err != nil {
 			return fmt.Errorf("error updating DMS instance v2 client: %s", err)
 		}
@@ -359,8 +359,8 @@ func resourceDmsInstancesV1Update(d *schema.ResourceData, meta interface{}) erro
 }
 
 func resourceDmsInstancesV1Delete(d *schema.ResourceData, meta interface{}) error {
-	config := meta.(*config.Config)
-	dmsV1Client, err := config.DmsV1Client(config.GetRegion(d))
+	cfg := meta.(*config.Config)
+	dmsV1Client, err := cfg.DmsV1Client(cfg.GetRegion(d))
 	if err != nil {
 		return fmt.Errorf("error creating DMS instance client: %s", err)
 	}

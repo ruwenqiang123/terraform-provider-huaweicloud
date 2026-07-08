@@ -295,7 +295,7 @@ func retryBackoffFunc(ctx context.Context, _ *golangsdk.ErrUnexpectedResponseCod
 			return e
 		}
 	} else {
-		//lintignore:R018
+		// lintignore:R018
 		time.Sleep(sleep)
 	}
 
@@ -443,7 +443,8 @@ func (c *Config) newServiceClientByName(client *golangsdk.ProviderClient, catalo
 	// Custom Resource-level region only supports AK/SK authentication.
 	// If set it when using non AK/SK authentication, then it must be the same as Provider-level region.
 	if region != c.Region && (c.AccessKey == "" || c.SecretKey == "") {
-		return nil, fmt.Errorf("Resource-level region must be the same as Provider-level region when using non AK/SK authentication if Resource-level region set")
+		return nil, fmt.Errorf("Resource-level region must be the same as Provider-level region when using non AK/SK authentication" +
+			" if Resource-level region set")
 	}
 
 	c.RPLock.Lock()
@@ -580,7 +581,6 @@ func (c *Config) getUserIDbyName(name string) (string, error) {
 
 // loadUserProjects will query the region-projectId pair and store it into RegionProjectIDMap
 func (c *Config) loadUserProjects(client *golangsdk.ProviderClient, region string) error {
-
 	log.Printf("[DEBUG] Load project ID for region: %s", region)
 	domainID := client.DomainID
 	opts := projects.ListOpts{
@@ -879,11 +879,11 @@ func (c *Config) FwV2Client(region string) (*golangsdk.ServiceClient, error) {
 	return c.NewServiceClient("networkv2", region)
 }
 
-func (c *Config) DnsV2Client(region string) (*golangsdk.ServiceClient, error) {
+func (c *Config) DNSV2Client(region string) (*golangsdk.ServiceClient, error) {
 	return c.NewServiceClient("dns", region)
 }
 
-func (c *Config) DnsWithRegionClient(region string) (*golangsdk.ServiceClient, error) {
+func (c *Config) DNSWithRegionClient(region string) (*golangsdk.ServiceClient, error) {
 	return c.NewServiceClient("dns_region", region)
 }
 

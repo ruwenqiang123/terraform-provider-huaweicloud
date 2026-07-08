@@ -154,9 +154,8 @@ func ResourceVpnSiteConnectionV2() *schema.Resource {
 }
 
 func resourceVpnSiteConnectionV2Create(d *schema.ResourceData, meta interface{}) error {
-
-	config := meta.(*config.Config)
-	networkingClient, err := config.NetworkingV2Client(config.GetRegion(d))
+	cfg := meta.(*config.Config)
+	networkingClient, err := cfg.NetworkingV2Client(cfg.GetRegion(d))
 	if err != nil {
 		return fmt.Errorf("error creating networking client: %s", err)
 	}
@@ -235,8 +234,8 @@ func resourceVpnSiteConnectionV2Create(d *schema.ResourceData, meta interface{})
 func resourceVpnSiteConnectionV2Read(d *schema.ResourceData, meta interface{}) error {
 	log.Printf("[DEBUG] Retrieve information about site connection: %s", d.Id())
 
-	config := meta.(*config.Config)
-	networkingClient, err := config.NetworkingV2Client(config.GetRegion(d))
+	cfg := meta.(*config.Config)
+	networkingClient, err := cfg.NetworkingV2Client(cfg.GetRegion(d))
 	if err != nil {
 		return fmt.Errorf("error creating networking client: %s", err)
 	}
@@ -261,10 +260,9 @@ func resourceVpnSiteConnectionV2Read(d *schema.ResourceData, meta interface{}) e
 	d.Set("vpnservice_id", conn.VPNServiceID)
 	d.Set("local_ep_group_id", conn.LocalEPGroupID)
 	d.Set("ipsecpolicy_id", conn.IPSecPolicyID)
-	// Do not set psk here as the response value is not same with the requested
-	//d.Set("psk", conn.PSK)
 	d.Set("mtu", conn.MTU)
 	d.Set("peer_cidrs", conn.PeerCIDRs)
+	// Do not set `psk` parameter here as the response value is not same with the requested
 
 	// Set the dpd
 	var dpdMap map[string]interface{}
@@ -294,9 +292,8 @@ func resourceVpnSiteConnectionV2Read(d *schema.ResourceData, meta interface{}) e
 }
 
 func resourceVpnSiteConnectionV2Update(d *schema.ResourceData, meta interface{}) error {
-
-	config := meta.(*config.Config)
-	networkingClient, err := config.NetworkingV2Client(config.GetRegion(d))
+	cfg := meta.(*config.Config)
+	networkingClient, err := cfg.NetworkingV2Client(cfg.GetRegion(d))
 	if err != nil {
 		return fmt.Errorf("error creating networking client: %s", err)
 	}
@@ -414,8 +411,8 @@ func resourceVpnSiteConnectionV2Update(d *schema.ResourceData, meta interface{})
 func resourceVpnSiteConnectionV2Delete(d *schema.ResourceData, meta interface{}) error {
 	log.Printf("[DEBUG] Destroy service: %s", d.Id())
 
-	config := meta.(*config.Config)
-	networkingClient, err := config.NetworkingV2Client(config.GetRegion(d))
+	cfg := meta.(*config.Config)
+	networkingClient, err := cfg.NetworkingV2Client(cfg.GetRegion(d))
 	if err != nil {
 		return fmt.Errorf("error creating networking client: %s", err)
 	}
@@ -441,7 +438,6 @@ func resourceVpnSiteConnectionV2Delete(d *schema.ResourceData, meta interface{})
 }
 
 func waitForSiteConnectionDeletion(networkingClient *golangsdk.ServiceClient, id string) retry.StateRefreshFunc {
-
 	return func() (interface{}, string, error) {
 		conn, err := siteconnections.Get(networkingClient, id).Extract()
 		log.Printf("[DEBUG] Got site connection %s => %#v", id, conn)

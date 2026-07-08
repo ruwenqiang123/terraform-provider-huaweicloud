@@ -15,6 +15,7 @@
 package deprecated
 
 import (
+	"fmt"
 	"log"
 	"reflect"
 	"time"
@@ -22,8 +23,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
 	"github.com/chnsz/golangsdk"
-
-	"fmt"
 
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/config"
 )
@@ -94,8 +93,8 @@ func resourceCsPeeringConnectV1UserInputParams(d *schema.ResourceData) map[strin
 }
 
 func resourceCsPeeringConnectV1Create(d *schema.ResourceData, meta interface{}) error {
-	config := meta.(*config.Config)
-	csClient, err := config.CloudStreamV1Client(config.GetRegion(d))
+	cfg := meta.(*config.Config)
+	csClient, err := cfg.CloudStreamV1Client(cfg.GetRegion(d))
 	if err != nil {
 		return fmt.Errorf("error creating SDK client: %s", err)
 	}
@@ -115,7 +114,7 @@ func resourceCsPeeringConnectV1Create(d *schema.ResourceData, meta interface{}) 
 		return fmt.Errorf("error creating CS peering connect: %s", err)
 	}
 
-	networkClient, err := config.NetworkingV2Client(config.GetRegion(d))
+	networkClient, err := cfg.NetworkingV2Client(cfg.GetRegion(d))
 	if err != nil {
 		return fmt.Errorf("error creating SDK client: %s", err)
 	}
@@ -127,7 +126,7 @@ func resourceCsPeeringConnectV1Create(d *schema.ResourceData, meta interface{}) 
 
 	timeout := d.Timeout(schema.TimeoutCreate)
 
-	obj, err := asyncWaitCsPeeringConnectV1Create(d, config, r, csClient, timeout)
+	obj, err := asyncWaitCsPeeringConnectV1Create(d, r, csClient, timeout)
 	if err != nil {
 		return err
 	}
@@ -141,8 +140,8 @@ func resourceCsPeeringConnectV1Create(d *schema.ResourceData, meta interface{}) 
 }
 
 func resourceCsPeeringConnectV1Read(d *schema.ResourceData, meta interface{}) error {
-	config := meta.(*config.Config)
-	client, err := config.CloudStreamV1Client(config.GetRegion(d))
+	cfg := meta.(*config.Config)
+	client, err := cfg.CloudStreamV1Client(cfg.GetRegion(d))
 	if err != nil {
 		return fmt.Errorf("error creating SDK client: %s", err)
 	}
@@ -164,8 +163,8 @@ func resourceCsPeeringConnectV1Read(d *schema.ResourceData, meta interface{}) er
 }
 
 func resourceCsPeeringConnectV1Delete(d *schema.ResourceData, meta interface{}) error {
-	config := meta.(*config.Config)
-	client, err := config.CloudStreamV1Client(config.GetRegion(d))
+	cfg := meta.(*config.Config)
+	client, err := cfg.CloudStreamV1Client(cfg.GetRegion(d))
 	if err != nil {
 		return fmt.Errorf("error creating SDK client: %s", err)
 	}
@@ -188,7 +187,7 @@ func resourceCsPeeringConnectV1Delete(d *schema.ResourceData, meta interface{}) 
 		return fmt.Errorf("error deleting CS peering connect, which ID is %s: %s", d.Id(), r.Err)
 	}
 
-	_, err = asyncWaitCsPeeringConnectV1Delete(d, config, r.Body, client, d.Timeout(schema.TimeoutDelete))
+	_, err = asyncWaitCsPeeringConnectV1Delete(d, client, d.Timeout(schema.TimeoutDelete))
 	return err
 }
 
@@ -246,9 +245,8 @@ func sendCsPeeringConnectV1CreateRequest(d *schema.ResourceData, params interfac
 	return r.Body, nil
 }
 
-func asyncWaitCsPeeringConnectV1Create(d *schema.ResourceData, config *config.Config, result interface{},
+func asyncWaitCsPeeringConnectV1Create(d *schema.ResourceData, result interface{},
 	client *golangsdk.ServiceClient, timeout time.Duration) (interface{}, error) {
-
 	data := make(map[string]interface{})
 	pathParameters := map[string][]string{
 		"peering_id": []string{"peering", "id"},
@@ -288,9 +286,7 @@ func asyncWaitCsPeeringConnectV1Create(d *schema.ResourceData, config *config.Co
 	)
 }
 
-func asyncWaitCsPeeringConnectV1Delete(d *schema.ResourceData, config *config.Config, result interface{},
-	client *golangsdk.ServiceClient, timeout time.Duration) (interface{}, error) {
-
+func asyncWaitCsPeeringConnectV1Delete(d *schema.ResourceData, client *golangsdk.ServiceClient, timeout time.Duration) (interface{}, error) {
 	url, err := replaceVars(d, "reserved_cluster/{cluster_id}/peering/{id}", nil)
 	if err != nil {
 		return nil, err
@@ -428,7 +424,7 @@ func flattenCsPeeringConnectV1TargetVpcInfo(d interface{}, arrayIndex map[string
 
 func setCsPeeringConnectV1States(d *schema.ResourceData, opts map[string]interface{}) error {
 	for k, v := range opts {
-		//lintignore:R001
+		// lintignore:R001
 		if err := d.Set(k, v); err != nil {
 			return fmt.Errorf("error setting CS peering connect:%s: %s", k, err)
 		}

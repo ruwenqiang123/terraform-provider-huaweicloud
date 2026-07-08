@@ -246,7 +246,6 @@ func dataSourceCCEClusterV3Read(_ context.Context, d *schema.ResourceData, meta 
 	// set endpoints
 	var v []map[string]interface{}
 	for _, endpoint := range Cluster.Status.Endpoints {
-
 		mapping := map[string]interface{}{
 			"url":  endpoint.Url,
 			"type": endpoint.Type,
@@ -270,7 +269,7 @@ func dataSourceCCEClusterV3Read(_ context.Context, d *schema.ResourceData, meta 
 		log.Printf("Error retrieving CCE cluster cert: %s", err)
 	}
 
-	//Set Certificate Clusters
+	// Set Certificate Clusters
 	var clusterList []map[string]interface{}
 	for _, clusterObj := range cert.Clusters {
 		clusterCert := make(map[string]interface{})
@@ -281,7 +280,7 @@ func dataSourceCCEClusterV3Read(_ context.Context, d *schema.ResourceData, meta 
 	}
 	mErr = multierror.Append(mErr, d.Set("certificate_clusters", clusterList))
 
-	//Set Certificate Users
+	// Set Certificate Users
 	var userList []map[string]interface{}
 	for _, userObj := range cert.Users {
 		userCert := make(map[string]interface{})

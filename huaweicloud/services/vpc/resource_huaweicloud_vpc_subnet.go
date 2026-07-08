@@ -75,7 +75,7 @@ func buildSubnetDNSList(d *schema.ResourceData, cfg *config.Config, region strin
 	// public DNS: 8.8.8.8(google-public-dns-a.google.com) and 114.114.114.114(China)
 	publicDNSList := []string{"8.8.8.8", "114.114.114.114"}
 
-	dnsClient, err := cfg.DnsWithRegionClient(region)
+	dnsClient, err := cfg.DNSWithRegionClient(region)
 	if err != nil {
 		log.Printf("[WARN] cannot generate DNS client, use %v as the DNS list", publicDNSList)
 		return publicDNSList
@@ -345,12 +345,11 @@ func resourceVpcSubnetCreate(ctx context.Context, d *schema.ResourceData, meta i
 	}
 
 	return resourceVpcSubnetRead(ctx, d, cfg)
-
 }
 
 // GetVpcSubnetById is a method to obtain subnet informations from special region through subnet ID.
-func GetVpcSubnetById(config *config.Config, region, networkId string) (*subnets.Subnet, error) {
-	subnetClient, err := config.NetworkingV1Client(region)
+func GetVpcSubnetById(cfg *config.Config, region, networkId string) (*subnets.Subnet, error) {
+	subnetClient, err := cfg.NetworkingV1Client(region)
 	if err != nil {
 		return nil, err
 	}
@@ -487,7 +486,6 @@ func resourceVpcSubnetUpdate(ctx context.Context, d *schema.ResourceData, meta i
 }
 
 func resourceVpcSubnetDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-
 	cfg := meta.(*config.Config)
 	subnetClient, err := cfg.NetworkingV1Client(cfg.GetRegion(d))
 	if err != nil {
@@ -535,7 +533,6 @@ func waitForVpcSubnetActive(subnetClient *golangsdk.ServiceClient, vpcId string)
 
 func waitForVpcSubnetDelete(subnetClient *golangsdk.ServiceClient, vpcId string, subnetId string) retry.StateRefreshFunc {
 	return func() (interface{}, string, error) {
-
 		r, err := subnets.Get(subnetClient, subnetId).Extract()
 
 		if err != nil {

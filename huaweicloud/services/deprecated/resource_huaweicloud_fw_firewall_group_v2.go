@@ -87,9 +87,8 @@ func ResourceFWFirewallGroupV2() *schema.Resource {
 }
 
 func resourceFWFirewallGroupV2Create(d *schema.ResourceData, meta interface{}) error {
-
-	config := meta.(*config.Config)
-	fwClient, err := config.FwV2Client(config.GetRegion(d))
+	cfg := meta.(*config.Config)
+	fwClient, err := cfg.FwV2Client(cfg.GetRegion(d))
 	if err != nil {
 		return fmt.Errorf("error creating fw client: %s", err)
 	}
@@ -126,26 +125,26 @@ func resourceFWFirewallGroupV2Create(d *schema.ResourceData, meta interface{}) e
 
 	log.Printf("[DEBUG] Create firewall group: %#v", createOpts)
 
-	firewall_group, err := firewall_groups.Create(fwClient, createOpts).Extract()
+	firewallGroup, err := firewall_groups.Create(fwClient, createOpts).Extract()
 	if err != nil {
 		return err
 	}
 
-	log.Printf("[DEBUG] Firewall group created: %#v", firewall_group)
+	log.Printf("[DEBUG] Firewall group created: %#v", firewallGroup)
 
 	stateConf := &retry.StateChangeConf{
 		Pending:    []string{"PENDING_CREATE"},
 		Target:     []string{"ACTIVE"},
-		Refresh:    waitForFirewallGroupActive(fwClient, firewall_group.ID),
+		Refresh:    waitForFirewallGroupActive(fwClient, firewallGroup.ID),
 		Timeout:    d.Timeout(schema.TimeoutCreate),
 		Delay:      0,
 		MinTimeout: 2 * time.Second,
 	}
 
 	_, err = stateConf.WaitForStateContext(context.Background())
-	log.Printf("[DEBUG] Firewall group (%s) is active.", firewall_group.ID)
+	log.Printf("[DEBUG] Firewall group (%s) is active.", firewallGroup.ID)
 
-	d.SetId(firewall_group.ID)
+	d.SetId(firewallGroup.ID)
 
 	return resourceFWFirewallGroupV2Read(d, meta)
 }
@@ -153,38 +152,37 @@ func resourceFWFirewallGroupV2Create(d *schema.ResourceData, meta interface{}) e
 func resourceFWFirewallGroupV2Read(d *schema.ResourceData, meta interface{}) error {
 	log.Printf("[DEBUG] Retrieve information about firewall: %s", d.Id())
 
-	config := meta.(*config.Config)
-	fwClient, err := config.FwV2Client(config.GetRegion(d))
+	cfg := meta.(*config.Config)
+	fwClient, err := cfg.FwV2Client(cfg.GetRegion(d))
 	if err != nil {
 		return fmt.Errorf("error creating fw client: %s", err)
 	}
 
-	var firewall_group FirewallGroup
-	err = firewall_groups.Get(fwClient, d.Id()).ExtractInto(&firewall_group)
+	var firewallGroup FirewallGroup
+	err = firewall_groups.Get(fwClient, d.Id()).ExtractInto(&firewallGroup)
 	if err != nil {
 		return common.CheckDeleted(d, err, "firewall")
 	}
 
-	log.Printf("[DEBUG] Read firewall group %s: %#v", d.Id(), firewall_group)
+	log.Printf("[DEBUG] Read firewall group %s: %#v", d.Id(), firewallGroup)
 
-	d.Set("name", firewall_group.Name)
-	d.Set("description", firewall_group.Description)
-	d.Set("ingress_policy_id", firewall_group.IngressPolicyID)
-	d.Set("egress_policy_id", firewall_group.EgressPolicyID)
-	d.Set("admin_state_up", firewall_group.AdminStateUp)
-	d.Set("tenant_id", firewall_group.TenantID)
-	if err := d.Set("ports", firewall_group.PortIDs); err != nil {
+	d.Set("name", firewallGroup.Name)
+	d.Set("description", firewallGroup.Description)
+	d.Set("ingress_policy_id", firewallGroup.IngressPolicyID)
+	d.Set("egress_policy_id", firewallGroup.EgressPolicyID)
+	d.Set("admin_state_up", firewallGroup.AdminStateUp)
+	d.Set("tenant_id", firewallGroup.TenantID)
+	if err := d.Set("ports", firewallGroup.PortIDs); err != nil {
 		return fmt.Errorf("error saving ports to state for firewall group (%s): %s", d.Id(), err)
 	}
-	d.Set("region", config.GetRegion(d))
+	d.Set("region", cfg.GetRegion(d))
 
 	return nil
 }
 
 func resourceFWFirewallGroupV2Update(d *schema.ResourceData, meta interface{}) error {
-
-	config := meta.(*config.Config)
-	fwClient, err := config.FwV2Client(config.GetRegion(d))
+	cfg := meta.(*config.Config)
+	fwClient, err := cfg.FwV2Client(cfg.GetRegion(d))
 	if err != nil {
 		return fmt.Errorf("error creating fw client: %s", err)
 	}
@@ -249,8 +247,8 @@ func resourceFWFirewallGroupV2Update(d *schema.ResourceData, meta interface{}) e
 func resourceFWFirewallGroupV2Delete(d *schema.ResourceData, meta interface{}) error {
 	log.Printf("[DEBUG] Destroy firewall group: %s", d.Id())
 
-	config := meta.(*config.Config)
-	fwClient, err := config.FwV2Client(config.GetRegion(d))
+	cfg := meta.(*config.Config)
+	fwClient, err := cfg.FwV2Client(cfg.GetRegion(d))
 	if err != nil {
 		return fmt.Errorf("error creating fw client: %s", err)
 	}
@@ -288,7 +286,6 @@ func resourceFWFirewallGroupV2Delete(d *schema.ResourceData, meta interface{}) e
 }
 
 func waitForFirewallGroupActive(fwClient *golangsdk.ServiceClient, id string) retry.StateRefreshFunc {
-
 	return func() (interface{}, string, error) {
 		var fw FirewallGroup
 
@@ -301,7 +298,6 @@ func waitForFirewallGroupActive(fwClient *golangsdk.ServiceClient, id string) re
 }
 
 func waitForFirewallGroupDeletion(fwClient *golangsdk.ServiceClient, id string) retry.StateRefreshFunc {
-
 	return func() (interface{}, string, error) {
 		fw, err := firewall_groups.Get(fwClient, id).Extract()
 		log.Printf("[DEBUG] Got firewall group %s => %#v", id, fw)

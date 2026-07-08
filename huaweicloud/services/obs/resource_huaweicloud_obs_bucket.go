@@ -596,7 +596,6 @@ func resourceObsBucketUpdate(ctx context.Context, d *schema.ResourceData, meta i
 		if err := resourceObsBucketEnterpriseProjectIdUpdate(ctx, d, conf, obsClient, region); err != nil {
 			return diag.FromErr(err)
 		}
-
 	}
 
 	if d.HasChange("user_domain_names") {
@@ -867,7 +866,7 @@ func resourceObsBucketVersioningUpdate(obsClient *obs.ObsClient, d *schema.Resou
 	return nil
 }
 
-func resourceObsBucketEncryptionUpdate(config *config.Config, obsClient *obs.ObsClient, d *schema.ResourceData) error {
+func resourceObsBucketEncryptionUpdate(_ *config.Config, obsClient *obs.ObsClient, d *schema.ResourceData) error {
 	bucket := d.Get("bucket").(string)
 
 	if d.Get("encryption").(bool) {
@@ -953,7 +952,6 @@ func resourceObsBucketQuotaUpdate(obsClient *obs.ObsClient, d *schema.ResourceDa
 	}
 
 	return nil
-
 }
 
 // nolint:gocyclo

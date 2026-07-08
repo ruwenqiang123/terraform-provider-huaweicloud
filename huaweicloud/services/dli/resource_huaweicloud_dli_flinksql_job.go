@@ -299,8 +299,8 @@ func resourceFlinkSqlJobCreate(ctx context.Context, d *schema.ResourceData, meta
 	}
 
 	if runtimConfig, ok := d.GetOk("runtime_config"); ok {
-		config := utils.ExpandResourceTags(runtimConfig.(map[string]interface{}))
-		configStr, err := json.Marshal(config)
+		cfg := utils.ExpandResourceTags(runtimConfig.(map[string]interface{}))
+		configStr, err := json.Marshal(cfg)
 		if err != nil {
 			log.Printf("[ERROR] error marshaling runtime config: %s", err)
 		}
@@ -385,7 +385,7 @@ func addTagsToResource(cfg *config.Config, region string, d *schema.ResourceData
 	return nil
 }
 
-func resourceFlinkSqlJobRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceFlinkSqlJobRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	cfg := meta.(*config.Config)
 	region := cfg.GetRegion(d)
 	client, err := cfg.DliV1Client(region)
@@ -497,7 +497,7 @@ func getSteramGraphById(client *golangsdk.ServiceClient, d *schema.ResourceData,
 }
 
 // This API is used to cancel a submitted job. If execution of a job completes or fails, this job cannot be canceled.
-func resourceFlinkSqlJobDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceFlinkSqlJobDelete(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	cfg := meta.(*config.Config)
 	region := cfg.GetRegion(d)
 	client, err := cfg.DliV1Client(region)
@@ -723,8 +723,8 @@ func updateFlinkSqlJobWithStop(ctx context.Context, client *golangsdk.ServiceCli
 		}
 
 		if runtimConfig, ok := d.GetOk("runtime_config"); ok {
-			config := utils.ExpandResourceTags(runtimConfig.(map[string]interface{}))
-			configStr, err := json.Marshal(config)
+			cfg := utils.ExpandResourceTags(runtimConfig.(map[string]interface{}))
+			configStr, err := json.Marshal(cfg)
 			if err != nil {
 				log.Printf("[ERROR] error marshaling runtime config: %s", err)
 			}

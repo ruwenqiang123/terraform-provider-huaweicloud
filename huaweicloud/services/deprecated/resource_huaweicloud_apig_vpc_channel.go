@@ -32,12 +32,7 @@ const (
 	AlgorithmTypeWrr AlgorithmType = "WRR"
 	AlgorithmTypeWlc AlgorithmType = "WLC"
 	AlgorithmTypeSh  AlgorithmType = "SH"
-	AlgorithmTypeUri AlgorithmType = "URI hashing"
-
-	ProtocolTypeTcp   ProtocolType = "TCP"
-	ProtocolTypeHttp  ProtocolType = "HTTP"
-	ProtocolTypeHttps ProtocolType = "HTTPS"
-	ProtocolTypeBoth  ProtocolType = "BOTH"
+	AlgorithmTypeURI AlgorithmType = "URI hashing"
 
 	ChannelStatusNormal   ChannelStatus = 1
 	ChannelStatusAbnormal ChannelStatus = 2
@@ -57,7 +52,7 @@ var (
 		AlgorithmTypeWrr: 1,
 		AlgorithmTypeWlc: 2,
 		AlgorithmTypeSh:  3,
-		AlgorithmTypeUri: 4,
+		AlgorithmTypeURI: 4,
 	}
 
 	channelStatus = map[int]string{
@@ -147,7 +142,7 @@ func ResourceApigVpcChannelV2() *schema.Resource {
 					string(AlgorithmTypeWrr),
 					string(AlgorithmTypeWlc),
 					string(AlgorithmTypeSh),
-					string(AlgorithmTypeUri),
+					string(AlgorithmTypeURI),
 				}, false),
 				Description: "The distribution algorithm.",
 			},
@@ -234,7 +229,7 @@ func buildVpcChannelHealthConfig(d *schema.ResourceData) (channels.VpcHealthConf
 	return result, nil
 }
 
-func buildVpcChannelMembers(d *schema.ResourceData, config *config.Config) ([]channels.MemberInfo, error) {
+func buildVpcChannelMembers(d *schema.ResourceData, cfg *config.Config) ([]channels.MemberInfo, error) {
 	var (
 		members = d.Get("members").(*schema.Set)
 		mType   = MemberType(d.Get("member_type").(string))
@@ -244,7 +239,7 @@ func buildVpcChannelMembers(d *schema.ResourceData, config *config.Config) ([]ch
 	// Since the API requires that the name must be supported when the member type is 'ecs'.
 	// It is necessary to query the ecs instance information from server to obtain the instance name.
 	// We will cancel this unreasonable parameter configuration in the future.
-	ecsClient, err := config.ComputeV1Client(config.GetRegion(d))
+	ecsClient, err := cfg.ComputeV1Client(cfg.GetRegion(d))
 	if err != nil {
 		return result, fmt.Errorf("error creating ECS v1 client: %s", err)
 	}
@@ -279,7 +274,7 @@ func buildVpcChannelMembers(d *schema.ResourceData, config *config.Config) ([]ch
 	return result, nil
 }
 
-func buildVpcChannelParameters(d *schema.ResourceData, config *config.Config) (channels.ChannelOpts, error) {
+func buildVpcChannelParameters(d *schema.ResourceData, cfg *config.Config) (channels.ChannelOpts, error) {
 	var (
 		mType         = MemberType(d.Get("member_type").(string))
 		algorithmType = AlgorithmType(d.Get("algorithm").(string))
@@ -297,7 +292,7 @@ func buildVpcChannelParameters(d *schema.ResourceData, config *config.Config) (c
 		return opt, fmt.Errorf("wrong member type: %v", mType)
 	}
 	// Backend servers
-	members, err := buildVpcChannelMembers(d, config)
+	members, err := buildVpcChannelMembers(d, cfg)
 	if err != nil {
 		return opt, err
 	}
