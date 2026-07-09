@@ -15,14 +15,13 @@
 package deprecated
 
 import (
+	"fmt"
 	"log"
 	"reflect"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 
 	"github.com/chnsz/golangsdk"
-
-	"fmt"
 
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/config"
 )
@@ -71,8 +70,8 @@ func resourceCsRouteV1UserInputParams(d *schema.ResourceData) map[string]interfa
 }
 
 func resourceCsRouteV1Create(d *schema.ResourceData, meta interface{}) error {
-	config := meta.(*config.Config)
-	client, err := config.CloudStreamV1Client(config.GetRegion(d))
+	cfg := meta.(*config.Config)
+	client, err := cfg.CloudStreamV1Client(cfg.GetRegion(d))
 	if err != nil {
 		return fmt.Errorf("error creating SDK client: %s", err)
 	}
@@ -98,8 +97,8 @@ func resourceCsRouteV1Create(d *schema.ResourceData, meta interface{}) error {
 }
 
 func resourceCsRouteV1Read(d *schema.ResourceData, meta interface{}) error {
-	config := meta.(*config.Config)
-	client, err := config.CloudStreamV1Client(config.GetRegion(d))
+	cfg := meta.(*config.Config)
+	client, err := cfg.CloudStreamV1Client(cfg.GetRegion(d))
 	if err != nil {
 		return fmt.Errorf("error creating SDK client: %s", err)
 	}
@@ -121,8 +120,8 @@ func resourceCsRouteV1Read(d *schema.ResourceData, meta interface{}) error {
 }
 
 func resourceCsRouteV1Delete(d *schema.ResourceData, meta interface{}) error {
-	config := meta.(*config.Config)
-	client, err := config.CloudStreamV1Client(config.GetRegion(d))
+	cfg := meta.(*config.Config)
+	client, err := cfg.CloudStreamV1Client(cfg.GetRegion(d))
 	if err != nil {
 		return fmt.Errorf("error creating SDK client: %s", err)
 	}
@@ -252,7 +251,7 @@ func flattenCsRouteV1Options(response map[string]interface{}) (map[string]interf
 
 func setCsRouteV1States(d *schema.ResourceData, opts map[string]interface{}) error {
 	for k, v := range opts {
-		//lintignore:R001
+		// lintignore:R001
 		if err := d.Set(k, v); err != nil {
 			return fmt.Errorf("error setting CS route:%s: %s", k, err)
 		}

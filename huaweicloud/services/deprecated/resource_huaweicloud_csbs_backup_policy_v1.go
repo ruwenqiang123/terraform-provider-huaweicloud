@@ -147,12 +147,11 @@ func ResourceCSBSBackupPolicyV1() *schema.Resource {
 			},
 		},
 	}
-
 }
 
 func resourceCSBSBackupPolicyCreate(d *schema.ResourceData, meta interface{}) error {
-	config := meta.(*config.Config)
-	policyClient, err := config.CsbsV1Client(config.GetRegion(d))
+	cfg := meta.(*config.Config)
+	policyClient, err := cfg.CsbsV1Client(cfg.GetRegion(d))
 
 	if err != nil {
 		return fmt.Errorf("error creating backup policy client: %s", err)
@@ -193,13 +192,11 @@ func resourceCSBSBackupPolicyCreate(d *schema.ResourceData, meta interface{}) er
 	}
 
 	return resourceCSBSBackupPolicyRead(d, meta)
-
 }
 
 func resourceCSBSBackupPolicyRead(d *schema.ResourceData, meta interface{}) error {
-
-	config := meta.(*config.Config)
-	policyClient, err := config.CsbsV1Client(config.GetRegion(d))
+	cfg := meta.(*config.Config)
+	policyClient, err := cfg.CsbsV1Client(cfg.GetRegion(d))
 	if err != nil {
 		return fmt.Errorf("error creating CSBS client: %s", err)
 	}
@@ -230,14 +227,14 @@ func resourceCSBSBackupPolicyRead(d *schema.ResourceData, meta interface{}) erro
 	d.Set("provider_id", backupPolicy.ProviderId)
 	d.Set("created_at", backupPolicy.CreatedAt.Format(time.RFC3339))
 
-	d.Set("region", config.GetRegion(d))
+	d.Set("region", cfg.GetRegion(d))
 
 	return nil
 }
 
 func resourceCSBSBackupPolicyUpdate(d *schema.ResourceData, meta interface{}) error {
-	config := meta.(*config.Config)
-	policyClient, err := config.CsbsV1Client(config.GetRegion(d))
+	cfg := meta.(*config.Config)
+	policyClient, err := cfg.CsbsV1Client(cfg.GetRegion(d))
 	if err != nil {
 		return fmt.Errorf("error creating CSBS client: %s", err)
 	}
@@ -267,8 +264,8 @@ func resourceCSBSBackupPolicyUpdate(d *schema.ResourceData, meta interface{}) er
 }
 
 func resourceCSBSBackupPolicyDelete(d *schema.ResourceData, meta interface{}) error {
-	config := meta.(*config.Config)
-	policyClient, err := config.CsbsV1Client(config.GetRegion(d))
+	cfg := meta.(*config.Config)
+	policyClient, err := cfg.CsbsV1Client(cfg.GetRegion(d))
 	if err != nil {
 		return fmt.Errorf("error creating CSBS client: %s", err)
 	}
@@ -307,7 +304,6 @@ func waitForCSBSBackupPolicyActive(policyClient *golangsdk.ServiceClient, policy
 
 func waitForVBSPolicyDelete(policyClient *golangsdk.ServiceClient, policyID string) retry.StateRefreshFunc {
 	return func() (interface{}, string, error) {
-
 		r, err := policies.Get(policyClient, policyID).Extract()
 
 		if err != nil {
@@ -376,7 +372,6 @@ func resourceCSBSResourceV1(d *schema.ResourceData) []policies.Resource {
 }
 
 func resourceCSBScheduleUpdateV1(d *schema.ResourceData) []policies.ScheduledOperationToUpdate {
-
 	oldSORaw, newSORaw := d.GetChange("scheduled_operation")
 	oldSOList := oldSORaw.([]interface{})
 	newSOSetList := newSORaw.([]interface{})

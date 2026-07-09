@@ -63,7 +63,7 @@ func DataSourceNetworkingSubnetV2() *schema.Resource {
 				Type:     schema.TypeInt,
 				Optional: true,
 				Computed: true,
-				ValidateFunc: func(v interface{}, k string) (ws []string, result []error) {
+				ValidateFunc: func(v interface{}, _ string) (ws []string, result []error) {
 					value := v.(int)
 					if value != 4 && value != 6 {
 						result = append(result, errors.New("only 4 and 6 are supported values for 'ip_version'"))
@@ -154,8 +154,8 @@ func DataSourceNetworkingSubnetV2() *schema.Resource {
 
 // nolint:gocyclo
 func dataSourceNetworkingSubnetV2Read(d *schema.ResourceData, meta interface{}) error {
-	config := meta.(*config.Config)
-	networkingClient, err := config.NetworkingV2Client(config.GetRegion(d))
+	cfg := meta.(*config.Config)
+	networkingClient, err := cfg.NetworkingV2Client(cfg.GetRegion(d))
 	if err != nil {
 		return fmt.Errorf("error creating networking client: %s", err)
 	}
@@ -240,7 +240,7 @@ func dataSourceNetworkingSubnetV2Read(d *schema.ResourceData, meta interface{}) 
 	d.Set("ipv6_ra_mode", subnet.IPv6RAMode)
 	d.Set("gateway_ip", subnet.GatewayIP)
 	d.Set("enable_dhcp", subnet.EnableDHCP)
-	d.Set("region", config.GetRegion(d))
+	d.Set("region", cfg.GetRegion(d))
 
 	err = d.Set("dns_nameservers", subnet.DNSNameservers)
 	if err != nil {

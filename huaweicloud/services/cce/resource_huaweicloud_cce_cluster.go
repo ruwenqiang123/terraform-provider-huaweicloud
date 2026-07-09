@@ -93,7 +93,7 @@ func ResourceCluster() *schema.Resource {
 
 		CustomizeDiff: config.MergeDefaultTags(),
 
-		//request and response parameters
+		// request and response parameters
 		Schema: map[string]*schema.Schema{
 			"region": {
 				Type:     schema.TypeString,
@@ -705,11 +705,11 @@ func resourceClusterCreate(ctx context.Context, d *schema.ResourceData, meta int
 		return diag.Errorf("error creating AOM v1 client: %s", err)
 	}
 
-	authenticating_proxy := make(map[string]string)
+	authenticatingProxy := make(map[string]string)
 	if common.HasFilledOpt(d, "authenticating_proxy_ca") {
-		authenticating_proxy["ca"] = utils.TryBase64EncodeString(d.Get("authenticating_proxy_ca").(string))
-		authenticating_proxy["cert"] = utils.TryBase64EncodeString(d.Get("authenticating_proxy_cert").(string))
-		authenticating_proxy["privateKey"] = utils.TryBase64EncodeString(d.Get("authenticating_proxy_private_key").(string))
+		authenticatingProxy["ca"] = utils.TryBase64EncodeString(d.Get("authenticating_proxy_ca").(string))
+		authenticatingProxy["cert"] = utils.TryBase64EncodeString(d.Get("authenticating_proxy_cert").(string))
+		authenticatingProxy["privateKey"] = utils.TryBase64EncodeString(d.Get("authenticating_proxy_private_key").(string))
 	}
 
 	billingMode := 0
@@ -750,7 +750,7 @@ func resourceClusterCreate(ctx context.Context, d *schema.ResourceData, meta int
 			EniNetwork: buildEniNetworkOpts(d.Get("eni_subnet_id").(string)),
 			Authentication: clusters.AuthenticationSpec{
 				Mode:                d.Get("authentication_mode").(string),
-				AuthenticatingProxy: authenticating_proxy,
+				AuthenticatingProxy: authenticatingProxy,
 			},
 			BillingMode:      billingMode,
 			ExtendParam:      buildResourceClusterExtendParams(d, cfg),
@@ -862,7 +862,6 @@ func resourceClusterCreate(ctx context.Context, d *schema.ResourceData, meta int
 	diags = append(diags, resourceClusterRead(ctx, d, meta)...)
 
 	return diags
-
 }
 
 func resourceClusterRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
@@ -931,7 +930,7 @@ func resourceClusterRead(_ context.Context, d *schema.ResourceData, meta interfa
 		log.Printf("error retrieving CCE cluster certificate: %s", err)
 	}
 
-	//Set Certificate Clusters
+	// Set Certificate Clusters
 	var clusterList []map[string]interface{}
 	for _, clusterObj := range cert.Clusters {
 		clusterCert := make(map[string]interface{})
@@ -942,7 +941,7 @@ func resourceClusterRead(_ context.Context, d *schema.ResourceData, meta interfa
 	}
 	mErr = multierror.Append(mErr, d.Set("certificate_clusters", clusterList))
 
-	//Set Certificate Users
+	// Set Certificate Users
 	var userList []map[string]interface{}
 	for _, userObj := range cert.Users {
 		userCert := make(map[string]interface{})
@@ -1324,7 +1323,6 @@ func getClusterIDFromJob(ctx context.Context, client *golangsdk.ServiceClient, j
 		} else {
 			return "", fmt.Errorf("error waiting for job (%s) to become success: %s", jobID, err)
 		}
-
 	}
 
 	job := v.(*nodes.Job)

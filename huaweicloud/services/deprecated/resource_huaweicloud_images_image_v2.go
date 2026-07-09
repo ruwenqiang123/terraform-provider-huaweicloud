@@ -175,8 +175,8 @@ func ResourceImagesImageV2() *schema.Resource {
 }
 
 func resourceImagesImageV2Create(d *schema.ResourceData, meta interface{}) error {
-	config := meta.(*config.Config)
-	imageClient, err := config.ImageV2Client(config.GetRegion(d))
+	cfg := meta.(*config.Config)
+	imageClient, err := cfg.ImageV2Client(cfg.GetRegion(d))
 	if err != nil {
 		return fmt.Errorf("error creating image client: %s", err)
 	}
@@ -210,9 +210,8 @@ func resourceImagesImageV2Create(d *schema.ResourceData, meta interface{}) error
 	imgFilePath, err := resourceImagesImageV2File(d)
 	if err != nil {
 		return fmt.Errorf("error opening file for Image: %s", err)
-
 	}
-	fileSize, fileChecksum, err := resourceImagesImageV2FileProps(imgFilePath)
+	fileSize, _, err := resourceImagesImageV2FileProps(imgFilePath)
 	if err != nil {
 		return fmt.Errorf("error getting file props: %s", err)
 	}
@@ -230,11 +229,11 @@ func resourceImagesImageV2Create(d *schema.ResourceData, meta interface{}) error
 		return fmt.Errorf("error while uploading file %s: %s", imgFilePath, res.Err)
 	}
 
-	//wait for active
+	// wait for active
 	stateConf := &retry.StateChangeConf{
 		Pending:    []string{string(images.ImageStatusQueued), string(images.ImageStatusSaving)},
 		Target:     []string{string(images.ImageStatusActive)},
-		Refresh:    resourceImagesImageV2RefreshFunc(imageClient, d.Id(), fileSize, fileChecksum),
+		Refresh:    resourceImagesImageV2RefreshFunc(imageClient, d.Id()),
 		Timeout:    d.Timeout(schema.TimeoutCreate),
 		Delay:      10 * time.Second,
 		MinTimeout: 3 * time.Second,
@@ -248,9 +247,9 @@ func resourceImagesImageV2Create(d *schema.ResourceData, meta interface{}) error
 }
 
 func resourceImagesImageV2Read(d *schema.ResourceData, meta interface{}) error {
-	config := meta.(*config.Config)
-	region := config.GetRegion(d)
-	imageClient, err := config.ImageV2Client(region)
+	cfg := meta.(*config.Config)
+	region := cfg.GetRegion(d)
+	imageClient, err := cfg.ImageV2Client(region)
 	if err != nil {
 		return fmt.Errorf("error creating image client: %s", err)
 	}
@@ -291,8 +290,8 @@ func resourceImagesImageV2Read(d *schema.ResourceData, meta interface{}) error {
 }
 
 func resourceImagesImageV2Update(d *schema.ResourceData, meta interface{}) error {
-	config := meta.(*config.Config)
-	imageClient, err := config.ImageV2Client(config.GetRegion(d))
+	cfg := meta.(*config.Config)
+	imageClient, err := cfg.ImageV2Client(cfg.GetRegion(d))
 	if err != nil {
 		return fmt.Errorf("error creating image client: %s", err)
 	}
@@ -329,8 +328,8 @@ func resourceImagesImageV2Update(d *schema.ResourceData, meta interface{}) error
 }
 
 func resourceImagesImageV2Delete(d *schema.ResourceData, meta interface{}) error {
-	config := meta.(*config.Config)
-	imageClient, err := config.ImageV2Client(config.GetRegion(d))
+	cfg := meta.(*config.Config)
+	imageClient, err := cfg.ImageV2Client(cfg.GetRegion(d))
 	if err != nil {
 		return fmt.Errorf("error creating image client: %s", err)
 	}
@@ -426,7 +425,6 @@ func resourceImagesImageV2FileProps(filename string) (int64, string, error) {
 	file, err := os.Open(filename)
 	if err != nil {
 		return -1, "", fmt.Errorf("error opening file for Image: %s", err)
-
 	}
 	defer file.Close()
 
@@ -485,7 +483,7 @@ func resourceImagesImageV2File(d *schema.ResourceData) (string, error) {
 	}
 }
 
-func resourceImagesImageV2RefreshFunc(client *golangsdk.ServiceClient, id string, fileSize int64, checksum string) retry.StateRefreshFunc {
+func resourceImagesImageV2RefreshFunc(client *golangsdk.ServiceClient, id string) retry.StateRefreshFunc {
 	return func() (interface{}, string, error) {
 		img, err := images.Get(client, id).Extract()
 		if err != nil {

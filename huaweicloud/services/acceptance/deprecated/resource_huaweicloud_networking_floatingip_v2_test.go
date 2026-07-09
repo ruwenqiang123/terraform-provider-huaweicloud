@@ -57,8 +57,8 @@ func TestAccNetworkingV2FloatingIP_fixedip_bind(t *testing.T) {
 }
 
 func testAccCheckNetworkingV2FloatingIPDestroy(s *terraform.State) error {
-	config := acceptance.TestAccProvider.Meta().(*config.Config)
-	networkClient, err := config.NetworkingV2Client(acceptance.HW_REGION_NAME)
+	cfg := acceptance.TestAccProvider.Meta().(*config.Config)
+	networkClient, err := cfg.NetworkingV2Client(acceptance.HW_REGION_NAME)
 	if err != nil {
 		return fmt.Errorf("error creating floating IP: %s", err)
 	}
@@ -88,8 +88,8 @@ func testAccCheckNetworkingV2FloatingIPExists(n string, kp *floatingips.Floating
 			return errors.New("no ID is set")
 		}
 
-		config := acceptance.TestAccProvider.Meta().(*config.Config)
-		networkClient, err := config.NetworkingV2Client(acceptance.HW_REGION_NAME)
+		cfg := acceptance.TestAccProvider.Meta().(*config.Config)
+		networkClient, err := cfg.NetworkingV2Client(acceptance.HW_REGION_NAME)
 		if err != nil {
 			return fmt.Errorf("error creating networking client: %s", err)
 		}
@@ -110,7 +110,7 @@ func testAccCheckNetworkingV2FloatingIPExists(n string, kp *floatingips.Floating
 }
 
 func testAccCheckNetworkingV2FloatingIPBoundToCorrectIP(fip *floatingips.FloatingIP, fixed_ip string) resource.TestCheckFunc {
-	return func(s *terraform.State) error {
+	return func(_ *terraform.State) error {
 		if fip.FixedIP != fixed_ip {
 			return errors.New("the floating IP associated with wrong fixed IP")
 		}

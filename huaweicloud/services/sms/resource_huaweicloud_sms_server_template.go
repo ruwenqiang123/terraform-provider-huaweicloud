@@ -161,7 +161,6 @@ func buildNicsOpts(client *golangsdk.ServiceClient, nics []string) ([]templates.
 				Cidr: rst.CIDR,
 			}
 		}
-
 	}
 	return request, nil
 }
@@ -194,7 +193,6 @@ func buildSecGroupOpts(client *golangsdk.ServiceClient, sgs []string) ([]templat
 				Name: rst.Name,
 			}
 		}
-
 	}
 	return request, nil
 }
@@ -284,11 +282,11 @@ func resourceServerTemplateCreate(ctx context.Context, d *schema.ResourceData, m
 }
 
 func flattenSubnetIDs(nics []templates.NicObject) []string {
-	subnets := make([]string, len(nics))
+	subnetIds := make([]string, len(nics))
 	for i, nic := range nics {
-		subnets[i] = nic.Id
+		subnetIds[i] = nic.Id
 	}
-	return subnets
+	return subnetIds
 }
 
 func flattenSecGroupIDs(groups []templates.SgObject) []string {

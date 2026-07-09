@@ -249,7 +249,6 @@ func TestAccVpcV1_WithEnhancedLocalRoute(t *testing.T) {
 // TestAccVpcV1_WithCustomRegion this case will run a test for resource-level region. Before run this case,
 // you shoule set `HW_CUSTOM_REGION_NAME` in your system and it should be different from `HW_REGION_NAME`.
 func TestAccVpcV1_WithCustomRegion(t *testing.T) {
-
 	vpcName1 := fmt.Sprintf("test_vpc_region_%s", acctest.RandString(5))
 	vpcName2 := fmt.Sprintf("test_vpc_region_%s", acctest.RandString(5))
 
@@ -275,8 +274,8 @@ func TestAccVpcV1_WithCustomRegion(t *testing.T) {
 }
 
 func testAccCheckVpcV1Destroy(s *terraform.State) error {
-	config := acceptance.TestAccProvider.Meta().(*config.Config)
-	vpcClient, err := config.NetworkingV1Client(acceptance.HW_REGION_NAME)
+	cfg := acceptance.TestAccProvider.Meta().(*config.Config)
+	vpcClient, err := cfg.NetworkingV1Client(acceptance.HW_REGION_NAME)
 	if err != nil {
 		return fmt.Errorf("error creating VPC client: %s", err)
 	}
@@ -306,8 +305,8 @@ func testAccCheckCustomRegionVpcV1Exists(name string, vpc *vpcs.Vpc, region stri
 			return errors.New("no ID is set")
 		}
 
-		config := acceptance.TestAccProvider.Meta().(*config.Config)
-		vpcClient, err := config.NetworkingV1Client(region)
+		cfg := acceptance.TestAccProvider.Meta().(*config.Config)
+		vpcClient, err := cfg.NetworkingV1Client(region)
 		if err != nil {
 			return fmt.Errorf("error creating VPC client: %s", err)
 		}
@@ -337,8 +336,8 @@ func testAccCheckVpcV1Exists(n string, vpc *vpcs.Vpc) resource.TestCheckFunc {
 			return errors.New("no ID is set")
 		}
 
-		config := acceptance.TestAccProvider.Meta().(*config.Config)
-		vpcClient, err := config.NetworkingV1Client(acceptance.HW_REGION_NAME)
+		cfg := acceptance.TestAccProvider.Meta().(*config.Config)
+		vpcClient, err := cfg.NetworkingV1Client(acceptance.HW_REGION_NAME)
 		if err != nil {
 			return fmt.Errorf("error creating VPC client: %s", err)
 		}

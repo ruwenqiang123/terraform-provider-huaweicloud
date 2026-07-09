@@ -293,7 +293,9 @@ var (
 	HW_GAUSSDB_INSTANCE_ID           = os.Getenv("HW_GAUSSDB_INSTANCE_ID")
 	HW_GAUSSDB_START_TIME            = os.Getenv("HW_GAUSSDB_START_TIME")
 	HW_GAUSSDB_END_TIME              = os.Getenv("HW_GAUSSDB_END_TIME")
+	HW_GAUSSDB_SQL_EXEC_ID           = os.Getenv("HW_GAUSSDB_SQL_EXEC_ID")
 	HW_GAUSSDB_HBA_HISTORY_ID        = os.Getenv("HW_GAUSSDB_HBA_HISTORY_ID")
+	HW_GAUSSDB_SQL_ID                = os.Getenv("HW_GAUSSDB_SQL_ID")
 
 	HW_VOD_WATERMARK_FILE   = os.Getenv("HW_VOD_WATERMARK_FILE")
 	HW_VOD_MEDIA_ASSET_FILE = os.Getenv("HW_VOD_MEDIA_ASSET_FILE")
@@ -459,6 +461,7 @@ var (
 	HW_DSC_ALARM_TOPIC_ID = os.Getenv("HW_DSC_ALARM_TOPIC_ID")
 	HW_DSC_ENABLE_FLAG    = os.Getenv("HW_DSC_ENABLE_FLAG")
 	HW_DSC_TYPE_ID        = os.Getenv("HW_DSC_TYPE_ID")
+	HW_DSC_SCAN_JOB_ID    = os.Getenv("HW_DSC_SCAN_JOB_ID")
 
 	HW_EIP_ID      = os.Getenv("HW_EIP_ID")
 	HW_EIP_ADDRESS = os.Getenv("HW_EIP_ADDRESS")
@@ -2411,6 +2414,13 @@ func TestAccPreCheckGaussDBInstanceId(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckGaussDBSqlExecId(t *testing.T) {
+	if HW_GAUSSDB_SQL_EXEC_ID == "" {
+		t.Skip("HW_GAUSSDB_SQL_EXEC_ID must be set for GaussDB acceptance tests")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckGaussDBTimeRange(t *testing.T) {
 	if HW_GAUSSDB_START_TIME == "" || HW_GAUSSDB_END_TIME == "" {
 		t.Skip("HW_GAUSSDB_START_TIME and HW_GAUSSDB_END_TIME must be set for GaussDB acceptance tests")
@@ -2421,6 +2431,13 @@ func TestAccPreCheckGaussDBTimeRange(t *testing.T) {
 func TestAccPreCheckGaussDBHbaHistoryId(t *testing.T) {
 	if HW_GAUSSDB_HBA_HISTORY_ID == "" {
 		t.Skip("HW_GAUSSDB_HBA_HISTORY_ID must be set for GaussDB acceptance tests.")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckGaussDBSqlId(t *testing.T) {
+	if HW_GAUSSDB_SQL_ID == "" {
+		t.Skip("HW_GAUSSDB_SQL_ID must be set for GaussDB acceptance tests.")
 	}
 }
 
@@ -5292,6 +5309,13 @@ func TestAccPreCheckDscEnableFlag(t *testing.T) {
 func TestAccPreCheckDscTypeId(t *testing.T) {
 	if HW_DSC_TYPE_ID == "" {
 		t.Skip("HW_DSC_TYPE_ID must be set for DSC acceptance tests")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckDscScanJobId(t *testing.T) {
+	if HW_DSC_SCAN_JOB_ID == "" {
+		t.Skip("HW_DSC_SCAN_JOB_ID must be set for DSC acceptance tests")
 	}
 }
 

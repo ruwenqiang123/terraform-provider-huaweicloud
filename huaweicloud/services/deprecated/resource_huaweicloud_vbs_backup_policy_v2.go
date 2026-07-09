@@ -117,8 +117,8 @@ func ResourceVBSBackupPolicyV2() *schema.Resource {
 }
 
 func resourceVBSBackupPolicyV2Create(d *schema.ResourceData, meta interface{}) error {
-	config := meta.(*config.Config)
-	vbsClient, err := config.VbsV2Client(config.GetRegion(d))
+	cfg := meta.(*config.Config)
+	vbsClient, err := cfg.VbsV2Client(cfg.GetRegion(d))
 
 	if err != nil {
 		return fmt.Errorf("error creating VBS client: %s", err)
@@ -178,19 +178,17 @@ func resourceVBSBackupPolicyV2Create(d *schema.ResourceData, meta interface{}) e
 	}
 
 	return resourceVBSBackupPolicyV2Read(d, meta)
-
 }
 
 func resourceVBSBackupPolicyV2Read(d *schema.ResourceData, meta interface{}) error {
-
-	config := meta.(*config.Config)
-	vbsClient, err := config.VbsV2Client(config.GetRegion(d))
+	cfg := meta.(*config.Config)
+	vbsClient, err := cfg.VbsV2Client(cfg.GetRegion(d))
 	if err != nil {
 		return fmt.Errorf("error creating VBS client: %s", err)
 	}
 
 	PolicyOpts := policies.ListOpts{ID: d.Id()}
-	policies, err := policies.List(vbsClient, PolicyOpts)
+	policyList, err := policies.List(vbsClient, PolicyOpts)
 	if err != nil {
 		if _, ok := err.(golangsdk.ErrDefault404); ok {
 			d.SetId("")
@@ -200,7 +198,7 @@ func resourceVBSBackupPolicyV2Read(d *schema.ResourceData, meta interface{}) err
 		return fmt.Errorf("error retrieving backup policy: %s", err)
 	}
 
-	n := policies[0]
+	n := policyList[0]
 
 	d.Set("name", n.Name)
 	d.Set("start_time", n.ScheduledPolicy.StartTime)
@@ -236,8 +234,8 @@ func resourceVBSBackupPolicyV2Read(d *schema.ResourceData, meta interface{}) err
 
 // nolint:gocyclo
 func resourceVBSBackupPolicyV2Update(d *schema.ResourceData, meta interface{}) error {
-	config := meta.(*config.Config)
-	vbsClient, err := config.VbsV2Client(config.GetRegion(d))
+	cfg := meta.(*config.Config)
+	vbsClient, err := cfg.VbsV2Client(cfg.GetRegion(d))
 	if err != nil {
 		return fmt.Errorf("error updating VBS client: %s", err)
 	}
@@ -267,7 +265,7 @@ func resourceVBSBackupPolicyV2Update(d *schema.ResourceData, meta interface{}) e
 		updateOpts.ScheduledPolicy.WeekFrequency = weeks
 	}
 
-	//lintignore:R019
+	// lintignore:R019
 	if d.HasChanges("name", "start_time", "retain_first_backup", "rentention_num",
 		"rentention_day", "status", "frequency", "week_frequency") {
 		if d.HasChange("name") {
@@ -309,10 +307,10 @@ func resourceVBSBackupPolicyV2Update(d *schema.ResourceData, meta interface{}) e
 	}
 
 	if d.HasChange("resources") {
-		old, new := d.GetChange("resources")
+		oldVal, newVal := d.GetChange("resources")
 
 		// disassociate old volumes from backup policy
-		removeResources := buildDisassociateResource(old.([]interface{}))
+		removeResources := buildDisassociateResource(oldVal.([]interface{}))
 		if len(removeResources) > 0 {
 			opts := policies.DisassociateOpts{
 				Resources: removeResources,
@@ -326,7 +324,7 @@ func resourceVBSBackupPolicyV2Update(d *schema.ResourceData, meta interface{}) e
 		}
 
 		// associate new volumes to backup policy
-		addResources := buildAssociateResource(new.([]interface{}))
+		addResources := buildAssociateResource(newVal.([]interface{}))
 		if len(addResources) > 0 {
 			opts := policies.AssociateOpts{
 				PolicyID:  d.Id(),
@@ -345,17 +343,16 @@ func resourceVBSBackupPolicyV2Update(d *schema.ResourceData, meta interface{}) e
 }
 
 func resourceVBSBackupPolicyV2Delete(d *schema.ResourceData, meta interface{}) error {
-	config := meta.(*config.Config)
-	vbsClient, err := config.VbsV2Client(config.GetRegion(d))
+	cfg := meta.(*config.Config)
+	vbsClient, err := cfg.VbsV2Client(cfg.GetRegion(d))
 	if err != nil {
 		return fmt.Errorf("error creating VBS client: %s", err)
 	}
 
-	delete := policies.Delete(vbsClient, d.Id())
-	if delete.Err != nil {
+	respBody := policies.Delete(vbsClient, d.Id())
+	if respBody.Err != nil {
 		if _, ok := err.(golangsdk.ErrDefault404); ok {
 			log.Printf("[INFO] Successfully deleted VBS Backup Policy %s", d.Id())
-
 		}
 		if _, ok := err.(golangsdk.ErrDefault409); ok {
 			log.Printf("[INFO] Error deleting VBS Backup Policy %s", d.Id())

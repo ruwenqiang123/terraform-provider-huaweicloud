@@ -181,8 +181,8 @@ func ResourceCSBSBackupV1() *schema.Resource {
 }
 
 func resourceCSBSBackupV1Create(d *schema.ResourceData, meta interface{}) error {
-	config := meta.(*config.Config)
-	backupClient, err := config.CsbsV1Client(config.GetRegion(d))
+	cfg := meta.(*config.Config)
+	backupClient, err := cfg.CsbsV1Client(cfg.GetRegion(d))
 
 	if err != nil {
 		return fmt.Errorf("error creating CSBS client: %s", err)
@@ -206,7 +206,6 @@ func resourceCSBSBackupV1Create(d *schema.ResourceData, meta interface{}) error 
 	}
 
 	if query[0].Result {
-
 		createOpts := backup.CreateOpts{
 			BackupName:   d.Get("backup_name").(string),
 			Description:  d.Get("description").(string),
@@ -252,13 +251,11 @@ func resourceCSBSBackupV1Create(d *schema.ResourceData, meta interface{}) error 
 	}
 
 	return resourceCSBSBackupV1Read(d, meta)
-
 }
 
 func resourceCSBSBackupV1Read(d *schema.ResourceData, meta interface{}) error {
-
-	config := meta.(*config.Config)
-	backupClient, err := config.CsbsV1Client(config.GetRegion(d))
+	cfg := meta.(*config.Config)
+	backupClient, err := cfg.CsbsV1Client(cfg.GetRegion(d))
 	if err != nil {
 		return fmt.Errorf("error creating CSBS client: %s", err)
 	}
@@ -266,7 +263,6 @@ func resourceCSBSBackupV1Read(d *schema.ResourceData, meta interface{}) error {
 	backupObject, err := backup.Get(backupClient, d.Id()).ExtractBackup()
 
 	if err != nil {
-
 		if _, ok := err.(golangsdk.ErrDefault404); ok {
 			log.Printf("[WARN] Removing backup %s as it's already gone", d.Id())
 			d.SetId("")
@@ -274,7 +270,6 @@ func resourceCSBSBackupV1Read(d *schema.ResourceData, meta interface{}) error {
 		}
 
 		return fmt.Errorf("error retrieving backup: %s", err)
-
 	}
 
 	d.Set("resource_id", backupObject.ResourceId)
@@ -288,14 +283,14 @@ func resourceCSBSBackupV1Read(d *schema.ResourceData, meta interface{}) error {
 	d.Set("backup_record_id", backupObject.CheckpointId)
 	d.Set("auto_trigger", backupObject.ExtendInfo.AutoTrigger)
 
-	d.Set("region", config.GetRegion(d))
+	d.Set("region", cfg.GetRegion(d))
 
 	return nil
 }
 
 func resourceCSBSBackupV1Delete(d *schema.ResourceData, meta interface{}) error {
-	config := meta.(*config.Config)
-	backupClient, err := config.CsbsV1Client(config.GetRegion(d))
+	cfg := meta.(*config.Config)
+	backupClient, err := cfg.CsbsV1Client(cfg.GetRegion(d))
 	if err != nil {
 		return fmt.Errorf("error creating CSBS client: %s", err)
 	}
@@ -335,7 +330,6 @@ func waitForCSBSBackupActive(backupClient *golangsdk.ServiceClient, backupId str
 
 func waitForCSBSBackupDelete(backupClient *golangsdk.ServiceClient, backupId string, backupRecordID string) retry.StateRefreshFunc {
 	return func() (interface{}, string, error) {
-
 		r, err := backup.Get(backupClient, backupId).ExtractBackup()
 		if err != nil {
 			if _, ok := err.(golangsdk.ErrDefault404); ok {
@@ -348,7 +342,6 @@ func waitForCSBSBackupDelete(backupClient *golangsdk.ServiceClient, backupId str
 		err = backup.Delete(backupClient, backupRecordID).Err
 
 		if err != nil {
-
 			if _, ok := err.(golangsdk.ErrDefault404); ok {
 				log.Printf("[INFO] Successfully deleted Backup %s", backupId)
 				return r, "deleted", nil
@@ -409,5 +402,4 @@ func flattenCSBSVMMetadata(backupObject *backup.Backup) []map[string]interface{}
 	vmMetadata = append(vmMetadata, mapping)
 
 	return vmMetadata
-
 }

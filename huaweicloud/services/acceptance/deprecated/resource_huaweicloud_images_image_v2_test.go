@@ -30,8 +30,6 @@ func TestAccImagesImageV2_basic(t *testing.T) {
 						"huaweicloud_images_image_v2.image_1", "name", "Rancher TerraformAccTest"),
 					resource.TestCheckResourceAttr(
 						"huaweicloud_images_image_v2.image_1", "container_format", "bare"),
-					/*resource.TestCheckResourceAttr(
-					"huaweicloud_images_image_v2.image_1", "disk_format", "qcow2"),*/
 					resource.TestCheckResourceAttr(
 						"huaweicloud_images_image_v2.image_1", "schema", "/v2/schemas/image"),
 				),
@@ -160,8 +158,8 @@ func TestAccImagesImageV2_timeout(t *testing.T) {
 }
 
 func testAccCheckImagesImageV2Destroy(s *terraform.State) error {
-	config := acceptance.TestAccProvider.Meta().(*config.Config)
-	imageClient, err := config.ImageV2Client(acceptance.HW_REGION_NAME)
+	cfg := acceptance.TestAccProvider.Meta().(*config.Config)
+	imageClient, err := cfg.ImageV2Client(acceptance.HW_REGION_NAME)
 	if err != nil {
 		return fmt.Errorf("error creating IMS client: %s", err)
 	}
@@ -191,8 +189,8 @@ func testAccCheckImagesImageV2Exists(n string, image *images.Image) resource.Tes
 			return errors.New("no ID is set")
 		}
 
-		config := acceptance.TestAccProvider.Meta().(*config.Config)
-		imageClient, err := config.ImageV2Client(acceptance.HW_REGION_NAME)
+		cfg := acceptance.TestAccProvider.Meta().(*config.Config)
+		imageClient, err := cfg.ImageV2Client(acceptance.HW_REGION_NAME)
 		if err != nil {
 			return fmt.Errorf("error creating IMS client: %s", err)
 		}
@@ -223,8 +221,8 @@ func testAccCheckImagesImageV2HasTag(n, tag string) resource.TestCheckFunc {
 			return errors.New("no ID is set")
 		}
 
-		config := acceptance.TestAccProvider.Meta().(*config.Config)
-		imageClient, err := config.ImageV2Client(acceptance.HW_REGION_NAME)
+		cfg := acceptance.TestAccProvider.Meta().(*config.Config)
+		imageClient, err := cfg.ImageV2Client(acceptance.HW_REGION_NAME)
 		if err != nil {
 			return fmt.Errorf("error creating IMS client: %s", err)
 		}
@@ -259,8 +257,8 @@ func testAccCheckImagesImageV2TagCount(n string, expected int) resource.TestChec
 			return errors.New("no ID is set")
 		}
 
-		config := acceptance.TestAccProvider.Meta().(*config.Config)
-		imageClient, err := config.ImageV2Client(acceptance.HW_REGION_NAME)
+		cfg := acceptance.TestAccProvider.Meta().(*config.Config)
+		imageClient, err := cfg.ImageV2Client(acceptance.HW_REGION_NAME)
 		if err != nil {
 			return fmt.Errorf("error creating IMS client: %s", err)
 		}

@@ -201,7 +201,7 @@ func testAccCheckFWFirewallGroupV2Exists(n string, firewall_group *FirewallGroup
 }
 
 func testAccCheckFWFirewallPortCount(firewall_group *FirewallGroup, expected int) resource.TestCheckFunc {
-	return func(s *terraform.State) error {
+	return func(_ *terraform.State) error {
 		if len(firewall_group.PortIDs) != expected {
 			return fmt.Errorf("expected %d Ports, got %d", expected, len(firewall_group.PortIDs))
 		}
@@ -234,7 +234,7 @@ func testAccCheckFWFirewallGroupV2(n, expectedName, expectedDescription string, 
 			found, err = firewall_groups.Get(fwClient, rs.Primary.ID).Extract()
 			if err != nil {
 				if _, ok := err.(golangsdk.ErrDefault404); ok {
-					//lintignore:R018
+					// lintignore:R018
 					time.Sleep(time.Second)
 					continue
 				}

@@ -15,8 +15,8 @@ import (
 )
 
 func resourceECSAutoRecoveryV1Read(d *schema.ResourceData, meta interface{}, instanceID string) (bool, error) {
-	config := meta.(*config.Config)
-	client, err := config.ComputeV1Client(config.GetRegion(d))
+	cfg := meta.(*config.Config)
+	client, err := cfg.ComputeV1Client(cfg.GetRegion(d))
 	if err != nil {
 		return false, fmt.Errorf("error creating client: %s", err)
 	}
@@ -36,8 +36,8 @@ func resourceECSAutoRecoveryV1Read(d *schema.ResourceData, meta interface{}, ins
 }
 
 func setAutoRecoveryForInstance(d *schema.ResourceData, meta interface{}, instanceID string, ar bool) error {
-	config := meta.(*config.Config)
-	client, err := config.ComputeV1Client(config.GetRegion(d))
+	cfg := meta.(*config.Config)
+	client, err := cfg.ComputeV1Client(cfg.GetRegion(d))
 	if err != nil {
 		return fmt.Errorf("error creating client: %s", err)
 	}
@@ -49,7 +49,7 @@ func setAutoRecoveryForInstance(d *schema.ResourceData, meta interface{}, instan
 	timeout := d.Timeout(schema.TimeoutUpdate)
 
 	log.Printf("[DEBUG] Setting ECS-AutoRecovery for instance:%s with options: %#v", rId, updateOpts)
-	//lintignore:R006
+	// lintignore:R006
 	err = retry.Retry(timeout, func() *retry.RetryError {
 		err := auto_recovery.Update(client, rId, updateOpts)
 		if err != nil {

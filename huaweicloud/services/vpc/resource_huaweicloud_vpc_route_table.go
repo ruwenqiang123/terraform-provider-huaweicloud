@@ -146,7 +146,6 @@ func resourceVpcRouteTableCreate(ctx context.Context, d *schema.ResourceData, me
 	}
 
 	return resourceVpcRouteTableRead(ctx, d, meta)
-
 }
 
 func resourceVpcRouteTableRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
@@ -198,9 +197,9 @@ func resourceVpcRouteTableUpdate(ctx context.Context, d *schema.ResourceData, me
 		changed = true
 		routesOpts := map[string][]routetables.RouteOpts{}
 
-		old, new := d.GetChange("route")
-		addRaws := new.(*schema.Set).Difference(old.(*schema.Set))
-		delRaws := old.(*schema.Set).Difference(new.(*schema.Set))
+		oldVal, newVal := d.GetChange("route")
+		addRaws := newVal.(*schema.Set).Difference(oldVal.(*schema.Set))
+		delRaws := oldVal.(*schema.Set).Difference(newVal.(*schema.Set))
 
 		var filteredMod []interface{}
 
@@ -292,9 +291,9 @@ func resourceVpcRouteTableUpdate(ctx context.Context, d *schema.ResourceData, me
 	}
 
 	if d.HasChange("subnets") {
-		old, new := d.GetChange("subnets")
-		associateRaws := new.(*schema.Set).Difference(old.(*schema.Set))
-		disassociateRaws := old.(*schema.Set).Difference(new.(*schema.Set))
+		oldVal, newVal := d.GetChange("subnets")
+		associateRaws := newVal.(*schema.Set).Difference(oldVal.(*schema.Set))
+		disassociateRaws := oldVal.(*schema.Set).Difference(newVal.(*schema.Set))
 
 		disassociateSubnets := utils.ExpandToStringList(disassociateRaws.List())
 		if len(disassociateSubnets) > 0 {

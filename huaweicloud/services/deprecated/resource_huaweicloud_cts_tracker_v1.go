@@ -82,12 +82,11 @@ func ResourceCTSTrackerV1() *schema.Resource {
 			},
 		},
 	}
-
 }
 
 func resourceCTSTrackerCreate(d *schema.ResourceData, meta interface{}) error {
-	config := meta.(*config.Config)
-	ctsClient, err := config.CtsV1Client(config.GetRegion(d))
+	cfg := meta.(*config.Config)
+	ctsClient, err := cfg.CtsV1Client(cfg.GetRegion(d))
 
 	if err != nil {
 		return fmt.Errorf("error creating CTS client: %s", err)
@@ -115,14 +114,14 @@ func resourceCTSTrackerCreate(d *schema.ResourceData, meta interface{}) error {
 	}
 
 	d.SetId(trackers.TrackerName)
-	//lintignore:R018
+	// lintignore:R018
 	time.Sleep(20 * time.Second)
 	return resourceCTSTrackerRead(d, meta)
 }
 
 func resourceCTSTrackerRead(d *schema.ResourceData, meta interface{}) error {
-	config := meta.(*config.Config)
-	ctsClient, err := config.CtsV1Client(config.GetRegion(d))
+	cfg := meta.(*config.Config)
+	ctsClient, err := cfg.CtsV1Client(cfg.GetRegion(d))
 	if err != nil {
 		return fmt.Errorf("error creating CTS client: %s", err)
 	}
@@ -155,20 +154,20 @@ func resourceCTSTrackerRead(d *schema.ResourceData, meta interface{}) error {
 	d.Set("operations", ctsTracker.SimpleMessageNotification.Operations)
 	d.Set("need_notify_user_list", ctsTracker.SimpleMessageNotification.NeedNotifyUserList)
 
-	d.Set("region", config.GetRegion(d))
+	d.Set("region", cfg.GetRegion(d))
 
 	return nil
 }
 
 func resourceCTSTrackerUpdate(d *schema.ResourceData, meta interface{}) error {
-	config := meta.(*config.Config)
-	ctsClient, err := config.CtsV1Client(config.GetRegion(d))
+	cfg := meta.(*config.Config)
+	ctsClient, err := cfg.CtsV1Client(cfg.GetRegion(d))
 	if err != nil {
 		return fmt.Errorf("error creating CTS client: %s", err)
 	}
 	var updateOpts tracker.UpdateOptsWithSMN
 
-	//as bucket_name is mandatory while updating tracker
+	// as bucket_name is mandatory while updating tracker
 	updateOpts.BucketName = d.Get("bucket_name").(string)
 
 	updateOpts.SimpleMessageNotification.TopicID = d.Get("topic_id").(string)
@@ -193,14 +192,14 @@ func resourceCTSTrackerUpdate(d *schema.ResourceData, meta interface{}) error {
 	if err != nil {
 		return fmt.Errorf("error updating CTS tracker: %s", err)
 	}
-	//lintignore:R018
+	// lintignore:R018
 	time.Sleep(20 * time.Second)
 	return resourceCTSTrackerRead(d, meta)
 }
 
 func resourceCTSTrackerDelete(d *schema.ResourceData, meta interface{}) error {
-	config := meta.(*config.Config)
-	ctsClient, err := config.CtsV1Client(config.GetRegion(d))
+	cfg := meta.(*config.Config)
+	ctsClient, err := cfg.CtsV1Client(cfg.GetRegion(d))
 	if err != nil {
 		return fmt.Errorf("error creating CTS client: %s", err)
 	}
@@ -209,7 +208,7 @@ func resourceCTSTrackerDelete(d *schema.ResourceData, meta interface{}) error {
 	if result.Err != nil {
 		return err
 	}
-	//lintignore:R018
+	// lintignore:R018
 	time.Sleep(20 * time.Second)
 	log.Printf("[DEBUG] Successfully deleted CTS tracker %s", d.Id())
 

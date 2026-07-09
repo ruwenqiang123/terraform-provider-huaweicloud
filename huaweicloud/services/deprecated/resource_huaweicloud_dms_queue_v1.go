@@ -91,8 +91,8 @@ func ResourceDmsQueues() *schema.Resource {
 }
 
 func resourceDmsQueuesCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	config := meta.(*config.Config)
-	dmsV1Client, err := config.DmsV1Client(config.GetRegion(d))
+	cfg := meta.(*config.Config)
+	dmsV1Client, err := cfg.DmsV1Client(cfg.GetRegion(d))
 	if err != nil {
 		return diag.Errorf("error creating DMS client: %s", err)
 	}
@@ -120,9 +120,9 @@ func resourceDmsQueuesCreate(ctx context.Context, d *schema.ResourceData, meta i
 }
 
 func resourceDmsQueuesRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	config := meta.(*config.Config)
+	cfg := meta.(*config.Config)
 
-	dmsV1Client, err := config.DmsV1Client(config.GetRegion(d))
+	dmsV1Client, err := cfg.DmsV1Client(cfg.GetRegion(d))
 	if err != nil {
 		return diag.Errorf("error creating DMS client: %s", err)
 	}
@@ -148,9 +148,9 @@ func resourceDmsQueuesRead(_ context.Context, d *schema.ResourceData, meta inter
 	return nil
 }
 
-func resourceDmsQueuesDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	config := meta.(*config.Config)
-	dmsV1Client, err := config.DmsV1Client(config.GetRegion(d))
+func resourceDmsQueuesDelete(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+	cfg := meta.(*config.Config)
+	dmsV1Client, err := cfg.DmsV1Client(cfg.GetRegion(d))
 	if err != nil {
 		return diag.Errorf("error creating DMS client: %s", err)
 	}
