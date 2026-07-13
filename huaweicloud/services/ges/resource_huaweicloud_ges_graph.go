@@ -331,7 +331,9 @@ func resourceGesGraphCreate(ctx context.Context, d *schema.ResourceData, meta in
 		return diag.FromErr(err)
 	}
 
-	graphId := utils.PathSearch("graph_id", createGraphRespBody, "").(string)
+	// The legacy code only used "graph_id". The original intent is unclear,
+	// so the new implementation adds "id" as a fallback for backward compatibility.
+	graphId := utils.PathSearch("graph_id||id", createGraphRespBody, "").(string)
 	if graphId == "" {
 		return diag.Errorf("unable to find the GES graph ID from the API response")
 	}
