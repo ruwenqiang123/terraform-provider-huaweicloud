@@ -1,6 +1,6 @@
 info:
     version: ""
-    title: resource_huaweicloud_identity_policy_agency_attach
+    title: resource_huaweicloud_identityv5_policy_agency_attach
     description: ""
 schemes:
     - https

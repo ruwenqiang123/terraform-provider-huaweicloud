@@ -1,6 +1,6 @@
 info:
     version: ""
-    title: resource_huaweicloud_cciv2_persistent_volume_claim
+    title: resource_huaweicloud_cciv2_pvc
     description: ""
 schemes:
     - https
