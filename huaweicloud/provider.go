@@ -776,6 +776,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_cciv2_replica_sets":             cci.DataSourceV2ReplicaSets(),
 			"huaweicloud_cciv2_events":                   cci.DataSourceV2Events(),
 			"huaweicloud_cciv2_resources":                cci.DataSourceV2Resources(),
+			"huaweicloud_cciv2_feature_gates":            cci.DataSourceV2FeatureGates(),
 
 			"huaweicloud_ccm_certificates":                 ccm.DataSourceCertificates(),
 			"huaweicloud_ccm_csrs":                         ccm.DataSourceCcmCsrs(),
@@ -1422,6 +1423,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_dsc_catalog_instances":                dsc.DataSourceCatalogInstances(),
 			"huaweicloud_dsc_catalog_quantity_variation":       dsc.DataSourceDscCatalogQuantityVariation(),
 			"huaweicloud_dsc_catalog_top_classifications":      dsc.DataSourceCatalogTopClassifications(),
+			"huaweicloud_dsc_classification_results":           dsc.DataSourceDscClassificationResults(),
 			"huaweicloud_dsc_column_details_by_database":       dsc.DataSourceDscColumnDetailsByDatabase(),
 			"huaweicloud_dsc_column_details_by_classification": dsc.DataSourceDscColumnDetailsByClassification(),
 			"huaweicloud_dsc_dashboard_score":                  dsc.DataSourceDscDashboardScore(),
@@ -1460,6 +1462,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_dsc_protect_measure_baseline":         dsc.DataSourceProtectMeasureBaseline(),
 			"huaweicloud_dsc_user_list":                        dsc.DataSourceDscUserList(),
 			"huaweicloud_dsc_vpc_ep_quotas":                    dsc.DataSourceDscVpcEpQuotas(),
+			"huaweicloud_dsc_watermark_extract_logs":           dsc.DataSourceWatermarkExtractLogs(),
 
 			// EventGrid
 			"huaweicloud_eg_connections":           eg.DataSourceConnections(),
@@ -1639,6 +1642,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_gaussdb_instance_database_accounts":          gaussdb.DataSourceGaussDBInstanceDatabaseAccounts(),
 			"huaweicloud_gaussdb_instance_database_roles":             gaussdb.DataSourceGaussDBInstanceDatabaseRoles(),
 			"huaweicloud_gaussdb_instance_features":                   gaussdb.DataSourceGaussDbInstanceFeatures(),
+			"huaweicloud_gaussdb_instance_upgrade_versions":           gaussdb.DataSourceGaussDBInstanceUpgradeVersions(),
 			"huaweicloud_gaussdb_key_view_nodes_deliver":              gaussdb.DataSourceGaussdbKeyViewNodesDeliver(),
 			"huaweicloud_gaussdb_kms_detail":                          gaussdb.DataSourceGaussDBKmsDetail(),
 			"huaweicloud_gaussdb_kms_keys":                            gaussdb.DataSourceGaussDBKmsKeys(),
@@ -1704,6 +1708,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_gaussdb_rts_top_sql_statistics":              gaussdb.DataSourceGaussdbRtsTopSqlStatistics(),
 			"huaweicloud_gaussdb_auto_transaction_termination_config": gaussdb.DataSourceAutoTransactionTerminationConfig(),
 			"huaweicloud_gaussdb_param_set_template_expansion":        gaussdb.DataSourceGaussdbParamSetTemplateExpansion(),
+			"huaweicloud_gaussdb_top_sql_statements":                  gaussdb.DataSourceTopSqlStatements(),
 
 			"huaweicloud_hss_agent_install_script":                       hss.DataSourceAgentInstallScript(),
 			"huaweicloud_hss_agent_versions":                             hss.DataSourceAgentVersions(),
@@ -4065,6 +4070,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_gaussdb_parameter_template_apply":          gaussdb.ResourceGaussDbParameterTemplateApply(),
 			"huaweicloud_gaussdb_parameter_template_compare":        gaussdb.ResourceGaussDbParameterTemplateCompare(),
 			"huaweicloud_gaussdb_parameter_template_reset":          gaussdb.ResourceGaussDbParameterTemplateReset(),
+			"huaweicloud_gaussdb_parameter_template_save":           gaussdb.ResourceParameterTemplateSave(),
 			"huaweicloud_gaussdb_recycling_policy":                  gaussdb.ResourceGaussDbRecyclingPolicy(),
 			"huaweicloud_gaussdb_task_delete":                       gaussdb.ResourceGaussDbTaskDelete(),
 			"huaweicloud_gaussdb_sync_sql_throttling_task":          gaussdb.ResourceGaussDbSyncSqlThrottlingTask(),
@@ -5018,6 +5024,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_codearts_build_log_download": codeartsbuild.ResourceCodeArtsBuildLogDownload(),
 
 			"huaweicloud_dsc_alarm_notification":             dsc.ResourceAlarmNotification(),
+			"huaweicloud_dsc_asset_authorization":            dsc.ResourceDscAssetAuthorization(),
 			"huaweicloud_dsc_asset_domain_label":             dsc.ResourceAssetDomainLabel(),
 			"huaweicloud_dsc_asset_obs":                      dsc.ResourceAssetObs(),
 			"huaweicloud_dsc_batch_delete_obs":               dsc.ResourceBatchDeleteObs(),
