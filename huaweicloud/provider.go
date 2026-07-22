@@ -1448,8 +1448,10 @@ func Provider() *schema.Provider {
 			"huaweicloud_dsc_scan_rules":                       dsc.DataSourceScanRules(),
 			"huaweicloud_dsc_scan_security_levels":             dsc.DataSourceDscScanSecurityLevels(),
 			"huaweicloud_dsc_security_class":                   dsc.DataSourceSecurityClass(),
+			"huaweicloud_dsc_security_levels":                  dsc.DataSourceDscSecurityLevels(),
 			"huaweicloud_dsc_show_metadata":                    dsc.DataSourceDscShowMetadata(),
 			"huaweicloud_dsc_supported_column_types":           dsc.DataSourceSupportedColumnTypes(),
+			"huaweicloud_dsc_tags":                             dsc.DataSourceTags(),
 			"huaweicloud_dsc_template_rules":                   dsc.DataSourceDscTemplateRules(),
 			"huaweicloud_dsc_dbss_oem_info":                    dsc.DataSourceDbssOemInfo(),
 			"huaweicloud_dsc_catalog_statical_chart":           dsc.DataSourceCatalogStaticalChart(),
@@ -1460,8 +1462,10 @@ func Provider() *schema.Provider {
 			"huaweicloud_dsc_multi_organization_tree":          dsc.DataSourceMultiOrganizationTree(),
 			"huaweicloud_dsc_protect_data_types":               dsc.DataSourceDscProtectDataTypes(),
 			"huaweicloud_dsc_protect_measure_baseline":         dsc.DataSourceProtectMeasureBaseline(),
+			"huaweicloud_dsc_top_risky_assets":                 dsc.DataSourceDscTopRiskyAssets(),
 			"huaweicloud_dsc_user_list":                        dsc.DataSourceDscUserList(),
 			"huaweicloud_dsc_vpc_ep_quotas":                    dsc.DataSourceDscVpcEpQuotas(),
+			"huaweicloud_dsc_watermark_embed_logs":             dsc.DataSourceDscWatermarkEmbedLogs(),
 			"huaweicloud_dsc_watermark_extract_logs":           dsc.DataSourceWatermarkExtractLogs(),
 
 			// EventGrid
