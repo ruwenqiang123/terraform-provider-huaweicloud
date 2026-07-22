@@ -66,7 +66,7 @@ var openGaussInstanceNonUpdatableParams = []string{"availability_zone", "vpc_id"
 // @API GaussDB DELETE /v3/{project_id}/instances/{instance_id}/sharding
 // @API GaussDB DELETE /v3/{project_id}/instances/{instance_id}/coordinators
 // @API GaussDB PUT /v3.1/{project_id}/instances/{instance_id}/backups/policy
-// @API GaussDB PUT /v3/{project_id}/instance/{instance_id}/flavor
+// @API GaussDB PUT /v3/{project_id}/instances/{instance_id}/flavor
 // @API GaussDB PUT /v3/{project_id}/configurations/{config_id}/apply
 // @API GaussDB POST /v3/{project_id}/instances/{instance_id}/mysql-compatibility
 // @API GaussDB PUT /v3/{project_id}/instances/change-charge-mode
@@ -1875,7 +1875,7 @@ func buildUpdateInstanceBackupStrategyBodyParams(d *schema.ResourceData) map[str
 
 func updateInstanceFlavor(ctx context.Context, d *schema.ResourceData, client, bssClient *golangsdk.ServiceClient) error {
 	_, err := updateGaussDbInstanceField(ctx, d, client, updateInstanceFieldParams{
-		httpUrl:              "v3/{project_id}/instance/{instance_id}/flavor",
+		httpUrl:              "v3/{project_id}/instances/{instance_id}/flavor",
 		httpMethod:           "PUT",
 		pathParams:           map[string]string{"instance_id": d.Id()},
 		updateBodyParams:     utils.RemoveNil(buildUpdateInstanceFlavorBodyParams(d)),
