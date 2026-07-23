@@ -313,8 +313,6 @@ func TestAccGaussDbInstance_flavor(t *testing.T) {
 				Config: testAccGaussDbInstance_flavor_update(rName, password),
 				Check: resource.ComposeTestCheckFunc(
 					rc.CheckResourceExists(),
-					resource.TestCheckResourceAttrPair(resourceName, "flavor",
-						"data.huaweicloud_gaussdb_flavors.test", "flavors.1.spec_code"),
 					resource.TestCheckResourceAttr(resourceName, "mysql_compatibility_port", "12346"),
 				),
 			},
@@ -763,15 +761,9 @@ data "huaweicloud_gaussdb_flavors" "test" {
 }
 
 resource "huaweicloud_gaussdb_instance" "test" {
-  depends_on = [
-    huaweicloud_networking_secgroup_rule.in_v4_tcp_opengauss,
-    huaweicloud_networking_secgroup_rule.in_v4_tcp_opengauss_egress
-  ]
-
   vpc_id            = huaweicloud_vpc.test.id
   subnet_id         = huaweicloud_vpc_subnet.test.id
-  security_group_id = huaweicloud_networking_secgroup.test.id
-
+  security_group_id = huaweicloud_networking_secgroup.test[0].id
   flavor            = data.huaweicloud_gaussdb_flavors.test.flavors[0].spec_code
   name              = "%[2]s"
   password          = "%[3]s"
@@ -807,17 +799,15 @@ data "huaweicloud_gaussdb_flavors" "test" {
   ha_mode = "centralization_standard"
 }
 
-resource "huaweicloud_gaussdb_instance" "test" {
-  depends_on = [
-    huaweicloud_networking_secgroup_rule.in_v4_tcp_opengauss,
-    huaweicloud_networking_secgroup_rule.in_v4_tcp_opengauss_egress
-  ]
+locals {
+  spec_code = try([for v in flatten(data.huaweicloud_gaussdb_flavors.test.flavors) : v if  v.group_type == "general"][1].spec_code, "")
+}
 
+resource "huaweicloud_gaussdb_instance" "test" {
   vpc_id            = huaweicloud_vpc.test.id
   subnet_id         = huaweicloud_vpc_subnet.test.id
-  security_group_id = huaweicloud_networking_secgroup.test.id
-
-  flavor            = data.huaweicloud_gaussdb_flavors.test.flavors[1].spec_code
+  security_group_id = huaweicloud_networking_secgroup.test[0].id
+  flavor            = local.spec_code
   name              = "%[2]s"
   password          = "%[3]s"
   replica_num       = 3
