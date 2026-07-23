@@ -462,6 +462,7 @@ var (
 
 	HW_DSC_INSTANCE_ID              = os.Getenv("HW_DSC_INSTANCE_ID")
 	HW_DSC_ALARM_TOPIC_ID           = os.Getenv("HW_DSC_ALARM_TOPIC_ID")
+	HW_DSC_ASSET_ID                 = os.Getenv("HW_DSC_ASSET_ID")
 	HW_DSC_ENABLE_FLAG              = os.Getenv("HW_DSC_ENABLE_FLAG")
 	HW_DSC_TYPE_ID                  = os.Getenv("HW_DSC_TYPE_ID")
 	HW_DSC_SCAN_TEMPLATE_ID         = os.Getenv("HW_DSC_SCAN_TEMPLATE_ID")
@@ -469,6 +470,8 @@ var (
 	HW_DSC_SECURITY_LEVEL_ID        = os.Getenv("HW_DSC_SECURITY_LEVEL_ID")
 	HW_DSC_SECURITY_LEVEL_ID_TARGET = os.Getenv("HW_DSC_SECURITY_LEVEL_ID_TARGET")
 	HW_DSC_OBS_ID                   = os.Getenv("HW_DSC_OBS_ID")
+	HW_DSC_RULE_IDS                 = os.Getenv("HW_DSC_RULE_IDS")
+	HW_DSC_DB_INSTANCE_ID           = os.Getenv("HW_DSC_DB_INSTANCE_ID")
 	HW_DSC_DB_ID                    = os.Getenv("HW_DSC_DB_ID")
 	HW_DSC_BUCKET_ID                = os.Getenv("HW_DSC_BUCKET_ID")
 
@@ -5329,6 +5332,13 @@ func TestAccPrecheckDscAlarmTopicID(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckDscAssetId(t *testing.T) {
+	if HW_DSC_ASSET_ID == "" {
+		t.Skip("HW_DSC_ASSET_ID must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckDscEnableFlag(t *testing.T) {
 	if HW_DSC_ENABLE_FLAG == "" {
 		t.Skip("HW_DSC_ENABLE_FLAG must be set for DSC acceptance tests")
@@ -5388,6 +5398,20 @@ func TestAccPreCheckDscDbId(t *testing.T) {
 func TestAccPreCheckDscBucketId(t *testing.T) {
 	if HW_DSC_BUCKET_ID == "" {
 		t.Skip("HW_DSC_BUCKET_ID must be set for DSC acceptance tests")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckDscRuleIds(t *testing.T) {
+	if HW_DSC_RULE_IDS == "" {
+		t.Skip("HW_DSC_RULE_IDS must be set for DSC acceptance tests")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckDscDbInstanceId(t *testing.T) {
+	if HW_DSC_DB_INSTANCE_ID == "" {
+		t.Skip("HW_DSC_DB_INSTANCE_ID must be set for DSC acceptance tests")
 	}
 }
 
