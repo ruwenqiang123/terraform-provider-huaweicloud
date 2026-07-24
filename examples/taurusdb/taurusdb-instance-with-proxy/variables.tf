@@ -45,12 +45,6 @@ variable "gateway_ip" {
   default     = ""
 }
 
-variable "availability_zone_mode" {
-  description = "The availability zone mode. Valid values are single, multi"
-  type        = string
-  default     = "multi"
-}
-
 variable "master_availability_zone" {
   description = "The master availability zone of the TaurusDB instance. If not specified, the first available AZ from flavors will be used"
   type        = string
@@ -62,29 +56,11 @@ variable "security_group_name" {
   type        = string
 }
 
-variable "instance_db_port" {
-  description = "The database port"
-  type        = number
-  default     = 3306
-}
-
 variable "instance_password" {
   description = "The password for the TaurusDB instance"
   type        = string
   default     = ""
   sensitive   = true
-}
-
-variable "configuration_id" {
-  description = "The ID of an existing parameter template. If not specified, a new parameter template will be created"
-  type        = string
-  default     = ""
-}
-
-variable "parameter_template_name" {
-  description = "The name of the parameter template to create"
-  type        = string
-  default     = ""
 }
 
 variable "instance_name" {
@@ -98,16 +74,10 @@ variable "instance_flavor_ref" {
   default     = ""
 }
 
-variable "instance_mode" {
-  description = "The instance mode. Valid values are Cluster, StandSingle"
-  type        = string
-  default     = "Cluster"
-}
-
 variable "read_replicas" {
   description = "The number of read replicas"
   type        = number
-  default     = 2
+  default     = 4
 }
 
 variable "enterprise_project_id" {
@@ -126,6 +96,12 @@ variable "time_zone" {
   description = "The time zone of the instance"
   type        = string
   default     = "UTC+08:00"
+}
+
+variable "instance_db_port" {
+  description = "The database port"
+  type        = number
+  default     = 3306
 }
 
 variable "ssl_option" {
@@ -222,19 +198,112 @@ variable "tags" {
   default     = {}
 }
 
-# Account and database variables
-variable "account_name" {
-  description = "Username with elevated privileges"
-  type        = string
+# Proxy variables
+variable "proxy_node_num" {
+  description = "The number of proxy nodes"
+  type        = number
+  default     = 2
 }
 
-variable "database_name" {
-  description = "The name of the initial database"
+variable "proxy_name" {
+  description = "The name of the database proxy"
   type        = string
+  default     = ""
 }
 
-variable "character_set" {
-  description = "The character set of the database"
+variable "proxy_mode" {
+  description = "The type of the proxy. Valid values are readwrite, readonly. Defaults to readwrite"
   type        = string
-  default     = "utf8"
+  default     = "readwrite"
+}
+
+variable "route_mode" {
+  description = "The routing policy of the proxy. Valid values are 0, 1, 2"
+  type        = number
+  default     = 1
+}
+
+variable "proxy_new_node_auto_add_status" {
+  description = "Whether to automatically add new nodes to the proxy. Valid values are ON, OFF"
+  type        = string
+  default     = "OFF"
+}
+
+variable "proxy_new_node_weight" {
+  description = "The weight of new nodes automatically added to the proxy"
+  type        = number
+  default     = 20
+}
+
+variable "proxy_port" {
+  description = "The proxy port"
+  type        = number
+  default     = 3306
+}
+
+variable "proxy_transaction_split" {
+  description = "Whether to enable transaction split. Valid values are ON, OFF. Defaults to OFF"
+  type        = string
+  default     = "OFF"
+}
+
+variable "proxy_consistence_mode" {
+  description = "The consistency mode. Valid values are session, global, eventual. Defaults to eventual"
+  type        = string
+  default     = "eventual"
+}
+
+variable "proxy_connection_pool_type" {
+  description = "The connection pool type. Valid values are SESSION, CLOSED. Defaults to CLOSED"
+  type        = string
+  default     = "CLOSED"
+}
+
+variable "proxy_open_access_control" {
+  description = "Whether to enable access control"
+  type        = bool
+  default     = true
+}
+
+variable "access_control_type" {
+  description = "The access control mode. Valid values are white, black"
+  type        = string
+  default     = "white"
+}
+
+variable "proxy_dns_name_prefix" {
+  description = "The DNS name prefix for the proxy"
+  type        = string
+  default     = ""
+}
+
+variable "proxy_access_control_ip_list" {
+  description = "The access control IP list for the proxy"
+  type        = list(object({
+    ip          = string
+    description = string
+  }))
+  default     = []
+}
+
+variable "proxy_master_node_weight" {
+  description = "The weight of the master node in the proxy"
+  type        = number
+  default     = 20
+}
+
+variable "proxy_readonly_node_weight" {
+  description = "The weight of read-only nodes in the proxy"
+  type        = number
+  default     = 30
+}
+
+variable "proxy_parameters" {
+  description = "The parameters for the proxy"
+  type        = list(object({
+    name      = string
+    value     = string
+    elem_type = string
+  }))
+  default     = []
 }

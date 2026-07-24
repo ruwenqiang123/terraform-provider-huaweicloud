@@ -6,10 +6,6 @@ terraform {
       source  = "huaweicloud/huaweicloud"
       version = ">= 1.95.0"
     }
-    random = {
-      source  = "hashicorp/random"
-      version = ">= 3.0.0"
-    }
   }
 }
 
