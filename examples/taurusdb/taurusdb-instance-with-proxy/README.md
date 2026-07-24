@@ -1,9 +1,7 @@
-# Create a TaurusDB Instance and Associate EIP
+# Create a TaurusDB Instance with Database Proxy
 
-This example provides best practice code for using Terraform to create a TaurusDB instance and associate an EIP for
-public network access in HuaweiCloud TaurusDB service.
-
-It supports both creating a new EIP and using an existing EIP by configuring the `associate_eip_address` variable.
+This example provides best practice code for using Terraform to create a TaurusDB instance with a database proxy in
+HuaweiCloud TaurusDB service.
 
 ## Prerequisites
 
@@ -32,23 +30,21 @@ The following variables need to be configured:
 * `instance_backup_time_window` - The backup time window in HH:MM-HH:MM format
 * `instance_backup_keep_days` - The number of days to retain backups
 
-#### Optional Variables
+#### Optional Variables - TaurusDB Instance
 
 * `vpc_cidr` - The CIDR block of the VPC (default: "192.168.0.0/16")
 * `subnet_cidr` - The CIDR block of the subnet (default: "")
 * `gateway_ip` - The gateway IP address of the subnet (default: "")
-* `availability_zone_mode` - The availability zone mode (default: "multi")
 * `master_availability_zone` - The master availability zone (default: "")
-* `instance_db_port` - The database port (default: 3306)
+* `instance_flavor_ref` - The flavor code (default: "")
 * `instance_password` - The password for the TaurusDB instance (default: "")
-* `instance_flavor_ref` - The flavor code of the TaurusDB instance (default: "")
-* `instance_mode` - The instance mode (default: "Cluster")
-* `read_replicas` - The number of read replicas (default: 2)
+* `read_replicas` - The number of read replicas (default: 4)
 * `enterprise_project_id` - The enterprise project ID (default: "0")
+* `instance_db_port` - The database port (default: 3306)
 * `volume_type` - The storage type of the instance (default: "DL6")
 * `time_zone` - The time zone of the instance (default: "UTC+08:00")
-* `sql_filter_enabled` - Whether to enable SQL filter (default: true)
 * `ssl_option` - Whether to enable SSL (default: "true")
+* `sql_filter_enabled` - Whether to enable SQL filter (default: true)
 * `slow_log_show_original_switch` - Whether to enable slow log show original switch (default: true)
 * `table_name_case_sensitivity` - Whether the kernel table name is case sensitive (default: true)
 * `multi_tenant_switch` - Whether to enable multi-tenancy switch (default: "true")
@@ -62,15 +58,25 @@ The following variables need to be configured:
 * `reserve_audit_logs` - Whether to reserve historical audit logs when SQL audit is disabled (default: "true")
 * `tags` - The tags of the TaurusDB instance (default: {})
 
-#### Optional Variables - EIP Association
+#### Optional Variables - Database Proxy
 
-* `associate_eip_address` - The existing EIP address to associate.
-  If not specified, a new EIP will be created (default: "")
-* `eip_type` - The EIP type (default: "5_bgp")
-* `bandwidth_name` - The bandwidth name (required when creating new EIP)
-* `bandwidth_size` - The bandwidth size in Mbit/s (default: 5)
-* `bandwidth_share_type` - The share type of the bandwidth (default: "PER")
-* `bandwidth_charge_mode` - The charge mode of the bandwidth (default: "traffic")
+* `proxy_mode` - The type of the proxy (default: "readwrite")
+* `proxy_node_num` - The number of proxy nodes (default: 2)
+* `proxy_name` - The name of the database proxy (default: "")
+* `route_mode` - The routing policy of the proxy (default: 1)
+* `proxy_new_node_auto_add_status` - Whether to automatically add new nodes (default: "OFF")
+* `proxy_new_node_weight` - The weight of new nodes (default: 20)
+* `proxy_port` - The proxy port (default: 3306)
+* `proxy_transaction_split` - Whether to enable transaction split (default: "OFF")
+* `proxy_consistence_mode` - The consistency mode (default: "eventual")
+* `proxy_connection_pool_type` - The connection pool type (default: "CLOSED")
+* `proxy_open_access_control` - Whether to enable access control (default: true)
+* `access_control_type` - The access control mode (default: "white")
+* `proxy_dns_name_prefix` - The DNS name prefix for the proxy (default: "")
+* `proxy_master_node_weight` - The weight of the master node (default: 20)
+* `proxy_readonly_node_weight` - The weight of read-only nodes (default: 30)
+* `proxy_access_control_ip_list` - The access control IP list (default: [])
+* `proxy_parameters` - The parameters for the proxy (default: [])
 
 ## Usage
 
@@ -78,28 +84,29 @@ The following variables need to be configured:
 
 * Create a `terraform.tfvars` file and fill in the required variables:
 
-  **Create a new EIP:**
-
   ```hcl
-  vpc_name                    = "your_vpc_name"
-  subnet_name                 = "your_subnet_name"
-  security_group_name         = "your_security_group_name"
-  instance_name               = "your_taurusdb_instance_name"
-  instance_backup_time_window = "02:00-03:00"
-  instance_backup_keep_days   = 7
-  bandwidth_name              = "your_bandwidth_name"
-  ```
-
-  **Use an existing EIP:**
-
-  ```hcl
-  vpc_name                    = "your_vpc_name"
-  subnet_name                 = "your_subnet_name"
-  security_group_name         = "your_security_group_name"
-  instance_name               = "your_taurusdb_instance_name"
-  instance_backup_time_window = "02:00-03:00"
-  instance_backup_keep_days   = 7
-  associate_eip_address       = "your_existing_eip_address"
+  vpc_name                       = "your_vpc_name"
+  subnet_name                    = "your_subnet_name"
+  security_group_name            = "your_security_group_name"
+  instance_name                  = "your_taurusdb_instance_name"
+  instance_backup_time_window    = "02:00-03:00"
+  instance_backup_keep_days      = 7
+  proxy_name                     = "your_proxy_name"
+  proxy_node_num                 = 2
+  proxy_port                     = 3339
+  proxy_access_control_ip_list   = [
+    {
+      ip          = "3.3.3.3"
+      description = "test description"
+    }
+  ]
+  proxy_parameters               = [
+    {
+      name      = "multiStatementType"
+      value     = "Loose"
+      elem_type = "system"
+    }
+  ]
   ```
 
 * Initialize Terraform:
@@ -129,12 +136,12 @@ The following variables need to be configured:
 ## Note
 
 * Make sure to keep your credentials secure and never commit them to version control
-* The creation of the TaurusDB instance takes about 15-20 minutes
-* When `associate_eip_address` is not specified, a new EIP will be created and associated to the TaurusDB instance
-* When `associate_eip_address` is specified, the existing EIP will be queried and associated to the TaurusDB instance
-* The `bandwidth_name` is required when creating a new EIP (i.e., when `associate_eip_address` is not specified)
+* The creation of the TaurusDB instance takes about 20-30 minutes
+* The TaurusDB instance must be deployed in multi-AZ mode to use the database proxy
+* It is recommended to have at least 4 read replicas when using the database proxy
+* Node weights are assigned automatically based on the instance nodes list
 * The instance flavor and availability zones are automatically queried from `huaweicloud_taurusdb_flavors` data source
-* All resources will be created in the specified region
+* The proxy flavor is automatically queried from `huaweicloud_taurusdb_proxy_flavors` data source
 
 ## Requirements
 
