@@ -1414,6 +1414,7 @@ func Provider() *schema.Provider {
 
 			"huaweicloud_dsc_alarms":                           dsc.DataSourceDscAlarms(),
 			"huaweicloud_dsc_alarm_handling_trend":             dsc.DataSourceDscAlarmHandlingTrend(),
+			"huaweicloud_dsc_alarm_infos":                      dsc.DataSourceDscAlarmInfos(),
 			"huaweicloud_dsc_alarm_overview":                   dsc.DataSourceDscAlarmOverview(),
 			"huaweicloud_dsc_asset_last_job":                   dsc.DataSourceDscAssetLastJob(),
 			"huaweicloud_dsc_attacked_top":                     dsc.DataSourceDscAttackedTop(),
@@ -1431,6 +1432,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_dsc_column_details_by_database":       dsc.DataSourceDscColumnDetailsByDatabase(),
 			"huaweicloud_dsc_column_details_by_classification": dsc.DataSourceDscColumnDetailsByClassification(),
 			"huaweicloud_dsc_dashboard_score":                  dsc.DataSourceDscDashboardScore(),
+			"huaweicloud_dsc_data_detail":                      dsc.DataSourceDscDataDetail(),
 			"huaweicloud_dsc_data_map_dynamic_data_infos":      dsc.DataSourceDataMapDynamicDataInfos(),
 			"huaweicloud_dsc_data_map_score":                   dsc.DataSourceDscDataMapScore(),
 			"huaweicloud_dsc_data_map_security_level":          dsc.DataSourceDscDataMapSecurityLevel(),
@@ -2188,8 +2190,6 @@ func Provider() *schema.Provider {
 			"huaweicloud_networking_secgroup_tags":     vpc.DataSourceVpcNetworkingSecgroupTags(),
 
 			"huaweicloud_modelarts_algorithms":              modelarts.DataSourceAlgorithms(),
-			"huaweicloud_modelarts_dataset_versions":        modelarts.DataSourceDatasetVerions(),
-			"huaweicloud_modelarts_datasets":                modelarts.DataSourceDatasets(),
 			"huaweicloud_modelarts_devserver_flavors":       modelarts.DataSourceDevServerFlavors(),
 			"huaweicloud_modelarts_devserver_images":        modelarts.DataSourceDevServerImages(),
 			"huaweicloud_modelarts_devserver_job_templates": modelarts.DataSourceDevServerJobTemplates(),
@@ -3190,6 +3190,8 @@ func Provider() *schema.Provider {
 			"huaweicloud_dcs_product_v1":                deprecated.DataSourceDcsProductV1(),
 			"huaweicloud_dms_az":                        deprecated.DataSourceDmsAZ(),
 			"huaweicloud_dms_az_v1":                     deprecated.DataSourceDmsAZ(),
+			"huaweicloud_modelarts_dataset_versions":    deprecated.DataSourceDatasetVerions(),
+			"huaweicloud_modelarts_datasets":            deprecated.DataSourceDatasets(),
 			"huaweicloud_sfs_file_system":               deprecated.DataSourceSFSFileSystemV2(),
 			"huaweicloud_sfs_file_system_v2":            deprecated.DataSourceSFSFileSystemV2(),
 			"huaweicloud_vbs_backup_policy":             deprecated.DataSourceVBSBackupPolicyV2(),
@@ -4385,8 +4387,6 @@ func Provider() *schema.Provider {
 
 			"huaweicloud_modelarts_algorithm":                       modelarts.ResourceAlgorithm(),
 			"huaweicloud_modelarts_authorization":                   modelarts.ResourceModelArtsAuthorization(),
-			"huaweicloud_modelarts_dataset":                         modelarts.ResourceDataset(),
-			"huaweicloud_modelarts_dataset_version":                 modelarts.ResourceDatasetVersion(),
 			"huaweicloud_modelarts_devserver":                       modelarts.ResourceDevServer(),
 			"huaweicloud_modelarts_devserver_action":                modelarts.ResourceDevServerAction(),
 			"huaweicloud_modelarts_model":                           modelarts.ResourceModelartsModel(),
@@ -5048,6 +5048,8 @@ func Provider() *schema.Provider {
 			"huaweicloud_dsc_device":                         dsc.ResourceDscDevice(),
 			"huaweicloud_dsc_instance":                       dsc.ResourceDscInstance(),
 			"huaweicloud_dsc_mask_algorithm":                 dsc.ResourceMaskAlgorithm(),
+			"huaweicloud_dsc_mask_algorithm_debug":           dsc.ResourceMaskAlgorithmDebug(),
+			"huaweicloud_dsc_measure_info":                   dsc.ResourceMeasureInfo(),
 			"huaweicloud_dsc_multi_enable_trusted_service":   dsc.ResourceMultiEnableTrustedService(),
 			"huaweicloud_dsc_operate_obs_audit":              dsc.ResourceOperateObsAudit(),
 			"huaweicloud_dsc_scan_rule":                      dsc.ResourceScanRule(),
@@ -5294,6 +5296,9 @@ func Provider() *schema.Provider {
 			"huaweicloud_cs_peering_connect_v1": deprecated.ResourceCsPeeringConnectV1(),
 
 			"huaweicloud_lts_structuring_configuration": lts.ResourceStructConfig(),
+
+			"huaweicloud_modelarts_dataset":         deprecated.ResourceDataset(),
+			"huaweicloud_modelarts_dataset_version": deprecated.ResourceDatasetVersion(),
 
 			"huaweicloud_mrs_cluster":    deprecated.ResourceMRSClusterV1(),
 			"huaweicloud_mrs_cluster_v1": deprecated.ResourceMRSClusterV1(),

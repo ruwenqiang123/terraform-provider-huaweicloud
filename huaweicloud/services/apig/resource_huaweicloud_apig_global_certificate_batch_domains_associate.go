@@ -251,10 +251,9 @@ func flattenGlobalCertificateAssociatedDomains(domains []interface{}) []interfac
 
 func resourceGlobalCertificateBatchDomainsAssociateUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	var (
-		cfg                 = meta.(*config.Config)
-		region              = cfg.GetRegion(d)
-		certificateId       = d.Get("certificate_id").(string)
-		addRaws, removeRaws = getUpdateCertificateBatchDomainsAssociateDomainNames(d, "verify_disabled_domain_names")
+		cfg           = meta.(*config.Config)
+		region        = cfg.GetRegion(d)
+		certificateId = d.Get("certificate_id").(string)
 	)
 
 	client, err := cfg.NewServiceClient("apig", region)
@@ -262,26 +261,30 @@ func resourceGlobalCertificateBatchDomainsAssociateUpdate(ctx context.Context, d
 		return diag.Errorf("error creating APIG client: %s", err)
 	}
 
-	// Must disassociate domains first, prevent the bound data from containing domains to be unbound.
-	if len(removeRaws) > 0 {
-		if err = disassociateDomainsFromCertificate(client, certificateId, buildGlobalCertificateAssociatedDomains(removeRaws)); err != nil {
-			return diag.FromErr(err)
+	// Skip the update request when only enable_force_new is changed.
+	if d.HasChangeExcept("enable_force_new") {
+		addRaws, removeRaws := getUpdateCertificateBatchDomainsAssociateDomainNames(d, "verify_disabled_domain_names")
+		// Must disassociate domains first, prevent the bound data from containing domains to be unbound.
+		if len(removeRaws) > 0 {
+			if err = disassociateDomainsFromCertificate(client, certificateId, buildGlobalCertificateAssociatedDomains(removeRaws)); err != nil {
+				return diag.FromErr(err)
+			}
 		}
-	}
 
-	if len(addRaws) > 0 {
-		if err = associateDomainsToCertificate(client, certificateId, buildGlobalCertificateAssociatedDomains(addRaws)); err != nil {
-			return diag.FromErr(err)
+		if len(addRaws) > 0 {
+			if err = associateDomainsToCertificate(client, certificateId, buildGlobalCertificateAssociatedDomains(addRaws)); err != nil {
+				return diag.FromErr(err)
+			}
 		}
-	}
 
-	// If the request is successful, obtain the values of all slice parameters first and save them to the corresponding
-	// '_origin' attributes for subsequent determination and construction of the request body during next updates.
-	// And whether corresponding parameters are changed, the origin values must be refreshed.
-	err = utils.RefreshSliceParamOriginValues(d, globalCertificateBatchDomainsAssociateStrSliceParamKeys)
-	if err != nil {
-		// Don't fail the update if origin refresh fails
-		log.Printf("[WARN] Unable to refresh the origin values: %s", err)
+		// If the request is successful, obtain the values of all slice parameters first and save them to the corresponding
+		// '_origin' attributes for subsequent determination and construction of the request body during next updates.
+		// And whether corresponding parameters are changed, the origin values must be refreshed.
+		err = utils.RefreshSliceParamOriginValues(d, globalCertificateBatchDomainsAssociateStrSliceParamKeys)
+		if err != nil {
+			// Don't fail the update if origin refresh fails
+			log.Printf("[WARN] Unable to refresh the origin values: %s", err)
+		}
 	}
 
 	return resourceGlobalCertificateBatchDomainsAssociateRead(ctx, d, meta)

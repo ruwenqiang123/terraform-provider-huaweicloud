@@ -279,9 +279,11 @@ func resourceV3ApplicationConfigurationUpdate(ctx context.Context, d *schema.Res
 		return diag.Errorf("error creating ServiceStage client: %s", err)
 	}
 
-	_, err = updateV3ApplicationConfiguration(client, d)
-	if err != nil {
-		return diag.FromErr(err)
+	if d.HasChangeExcept("enable_force_new") {
+		_, err = updateV3ApplicationConfiguration(client, d)
+		if err != nil {
+			return diag.FromErr(err)
+		}
 	}
 
 	return resourceV3ApplicationConfigurationRead(ctx, d, meta)

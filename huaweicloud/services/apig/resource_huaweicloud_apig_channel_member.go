@@ -296,19 +296,22 @@ func resourceChannelMemberUpdate(ctx context.Context, d *schema.ResourceData, me
 		return diag.Errorf("error creating APIG client: %s", err)
 	}
 
-	// Lock the resource to prevent concurrent updates (error APIG.9999 will be returned if the database data synchronize
-	// failed)
-	config.MutexKV.Lock(lockInfo)
-	defer config.MutexKV.Unlock(lockInfo)
+	// Skip the update request when only enable_force_new is changed.
+	if d.HasChangeExcept("enable_force_new") {
+		// Lock the resource to prevent concurrent updates (error APIG.9999 will be returned if the database data synchronize
+		// failed)
+		config.MutexKV.Lock(lockInfo)
+		defer config.MutexKV.Unlock(lockInfo)
 
-	// The old update API: PUT /v2/{project_id}/apigw/instances/{instance_id}/vpc-channels/{vpc_channel_id}/members
-	// The legacy update API cannot update a single entity within the group; it can only perform a full replacement of the
-	// entire instance group.
-	// The new update API: POST /v2/{project_id}/apigw/instances/{instance_id}/vpc-channels/{vpc_channel_id}/members
-	// The new API can modify one item by unique index (instance_id, vpc_channel_id, member_group_name, host, port)
-	err = updateChannelMember(client, instanceId, vpcChannelId, d)
-	if err != nil {
-		return diag.Errorf("error updating channel member (%s): %s", d.Id(), err)
+		// The old update API: PUT /v2/{project_id}/apigw/instances/{instance_id}/vpc-channels/{vpc_channel_id}/members
+		// The legacy update API cannot update a single entity within the group; it can only perform a full replacement of the
+		// entire instance group.
+		// The new update API: POST /v2/{project_id}/apigw/instances/{instance_id}/vpc-channels/{vpc_channel_id}/members
+		// The new API can modify one item by unique index (instance_id, vpc_channel_id, member_group_name, host, port)
+		err = updateChannelMember(client, instanceId, vpcChannelId, d)
+		if err != nil {
+			return diag.Errorf("error updating channel member (%s): %s", d.Id(), err)
+		}
 	}
 
 	return resourceChannelMemberRead(ctx, d, meta)

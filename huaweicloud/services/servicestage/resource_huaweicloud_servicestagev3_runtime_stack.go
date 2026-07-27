@@ -271,29 +271,31 @@ func resourceV3RuntimeStackUpdate(ctx context.Context, d *schema.ResourceData, m
 		return diag.Errorf("error creating ServiceStage client: %s", err)
 	}
 
-	updatePath := client.Endpoint + httpUrl
-	updatePath = strings.ReplaceAll(updatePath, "{project_id}", client.ProjectID)
-	updatePath = strings.ReplaceAll(updatePath, "{runtimestack_id}", runtimeStackId)
+	if d.HasChangeExcept("enable_force_new") {
+		updatePath := client.Endpoint + httpUrl
+		updatePath = strings.ReplaceAll(updatePath, "{project_id}", client.ProjectID)
+		updatePath = strings.ReplaceAll(updatePath, "{runtimestack_id}", runtimeStackId)
 
-	opt := golangsdk.RequestOpts{
-		KeepResponseBody: true,
-		MoreHeaders: map[string]string{
-			"Content-Type": "application/json;charset=utf8",
-		},
-		JSONBody: utils.RemoveNil(buildV3RuntimeStackUpdateBodyParams(d)),
-	}
+		opt := golangsdk.RequestOpts{
+			KeepResponseBody: true,
+			MoreHeaders: map[string]string{
+				"Content-Type": "application/json;charset=utf8",
+			},
+			JSONBody: utils.RemoveNil(buildV3RuntimeStackUpdateBodyParams(d)),
+		}
 
-	_, err = client.Request("PUT", updatePath, &opt)
-	if err != nil {
-		return diag.Errorf("error updating runtime stack (%s): %s", runtimeStackId, err)
-	}
+		_, err = client.Request("PUT", updatePath, &opt)
+		if err != nil {
+			return diag.Errorf("error updating runtime stack (%s): %s", runtimeStackId, err)
+		}
 
-	// If the request is successful, obtain the values ​​of all JSON parameters first and save them to the
-	// corresponding '_origin' attributes for subsequent determination and construction of the request body during
-	// next updates.
-	err = utils.RefreshObjectParamOriginValues(d, runtimeStackJsonObjectParamKeys)
-	if err != nil {
-		return diag.Errorf("unable to refresh the origin values: %s", err)
+		// If the request is successful, obtain the values ​​of all JSON parameters first and save them to the
+		// corresponding '_origin' attributes for subsequent determination and construction of the request body during
+		// next updates.
+		err = utils.RefreshObjectParamOriginValues(d, runtimeStackJsonObjectParamKeys)
+		if err != nil {
+			return diag.Errorf("unable to refresh the origin values: %s", err)
+		}
 	}
 
 	return resourceV3RuntimeStackRead(ctx, d, meta)

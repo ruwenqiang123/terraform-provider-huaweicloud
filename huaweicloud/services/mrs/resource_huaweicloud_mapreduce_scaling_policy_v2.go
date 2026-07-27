@@ -472,19 +472,21 @@ func resourceScalingPolicyV2Update(ctx context.Context, d *schema.ResourceData, 
 		return diag.Errorf("error creating MRS client: %s", err)
 	}
 
-	updatePath := client.Endpoint + "v2/{project_id}/autoscaling-policy/{cluster_id}"
-	updatePath = strings.ReplaceAll(updatePath, "{project_id}", client.ProjectID)
-	updatePath = strings.ReplaceAll(updatePath, "{cluster_id}", d.Get("cluster_id").(string))
+	if d.HasChangeExcept("enable_force_new") {
+		updatePath := client.Endpoint + "v2/{project_id}/autoscaling-policy/{cluster_id}"
+		updatePath = strings.ReplaceAll(updatePath, "{project_id}", client.ProjectID)
+		updatePath = strings.ReplaceAll(updatePath, "{cluster_id}", d.Get("cluster_id").(string))
 
-	updateOpt := golangsdk.RequestOpts{
-		KeepResponseBody: true,
-		MoreHeaders:      map[string]string{"Content-Type": "application/json"},
-		JSONBody:         utils.RemoveNil(buildScalingPolicyV2Params(d)),
-	}
+		updateOpt := golangsdk.RequestOpts{
+			KeepResponseBody: true,
+			MoreHeaders:      map[string]string{"Content-Type": "application/json"},
+			JSONBody:         utils.RemoveNil(buildScalingPolicyV2Params(d)),
+		}
 
-	_, err = client.Request("PUT", updatePath, &updateOpt)
-	if err != nil {
-		return diag.Errorf("error updating scaling policy: %s", err)
+		_, err = client.Request("PUT", updatePath, &updateOpt)
+		if err != nil {
+			return diag.Errorf("error updating scaling policy: %s", err)
+		}
 	}
 
 	return resourceScalingPolicyV2Read(ctx, d, meta)

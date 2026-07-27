@@ -255,34 +255,37 @@ func resourceGroupDomainAssociateUpdate(ctx context.Context, d *schema.ResourceD
 		return diag.Errorf("error creating APIG client: %s", err)
 	}
 
-	// Get domain ID if the value of attribute 'domain_id' is empty.
-	if domainId == "" {
-		urlDomain := d.Get("url_domain").(string)
-		associateInfo, err := GetGroupAssociatedDomainByUrl(client, instanceId, groupId, urlDomain)
-		if err != nil {
-			return common.CheckDeletedDiag(d, err, fmt.Sprintf("error querying the associated domain information (%s)", urlDomain))
+	// Skip the update request when only enable_force_new is changed.
+	if d.HasChangeExcept("enable_force_new") {
+		// Get domain ID if the value of attribute 'domain_id' is empty.
+		if domainId == "" {
+			urlDomain := d.Get("url_domain").(string)
+			associateInfo, err := GetGroupAssociatedDomainByUrl(client, instanceId, groupId, urlDomain)
+			if err != nil {
+				return common.CheckDeletedDiag(d, err, fmt.Sprintf("error querying the associated domain information (%s)", urlDomain))
+			}
+			domainId = utils.PathSearch("id", associateInfo, "").(string)
 		}
-		domainId = utils.PathSearch("id", associateInfo, "").(string)
-	}
 
-	updatePath := client.Endpoint + httpUrl
-	updatePath = strings.ReplaceAll(updatePath, "{project_id}", client.ProjectID)
-	updatePath = strings.ReplaceAll(updatePath, "{instance_id}", instanceId)
-	updatePath = strings.ReplaceAll(updatePath, "{group_id}", groupId)
-	updatePath = strings.ReplaceAll(updatePath, "{domain_id}", domainId)
+		updatePath := client.Endpoint + httpUrl
+		updatePath = strings.ReplaceAll(updatePath, "{project_id}", client.ProjectID)
+		updatePath = strings.ReplaceAll(updatePath, "{instance_id}", instanceId)
+		updatePath = strings.ReplaceAll(updatePath, "{group_id}", groupId)
+		updatePath = strings.ReplaceAll(updatePath, "{domain_id}", domainId)
 
-	opt := golangsdk.RequestOpts{
-		KeepResponseBody: true,
-		MoreHeaders: map[string]string{
-			"Content-Type": "application/json",
-		},
-		JSONBody: utils.RemoveNil(buildDomainAssociateUpdateBodyParams(d)),
-	}
+		opt := golangsdk.RequestOpts{
+			KeepResponseBody: true,
+			MoreHeaders: map[string]string{
+				"Content-Type": "application/json",
+			},
+			JSONBody: utils.RemoveNil(buildDomainAssociateUpdateBodyParams(d)),
+		}
 
-	_, err = client.Request("PUT", updatePath, &opt)
-	if err != nil {
-		return diag.Errorf("error updating associate configuration for the domain (%s) and the API group (%s): %s",
-			domainId, groupId, err)
+		_, err = client.Request("PUT", updatePath, &opt)
+		if err != nil {
+			return diag.Errorf("error updating associate configuration for the domain (%s) and the API group (%s): %s",
+				domainId, groupId, err)
+		}
 	}
 	return resourceGroupDomainAssociateRead(ctx, d, meta)
 }

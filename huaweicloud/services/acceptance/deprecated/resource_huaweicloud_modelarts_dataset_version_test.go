@@ -1,4 +1,4 @@
-package modelarts
+package deprecated
 
 import (
 	"fmt"
@@ -12,7 +12,7 @@ import (
 
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/config"
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/acceptance"
-	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/modelarts"
+	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/deprecated"
 )
 
 func getDatasetVersionResourceFunc(cfg *config.Config, state *terraform.ResourceState) (interface{}, error) {
@@ -21,7 +21,7 @@ func getDatasetVersionResourceFunc(cfg *config.Config, state *terraform.Resource
 		return nil, fmt.Errorf("error creating ModelArts v2 client, err=%s", err)
 	}
 
-	datasetId, versionId, err := modelarts.ParseVersionInfoFromId(state.Primary.ID)
+	datasetId, versionId, err := deprecated.ParseVersionInfoFromId(state.Primary.ID)
 	if err != nil {
 		return nil, err
 	}

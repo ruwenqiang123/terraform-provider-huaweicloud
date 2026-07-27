@@ -1,4 +1,4 @@
-package modelarts
+package deprecated
 
 import (
 	"context"
@@ -20,6 +20,8 @@ import (
 func DataSourceDatasetVerions() *schema.Resource {
 	return &schema.Resource{
 		ReadContext: dataSourceDatasetVersionsRead,
+
+		DeprecationMessage: "ModelArts dataset versions data source has been deprecated.",
 
 		Schema: map[string]*schema.Schema{
 			"region": {

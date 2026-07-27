@@ -328,9 +328,12 @@ func resourceChannelMemberGroupUpdate(ctx context.Context, d *schema.ResourceDat
 		return diag.Errorf("error creating APIG client: %s", err)
 	}
 
-	err = updateChannelMemberGroup(client, instanceId, vpcChannelId, memberGroupId, d)
-	if err != nil {
-		return diag.Errorf("error updating member group (%s): %s", memberGroupId, err)
+	// Skip the update request when only enable_force_new is changed.
+	if d.HasChangeExcept("enable_force_new") {
+		err = updateChannelMemberGroup(client, instanceId, vpcChannelId, memberGroupId, d)
+		if err != nil {
+			return diag.Errorf("error updating member group (%s): %s", memberGroupId, err)
+		}
 	}
 
 	return resourceChannelMemberGroupRead(ctx, d, meta)

@@ -377,37 +377,40 @@ func resourceApiBatchPluginsAssociateUpdate(ctx context.Context, d *schema.Resou
 		originPluginIdsList  = d.Get("plugin_ids_origin").([]interface{})
 	)
 
-	// Lock the resource to prevent concurrent updates (error APIG.3500 will be returned if the etcd data synchronize
-	// failed)
-	config.MutexKV.Lock(resourceId)
-	defer config.MutexKV.Unlock(resourceId)
+	// Skip the update request when only enable_force_new is changed.
+	if d.HasChangeExcept("enable_force_new") {
+		// Lock the resource to prevent concurrent updates (error APIG.3500 will be returned if the etcd data synchronize
+		// failed)
+		config.MutexKV.Lock(resourceId)
+		defer config.MutexKV.Unlock(resourceId)
 
-	newPluginIds := utils.FindSliceElementsNotInAnother(scriptPluginIdsList, consolePluginIdsList)
-	rmPluginIds := utils.FindSliceElementsNotInAnother(originPluginIdsList, scriptPluginIdsList)
+		newPluginIds := utils.FindSliceElementsNotInAnother(scriptPluginIdsList, consolePluginIdsList)
+		rmPluginIds := utils.FindSliceElementsNotInAnother(originPluginIdsList, scriptPluginIdsList)
 
-	if len(rmPluginIds) > 0 {
-		log.Printf("[DEBUG] Prepare to unbind the specified plugin IDs: %v", rmPluginIds)
-		err := unbindPluginsFromApis(client, instanceId, apiId, envId, rmPluginIds)
-		if err != nil {
-			return diag.FromErr(err)
+		if len(rmPluginIds) > 0 {
+			log.Printf("[DEBUG] Prepare to unbind the specified plugin IDs: %v", rmPluginIds)
+			err := unbindPluginsFromApis(client, instanceId, apiId, envId, rmPluginIds)
+			if err != nil {
+				return diag.FromErr(err)
+			}
 		}
-	}
 
-	if len(newPluginIds) > 0 {
-		log.Printf("[DEBUG] Prepare to bind the specified plugin IDs: %v", newPluginIds)
-		err = bindPluginsToApi(client, instanceId, apiId, envId, newPluginIds)
-		if err != nil {
-			return diag.FromErr(err)
+		if len(newPluginIds) > 0 {
+			log.Printf("[DEBUG] Prepare to bind the specified plugin IDs: %v", newPluginIds)
+			err = bindPluginsToApi(client, instanceId, apiId, envId, newPluginIds)
+			if err != nil {
+				return diag.FromErr(err)
+			}
 		}
-	}
 
-	// If the request is successful, obtain the values of all slice parameters first and save them to the corresponding
-	// '_origin' attributes for subsequent determination and construction of the request body during next updates.
-	// And whether corresponding parameters are changed, the origin values must be refreshed.
-	err = utils.RefreshSliceParamOriginValues(d, strSliceParamKeysForApiBatchPluginsAssociate)
-	if err != nil {
-		// Don't fail the update if origin refresh fails
-		log.Printf("[WARN] Unable to refresh the origin values: %s", err)
+		// If the request is successful, obtain the values of all slice parameters first and save them to the corresponding
+		// '_origin' attributes for subsequent determination and construction of the request body during next updates.
+		// And whether corresponding parameters are changed, the origin values must be refreshed.
+		err = utils.RefreshSliceParamOriginValues(d, strSliceParamKeysForApiBatchPluginsAssociate)
+		if err != nil {
+			// Don't fail the update if origin refresh fails
+			log.Printf("[WARN] Unable to refresh the origin values: %s", err)
+		}
 	}
 
 	return resourceApiBatchPluginsAssociateRead(ctx, d, meta)

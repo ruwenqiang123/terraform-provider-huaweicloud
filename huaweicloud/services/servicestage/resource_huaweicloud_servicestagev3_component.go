@@ -1574,35 +1574,37 @@ func resourceV3ComponentUpdate(ctx context.Context, d *schema.ResourceData, meta
 		return diag.Errorf("error creating ServiceStage client: %s", err)
 	}
 
-	createPath := client.Endpoint + httpUrl
-	createPath = strings.ReplaceAll(createPath, "{project_id}", client.ProjectID)
-	createPath = strings.ReplaceAll(createPath, "{application_id}", appId)
-	createPath = strings.ReplaceAll(createPath, "{component_id}", componentId)
+	if d.HasChangeExcept("enable_force_new") {
+		createPath := client.Endpoint + httpUrl
+		createPath = strings.ReplaceAll(createPath, "{project_id}", client.ProjectID)
+		createPath = strings.ReplaceAll(createPath, "{application_id}", appId)
+		createPath = strings.ReplaceAll(createPath, "{component_id}", componentId)
 
-	opt := golangsdk.RequestOpts{
-		KeepResponseBody: true,
-		MoreHeaders: map[string]string{
-			"Content-Type": "application/json",
-		},
-		JSONBody: utils.RemoveNil(buildV3ComponentUpdteBodyParams(d)),
-	}
+		opt := golangsdk.RequestOpts{
+			KeepResponseBody: true,
+			MoreHeaders: map[string]string{
+				"Content-Type": "application/json",
+			},
+			JSONBody: utils.RemoveNil(buildV3ComponentUpdteBodyParams(d)),
+		}
 
-	_, err = client.Request("PUT", createPath, &opt)
-	if err != nil {
-		return diag.Errorf("error updating component (%s): %s", componentId, err)
-	}
+		_, err = client.Request("PUT", createPath, &opt)
+		if err != nil {
+			return diag.Errorf("error updating component (%s): %s", componentId, err)
+		}
 
-	err = waitV3ComponentUpdateCompleted(ctx, client, d)
-	if err != nil {
-		return diag.FromErr(err)
-	}
+		err = waitV3ComponentUpdateCompleted(ctx, client, d)
+		if err != nil {
+			return diag.FromErr(err)
+		}
 
-	// If the request is successful, obtain the values ​​of all JSON parameters first and save them to the
-	// corresponding '_origin' attributes for subsequent determination and construction of the request body during
-	// next updates.
-	err = utils.RefreshObjectParamOriginValues(d, componentJsonParamKeys)
-	if err != nil {
-		return diag.Errorf("unable to refresh the origin values: %s", err)
+		// If the request is successful, obtain the values ​​of all JSON parameters first and save them to the
+		// corresponding '_origin' attributes for subsequent determination and construction of the request body during
+		// next updates.
+		err = utils.RefreshObjectParamOriginValues(d, componentJsonParamKeys)
+		if err != nil {
+			return diag.Errorf("unable to refresh the origin values: %s", err)
+		}
 	}
 
 	return resourceV3ComponentRead(ctx, d, meta)

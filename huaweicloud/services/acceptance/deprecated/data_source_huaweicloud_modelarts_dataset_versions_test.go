@@ -1,4 +1,4 @@
-package modelarts
+package deprecated
 
 import (
 	"fmt"

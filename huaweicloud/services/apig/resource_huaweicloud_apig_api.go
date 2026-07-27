@@ -2013,17 +2013,20 @@ func resourceApiUpdate(ctx context.Context, d *schema.ResourceData, meta interfa
 		return diag.Errorf("error creating APIG client: %s", err)
 	}
 
-	body, err := buildApiBodyParams(d)
-	if err != nil {
-		return diag.Errorf("unable to build the API updateOpts: %s", err)
-	}
+	// Skip the update request when only enable_force_new is changed.
+	if d.HasChangeExcept("enable_force_new") {
+		body, err := buildApiBodyParams(d)
+		if err != nil {
+			return diag.Errorf("unable to build the API updateOpts: %s", err)
+		}
 
-	if err = updateApi(client, instanceId, apiId, body); err != nil {
-		return diag.Errorf("error updating API (%s): %s", apiId, err)
-	}
+		if err = updateApi(client, instanceId, apiId, body); err != nil {
+			return diag.Errorf("error updating API (%s): %s", apiId, err)
+		}
 
-	if err = updateAllOriginParameters(d); err != nil {
-		return diag.Errorf("error updating all origin parameters: %s", err)
+		if err = updateAllOriginParameters(d); err != nil {
+			return diag.Errorf("error updating all origin parameters: %s", err)
+		}
 	}
 
 	return resourceApiRead(ctx, d, meta)

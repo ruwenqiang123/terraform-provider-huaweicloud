@@ -1,4 +1,4 @@
-package modelarts
+package deprecated
 
 import (
 	"context"
@@ -67,6 +67,8 @@ func ResourceDataset() *schema.Resource {
 		ReadContext:   resourceDatasetRead,
 		UpdateContext: resourceDatasetUpdate,
 		DeleteContext: resourceDatasetDelete,
+
+		DeprecationMessage: "ModelArts dataset has been deprecated.",
 
 		Timeouts: &schema.ResourceTimeout{
 			Create: schema.DefaultTimeout(30 * time.Minute),

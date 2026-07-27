@@ -1,4 +1,4 @@
-package modelarts
+package deprecated
 
 import (
 	"context"
@@ -32,6 +32,8 @@ func ResourceDatasetVersion() *schema.Resource {
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
 		},
+
+		DeprecationMessage: "ModelArts dataset version has been deprecated.",
 
 		Schema: map[string]*schema.Schema{
 			"region": {
