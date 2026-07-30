@@ -63,6 +63,7 @@ var (
 	HW_PGP_PUBLIC_KEY                      = os.Getenv("HW_PGP_PUBLIC_KEY")
 	HW_PGP_PRIVATE_KEY                     = os.Getenv("HW_PGP_PRIVATE_KEY")
 	HW_RUNNER_PUBLIC_IPS                   = os.Getenv("HW_RUNNER_PUBLIC_IPS")
+	HW_RUNNER_PUBLIC_V6IPS                 = os.Getenv("HW_RUNNER_PUBLIC_V6IPS")
 
 	// CBR environment
 	HW_CBR_ECS_BACKUP_ID          = os.Getenv("HW_CBR_ECS_BACKUP_ID")          // The ECS backup ID.
@@ -464,6 +465,7 @@ var (
 	HW_DSC_ALARM_TOPIC_ID           = os.Getenv("HW_DSC_ALARM_TOPIC_ID")
 	HW_DSC_ASSET_ID                 = os.Getenv("HW_DSC_ASSET_ID")
 	HW_DSC_ENABLE_FLAG              = os.Getenv("HW_DSC_ENABLE_FLAG")
+	HW_DSC_DEVICE_ID                = os.Getenv("HW_DSC_DEVICE_ID")
 	HW_DSC_LABEL_ID                 = os.Getenv("HW_DSC_LABEL_ID")
 	HW_DSC_TYPE_ID                  = os.Getenv("HW_DSC_TYPE_ID")
 	HW_DSC_SCAN_TEMPLATE_ID         = os.Getenv("HW_DSC_SCAN_TEMPLATE_ID")
@@ -1837,6 +1839,13 @@ func TestAccPreCheckServiceLinkedAgencyPrincipal(t *testing.T) {
 func TestAccPreCheckRunnerPublicIPs(t *testing.T, min int) {
 	if HW_RUNNER_PUBLIC_IPS == "" || len(strings.Split(HW_RUNNER_PUBLIC_IPS, ",")) < min {
 		t.Skipf(`At least %d public IP(s) must be supported during the HW_RUNNER_PUBLIC_IPS, separated by commas (,).`, min)
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckRunnerPublicV6IPs(t *testing.T, min int) {
+	if HW_RUNNER_PUBLIC_V6IPS == "" || len(strings.Split(HW_RUNNER_PUBLIC_V6IPS, ",")) < min {
+		t.Skipf(`At least %d public IP(s) must be supported during the HW_RUNNER_PUBLIC_V6IPS, separated by commas (,).`, min)
 	}
 }
 
@@ -5345,6 +5354,13 @@ func TestAccPreCheckDscAssetId(t *testing.T) {
 func TestAccPreCheckDscEnableFlag(t *testing.T) {
 	if HW_DSC_ENABLE_FLAG == "" {
 		t.Skip("HW_DSC_ENABLE_FLAG must be set for DSC acceptance tests")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckDscDeviceId(t *testing.T) {
+	if HW_DSC_DEVICE_ID == "" {
+		t.Skip("HW_DSC_DEVICE_ID must be set for DSC acceptance tests")
 	}
 }
 
