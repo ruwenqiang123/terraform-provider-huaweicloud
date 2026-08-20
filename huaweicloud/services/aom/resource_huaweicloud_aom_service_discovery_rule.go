@@ -297,17 +297,17 @@ func resourceServiceDiscoveryRuleRead(_ context.Context, d *schema.ResourceData,
 
 	isDefaultRule, err := strconv.ParseBool(utils.PathSearch("spec.isDefaultRule", rule, "false").(string))
 	if err != nil {
-		log.Printf("[ERROR] error parsing 'isDefaultRule' field to Boolean: %s", err)
+		log.Printf("[WARN] error parsing 'isDefaultRule' field to Boolean: %s", err)
 	}
 
 	detectLogEnabled, err := strconv.ParseBool(utils.PathSearch("spec.detectLog", rule, "false").(string))
 	if err != nil {
-		log.Printf("[ERROR] error parsing 'detectLog' field to Boolean: %s", err)
+		log.Printf("[WARN] error parsing 'detectLog' field to Boolean: %s", err)
 	}
 
 	createdAt, err := strconv.ParseInt(utils.PathSearch("createTime", rule, "").(string), 10, 64)
 	if err != nil {
-		log.Printf("[ERROR] error parsing 'createTime' field to Int: %s", err)
+		log.Printf("[WARN] error parsing 'createTime' field to Int: %s", err)
 	}
 
 	mErr := multierror.Append(nil,
@@ -364,7 +364,7 @@ func GetServiceDiscoveryRule(client *golangsdk.ServiceClient, name string) (inte
 				Method:    "GET",
 				URL:       "/v1/{project_id}/inv/servicediscoveryrules",
 				RequestId: "NONE",
-				Body:      []byte(fmt.Sprintf("the service discovery rule (%s) does not exist", name)),
+				Body:      fmt.Appendf(nil, "the service discovery rule (%s) does not exist", name),
 			},
 		}
 	}

@@ -277,7 +277,7 @@ func resourceAlarmRuleRead(_ context.Context, d *schema.ResourceData, meta inter
 
 	alarmLevel, err := strconv.Atoi(utils.PathSearch("alarm_level", rule, "0").(string))
 	if err != nil {
-		log.Printf("[ERROR] failed to parse alarm level: %s", err)
+		log.Printf("[WARN] failed to parse alarm level: %s", err)
 	}
 
 	mErr := multierror.Append(nil,
@@ -335,7 +335,7 @@ func GetV2AlarmRule(client *golangsdk.ServiceClient, ruleId string) (interface{}
 				Method:    "GET",
 				URL:       "/v2/{project_id}/alarm-rules/{alarm_rule_id}",
 				RequestId: "NONE",
-				Body:      []byte(fmt.Sprintf("the alarm rule (%s) does not exist", ruleId)),
+				Body:      fmt.Appendf(nil, "the alarm rule (%s) does not exist", ruleId),
 			},
 		}
 	}

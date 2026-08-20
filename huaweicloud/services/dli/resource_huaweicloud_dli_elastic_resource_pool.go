@@ -276,7 +276,7 @@ func buildCreateElasticResourcePoolBodyParams(d *schema.ResourceData, epsId stri
 func parseElasticResourcePoolAutoRenew(autoRenew string) bool {
 	result, err := strconv.ParseBool(autoRenew)
 	if err != nil {
-		log.Printf("[ERROR] unable to convert auto_renew to bool value")
+		log.Printf("[WARN] unable to convert auto_renew to bool value")
 		return false
 	}
 
@@ -433,7 +433,7 @@ func GetElasticResourcePoolByName(client *golangsdk.ServiceClient, resourceName 
 	}
 	return nil, golangsdk.ErrDefault404{
 		ErrUnexpectedResponseCode: golangsdk.ErrUnexpectedResponseCode{
-			Body: []byte(fmt.Sprintf("unable to find the elastic resource pool using its name (%s)", lowercaseName)),
+			Body: fmt.Appendf(nil, "unable to find the elastic resource pool using its name (%s)", lowercaseName),
 		},
 	}
 }
