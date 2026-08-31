@@ -689,6 +689,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_cbh_instance_admin_url": cbh.DataSourceInstanceAdminUrl(),
 			"huaweicloud_cbh_instance_login_url": cbh.DataSourceInstanceLoginUrl(),
 			"huaweicloud_cbh_instance_om_url":    cbh.DataSourceInstanceOmUrl(),
+			"huaweicloud_cbh_switch_config_info": cbh.DataSourceSwitchConfigInfo(),
 
 			"huaweicloud_cc_authorizations":                               cc.DataSourceCcAuthorizations(),
 			"huaweicloud_cc_bandwidth_packages":                           cc.DataSourceCcBandwidthPackages(),
@@ -2278,6 +2279,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_rds_instance_no_index_tables":           rds.DataSourceRdsInstanceNoIndexTables(),
 			"huaweicloud_rds_backups":                            rds.DataSourceRdsBackups(),
 			"huaweicloud_rds_backup_files":                       rds.DataSourceRdsBackupFiles(),
+			"huaweicloud_rds_slow_log_statistics":                rds.DataSourceRdsSlowLogStatistics(),
 			"huaweicloud_rds_storage_types":                      rds.DataSourceStoragetype(),
 			"huaweicloud_rds_sqlserver_collations":               rds.DataSourceSQLServerCollations(),
 			"huaweicloud_rds_sqlserver_databases":                rds.DataSourceSQLServerDatabases(),
@@ -3883,6 +3885,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_drs_backup_migration":               drs.ResourceBackupMigration(),
 			"huaweicloud_drs_batch_pause_task":               drs.ResourceBatchPauseTask(),
 			"huaweicloud_drs_batch_retry_task":               drs.ResourceBatchRetryTask(),
+			"huaweicloud_drs_batch_select_objects":           drs.ResourceDrsBatchSelectObjects(),
 			"huaweicloud_drs_batch_set_definer":              drs.ResourceBatchSetDefiner(),
 			"huaweicloud_drs_check_data_filter":              drs.ResourceDrsCheckDataFilter(),
 			"huaweicloud_drs_update_data_progress_rules":     drs.ResourceDrsUpdateDataProgressRules(),
