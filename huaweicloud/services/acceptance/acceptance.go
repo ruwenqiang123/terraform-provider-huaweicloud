@@ -646,6 +646,8 @@ var (
 	HW_MODELARTS_WORKFLOW_ID                                 = os.Getenv("HW_MODELARTS_WORKFLOW_ID")
 	HW_MODELARTS_WORKFLOW_SUBSCRIPTION_ID                    = os.Getenv("HW_MODELARTS_WORKFLOW_SUBSCRIPTION_ID")
 	HW_MODELARTS_WORKFLOW_ITEM_VERSION_ID                    = os.Getenv("HW_MODELARTS_WORKFLOW_ITEM_VERSION_ID")
+	HW_MODELARTS_NETWORK_NAME                                = os.Getenv("HW_MODELARTS_NETWORK_NAME")
+	HW_MODELARTS_SUBNET_ID                                   = os.Getenv("HW_MODELARTS_SUBNET_ID")
 
 	HW_AOM_ALARM_EVENT_SN                        = os.Getenv("HW_AOM_ALARM_EVENT_SN")
 	HW_AOM_INSTALLER_AGENT_ID                    = os.Getenv("HW_AOM_INSTALLER_AGENT_ID")
@@ -820,12 +822,14 @@ var (
 	HW_DWS_OBS_AGENCY_NAMES = os.Getenv("HW_DWS_OBS_AGENCY_NAMES")
 
 	HW_DCS_INSTANCE_ID        = os.Getenv("HW_DCS_INSTANCE_ID")
+	HW_DCS_GROUP_ID           = os.Getenv("HW_DCS_GROUP_ID")
 	HW_DCS_BEGIN_TIME         = os.Getenv("HW_DCS_BEGIN_TIME")
 	HW_DCS_END_TIME           = os.Getenv("HW_DCS_END_TIME")
 	HW_DCS_OBS_BUCKET_NAME    = os.Getenv("HW_DCS_OBS_BUCKET_NAME")
 	HW_DCS_BACKUP_ID          = os.Getenv("HW_DCS_BACKUP_ID")
 	HW_DCS_BACKGROUND_TASK_ID = os.Getenv("HW_DCS_BACKGROUND_TASK_ID")
 	HW_DCS_CENTER_TASK_ID     = os.Getenv("HW_DCS_CENTER_TASK_ID")
+	HW_DCS_TASK_ID            = os.Getenv("HW_DCS_TASK_ID")
 
 	HW_ELB_GATEWAY_TYPE = os.Getenv("HW_ELB_GATEWAY_TYPE")
 
@@ -3752,6 +3756,13 @@ func TestAccPreCheckModelArtsWorkflowSubscription(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckModelArtsNetworkAvailableSubnets(t *testing.T) {
+	if HW_MODELARTS_NETWORK_NAME == "" || HW_MODELARTS_SUBNET_ID == "" {
+		t.Skip("HW_MODELARTS_NETWORK_NAME and HW_MODELARTS_SUBNET_ID must be set for ModelArts the acceptance test")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckEG(t *testing.T) {
 	if HW_EG_TEST_ON == "" {
 		t.Skip("Skip all sub tests of the EG service.")
@@ -4613,6 +4624,13 @@ func TestAccPreCheckDCSInstanceID(t *testing.T) {
 }
 
 // lintignore:AT003
+func TestAccPreCheckDcsGroupId(t *testing.T) {
+	if HW_DCS_GROUP_ID == "" {
+		t.Skip("HW_DCS_GROUP_ID must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
 func TestAccPreCheckDcsTimeRange(t *testing.T) {
 	if HW_DCS_BEGIN_TIME == "" || HW_DCS_END_TIME == "" {
 		t.Skip("HW_DCS_BEGIN_TIME and HW_DCS_END_TIME must be set for the acceptance test")
@@ -4644,6 +4662,13 @@ func TestAccPreCheckDcsCenterTaskId(t *testing.T) {
 func TestAccPreCheckDcsBackupId(t *testing.T) {
 	if HW_DCS_BACKUP_ID == "" {
 		t.Skip("HW_DCS_BACKUP_ID must be set for the acceptance test")
+	}
+}
+
+// lintignore:AT003
+func TestAccPreCheckDCSTaskId(t *testing.T) {
+	if HW_DCS_TASK_ID == "" {
+		t.Skip("HW_DCS_TASK_ID must be set for the acceptance test")
 	}
 }
 
