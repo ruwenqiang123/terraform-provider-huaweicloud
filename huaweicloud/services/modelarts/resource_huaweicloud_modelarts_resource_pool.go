@@ -332,6 +332,12 @@ func modelartsResourcePoolResourceFlavorSchema() *schema.Resource {
 							Computed:    true,
 							Description: `The percentage of container volumes to data volumes on resource pool nodes.`,
 						},
+						"mode": {
+							Type:        schema.TypeString,
+							Optional:    true,
+							Computed:    true,
+							Description: `The disk ratio partitioning mode. When set to share, it indicates the shared mode.`,
+						},
 						"lvm_config": {
 							Type:     schema.TypeList,
 							Optional: true,
@@ -549,6 +555,12 @@ func modelartsResourcePoolResourcesOsSchema() *schema.Resource {
 				Optional:    true,
 				Computed:    true,
 				Description: `The image type.`,
+			},
+			"auto_match": {
+				Type:        schema.TypeString,
+				Optional:    true,
+				Computed:    true,
+				Description: `The system image auto matching strategy.`,
 			},
 		},
 	}
@@ -1116,6 +1128,7 @@ func buildResourcePoolResourcesVolumeGroupConfigs(oldVolumeGroupConfigs, newVolu
 			result = append(result, map[string]interface{}{
 				"volumeGroup":    utils.PathSearch("volume_group", volumeGroupConfig, nil),
 				"dockerThinPool": utils.ValueIgnoreEmpty(utils.PathSearch("docker_thin_pool", volumeGroupConfig, nil)),
+				"mode":           utils.ValueIgnoreEmpty(utils.PathSearch("mode", volumeGroupConfig, nil)),
 				"lvmConfig": buildResourceVolumeGroupConfigsLvmConfig(utils.PathSearch("lvm_config", volumeGroupConfig,
 					make([]interface{}, 0)).([]interface{})),
 				"types": utils.ValueIgnoreEmpty(utils.PathSearch("types", volumeGroupConfig,
@@ -1139,6 +1152,12 @@ func buildResourcePoolResourcesVolumeGroupConfigs(oldVolumeGroupConfigs, newVolu
 			elem["dockerThinPool"] = dockerThinPool
 		} else {
 			elem["dockerThinPool"] = utils.ValueIgnoreEmpty(utils.PathSearch("docker_thin_pool", volumeGroupConfig, nil))
+		}
+
+		if mode := utils.PathSearch("mode", newVolumeGroupConfig, nil); mode != nil {
+			elem["mode"] = mode
+		} else {
+			elem["mode"] = utils.ValueIgnoreEmpty(utils.PathSearch("mode", volumeGroupConfig, nil))
 		}
 
 		if lvmConfigs := utils.PathSearch("lvm_config", newVolumeGroupConfig, make([]interface{}, 0)).([]interface{}); len(lvmConfigs) > 0 {
@@ -1179,10 +1198,16 @@ func buildResourcePoolResourcesOsInfo(osInfos []interface{}) map[string]interfac
 	}
 
 	osInfo := osInfos[0]
+	imageId := utils.PathSearch("image_id", osInfo, "")
+	if imageId != "" {
+		return map[string]interface{}{
+			"name":      utils.ValueIgnoreEmpty(utils.PathSearch("name", osInfo, nil)),
+			"imageId":   utils.ValueIgnoreEmpty(utils.PathSearch("image_id", osInfo, nil)),
+			"imageType": utils.ValueIgnoreEmpty(utils.PathSearch("image_type", osInfo, nil)),
+		}
+	}
 	return map[string]interface{}{
-		"name":      utils.ValueIgnoreEmpty(utils.PathSearch("name", osInfo, nil)),
-		"imageId":   utils.ValueIgnoreEmpty(utils.PathSearch("image_id", osInfo, nil)),
-		"imageType": utils.ValueIgnoreEmpty(utils.PathSearch("image_type", osInfo, nil)),
+		"autoMatch": utils.ValueIgnoreEmpty(utils.PathSearch("auto_match", osInfo, nil)),
 	}
 }
 
@@ -1348,6 +1373,7 @@ func flattenResourcePoolResourcesVolumeGroupConfigs(volumeGroupConfigs []interfa
 		result = append(result, map[string]interface{}{
 			"volume_group":     utils.PathSearch("volumeGroup", volumeGroupConfig, nil),
 			"docker_thin_pool": utils.PathSearch("dockerThinPool", volumeGroupConfig, nil),
+			"mode":             utils.PathSearch("mode", volumeGroupConfig, nil),
 			"lvm_config": flattenResourcePoolVolumeGroupConfigsLvmConfig(utils.PathSearch("lvmConfig",
 				volumeGroupConfig, nil)),
 			"types": utils.PathSearch("types", volumeGroupConfig, make([]interface{}, 0)),
@@ -1366,6 +1392,9 @@ func flattenResourcePoolResourcesOsInfo(osInfo interface{}) []map[string]interfa
 			"name":       utils.PathSearch("name", osInfo, nil),
 			"image_id":   utils.PathSearch("imageId", osInfo, nil),
 			"image_type": utils.PathSearch("iamgeType", osInfo, nil),
+			// auto_match matches the image by image name automatically.
+			// The ModelArts API does not return this field, so read it from the image name.
+			"auto_match": utils.PathSearch("name", osInfo, nil),
 		},
 	}
 }
@@ -2101,6 +2130,7 @@ func buildUpdateResourcePoolResourceVolumeGroupConfigs(resourceElem cty.Value) [
 		result[i] = map[string]interface{}{
 			"volume_group":     volumeGroupConfigElem.GetAttr("volume_group").AsString(),
 			"docker_thin_pool": getConfigFileIntValueByKey(volumeGroupConfigElem, "docker_thin_pool"),
+			"mode":             getConfigFileStringValueByKey(volumeGroupConfigElem, "mode"),
 			"lvm_config":       buildUpdateResourceVolumeGroupConfigsLvmConfig(volumeGroupConfigElem),
 			"types":            buildUpdateResourcePoolResourceVolumeGroupConfigsTypes(volumeGroupConfigElem),
 		}

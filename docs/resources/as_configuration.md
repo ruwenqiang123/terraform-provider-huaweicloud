@@ -284,6 +284,14 @@ password authentication.
   more files and their contents. The [personality](#instance_config_personality_object) structure is documented below.
   Changing this will create a new resource.
 
+* `tags` - (Optional, Map) Specifies the key/value pairs to associate with the AS configuration.
+  The tags are inherited by the new instances during scaling out when `tag_transmission_policy` is set to `OVERRIDE`.
+
+* `tag_transmission_policy` - (Optional, String, ForceNew) Specifies the tag transmission policy, which determines
+  whether the tags of the AS configuration (value `OVERRIDE`) or the tags of the AS group (value `SUPPRESS`) are
+  inherited by the new instances during scaling out. Defaults to `SUPPRESS`.
+  Changing this will create a new resource.
+
 <a name="instance_config_disk_object"></a>
 The `disk` block supports:
 
@@ -392,6 +400,15 @@ The `personality` block supports:
 
 * `content` - (Required, String, ForceNew) Specifies the content of the injected file, which must be encoded with base64.
   Changing this creates a new resource.
+
+<a name="instance_config_tags_object"></a>
+The `tags` block supports:
+
+* `key` - (Required, String, ForceNew) Specifies the tag key. The maximum length is `36` Unicode characters.
+  Changing this will create a new resource.
+
+* `value` - (Required, String, ForceNew) Specifies the tag value. The maximum length is `43` Unicode characters.
+  Changing this will create a new resource.
 
 ## Attribute Reference
 

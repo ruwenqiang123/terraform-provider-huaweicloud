@@ -1,5 +1,56 @@
 # CHANGELOG
 
+## 1.100.0 (Oct 27, 2026)
+
+* **New Resource Source:**
+  + `huaweicloud_drs_compare_restart`
+  + `huaweicloud_drs_filter_rules`
+  + `huaweicloud_drs_job_change_flavor`
+  + `huaweicloud_drs_job_update`
+  + `huaweicloud_rc_resource_batch_add`
+  + `huaweicloud_rc_resource_group`
+  + `huaweicloud_rc_resource_remove`
+  + `huaweicloud_rc_stored_query`
+
+* **New Data Source:**
+  + `huaweicloud_drs_compare_users`
+  + `huaweicloud_drs_filter_rules_collect`
+  + `huaweicloud_drs_replay_execute_records`
+  + `huaweicloud_drs_replay_records`
+  + `huaweicloud_rc_providers`
+  + `huaweicloud_rc_resource_count`
+  + `huaweicloud_rc_resource_groups`
+  + `huaweicloud_rc_resource_relations`
+  + `huaweicloud_rc_resource_summaries`
+  + `huaweicloud_rc_resource_tags`
+  + `huaweicloud_rc_resources`
+  + `huaweicloud_rc_run_query`
+  + `huaweicloud_rc_schemas`
+  + `huaweicloud_rc_service_resources`
+  + `huaweicloud_rc_stored_queries`
+  
+## 1.99.2 (Oct 22, 2026)
+
+ENHANCEMENTS:
+
+* feat(retry): supports custom backoff interval for specified service [GH-10524]
+
+BUG FIXES:
+
+* fix(CCE): mark the attributes containing the admin client private key as sensitive [GH-10514]
+* fix(modelarts): supplement the missing attributes and repair the update logic [GH-10525]
+
+## 1.99.1 (Oct 19, 2026)
+
+ENHANCEMENTS:
+
+* feat(modelarts): support os autoMatch and volume mode [GH-10521]
+
+## 1.99.0 (Oct 14, 2026)
+
+* **New Resource Source:**
+  + `huaweicloud_cbr_vault_policies_associate` [GH-10506]
+
 ## 1.98.2 (Sep 11, 2026)
 
 * **New Data Source:**

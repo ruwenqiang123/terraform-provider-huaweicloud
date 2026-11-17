@@ -108,6 +108,7 @@ import (
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/organizations"
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/rabbitmq"
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/ram"
+	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/rc"
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/rds"
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/rfs"
 	"github.com/huaweicloud/terraform-provider-huaweicloud/huaweicloud/services/rgc"
@@ -1384,11 +1385,13 @@ func Provider() *schema.Provider {
 			"huaweicloud_drs_compare_policy":           drs.DataSourceDrsComparePolicy(),
 			"huaweicloud_drs_compare_progress":         drs.DataSourceDrsCompareProgress(),
 			"huaweicloud_drs_compare_result":           drs.DataSourceDrsCompareResult(),
+			"huaweicloud_drs_compare_users":            drs.DataSourceCompareUsers(),
 			"huaweicloud_drs_configuration_histories":  drs.DataSourceDrsConfigurationHistories(),
 			"huaweicloud_drs_db_object":                drs.DataSourceDrsDbObject(),
 			"huaweicloud_drs_ddls":                     drs.DataSourceDrsDdls(),
 			"huaweicloud_drs_data_processing_rules":    drs.DataSourceDrsDataProcessingRules(),
 			"huaweicloud_drs_dirty_data":               drs.DataSourceDrsDirtyData(),
+			"huaweicloud_drs_filter_rules_collect":     drs.DataSourceDrsFilterRulesCollect(),
 			"huaweicloud_drs_disaster_monitoring_data": drs.DataSourceDrsDisasterMonitoringData(),
 			"huaweicloud_drs_health_compare_jobs":      drs.DataSourceDrsHealthCompareJobs(),
 			"huaweicloud_drs_health_compare_overview":  drs.DataSourceDrsHealthCompareOverview(),
@@ -1406,6 +1409,8 @@ func Provider() *schema.Provider {
 			"huaweicloud_drs_object_mappings":          drs.DataSourceDrsObjectMappings(),
 			"huaweicloud_drs_quotas":                   drs.DataSourceDrsQuotas(),
 			"huaweicloud_drs_replay_progress":          drs.DataSourceDrsReplayProgress(),
+			"huaweicloud_drs_replay_records":           drs.DataSourceReplayRecords(),
+			"huaweicloud_drs_replay_execute_records":   drs.DataSourceDrsReplayExecuteRecords(),
 			"huaweicloud_drs_subscriptions":            drs.DataSourceDrsSubscriptions(),
 			"huaweicloud_drs_support_links":            drs.DataSourceSupportLinks(),
 			"huaweicloud_drs_table_compare":            drs.DataSourceDrsTableCompare(),
@@ -2274,6 +2279,18 @@ func Provider() *schema.Provider {
 			"huaweicloud_ram_distinct_shared_resources":             ram.DataSourceDistinctSharedResources(),
 			"huaweicloud_ram_resource_instances_filter":             ram.DataSourceResourceInstancesFilter(),
 			"huaweicloud_ram_resource_instances_count":              ram.DataSourceResourceInstancesCount(),
+
+			"huaweicloud_rc_providers":          rc.DataSourceRcProviders(),
+			"huaweicloud_rc_resource_count":     rc.DataSourceRcResourceCount(),
+			"huaweicloud_rc_resource_groups":    rc.DataSourceRcResourceGroups(),
+			"huaweicloud_rc_resource_relations": rc.DataSourceRcResourceRelations(),
+			"huaweicloud_rc_resource_summaries": rc.DataSourceRcResourceSummaries(),
+			"huaweicloud_rc_resource_tags":      rc.DataSourceRcResourceTags(),
+			"huaweicloud_rc_resources":          rc.DataSourceRcResources(),
+			"huaweicloud_rc_run_query":          rc.DataSourceRcRunQuery(),
+			"huaweicloud_rc_schemas":            rc.DataSourceRcSchemas(),
+			"huaweicloud_rc_service_resources":  rc.DataSourceRcServiceResources(),
+			"huaweicloud_rc_stored_queries":     rc.DataSourceRcStoredQueries(),
 
 			"huaweicloud_rds_flavors":                            rds.DataSourceRdsFlavors(),
 			"huaweicloud_rds_available_flavors":                  rds.DataSourceRdsAvailableFlavors(),
@@ -3382,6 +3399,7 @@ func Provider() *schema.Provider {
 			"huaweicloud_cbr_change_order":             cbr.ResourceChangeOrder(),
 			"huaweicloud_cbr_update_backup":            cbr.ResourceUpdateBackup(),
 			"huaweicloud_cbr_vault_set_resource":       cbr.ResourceVaultSetResource(),
+			"huaweicloud_cbr_vault_policies_associate": cbr.ResourceVaultPoliciesAssociate(),
 
 			"huaweicloud_cbh_instance":                   cbh.ResourceCBHInstance(),
 			"huaweicloud_cbh_reset_login_mode":           cbh.ResourceResetLoginMode(),
@@ -3899,14 +3917,18 @@ func Provider() *schema.Provider {
 			"huaweicloud_drs_update_data_progress_rules":     drs.ResourceDrsUpdateDataProgressRules(),
 			"huaweicloud_drs_compare_job_cancel":             drs.ResourceCancelCompareJob(),
 			"huaweicloud_drs_compare_policy":                 drs.ResourceDrsComparePolicy(),
+			"huaweicloud_drs_compare_restart":                drs.ResourceDrsCompareRestart(),
 			"huaweicloud_drs_connection":                     drs.ResourceDrsConnection(),
 			"huaweicloud_drs_download_batch_create_template": drs.ResourceDownloadBatchCreateTemplate(),
 			"huaweicloud_drs_driver_delete":                  drs.ResourceDriverDelete(),
 			"huaweicloud_drs_job":                            drs.ResourceDrsJob(),
+			"huaweicloud_drs_job_change_flavor":              drs.ResourceDrsJobChangeFlavor(),
 			"huaweicloud_drs_job_clone":                      drs.ResourceDrsJobClone(),
 			"huaweicloud_drs_job_configuration_update":       drs.ResourceJobConfigurationUpdate(),
+			"huaweicloud_drs_job_update":                     drs.ResourceDrsJobUpdate(),
 			"huaweicloud_drs_job_primary_standby_switch":     drs.ResourceDRSPrimaryStandbySwitch(),
 			"huaweicloud_drs_job_v5":                         drs.ResourceDrsJobV5(),
+			"huaweicloud_drs_filter_rules":                   drs.ResourceFilterRules(),
 			"huaweicloud_drs_jobs_batch_stop":                drs.ResourceJobsBatchStop(),
 			"huaweicloud_drs_lts_config":                     drs.ResourceDrsLtsConfig(),
 			"huaweicloud_drs_name_validation":                drs.ResourceDrsNameValidation(),
@@ -4534,6 +4556,11 @@ func Provider() *schema.Provider {
 			"huaweicloud_ram_resource_share":            ram.ResourceRAMShare(),
 			"huaweicloud_ram_resource_share_accepter":   ram.ResourceShareAccepter(),
 			"huaweicloud_ram_resource_share_permission": ram.ResourceSharePermission(),
+
+			"huaweicloud_rc_resource_batch_add": rc.ResourceResourceBatchAdd(),
+			"huaweicloud_rc_resource_group":     rc.ResourceRcResourceGroup(),
+			"huaweicloud_rc_resource_remove":    rc.ResourceResourceRemove(),
+			"huaweicloud_rc_stored_query":       rc.ResourceRcStoredQuery(),
 
 			"huaweicloud_rds_mysql_account":                   rds.ResourceMysqlAccount(),
 			"huaweicloud_rds_mysql_binlog":                    rds.ResourceMysqlBinlog(),
