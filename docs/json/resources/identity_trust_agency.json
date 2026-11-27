@@ -15,14 +15,14 @@
                 "description": "The description of the trust agency.",
                 "optional": true
               },
-              "duration": {
-                "type": "number",
-                "description": "The validity period of a trust agency.",
-                "optional": true,
-                "computed": true
-              },
               "id": {
                 "type": "string",
+                "computed": true
+              },
+              "max_session_duration": {
+                "type": "number",
+                "description": "The maximum session duration of the trust agency, in seconds. The value ranges from 3,600 to 43,200.",
+                "optional": true,
                 "computed": true
               },
               "name": {
@@ -43,7 +43,7 @@
                   "string"
                 ],
                 "description": "The string list of one or more policy names that you would like to attach to\nthe trust agency.",
-                "required": true
+                "optional": true
               },
               "tags": {
                 "type": [
@@ -55,9 +55,8 @@
               },
               "trust_policy": {
                 "type": "string",
-                "description": "The trust policy of the trust agency.",
-                "required": true,
-                "forcenew": true
+                "description": "The trust policy of the trust agency, in JSON format.",
+                "required": true
               },
               "urn": {
                 "type": "string",
